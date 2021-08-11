@@ -395,7 +395,7 @@ namespace CodeImp.DoomBuilder.Windows
 			{
 				// Get configuration item
 				ci = listconfigs.Items[i].Tag as ConfigurationInfo;
-				if(!ci.Resources.IsValid())
+				if(listconfigs.Items[i].Checked && !ci.Resources.IsValid())
 				{
 					MessageBox.Show(this, "At least one resource doesn't exist in \"" + ci.Name + "\" game configuration!", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
 					tabs.SelectedTab = tabresources;
