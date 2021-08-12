@@ -402,51 +402,48 @@ namespace CodeImp.DoomBuilder.Map
 		public bool HighRequired()
 		{
 			// Doublesided?
-			if(Other != null)
+			if(Other == null || Other.sector.HasSkyCeiling) return false;
+
+			//mxd. Check sloped ceilings...
+			if(General.Map.UDMF && this.sector != Other.Sector) 
 			{
-				//mxd. Check sloped ceilings...
-				if(General.Map.UDMF && this.sector != Other.Sector) 
+				double thisstartz = this.sector.CeilHeight;
+				double thisendz = this.sector.CeilHeight;
+				double otherstartz = Other.sector.CeilHeight;
+				double otherendz = Other.sector.CeilHeight;
+
+				// Check if this side is affected by UDMF slope (it overrides vertex heights, riiiiiight?..) TODO: check this!
+				if(this.sector.CeilSlope.GetLengthSq() > 0) 
 				{
-					double thisstartz = this.sector.CeilHeight;
-					double thisendz = this.sector.CeilHeight;
-					double otherstartz = Other.sector.CeilHeight;
-					double otherendz = Other.sector.CeilHeight;
-
-					// Check if this side is affected by UDMF slope (it overrides vertex heights, riiiiiight?..) TODO: check this!
-					if(this.sector.CeilSlope.GetLengthSq() > 0) 
-					{
-						Plane ceil = new Plane(this.sector.CeilSlope, this.sector.CeilSlopeOffset);
-						thisstartz = ceil.GetZ(this.Line.Start.Position);
-						thisendz = ceil.GetZ(this.Line.End.Position);
-					} 
-					else if(this.sector.Sidedefs.Count == 3) // Check vertex heights on this side
-					{
-						if(!double.IsNaN(this.Line.Start.ZCeiling)) thisstartz = this.Line.Start.ZCeiling;
-						if(!double.IsNaN(this.Line.End.ZCeiling)) thisendz = this.Line.End.ZCeiling;
-					}
-
-					// Check if other side is affected by UDMF slope (it overrides vertex heights, riiiiiight?..) TODO: check this!
-					if(Other.sector.CeilSlope.GetLengthSq() > 0) 
-					{
-						Plane ceil = new Plane(Other.sector.CeilSlope, Other.sector.CeilSlopeOffset);
-						otherstartz = ceil.GetZ(this.Line.Start.Position);
-						otherendz = ceil.GetZ(this.Line.End.Position);
-					} 
-					else if(Other.sector.Sidedefs.Count == 3) // Check other line's vertex heights
-					{
-						if(!double.IsNaN(this.Line.Start.ZCeiling)) otherstartz = this.Line.Start.ZCeiling;
-						if(!double.IsNaN(this.Line.End.ZCeiling)) otherendz = this.Line.End.ZCeiling;
-					}
-
-					// Texture is required when our start or end vertex is higher than on the other side.
-					if(thisstartz > otherstartz || thisendz > otherendz) return true;
+					Plane ceil = new Plane(this.sector.CeilSlope, this.sector.CeilSlopeOffset);
+					thisstartz = ceil.GetZ(this.Line.Start.Position);
+					thisendz = ceil.GetZ(this.Line.End.Position);
+				} 
+				else if(this.sector.Sidedefs.Count == 3) // Check vertex heights on this side
+				{
+					if(!double.IsNaN(this.Line.Start.ZCeiling)) thisstartz = this.Line.Start.ZCeiling;
+					if(!double.IsNaN(this.Line.End.ZCeiling)) thisendz = this.Line.End.ZCeiling;
 				}
-				
-				// Texture is required when ceiling of other side is lower
-				return (Other.sector.CeilHeight < this.sector.CeilHeight);
-			}
 
-			return false;
+				// Check if other side is affected by UDMF slope (it overrides vertex heights, riiiiiight?..) TODO: check this!
+				if(Other.sector.CeilSlope.GetLengthSq() > 0) 
+				{
+					Plane ceil = new Plane(Other.sector.CeilSlope, Other.sector.CeilSlopeOffset);
+					otherstartz = ceil.GetZ(this.Line.Start.Position);
+					otherendz = ceil.GetZ(this.Line.End.Position);
+				} 
+				else if(Other.sector.Sidedefs.Count == 3) // Check other line's vertex heights
+				{
+					if(!double.IsNaN(this.Line.Start.ZCeiling)) otherstartz = this.Line.Start.ZCeiling;
+					if(!double.IsNaN(this.Line.End.ZCeiling)) otherendz = this.Line.End.ZCeiling;
+				}
+
+				// Texture is required when our start or end vertex is higher than on the other side.
+				if(thisstartz > otherstartz || thisendz > otherendz) return true;
+			}
+				
+			// Texture is required when ceiling of other side is lower
+			return Other.sector.CeilHeight < this.sector.CeilHeight;
 		}
 
 		/// <summary>
@@ -464,51 +461,48 @@ namespace CodeImp.DoomBuilder.Map
 		public bool LowRequired()
 		{
 			// Doublesided?
-			if(Other != null)
+			if (Other == null || Other.sector.HasSkyFloor) return false;
+
+			//mxd. Check sloped floors...
+			if(General.Map.UDMF && this.sector != Other.Sector)
 			{
-				//mxd. Check sloped floors...
-				if(General.Map.UDMF && this.sector != Other.Sector)
+				double thisstartz = this.sector.FloorHeight;
+				double thisendz = this.sector.FloorHeight;
+				double otherstartz = Other.sector.FloorHeight;
+				double otherendz = Other.sector.FloorHeight;
+
+				// Check if this side is affected by UDMF slope (it overrides vertex heights, riiiiiight?..) TODO: check this!
+				if(this.sector.FloorSlope.GetLengthSq() > 0) 
 				{
-					double thisstartz = this.sector.FloorHeight;
-					double thisendz = this.sector.FloorHeight;
-					double otherstartz = Other.sector.FloorHeight;
-					double otherendz = Other.sector.FloorHeight;
-
-					// Check if this side is affected by UDMF slope (it overrides vertex heights, riiiiiight?..) TODO: check this!
-					if(this.sector.FloorSlope.GetLengthSq() > 0) 
-					{
-						Plane floor = new Plane(this.sector.FloorSlope, this.sector.FloorSlopeOffset);
-						thisstartz = floor.GetZ(this.Line.Start.Position);
-						thisendz = floor.GetZ(this.Line.End.Position);
-					} 
-					else if(this.sector.Sidedefs.Count == 3) // Check vertex heights on this side
-					{
-						if(!double.IsNaN(this.Line.Start.ZFloor)) thisstartz = this.Line.Start.ZFloor;
-						if(!double.IsNaN(this.Line.End.ZFloor)) thisendz = this.Line.End.ZFloor;
-					}
+					Plane floor = new Plane(this.sector.FloorSlope, this.sector.FloorSlopeOffset);
+					thisstartz = floor.GetZ(this.Line.Start.Position);
+					thisendz = floor.GetZ(this.Line.End.Position);
+				} 
+				else if(this.sector.Sidedefs.Count == 3) // Check vertex heights on this side
+				{
+					if(!double.IsNaN(this.Line.Start.ZFloor)) thisstartz = this.Line.Start.ZFloor;
+					if(!double.IsNaN(this.Line.End.ZFloor)) thisendz = this.Line.End.ZFloor;
+				}
 					
-					// Check if other side is affected by UDMF slope (it overrides vertex heights, riiiiiight?..) TODO: check this!
-					if(Other.sector.FloorSlope.GetLengthSq() > 0)
-					{
-						Plane floor = new Plane(Other.sector.FloorSlope, Other.sector.FloorSlopeOffset);
-						otherstartz = floor.GetZ(this.Line.Start.Position);
-						otherendz = floor.GetZ(this.Line.End.Position);
-					}
-					else if(Other.sector.Sidedefs.Count == 3) // Check other line's vertex heights
-					{
-						if(!double.IsNaN(this.Line.Start.ZFloor)) otherstartz = this.Line.Start.ZFloor;
-						if(!double.IsNaN(this.Line.End.ZFloor)) otherendz = this.Line.End.ZFloor;
-					}
-
-					// Texture is required when our start or end vertex is lower than on the other side.
-					if(thisstartz < otherstartz || thisendz < otherendz) return true;
+				// Check if other side is affected by UDMF slope (it overrides vertex heights, riiiiiight?..) TODO: check this!
+				if(Other.sector.FloorSlope.GetLengthSq() > 0)
+				{
+					Plane floor = new Plane(Other.sector.FloorSlope, Other.sector.FloorSlopeOffset);
+					otherstartz = floor.GetZ(this.Line.Start.Position);
+					otherendz = floor.GetZ(this.Line.End.Position);
+				}
+				else if(Other.sector.Sidedefs.Count == 3) // Check other line's vertex heights
+				{
+					if(!double.IsNaN(this.Line.Start.ZFloor)) otherstartz = this.Line.Start.ZFloor;
+					if(!double.IsNaN(this.Line.End.ZFloor)) otherendz = this.Line.End.ZFloor;
 				}
 
-				// Texture is required when floor of other side is higher
-				return (Other.sector.FloorHeight > this.sector.FloorHeight);
+				// Texture is required when our start or end vertex is lower than on the other side.
+				if(thisstartz < otherstartz || thisendz < otherendz) return true;
 			}
 
-			return false;
+			// Texture is required when floor of other side is higher
+			return Other.sector.FloorHeight > this.sector.FloorHeight;
 		}
 
 		/// <summary>
