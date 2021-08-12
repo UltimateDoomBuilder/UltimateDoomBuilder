@@ -138,7 +138,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private bool IsFogBoundary()
 		{
 			if(Sidedef.Sector.Index == Sidedef.Other.Sector.Index) return false; // There can't be a boundary if both sides are in the same sector.
-			if(Sidedef.Sector.CeilTexture == General.Map.Config.SkyFlatName && Sidedef.Other.Sector.CeilTexture == General.Map.Config.SkyFlatName) return false;
+			if(Sidedef.Sector.HasSkyCeiling && Sidedef.Other.Sector.HasSkyCeiling) return false;
 			return (Sidedef.Sector.FogMode > SectorFogMode.CLASSIC && Sidedef.Other.Sector.FogMode <= SectorFogMode.CLASSIC);
 		}
 

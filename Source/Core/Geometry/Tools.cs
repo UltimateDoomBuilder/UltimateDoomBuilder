@@ -2006,8 +2006,8 @@ namespace CodeImp.DoomBuilder.Geometry
 
 			if (side.Line.IsFlagSet(General.Map.Config.LowerUnpeggedFlag)) 
 			{
-				if(side.Other == null || side.Other.Sector == null || side.Sector.CeilTexture != General.Map.Config.SkyFlatName ||
-					side.Other.Sector.CeilTexture != General.Map.Config.SkyFlatName)
+				if(side.Other == null || side.Other.Sector == null || !side.Sector.HasSkyCeiling ||
+					!side.Other.Sector.HasSkyCeiling)
 					return offset;
 
 				//normalize offset the way Doom does it when front and back sector's ceiling is sky
@@ -2447,7 +2447,7 @@ namespace CodeImp.DoomBuilder.Geometry
 
 			//Update the flag
 			if(General.Map.Data.MapInfo.HasFadeColor ||
-			   (General.Map.Data.MapInfo.HasOutsideFogColor && side.Sector.CeilTexture == General.Map.Config.SkyFlatName) ||
+			   (General.Map.Data.MapInfo.HasOutsideFogColor && side.Sector.HasSkyCeiling) ||
 			   side.Sector.Fields.ContainsKey("fadecolor")) 
 			{
 				//Set the flag
@@ -2508,7 +2508,7 @@ namespace CodeImp.DoomBuilder.Geometry
 		public static PixelColor GetSectorFadeColor(Sector s)
 		{
 			if(s.Fields.ContainsKey("fadecolor")) return PixelColor.FromInt(s.Fields.GetValue("fadecolor", 0));
-			if(General.Map.Data.MapInfo.HasOutsideFogColor && s.CeilTexture == General.Map.Config.SkyFlatName)
+			if(General.Map.Data.MapInfo.HasOutsideFogColor && s.HasSkyCeiling)
 				return PixelColor.FromColor(General.Map.Data.MapInfo.OutsideFogColor.ToColor());
 
 			return PixelColor.FromColor(General.Map.Data.MapInfo.HasFadeColor ? General.Map.Data.MapInfo.FadeColor.ToColor() : Color.Black);

@@ -188,7 +188,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 
 			//mxd. Update sky render flag
-			renderassky = (level.sector.FloorTexture == General.Map.Config.SkyFlatName);
+			renderassky = level.sector.HasSkyFloor;
 			
 			// Apply vertices
 			base.SetVertices(verts);

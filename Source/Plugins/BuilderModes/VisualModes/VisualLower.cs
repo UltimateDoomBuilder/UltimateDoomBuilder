@@ -160,7 +160,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			double floorbias = (Sidedef.Other.Sector.FloorHeight == Sidedef.Sector.FloorHeight) ? 1.0 : 0.0;
 			if(Sidedef.Line.IsFlagSet(General.Map.Config.LowerUnpeggedFlag))
 			{
-				if(Sidedef.Sector.CeilTexture == General.Map.Config.SkyFlatName && Sidedef.Other.Sector.CeilTexture == General.Map.Config.SkyFlatName) 
+				if(Sidedef.Sector.HasSkyCeiling && Sidedef.Other.Sector.HasSkyCeiling) 
 				{
 					// mxd. Replicate Doom texture offset glitch when front and back sector's ceilings are sky
 					tp.tlt.y = (double)Sidedef.Other.Sector.CeilHeight - Sidedef.Other.Sector.FloorHeight;
@@ -240,7 +240,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		internal void UpdateSkyRenderFlag()
 		{
 			renderassky = (Sidedef.Other != null && Sidedef.Sector != null && Sidedef.Other.Sector != null
-				&& Sidedef.Other.Sector.FloorTexture == General.Map.Config.SkyFlatName
+				&& Sidedef.Other.Sector.HasSkyFloor
 				&& Sidedef.LowTexture == "-");
 		}
 		

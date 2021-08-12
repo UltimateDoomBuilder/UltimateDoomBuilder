@@ -227,8 +227,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		internal void UpdateSkyRenderFlag()
 		{
 			renderassky = (Sidedef.Other != null && Sidedef.Sector != null && Sidedef.Other.Sector != null
-				&& Sidedef.Other.Sector.CeilTexture == General.Map.Config.SkyFlatName
-				&& (Sidedef.Sector.CeilTexture == General.Map.Config.SkyFlatName || Sidedef.HighTexture == "-")
+				&& Sidedef.Other.Sector.HasSkyCeiling
+				&& (Sidedef.Sector.HasSkyCeiling || Sidedef.HighTexture == "-")
 				);
 		}
 		

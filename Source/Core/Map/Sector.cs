@@ -106,6 +106,9 @@ namespace CodeImp.DoomBuilder.Map
 		public string CeilTexture { get { return ceiltexname; } }
 		public long LongFloorTexture { get { return longfloortexname; } }
 		public long LongCeilTexture { get { return longceiltexname; } }
+		public bool HasSkyCeiling { get { return ceiltexname == General.Map.Config.SkyFlatName; } }
+		public bool HasSkyFloor { get { return floortexname == General.Map.Config.SkyFlatName; } }
+
 		internal Dictionary<string, bool> Flags { get { return flags; } } //mxd
 		public int Effect { get { return effect; } set { BeforePropsChange(); effect = value; } }
 		public int Tag { get { return tags[0]; } set { BeforePropsChange(); tags[0] = value; if((value < General.Map.FormatInterface.MinTag) || (value > General.Map.FormatInterface.MaxTag)) throw new ArgumentOutOfRangeException("Tag", "Invalid tag number"); } } //mxd
@@ -894,7 +897,7 @@ namespace CodeImp.DoomBuilder.Map
 			}
 			// Sector uses outisde fog when it's ceiling is sky or Sector_Outside effect (87) is set
 			else if(General.Map.Data.MapInfo.HasOutsideFogColor && 
-				(ceiltexname == General.Map.Config.SkyFlatName || (effect == 87 && General.Map.Config.SectorEffects.ContainsKey(effect))))
+				(HasSkyCeiling || (effect == 87 && General.Map.Config.SectorEffects.ContainsKey(effect))))
 			{
 				fogcolor = General.Map.Data.MapInfo.OutsideFogColor;
 				fogmode = SectorFogMode.OUTSIDEFOGDENSITY;

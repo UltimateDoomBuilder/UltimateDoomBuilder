@@ -203,7 +203,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			//mxd. Update sky render flag
 			bool isrenderedassky = renderassky;
-			renderassky = (level.sector.CeilTexture == General.Map.Config.SkyFlatName);
+			renderassky = level.sector.HasSkyCeiling;
 			if(isrenderedassky != renderassky && Sector.Sides != null)
 			{
 				// Upper sidedef geometry may need updating...
@@ -216,7 +216,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					{
 						parts.upper.UpdateSkyRenderFlag();
 					}
-					else if(side.Other != null && side.Other.Sector != null && side.Other.Sector.CeilTexture == General.Map.Config.SkyFlatName)
+					else if(side.Other != null && side.Other.Sector != null && side.Other.Sector.HasSkyCeiling)
 					{
 						// Update upper side of the neightbouring sector, but only when the visual sector already exists. GetVisualSector will create
 						// the visual sector when it does not exist yet, which in turn modifies the mode's allsectors list, which is illegal when done
