@@ -23,6 +23,7 @@ using CodeImp.DoomBuilder.IO;
 using CodeImp.DoomBuilder.Map;
 using System.IO;
 using System.Collections;
+using System.Text.RegularExpressions;
 using CodeImp.DoomBuilder.Data;
 using CodeImp.DoomBuilder.Config;
 
@@ -38,7 +39,9 @@ namespace CodeImp.DoomBuilder.Windows
 		private WAD wadfile;
 		private readonly string filepathname;
 		private string selectedmapname;
-		
+		private static readonly Regex episodemapregex = new Regex("^E[1-9]M[1-9]$");
+		private static readonly Regex noepisodemapregex = new Regex("^MAP[0-9][0-9]$");
+
 		// Properties
 		//public string FilePathName { get { return filepathname; } }
 		public MapOptions Options { get { return options; } }
@@ -237,6 +240,7 @@ namespace CodeImp.DoomBuilder.Windows
 		// by checking if the specific lumps are detected
 		private static bool MatchConfiguration(Configuration cfg, WAD wadfile) 
 		{
+			string mapnameformat = cfg.ReadSetting("mapnameformat", "");
 			int lumpsrequired = 0;
 
 			// Get the map lump names
@@ -257,6 +261,8 @@ namespace CodeImp.DoomBuilder.Windows
 			// Go for all the lumps in the wad
 			for(int scanindex = 0; scanindex < (wadfile.Lumps.Count - 1); scanindex++) 
 			{
+				if(MapNameFormatMismatch(mapnameformat, wadfile.Lumps[scanindex].Name)) return false;
+
 				// Make sure this lump is not part of the map.
 				if(!maplumpnames.Contains(wadfile.Lumps[scanindex].Name)) 
 				{
@@ -290,6 +296,16 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 
 			return false;
+		}
+
+		// Determine if the given map lump name is not accepted by the given game configuration setting.
+		private static bool MapNameFormatMismatch(string mapnameformat, string lumpname)
+        {
+			return (
+				mapnameformat == MapManager.CONFIG_MAP_NAME_FORMAT_NO_EPISODE && episodemapregex.IsMatch(lumpname)
+			) || (
+				mapnameformat == MapManager.CONFIG_MAP_NAME_FORMAT_EPISODE && noepisodemapregex.IsMatch(lumpname)
+			);
 		}
 
 		// Configuration is selected

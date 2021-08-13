@@ -51,6 +51,8 @@ namespace CodeImp.DoomBuilder
 		internal const string TEMP_MAP_HEADER = "TEMPMAP";
 		internal const string BUILD_MAP_HEADER = "MAP01";
 		public const string CONFIG_MAP_HEADER = "~MAP";
+		public const string CONFIG_MAP_NAME_FORMAT_EPISODE = "ExMy";
+		public const string CONFIG_MAP_NAME_FORMAT_NO_EPISODE = "MAPxy";
 		private const int REPLACE_TARGET_MAP = -1; //mxd
 
 		#endregion
