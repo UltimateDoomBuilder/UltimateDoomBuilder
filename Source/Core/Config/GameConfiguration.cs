@@ -124,6 +124,10 @@ namespace CodeImp.DoomBuilder.Config
 		// Static limits for the base game and map format.
 		private readonly StaticLimits staticlimits;
 
+		// Visplane Explorer plugin settings.
+		private readonly int visplaneviewheightdefault;
+		private readonly Dictionary<string, string> visplaneviewheights;
+
 		// Texture/flat/voxel sources
 		private readonly IDictionary textureranges;
 		private readonly IDictionary hiresranges; //mxd
@@ -267,6 +271,9 @@ namespace CodeImp.DoomBuilder.Config
 
 		// Static limits for the base game and map format.
 		public StaticLimits StaticLimits { get { return staticlimits; } }
+
+		public int VisplaneViewHeightDefault { get { return visplaneviewheightdefault; } }
+		public Dictionary<string, string> VisplaneViewHeights { get { return visplaneviewheights; } }
 
 		public bool UseLocalSidedefTextureOffsets { get { return localsidedeftextureoffsets; } } //MaxW
 		public bool Effect3DFloorSupport { get { return effect3dfloorsupport; } }
@@ -451,6 +458,11 @@ namespace CodeImp.DoomBuilder.Config
 
 			// Read static limits for the base game and map format.
 			staticlimits = new StaticLimits(cfg);
+
+			// Read the Visplane Explorer plugin's default selectable view heights.
+			visplaneviewheightdefault = cfg.ReadSetting("visplaneexplorer.viewheightdefault", 41);
+			visplaneviewheights = new Dictionary<string, string>(StringComparer.Ordinal);
+			LoadStringDictionary(visplaneviewheights, "visplaneexplorer.viewheights");
 
 			//mxd. Texture names length
 			longtexturenames = cfg.ReadSetting("longtexturenames", false);

@@ -243,7 +243,7 @@ namespace CodeImp.DoomBuilder.Plugins.VisplaneExplorer
 			CleanUp();
 
 			BuilderPlug.InterfaceForm.AddToInterface();
-			BuilderPlug.InterfaceForm.OnOpenDoorsChanged += OnOpenDoorsChanged; //mxd
+			BuilderPlug.InterfaceForm.OnVisplaneSettingsChanged += OnVisplaneSettingsChanged; //mxd
 			lastviewstats = BuilderPlug.InterfaceForm.ViewStats;
 
 			// Export the current map to a temporary WAD file
@@ -479,7 +479,7 @@ namespace CodeImp.DoomBuilder.Plugins.VisplaneExplorer
 		}
 
 		//mxd
-		private void OnOpenDoorsChanged(object sender, EventArgs e)
+		private void OnVisplaneSettingsChanged(object sender, EventArgs e)
 		{
 			// Restart processing 
 			BuilderPlug.VPO.Stop();

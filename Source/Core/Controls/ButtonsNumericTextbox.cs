@@ -247,6 +247,11 @@ namespace CodeImp.DoomBuilder.Controls
 			textbox.ResetIncrementStep();
 		}
 
+		public void SelectAll()
+		{
+			textbox.SelectAll();
+		}
+
 		#endregion
 	}
 }

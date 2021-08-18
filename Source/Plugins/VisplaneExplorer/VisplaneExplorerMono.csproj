@@ -141,11 +141,18 @@
     <Compile Include="ViewStats.cs" />
     <Compile Include="VisplaneExplorerMode.cs" />
     <Compile Include="VPOManager.cs" />
+    <Compile Include="Windows\SetCustomHeightDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\SetCustomHeightDialog.Designer.cs">
+      <DependentUpon>SetCustomHeightDialog.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Actions.cfg" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Add.png" />
     <None Include="Resources\Drawsegs.png" />
     <None Include="Resources\Drawsegs_pal.png" />
     <Content Include="Resources\Gauge.ico" />

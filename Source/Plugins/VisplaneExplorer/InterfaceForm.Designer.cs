@@ -1,4 +1,11 @@
-﻿namespace CodeImp.DoomBuilder.Plugins.VisplaneExplorer
+﻿#region ================== Namespaces
+
+using System.Collections.Generic;
+using System.Globalization;
+
+#endregion
+
+namespace CodeImp.DoomBuilder.Plugins.VisplaneExplorer
 {
 	partial class InterfaceForm
 	{
@@ -38,6 +45,11 @@
 			this.separator = new System.Windows.Forms.ToolStripSeparator();
 			this.cbopendoors = new CodeImp.DoomBuilder.Controls.ToolStripCheckBox();
 			this.cbheatmap = new CodeImp.DoomBuilder.Controls.ToolStripCheckBox();
+			this.heightbutton = new System.Windows.Forms.ToolStripDropDownButton();
+			this.heightitems = new System.Windows.Forms.ToolStripMenuItem[General.Map.Config.VisplaneViewHeights.Count];
+			this.heightcustomitem = new System.Windows.Forms.ToolStripMenuItem();
+			this.heightcustomadd = new System.Windows.Forms.ToolStripMenuItem();
+			this.customheightdialog = new Windows.SetCustomHeightDialog();
 			this.tooltip = new System.Windows.Forms.ToolTip(this.components);
 			this.toolstrip.SuspendLayout();
 			this.SuspendLayout();
@@ -45,23 +57,26 @@
 			// toolstrip
 			// 
 			this.toolstrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.statsbutton,
-            this.separator,
-            this.cbopendoors,
-            this.cbheatmap});
+				this.statsbutton,
+				this.separator,
+				this.cbopendoors,
+				this.cbheatmap,
+				this.heightbutton
+			});
 			this.toolstrip.Location = new System.Drawing.Point(0, 0);
 			this.toolstrip.Name = "toolstrip";
-			this.toolstrip.Size = new System.Drawing.Size(465, 25);
+			this.toolstrip.Size = new System.Drawing.Size(561, 25);
 			this.toolstrip.TabIndex = 0;
 			// 
 			// statsbutton
 			// 
 			this.statsbutton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.statsbutton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.vpstats,
-            this.dsstats,
-            this.ssstats,
-            this.opstats});
+				this.vpstats,
+				this.dsstats,
+				this.ssstats,
+				this.opstats
+			});
 			this.statsbutton.Image = global::CodeImp.DoomBuilder.Plugins.VisplaneExplorer.Properties.Resources.Visplanes;
 			this.statsbutton.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.statsbutton.Name = "statsbutton";
@@ -127,6 +142,56 @@
 			this.cbheatmap.Size = new System.Drawing.Size(88, 22);
 			this.cbheatmap.Text = "Heat Colors";
 			this.cbheatmap.Click += new System.EventHandler(this.cbheatmap_Click);
+			//
+			// heightbutton
+			//
+			this.heightbutton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+			this.heightbutton.Text = "View Height";
+			this.heightbutton.Name = "heightbutton";
+			this.heightbutton.Size = new System.Drawing.Size(125, 22);
+			this.heightbutton.ToolTipText = "Position above the floor to calculate stats";
+			//
+			// heightitems
+			//
+			int i = 0;
+			foreach (KeyValuePair<string, string> viewheight in General.Map.Config.VisplaneViewHeights)
+			{
+				System.Windows.Forms.ToolStripMenuItem heightitem = new System.Windows.Forms.ToolStripMenuItem();
+				heightitem.Checked = false;
+				heightitem.Name = "viewheight" + viewheight.Key;
+				heightitem.Size = new System.Drawing.Size(125, 22);
+				heightitem.Tag = viewheight.Key;
+				heightitem.Text = viewheight.Key + " - " +
+					viewheight.Value +
+					(viewheight.Key == ViewHeightDefault.ToString() ? " (default)" : "");
+				heightitem.Click += new System.EventHandler(this.viewheight_Click);
+				this.heightbutton.DropDownItems.Add(heightitem);
+
+				this.heightitems[i] = heightitem;
+				++i;
+			}
+			//
+			// heightcustomitem
+			//
+			this.heightcustomitem.Checked = false;
+			this.heightcustomitem.Name = "heightcustomitem";
+			this.heightcustomitem.Size = new System.Drawing.Size(125, 22);
+			this.heightcustomitem.Tag = "0";
+			this.heightcustomitem.Text = "0 - Custom";
+			this.heightcustomitem.Visible = false;
+			this.heightcustomitem.Click += new System.EventHandler(this.viewheight_Click);
+			this.heightbutton.DropDownItems.Add(this.heightcustomitem);
+			//
+			// heightcustomadd
+			//
+			this.heightcustomadd.Image = global::CodeImp.DoomBuilder.Plugins.VisplaneExplorer.Properties.Resources.Add;
+			this.heightcustomadd.Checked = false;
+			this.heightcustomadd.Name = "heightcustomadd";
+			this.heightcustomadd.Size = new System.Drawing.Size(125, 22);
+			this.heightcustomadd.Tag = "-1";
+			this.heightcustomadd.Text = "Set custom height";
+			this.heightcustomadd.Click += new System.EventHandler(this.heightcustomadd_Click);
+			this.heightbutton.DropDownItems.Add(this.heightcustomadd);
 			// 
 			// tooltip
 			// 
@@ -140,7 +205,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-			this.ClientSize = new System.Drawing.Size(465, 273);
+			this.ClientSize = new System.Drawing.Size(561, 273);
 			this.Controls.Add(this.toolstrip);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
@@ -168,6 +233,11 @@
 		private System.Windows.Forms.ToolTip tooltip;
 		private CodeImp.DoomBuilder.Controls.ToolStripCheckBox cbopendoors;
 		private CodeImp.DoomBuilder.Controls.ToolStripCheckBox cbheatmap;
+		private System.Windows.Forms.ToolStripDropDownButton heightbutton;
+		private System.Windows.Forms.ToolStripMenuItem[] heightitems;
+		private System.Windows.Forms.ToolStripMenuItem heightcustomitem;
+		private System.Windows.Forms.ToolStripMenuItem heightcustomadd;
+		private Windows.SetCustomHeightDialog customheightdialog;
 		private System.Windows.Forms.ToolStripSeparator separator;
 
 	}

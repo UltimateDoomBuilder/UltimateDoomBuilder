@@ -20,7 +20,6 @@ namespace CodeImp.DoomBuilder.Plugins.VisplaneExplorer
 		private const int EXPECTED_RESULTS_BUFFER = 200000;
 
 		private readonly int[] TEST_ANGLES = new[] { 0, 90, 180, 270, 45, 135, 225, 315 /*, 22, 67, 112, 157, 202, 247, 292, 337 */ };
-		private const int TEST_HEIGHT = 41 + 8;
 		
 		#endregion
 
@@ -140,7 +139,7 @@ namespace CodeImp.DoomBuilder.Plugins.VisplaneExplorer
 
 					for(int i = 0; i < TEST_ANGLES.Length; i++)
 					{
-						pd.result = (PointResult)VPO_TestSpot(context, p.x, p.y, TEST_HEIGHT, TEST_ANGLES[i],
+						pd.result = (PointResult)VPO_TestSpot(context, p.x, p.y, BuilderPlug.InterfaceForm.ViewHeight, TEST_ANGLES[i],
 							ref pd.visplanes, ref pd.drawsegs, ref pd.openings, ref pd.solidsegs);
 					}
 
