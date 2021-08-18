@@ -45,9 +45,9 @@ and P_END marker lumps only. This can solve lump name conflicts, but old WAD fil
 always adhere to this rule.
 
 -portable
-The editor will be launched in portable mode. It will use the "GZBuilder.cfg" located in 
+The editor will be launched in portable mode. It will use the "UDBuilder.cfg" located in 
 the program directory instead of the one located in the 
-"%LocalAppData%\Doom Builder\GZBuilder.cfg" to load and save program settings. Log and 
+"%LocalAppData%\Doom Builder\UDBuilder.cfg" to load and save program settings. Log and 
 crash report files will be also created in the program directory.
 
 -resource <resource type> [flags] "path\to\resource"
