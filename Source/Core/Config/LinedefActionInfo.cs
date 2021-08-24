@@ -58,6 +58,8 @@ namespace CodeImp.DoomBuilder.Config
 		private readonly bool isgeneralized;
 		private readonly bool isknown;
 		private readonly bool requiresactivation; //mxd
+		private readonly bool linetolinetag;
+		private readonly bool linetolinesameaction;
 		private readonly ErrorCheckerExemptions errorcheckerexemptions;
 		
 		#endregion
@@ -75,6 +77,8 @@ namespace CodeImp.DoomBuilder.Config
 		public bool IsNull { get { return (index == 0); } }
 		public bool RequiresActivation { get { return requiresactivation; } } //mxd
 		public ArgumentInfo[] Args { get { return args; } }
+		public bool LineToLineTag { get { return linetolinetag; } }
+		public bool LineToLineSameAction { get { return linetolinesameaction; } }
 		public ErrorCheckerExemptions ErrorCheckerExemptions { get { return errorcheckerexemptions; } }
 
 		#endregion
@@ -101,6 +105,10 @@ namespace CodeImp.DoomBuilder.Config
 			this.requiresactivation = cfg.ReadSetting(actionsetting + ".requiresactivation", true); //mxd
 			this.title = this.prefix + " " + this.name;
 			this.title = this.title.Trim();
+
+			// Read line-to-line associations
+			this.linetolinetag = cfg.ReadSetting(actionsetting + ".linetolinetag", false);
+			this.linetolinesameaction = cfg.ReadSetting(actionsetting + ".linetolinesameaction", false);
 
 			// Error checker exemptions
 			this.errorcheckerexemptions.IgnoreUpperTexture = cfg.ReadSetting(actionsetting + ".errorchecker.ignoreuppertexture", false);

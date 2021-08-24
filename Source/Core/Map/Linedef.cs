@@ -766,6 +766,19 @@ namespace CodeImp.DoomBuilder.Map
 		
 		#region ================== Methods
 
+		// Determine if this line and another line are associated by action and tag.
+		public bool IsAssociatedWith(Linedef ld)
+		{
+			LinedefActionInfo actioninfo;
+
+			return this != ld &&
+				Action > 0 &&
+				ld.Tag > 0 &&
+				tags.Contains(ld.Tag) &&
+				(actioninfo = General.Map.Config.GetLinedefActionInfo(Action)).LineToLineTag &&
+				(!actioninfo.LineToLineSameAction || Action == ld.Action);
+		}
+
 		// This checks and returns a flag without creating it
 		public bool IsFlagSet(string flagname)
 		{

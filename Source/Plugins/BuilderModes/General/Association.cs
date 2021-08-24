@@ -237,6 +237,25 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			bool showforwardlabel = BuilderPlug.Me.EventLineLabelVisibility == 1 || BuilderPlug.Me.EventLineLabelVisibility == 3;
 			bool showreverselabel = BuilderPlug.Me.EventLineLabelVisibility == 2 || BuilderPlug.Me.EventLineLabelVisibility == 3;
 
+			// Association from line to line according to the action and tag.
+			if (tags.Count > 0 && element is Linedef)
+			{
+				Linedef ld = element as Linedef;
+
+				if (ld.Action > 0)
+				{
+					foreach (Linedef otherlinedef in General.Map.Map.Linedefs)
+					{
+						if (ld.IsAssociatedWith(otherlinedef))
+						{
+							linedefs.Add(otherlinedef);
+
+							AddLineToAction(showreverselabel ? GetActionDescription(ld) : string.Empty, center, otherlinedef.GetCenterPoint());
+						}
+					}
+				}
+			}
+
 			// Special handling for Doom format maps where there the linedef's tag references sectors
 			if (General.Map.Config.LineTagIndicatesSectors)
 			{
