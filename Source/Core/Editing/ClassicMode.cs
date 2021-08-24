@@ -721,8 +721,9 @@ namespace CodeImp.DoomBuilder.Editing
 					return false;
 				}
 
-				//41 = player's height in Doom. Is that so in all other games as well?
-				if (s.CeilHeight - s.FloorHeight < 41)
+				// Spawning sector height isn't too low to cause a stuck player.
+				int playerheight = General.Map.Config.ReadSetting("thingtypes.players.height", 56);
+				if (s.CeilHeight - s.FloorHeight < playerheight)
 				{
 					General.MainWindow.DisplayStatus(StatusType.Warning, "Can't test from current position: sector is too low!");
 					return false;
