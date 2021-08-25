@@ -18,7 +18,6 @@
 
 using CodeImp.DoomBuilder.Map;
 using System.Collections.Generic;
-using System.Threading;
 using System;
 
 #endregion
@@ -36,6 +35,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		#region ================== Variables
 
 		protected Dictionary<int, Flags3DFloor> sector3dfloors;
+		protected ActionFloorLowerToLowestTextures floorlowertolowest;
+		protected ActionFloorRaiseToNextHigherTextures floorraisetonexthigher;
+		protected ActionFloorRaiseToHighestTextures floorraisetohighest;
 
 		#endregion
 
@@ -48,6 +50,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			SetTotalProgress(General.Map.Map.Sidedefs.Count / PROGRESS_STEP);
 
 			sector3dfloors = new Dictionary<int, Flags3DFloor>();
+			floorlowertolowest = new ActionFloorLowerToLowestTextures();
+			floorraisetonexthigher = new ActionFloorRaiseToNextHigherTextures();
+			floorraisetohighest = new ActionFloorRaiseToHighestTextures();
 		}
 
 		#endregion
@@ -69,6 +74,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// Create a cache of sectors that have 3D floors, with their flags relevant to the error checker
 		protected void Build3DFloorCache()
 		{
+			// Skip if linedef action 160 isn't the ZDoom 3D floor special.
+			if (General.Map.Config.GetLinedefActionInfo(160).Id != "Sector_Set3dFloor")
+			{
+				return;
+			}
+
 			foreach (Linedef ld in General.Map.Map.Linedefs)
 			{
 				if (ld.Action == 160)

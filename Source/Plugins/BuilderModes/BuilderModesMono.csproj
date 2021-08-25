@@ -123,6 +123,10 @@
     <Compile Include="ClassicModes\DrawGeometryMode.cs" />
     <Compile Include="ClassicModes\FindReplaceMode.cs" />
     <Compile Include="ClassicModes\MakeSectorMode.cs" />
+    <Compile Include="ErrorChecks\ActionFloorLowerToLowestTextures.cs" />
+    <Compile Include="ErrorChecks\ActionFloorRaiseToHighestTextures.cs" />
+    <Compile Include="ErrorChecks\ActionFloorRaiseToNextHigherTextures.cs" />
+    <Compile Include="ErrorChecks\BaseActionTextures.cs" />
     <Compile Include="ErrorChecks\BaseCheckTextures.cs" />
     <Compile Include="ErrorChecks\CheckClosedSectors.cs" />
     <Compile Include="ErrorChecks\CheckMissingActivations.cs" />

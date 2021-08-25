@@ -31,6 +31,9 @@ namespace CodeImp.DoomBuilder.Config
 		public bool IgnoreUpperTexture;
 		public bool IgnoreMiddleTexture;
 		public bool IgnoreLowerTexture;
+		public bool FloorLowerToLowest;
+		public bool FloorRaiseToNextHigher;
+		public bool FloorRaiseToHighest;
 	}
 
 	public class LinedefActionInfo : INumberedTitle, IComparable<LinedefActionInfo>
@@ -114,6 +117,9 @@ namespace CodeImp.DoomBuilder.Config
 			this.errorcheckerexemptions.IgnoreUpperTexture = cfg.ReadSetting(actionsetting + ".errorchecker.ignoreuppertexture", false);
 			this.errorcheckerexemptions.IgnoreMiddleTexture = cfg.ReadSetting(actionsetting + ".errorchecker.ignoremiddletexture", false);
 			this.errorcheckerexemptions.IgnoreLowerTexture = cfg.ReadSetting(actionsetting + ".errorchecker.ignorelowertexture", false);
+			this.errorcheckerexemptions.FloorLowerToLowest = cfg.ReadSetting(actionsetting + ".errorchecker.floorlowertolowest", false);
+			this.errorcheckerexemptions.FloorRaiseToNextHigher = cfg.ReadSetting(actionsetting + ".errorchecker.floorraisetonexthigher", false);
+			this.errorcheckerexemptions.FloorRaiseToHighest = cfg.ReadSetting(actionsetting + ".errorchecker.floorraisetohighest", false);
 
 			// Read the args
 			for (int i = 0; i < Linedef.NUM_ARGS; i++)
