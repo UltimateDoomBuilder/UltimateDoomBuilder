@@ -33,6 +33,7 @@ namespace CodeImp.DoomBuilder.Windows
 		public bool WholeWord;
 		public string ReplaceWith;
 		public FindReplaceSearchMode SearchMode; //mxd
+		public bool WrapAroundDisabled;
 
 		//mxd. Copy constructor
 		public FindReplaceOptions(FindReplaceOptions other)
@@ -42,7 +43,7 @@ namespace CodeImp.DoomBuilder.Windows
 			WholeWord = other.WholeWord;
 			ReplaceWith = other.ReplaceWith;
 			SearchMode = other.SearchMode;
+			WrapAroundDisabled = other.WrapAroundDisabled;
 		}
 	}
 }
-

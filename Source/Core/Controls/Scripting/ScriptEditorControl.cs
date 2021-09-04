@@ -683,7 +683,10 @@ namespace CodeImp.DoomBuilder.Controls
 			// Wrap around?
 			if(result == -1)
 			{
-				if(options.SearchMode != FindReplaceSearchMode.CURRENT_FILE 
+				if (options.WrapAroundDisabled)
+					return false;
+
+				if (options.SearchMode != FindReplaceSearchMode.CURRENT_FILE 
 					&& OnFindNextWrapAround != null && OnFindNextWrapAround(options))
 				{
 					return true;
