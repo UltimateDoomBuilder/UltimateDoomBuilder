@@ -308,18 +308,6 @@ namespace CodeImp.DoomBuilder.Windows
 			AddComboboxText(replacefindbox, options.FindText);
 			AddComboboxText(replacebox, options.ReplaceWith);
 
-			// Find next match
-            // [ZZ] why are we doing this? we aren't limited to the current tab.....
-            /*
-			ScriptDocumentTab curtab = editor.ActiveTab;
-			if(curtab == null || !curtab.FindNext(options, true))
-			{
-				editor.DisplayStatus(ScriptStatusType.Warning, "Can't find any occurrence of \"" + options.FindText + "\".");
-				return;
-			}*/
-
-            // Replace loop
-            // We don't really want to do this outside of the script editor.
             int replacements = editor.FindReplace(options);
 
 			// Show result
@@ -329,7 +317,7 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 			else
 			{
-				editor.DisplayStatus(ScriptStatusType.Info, "Replaced " + replacements + " occurrences of \"" + options.FindText + "\" with \"" + options.ReplaceWith + "\".");
+				editor.DisplayStatus(ScriptStatusType.Info, "Replaced " + replacements + " occurrence" + (replacements == 1 ? "" : "s") + " of \"" + options.FindText + "\" with \"" + options.ReplaceWith + "\".");
 
                 // Find & select the last match on the now-current tab
                 ScriptDocumentTab curtab = editor.ActiveTab;
