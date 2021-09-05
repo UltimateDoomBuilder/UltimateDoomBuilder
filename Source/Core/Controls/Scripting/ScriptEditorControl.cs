@@ -536,6 +536,21 @@ namespace CodeImp.DoomBuilder.Controls
 			return scriptedit.GetWordFromPosition(position);
 		}
 
+		// Save one undo checkpoint when making many changes in the editor.
+		public void UndoTransaction(Action callback)
+		{
+			scriptedit.BeginUndoAction();
+
+			try
+			{
+				callback.Invoke();
+			}
+			finally
+			{
+				scriptedit.EndUndoAction();
+			}
+		}
+
 		// Perform undo
 		public void Undo()
 		{

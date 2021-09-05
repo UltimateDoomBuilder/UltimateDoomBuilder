@@ -317,16 +317,19 @@ namespace CodeImp.DoomBuilder.Controls
             int replacements = 0;
             foreach (ScriptDocumentTab tab in rtabs)
 			{
-				// Reset editor cursor to the start, searching until the end
-				tab.SelectionStart = tab.SelectionEnd = 0;
+				tab.UndoTransaction(() =>
+				{
+					// Reset editor cursor to the start, searching until the end
+					tab.SelectionStart = tab.SelectionEnd = 0;
 
-				// Count the number of replacements made in this tab.
-				while (tab.FindNext(singlesearchoptions))
-                {
-					tab.ReplaceSelection(options.ReplaceWith);
+					// Count the number of replacements made in this tab.
+					while (tab.FindNext(singlesearchoptions))
+					{
+						tab.ReplaceSelection(options.ReplaceWith);
 
-                    replacements++;
-                }
+						replacements++;
+					}
+				});
             }
 
             return replacements;

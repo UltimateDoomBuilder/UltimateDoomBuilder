@@ -410,6 +410,8 @@ namespace ScintillaNET
 		public void IndicatorClearRange(int position, int length) { }
 		public void IndicatorFillRange(int position, int length) { }
 		public void EmptyUndoBuffer() { textbox.ClearUndo(); }
+		public void BeginUndoAction() { }
+		public void EndUndoAction() { }
 		public void Undo() { textbox.Undo(); }
 		public void Redo() { }
 		public void Cut() { textbox.Cut(); }

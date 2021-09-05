@@ -356,6 +356,12 @@ namespace CodeImp.DoomBuilder.Controls
 			editor.ReplaceSelection(replacement);
 		}
 
+		// Save one undo checkpoint when making many changes in the editor.
+		public void UndoTransaction(Action callback)
+		{
+			editor.UndoTransaction(callback);
+		}
+
 		//mxd
 		internal List<CompilerError> UpdateNavigator()
 		{
