@@ -193,6 +193,10 @@
 #define CR_DARKGRAY				20
 #define CR_DARKGREY				20
 #define CR_CYAN					21
+#define CR_ICE					22
+#define CR_FIRE					23
+#define CR_SAPPHIRE				24
+#define CR_TEAL					25
 
 // HUD message types --------------------------------------------------------
 
@@ -289,6 +293,21 @@
 #define APROP_ViewHeight	39
 #define APROP_AttackZOffset	40
 #define APROP_StencilColor	41
+#define APROP_Friction		42
+#define APROP_DamageMultiplier	43
+#define APROP_MaxStepHeight 44
+#define APROP_MaxDropOffHeight 45
+#define APROP_DamageType	46
+
+// New to Eternity
+#define APROP_Counter0      100
+#define APROP_Counter1      101
+#define APROP_Counter2      102
+#define APROP_Counter3      103
+#define APROP_Counter4      104
+#define APROP_Counter5      105
+#define APROP_Counter6      106
+#define APROP_Counter7      107
 
 // Render Styles ------------------------------------------------------------
 
@@ -298,6 +317,8 @@
 #define STYLE_SoulTrans		3	// Draw translucent with amount in r_transsouls
 #define STYLE_OptFuzzy		4	// Draw as fuzzy, translucent or shadow, based on user preference
 #define STYLE_Stencil		5	// Draw as solid color
+#define STYLE_AddStencil	6	// Draw as additive solid color
+#define STYLE_AddShaded		7	// 
 #define STYLE_Translucent	64	// Draw translucent
 #define STYLE_Add			65	// Draw additive
 #define STYLE_Shaded		66	// 
@@ -346,6 +367,7 @@
 #define DAMAGE_NONPLAYERS			2
 #define DAMAGE_IN_AIR				4
 #define DAMAGE_SUBCLASSES_PROTECT	8
+#define DAMAGE_NO_ARMOR			16
 
 // Flags for MorphActor -----------------------------------------------------
 
@@ -362,6 +384,8 @@
 #define MRF_UNDOBYDEATH			0x00000200
 #define MRF_UNDOBYDEATHFORCED	0x00000400
 #define MRF_UNDOBYDEATHSAVES	0x00000800
+#define MRF_UNDOALWAYS			0x00001000
+#define MRF_TRANSFERTRANSLATION 0x00002000
 
 // Shared spawnable things from Hexen. You can spawn these in the other -----
 // games if you provide sprites for them, otherwise they'll be invisible. ---
@@ -687,6 +711,9 @@
 #define CHAN_VOICE				2
 #define CHAN_ITEM				3
 #define CHAN_BODY				4
+#define CHAN_5					5
+#define CHAN_6					6
+#define CHAN_7					7
 
 // Modifier flags for PlaySound
 
@@ -741,6 +768,12 @@
 #DEFINE	AAPTR_PLAYER8 0x2000
 
 #DEFINE AAPTR_FRIENDPLAYER 0x4000
+#DEFINE AAPTR_GET_LINETARGET 0x8000
+
+// [AK] Actor pointers used exclusively for GAMEEVENT_ACTOR_DAMAGED
+#DEFINE AAPTR_DAMAGE_SOURCE 0x10000000
+#DEFINE AAPTR_DAMAGE_INFLICTOR 0x40000000
+#DEFINE AAPTR_DAMAGE_TARGET 0x80000000
 
 // Actor pointer operation flags
 
@@ -763,6 +796,15 @@
 #define SPAC_UseBack		1024	// can be used from the back side
 
 #define SPAC_None			0
+
+// GetArmorInfo
+
+#define ARMORINFO_CLASSNAME		0
+#define ARMORINFO_SAVEAMOUNT		1
+#define ARMORINFO_SAVEPERCENT		2
+#define ARMORINFO_MAXABSORB		3
+#define ARMORINFO_MAXFULLABSORB		4
+#define ARMORINFO_ACTUALSAVEAMOUNT	5
 
 // ==========================================================================
 // Skulltag Definitions
@@ -860,6 +902,21 @@
 #define DB_ORDER_ASC			0
 #define DB_ORDER_DESC			1
 
+// Zandronum EVENT script types ---------------------------------------------
+#define GAMEEVENT_PLAYERFRAGS		0
+#define GAMEEVENT_MEDALS		1
+#define GAMEEVENT_CAPTURES		2
+#define GAMEEVENT_TOUCHES		3
+#define GAMEEVENT_RETURNS		4
+#define GAMEEVENT_ROUND_STARTS		5
+#define GAMEEVENT_ROUND_ENDS		6
+#define GAMEEVENT_ROUND_ABORTED		7
+#define GAMEEVENT_CHAT			8
+#define GAMEEVENT_PLAYERCONNECT		9
+#define GAMEEVENT_ACTOR_SPAWNED		10
+#define GAMEEVENT_ACTOR_DAMAGED		11
+#define GAMEEVENT_ACTOR_ARMORDAMAGED	12
+
 // Events when you have input grabbed
 
 #define EV_KeyDown				1	// data1: unshifted ASCII, data2: shifted ASCII
@@ -941,6 +998,13 @@
 #define SECF_NOFALLINGDAMAGE 2
 #define SECF_FLOORDROP 4
 #define SECF_NORESPAWN 8
+#define SECF_FRICTION 16
+#define SECF_PUSH 32
+#define SECF_SILENTMOVE 64
+#define SECF_DMGTERRAINFX	128
+#define SECF_DMGENDGODMODE 256
+#define SECF_DMGENDLEVEL 512
+#define SECF_DMGHAZARD 1024
 
 #define BLOCKF_CREATURES 1
 #define BLOCKF_MONSTERS 2
@@ -952,6 +1016,7 @@
 #define BLOCKF_USE 128
 #define BLOCKF_SIGHT 256
 #define BLOCKF_HITSCAN 512
+#define BLOCKF_SOUND 1024
 
 #define FOGP_DENSITY 0
 #define FOGP_OUTSIDEDENSITY 1
@@ -960,11 +1025,149 @@
 #define PRINTNAME_LEVELNAME -1
 #define PRINTNAME_LEVEL -2
 #define PRINTNAME_SKILL -3
+#define PRINTNAME_NEXTLEVEL -4
+#define PRINTNAME_NEXTSECRET -5
 
 #define CSF_NOFAKEFLOORS 1
 #define CSF_NOBLOCKALL 2
 
 #define FHF_NORANDOMPUFFZ	1
+#define FHF_NOIMPACTDECAL	2
+
+// PickActor flags
+
+#define	PICKAF_FORCETID			1
+#define	PICKAF_RETURNTID		2
+
+// magic value to set the ice translation through ACS
+#define TRANSLATION_ICE 0x100007
+
+// Actor flags
+#define MF_SPECIAL          0x00000001
+#define MF_SOLID            0x00000002
+#define MF_SHOOTABLE        0x00000004
+#define MF_NOSECTOR         0x00000008
+#define MF_NOBLOCKMAP       0x00000010
+#define MF_AMBUSH           0x00000020
+#define MF_JUSTHIT          0x00000040
+#define MF_JUSTATTACKED     0x00000080
+#define MF_SPAWNCEILING     0x00000100
+#define MF_NOGRAVITY        0x00000200
+#define MF_DROPOFF          0x00000400
+#define MF_PICKUP           0x00000800
+#define MF_NOCLIP           0x00001000
+#define MF_INCHASE          0x00002000
+#define MF_FLOAT            0x00004000
+#define MF_TELEPORT         0x00008000
+#define MF_MISSILE          0x00010000
+#define MF_DROPPED          0x00020000
+#define MF_SHADOW           0x00040000
+#define MF_NOBLOOD          0x00080000
+#define MF_CORPSE           0x00100000
+#define MF_INFLOAT          0x00200000
+#define MF_INBOUNCE         0x00200000
+#define MF_COUNTKILL        0x00400000
+#define MF_COUNTITEM        0x00800000
+#define MF_SKULLFLY         0x01000000
+#define MF_NOTDMATCH        0x02000000
+#define MF_SPAWNSOUNDSOURCE 0x04000000
+#define MF_FRIENDLY         0x08000000
+#define MF_UNMORPHED        0x10000000
+#define MF_NOLIFTDROP       0x20000000
+#define MF_STEALTH          0x40000000
+#define MF_ICECORPSE        0x80000000
+
+// Linedef flags
+#define ML_BLOCKING            0x00000001
+#define ML_BLOCKMONSTERS       0x00000002
+#define ML_TWOSIDED            0x00000004
+#define ML_DONTPEGTOP          0x00000008
+#define ML_DONTPEGBOTTOM       0x00000010
+#define ML_SECRET              0x00000020
+#define ML_SOUNDBLOCK          0x00000040
+#define ML_DONTDRAW            0x00000080
+#define ML_MAPPED              0x00000100
+#define ML_REPEAT_SPECIAL      0x00000200
+#define ML_ADDTRANS            0x00000400
+#define ML_MONSTERSCANACTIVATE 0x00002000
+#define ML_BLOCK_PLAYERS       0x00004000
+#define ML_BLOCKEVERYTHING     0x00008000
+#define ML_ZONEBOUNDARY        0x00010000
+#define ML_RAILING             0x00020000
+#define ML_BLOCK_FLOATERS      0x00040000
+#define ML_CLIP_MIDTEX         0x00080000
+#define ML_WRAP_MIDTEX         0x00100000
+#define ML_3DMIDTEX            0x00200000
+#define ML_CHECKSWITCHRANGE    0x00400000
+#define ML_FIRSTSIDEONLY       0x00800000
+#define ML_BLOCKPROJECTILE     0x01000000
+#define ML_BLOCKUSE            0x02000000
+#define ML_BLOCKSIGHT          0x04000000
+#define ML_BLOCKHITSCAN        0x08000000
+
+#define QF_RELATIVE		1
+#define QF_SCALEDOWN		1 << 1
+#define QF_SCALEUP		1 << 2
+#define QF_MAX			1 << 3
+#define QF_FULLINTENSITY	1 << 4
+#define QF_WAVE			1 << 5
+
+#define WARPF_ABSOLUTEOFFSET 0x1
+#define WARPF_ABSOLUTEANGLE 0x2
+#define WARPF_USECALLERANGLE 0x4
+#define WARPF_NOCHECKPOSITION 0x8
+#define WARPF_INTERPOLATE 0x10
+#define WARPF_WARPINTERPOLATION 0x20
+#define WARPF_COPYINTERPOLATION 0x40
+#define WARPF_STOP 0x80
+#define WARPF_TOFLOOR 0x100
+#define WARPF_TESTONLY 0x200
+#define WARPF_ABSOLUTEPOSITION 0x400
+#define WARPF_BOB 0x800
+#define WARPF_MOVEPTR 0x1000
+#define WARPF_USEPTR 0x2000
+#define WARPF_COPYVELOCITY 0x4000
+#define WARPF_COPYPITCH 0x8000
+
+#define CPXF_ANCESTOR    (1 << 0)
+#define CPXF_LESSOREQUAL (1 << 1)
+#define CPXF_NOZ         (1 << 2)
+#define CPXF_COUNTDEAD   (1 << 3)
+#define CPXF_DEADONLY    (1 << 4)
+#define CPXF_EXACT       (1 << 5)
+#define CPXF_SETTARGET   (1 << 6)
+#define CPXF_SETMASTER   (1 << 7)
+#define CPXF_SETTRACER   (1 << 8)
+#define CPXF_FARTHEST    (1 << 9)
+#define CPXF_CLOSEST     (1 << 10)
+#define CPXF_SETONPTR    (1 << 11)
+#define CPXF_CHECKSIGHT  (1 << 12)
+
+#define SECPART_Floor 0
+#define SECPART_Ceiling 1
+#define SECPART_3D 2
+
+// For Line_SetAutomapFlags; These are or'd together
+#define AMLF_Secret		(1 << 0)
+#define AMLF_DontDraw		(1 << 1)
+#define AMLF_Mapped		(1 << 2)
+#define AMLF_Revealed		(1 << 3)
+
+// For Line_SetAutomapStyle
+#define AMLS_Default		0
+#define AMLS_OneSided		1
+#define AMLS_TwoSided		2
+#define AMLS_FloorDiff		3
+#define AMLS_CeilingDiff	4
+#define AMLS_ExtraFloor		5
+#define AMLS_Special		6
+#define AMLS_Secret		7
+#define AMLS_NotSeen		8
+#define AMLS_Locked		9
+#define AMLS_IntraTeleport	10
+#define AMLS_InterTeleport	11
+#define AMLS_UnexploredSecret	12
+#define AMLS_Portal		13
 
 // [TP] For GetTimeProperty
 #define TM_SECOND 0
@@ -974,3 +1177,29 @@
 #define TM_MONTH 4
 #define TM_YEAR 5
 #define TM_WEEKDAY 6
+
+// [AK] For SetGamemodeLimit
+#define GAMELIMIT_FRAGS 0
+#define GAMELIMIT_TIME 1
+#define GAMELIMIT_POINTS 2
+#define GAMELIMIT_DUELS 3
+#define GAMELIMIT_WINS 4
+#define GAMELIMIT_WAVES 5
+
+// [AK] For SetPlayerScore and GetPlayerScore
+#define SCORE_FRAGS 0
+#define SCORE_POINTS 1
+#define SCORE_WINS 2
+#define SCORE_DEATHS 3
+#define SCORE_KILLS 4
+#define SCORE_ITEMS 5
+#define SCORE_SECRETS 6
+#define SCORE_SPREAD 7
+#define SCORE_RANK 8
+
+// [AK] For GetMapRotationInfo
+#define MAPROTATION_Name 0
+#define MAPROTATION_LumpName 1
+#define MAPROTATION_Used 2
+#define MAPROTATION_MinPlayers 3
+#define MAPROTATION_MaxPlayers 4
