@@ -902,6 +902,13 @@
 #define DB_ORDER_ASC			0
 #define DB_ORDER_DESC			1
 
+// Zandronum gamemode states ------------------------------------------------
+#define GAMESTATE_UNSPECIFIED		-1
+#define GAMESTATE_WAITFORPLAYERS	0
+#define GAMESTATE_COUNTDOWN		1
+#define GAMESTATE_INPROGRESS		2
+#define GAMESTATE_INRESULTSEQUENCE	3
+
 // Zandronum EVENT script types ---------------------------------------------
 #define GAMEEVENT_PLAYERFRAGS		0
 #define GAMEEVENT_MEDALS		1
@@ -1168,6 +1175,7 @@
 #define AMLS_InterTeleport	11
 #define AMLS_UnexploredSecret	12
 #define AMLS_Portal		13
+
 
 // [TP] For GetTimeProperty
 #define TM_SECOND 0
