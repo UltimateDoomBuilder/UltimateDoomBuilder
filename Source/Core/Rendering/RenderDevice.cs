@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Controls;
@@ -69,6 +70,11 @@ namespace CodeImp.DoomBuilder.Rendering
             DeclareUniform(UniformName.sectorfogcolor, "sectorfogcolor", UniformType.Vec4f);
             DeclareUniform(UniformName.lightsEnabled, "lightsEnabled", UniformType.Float);
 			DeclareUniform(UniformName.slopeHandleLength, "slopeHandleLength", UniformType.Float);
+            
+            // volte: classic rendering
+            DeclareUniform(UniformName.paletteSize, "paletteSize", UniformType.Vec2i);
+            DeclareUniform(UniformName.colormapSize, "colormapSize", UniformType.Vec2i);
+            DeclareUniform(UniformName.lightLevel, "lightLevel", UniformType.Int);
 
             // 2d fsaa
             CompileShader(ShaderName.display2d_fsaa, "display2d.shader", "display2d_fsaa");
@@ -90,6 +96,10 @@ namespace CodeImp.DoomBuilder.Rendering
             CompileShader(ShaderName.world3d_vertex_color, "world3d.shader", "world3d_vertex_color");
             CompileShader(ShaderName.world3d_main_vertexcolor, "world3d.shader", "world3d_main_vertexcolor");
             CompileShader(ShaderName.world3d_constant_color, "world3d.shader", "world3d_constant_color");
+            
+            // classic rendering
+            CompileShader(ShaderName.world3d_classic, "world3d.shader", "world3d_classic");
+            CompileShader(ShaderName.world3d_classic_highlight, "world3d.shader", "world3d_classic_highlight");
 
             // skybox shader
             CompileShader(ShaderName.world3d_skybox, "world3d_skybox.shader", "world3d_skybox");
@@ -125,7 +135,11 @@ namespace CodeImp.DoomBuilder.Rendering
 
             Handle = RenderDevice_New(display, RenderTarget.Handle);
             if (Handle == IntPtr.Zero)
-                throw new RenderDeviceException(string.Format("Could not create render device: {0}", BuilderNative_GetError()));
+            {
+                StringBuilder sb = new StringBuilder(4096);
+                BuilderNative_GetError(sb, sb.Capacity);
+                throw new RenderDeviceException(string.Format("Could not create render device: {0}", sb));
+            }
         }
 
         public bool Disposed { get { return Handle == IntPtr.Zero; } }
@@ -133,7 +147,11 @@ namespace CodeImp.DoomBuilder.Rendering
         void ThrowIfFailed(bool result)
         {
             if (!result)
-                throw new RenderDeviceException(BuilderNative_GetError());
+            {
+                StringBuilder sb = new StringBuilder(4096);
+                BuilderNative_GetError(sb, sb.Capacity);
+                throw new RenderDeviceException(sb.ToString());
+            }
         }
 
         public void Dispose()
@@ -359,24 +377,24 @@ namespace CodeImp.DoomBuilder.Rendering
             RenderDevice_SetZWriteEnable(Handle, value);
         }
 
-        public void SetTexture(BaseTexture value)
+        public void SetTexture(BaseTexture value, int unit = 0)
         {
-            RenderDevice_SetTexture(Handle, value != null ? value.Handle : IntPtr.Zero);
+            RenderDevice_SetTexture(Handle, unit, value != null ? value.Handle : IntPtr.Zero);
         }
 
-        public void SetSamplerFilter(TextureFilter filter)
+        public void SetSamplerFilter(TextureFilter filter, int unit = 0)
         {
-            SetSamplerFilter(filter, filter, MipmapFilter.None, 0.0f);
+            SetSamplerFilter(filter, filter, MipmapFilter.None, 0.0f, unit);
         }
 
-        public void SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, MipmapFilter mipfilter, float maxanisotropy)
+        public void SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, MipmapFilter mipfilter, float maxanisotropy, int unit = 0)
         {
-            RenderDevice_SetSamplerFilter(Handle, minfilter, magfilter, mipfilter, maxanisotropy);
+            RenderDevice_SetSamplerFilter(Handle, unit, minfilter, magfilter, mipfilter, maxanisotropy);
         }
 
-        public void SetSamplerState(TextureAddress address)
+        public void SetSamplerState(TextureAddress address, int unit = 0)
         {
-            RenderDevice_SetSamplerState(Handle, address);
+            RenderDevice_SetSamplerState(Handle, unit, address);
         }
 
         public void DrawIndexed(PrimitiveType type, int startIndex, int primitiveCount)
@@ -564,7 +582,7 @@ namespace CodeImp.DoomBuilder.Rendering
         static extern void RenderDevice_DeclareShader(IntPtr handle, ShaderName index, string name, string vertexShader, string fragShader);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        static extern string BuilderNative_GetError();
+        static extern void BuilderNative_GetError(StringBuilder str, int length);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern bool RenderDevice_SetShader(IntPtr handle, ShaderName name);
@@ -615,13 +633,13 @@ namespace CodeImp.DoomBuilder.Rendering
         static extern void RenderDevice_SetZWriteEnable(IntPtr handle, bool value);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetTexture(IntPtr handle, IntPtr texture);
+        static extern void RenderDevice_SetTexture(IntPtr handle, int unit, IntPtr texture);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetSamplerFilter(IntPtr handle, TextureFilter minfilter, TextureFilter magfilter, MipmapFilter mipfilter, float maxanisotropy);
+        static extern void RenderDevice_SetSamplerFilter(IntPtr handle, int unit, TextureFilter minfilter, TextureFilter magfilter, MipmapFilter mipfilter, float maxanisotropy);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RenderDevice_SetSamplerState(IntPtr handle, TextureAddress address);
+        static extern void RenderDevice_SetSamplerState(IntPtr handle, int unit, TextureAddress address);
 
         [DllImport("BuilderNative", CallingConvention = CallingConvention.Cdecl)]
         static extern bool RenderDevice_Draw(IntPtr handle, PrimitiveType type, int startIndex, int primitiveCount);
@@ -735,7 +753,10 @@ namespace CodeImp.DoomBuilder.Rendering
         world3d_main_highlight_fog_vertexcolor,
         world3d_vertex_color,
         world3d_constant_color,
-		world3d_slope_handle
+		world3d_slope_handle,
+        world3d_classic,
+        world3d_p19,
+        world3d_classic_highlight
     }
 
     public enum UniformType : int
@@ -778,7 +799,10 @@ namespace CodeImp.DoomBuilder.Rendering
         fogcolor,
         sectorfogcolor,
         lightsEnabled,
-		slopeHandleLength
+		slopeHandleLength,
+        paletteSize,
+        colormapSize,
+        lightLevel
     }
 
     public enum VertexFormat : int { Flat, World }

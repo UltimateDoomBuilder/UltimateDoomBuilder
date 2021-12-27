@@ -66,7 +66,8 @@ namespace CodeImp.DoomBuilder.Data
 		
 		// Palette
 		private Playpal palette;
-		
+		private ColorMap mainColormap;
+
 		// Textures, Flats and Sprites
 		private Dictionary<long, ImageData> textures;
 		private Dictionary<long, long> texturenamesshorttofull; //mxd
@@ -163,6 +164,7 @@ namespace CodeImp.DoomBuilder.Data
 		internal IEnumerable<DataReader> Containers { get { return containers; } }
 
 		public Playpal Palette { get { return palette; } }
+		public ColorMap MainColorMap { get { return mainColormap; } }		
 		public ICollection<ImageData> Textures { get { return textures.Values; } }
 		public ICollection<ImageData> Flats { get { return flats.Values; } }
 		public List<string> TextureNames { get { return texturenames; } }
@@ -428,6 +430,7 @@ namespace CodeImp.DoomBuilder.Data
 			// Load stuff
 			LoadX11R6RGB(); //mxd
 			LoadPalette();
+			LoadMainColorMap();
 			Dictionary<string, TexturesParser> cachedparsers = new Dictionary<string, TexturesParser>(); //mxd
 			int texcount = LoadTextures(texturesonly, texturenamesshorttofull, cachedparsers);
 			int flatcount = LoadFlats(flatsonly, flatnamesshorttofull, cachedparsers);
@@ -838,6 +841,24 @@ namespace CodeImp.DoomBuilder.Data
 				palette = new Playpal();
 			}
 		}
+
+        private void LoadMainColorMap() 
+        {
+	        // Go for all opened containers
+	        for(int i = containers.Count - 1; i >= 0; i--)
+	        {
+		        // Load palette
+		        mainColormap = containers[i].LoadMainColorMap(palette);
+		        if(mainColormap != null) break;
+	        }
+
+	        // Make empty palette when still no palette found
+	        if(mainColormap == null)
+	        {
+		        General.ErrorLogger.Add(ErrorType.Warning, "None of the loaded resources define a colormap. Did you forget to configure an IWAD for this game configuration?");
+		        mainColormap = new ColorMap();
+	        }
+        }
 
 		#endregion
 

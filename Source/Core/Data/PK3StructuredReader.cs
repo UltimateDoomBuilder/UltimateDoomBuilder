@@ -151,6 +151,37 @@ namespace CodeImp.DoomBuilder.Data
 			// Done
 			return palette;
 		}
+        
+        // This loads the COLORMAP
+        public override ColorMap LoadMainColorMap(Playpal palette)
+        {
+	        // Error when suspended
+	        if(issuspended) throw new Exception("Data reader is suspended");
+			
+	        // Colormap from wad(s)
+	        ColorMap colormap = null;
+	        foreach(WADReader wr in wads)
+	        {
+		        ColorMap wadcolormap = wr.LoadMainColorMap(palette);
+		        if(wadcolormap != null) return wadcolormap;
+	        }
+			
+	        // Find in root directory
+	        string foundfile = FindFirstFile("COLORMAP", false);
+	        if((foundfile != null) && FileExists(foundfile))
+	        {
+		        MemoryStream stream = LoadFile(foundfile);
+
+		        if(stream.Length >= 256) //mxd
+			        colormap = new ColorMap(stream, palette);
+		        else
+			        General.ErrorLogger.Add(ErrorType.Warning, "Warning: invalid colormap \"" + foundfile + "\"");
+		        stream.Dispose();
+	        }
+			
+	        // Done
+	        return colormap;
+        }
 
 		#endregion
 		

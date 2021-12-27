@@ -41,6 +41,8 @@ bool GLShader::CheckCompile(GLRenderDevice* device)
 		CreateProgram(device);
 		glUseProgram(mProgram);
 		glUniform1i(glGetUniformLocation(mProgram, "texture1"), 0);
+		glUniform1i(glGetUniformLocation(mProgram, "texture2"), 1);
+		glUniform1i(glGetUniformLocation(mProgram, "texture3"), 2);
 		glUseProgram(0);
 	}
 

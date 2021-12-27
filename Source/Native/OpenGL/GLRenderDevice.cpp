@@ -113,15 +113,14 @@ GLRenderDevice::~GLRenderDevice()
 			glDeleteVertexArrays(1, &handle);
 		}
 
-		for (auto& it : mSamplers)
+		for (auto& it : mTextureUnit)
 		{
-			for (GLuint handle : it.second.WrapModes)
-			{
-				if (handle != 0)
-					glDeleteSamplers(1, &handle);
-			}
+		    GLuint &handle = it.SamplerHandle;
+		    if (handle != 0)
+		    {
+		        glDeleteSamplers(1, &handle);
+		    }
 		}
-
 
 		mShaderManager->ReleaseResources();
 		Context->ClearCurrent();
@@ -264,30 +263,57 @@ void GLRenderDevice::SetZWriteEnable(bool value)
 	}
 }
 
-void GLRenderDevice::SetTexture(Texture* texture)
+void GLRenderDevice::SetTexture(int unit, Texture* texture)
 {
-	if (mTextureUnit.Tex != texture)
+	if (mTextureUnit[unit].Tex != texture)
 	{
-		mTextureUnit.Tex = static_cast<GLTexture*>(texture);
+		mTextureUnit[unit].Tex = static_cast<GLTexture*>(texture);
 		mNeedApply = true;
 		mTexturesChanged = true;
 	}
 }
 
-void GLRenderDevice::SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, MipmapFilter mipfilter, float maxanisotropy)
+void GLRenderDevice::SetSamplerFilter(int unit, TextureFilter minfilter, TextureFilter magfilter, MipmapFilter mipfilter, float maxanisotropy)
 {
-	SamplerFilterKey key;
-	key.MinFilter = GetGLMinFilter(minfilter, mipfilter);
-	key.MagFilter = (magfilter == TextureFilter::Nearest) ? GL_NEAREST : GL_LINEAR;
-	key.MaxAnisotropy = maxanisotropy;
-	if (mSamplerFilterKey != key)
-	{
-		mSamplerFilterKey = key;
-		mSamplerFilter = &mSamplers[mSamplerFilterKey];
+    // volte:
+    // All this dirty flag stuff is to prefer spurious calls to glSamplerParameter which can cause big performance hits
+    // (particularly with GL_TEXTURE_MAX_ANISOTROPY_EXT, at least on my machine)
+    
+    bool dirty = false;
+    
+    if (mTextureUnit[unit].MinFilter != minfilter) 
+    {
+        mTextureUnit[unit].MinFilter = minfilter;
+        mTextureUnit[unit].DirtyFlag |= TextureUnitDirtyFlag_MinFilter;
+        dirty = true;
+    }
+    
+    if (mTextureUnit[unit].MagFilter != magfilter) 
+    {
+        mTextureUnit[unit].MagFilter = magfilter;
+        mTextureUnit[unit].DirtyFlag |= TextureUnitDirtyFlag_MagFilter;
+        dirty = true;
+    }
+    
+    if (mTextureUnit[unit].MipFilter != mipfilter) 
+    {
+        mTextureUnit[unit].MipFilter = mipfilter;
+        mTextureUnit[unit].DirtyFlag |= TextureUnitDirtyFlag_MipFilter;
+        dirty = true;
+    }
 
-		mNeedApply = true;
-		mTexturesChanged = true;
-	}
+    if ( mTextureUnit[unit].MaxAnisotropy != maxanisotropy)
+    {    
+        mTextureUnit[unit].MaxAnisotropy = maxanisotropy;
+        mTextureUnit[unit].DirtyFlag |= TextureUnitDirtyFlag_MaxAnisotropy;
+        dirty = true;        
+    }
+    
+    if (dirty)
+    {
+        mNeedApply = true;
+        mTexturesChanged = true;
+    }  
 }
 
 GLint GLRenderDevice::GetGLMinFilter(TextureFilter filter, MipmapFilter mipfilter)
@@ -315,11 +341,12 @@ GLint GLRenderDevice::GetGLMinFilter(TextureFilter filter, MipmapFilter mipfilte
 	}
 }
 
-void GLRenderDevice::SetSamplerState(TextureAddress address)
+void GLRenderDevice::SetSamplerState(int unit, TextureAddress address)
 {
-	if (mTextureUnit.WrapMode != address)
+	if (mTextureUnit[unit].WrapMode != address)
 	{
-		mTextureUnit.WrapMode = address;
+		mTextureUnit[unit].WrapMode = address;
+		mTextureUnit[unit].DirtyFlag |= TextureUnitDirtyFlag_WrapMode;
 		mNeedApply = true;
 		mTexturesChanged = true;
 	}
@@ -901,42 +928,61 @@ bool GLRenderDevice::ApplyUniforms()
 
 bool GLRenderDevice::ApplyTextures()
 {
-	glActiveTexture(GL_TEXTURE0);
-	if (mTextureUnit.Tex)
-	{
-		GLenum target = mTextureUnit.Tex->IsCubeTexture() ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
+    bool hasError = false;
+    for (int index = 0; index < 10; index++)
+    {
+        TextureUnit &unit = mTextureUnit[index];
+        glActiveTexture(GL_TEXTURE0 + index);
+        if (unit.Tex)
+        {
+            GLenum target = unit.Tex->IsCubeTexture() ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
+    
+            glBindTexture(target, unit.Tex->GetTexture(this));
+    
+            GLuint& samplerHandle = unit.SamplerHandle;
+            if (samplerHandle == 0)
+            {
+                glGenSamplers(1, &samplerHandle);
+                unit.DirtyFlag = 0xffffffff;
+            }
 
-		glBindTexture(target, mTextureUnit.Tex->GetTexture(this));
+            glBindSampler(index, samplerHandle);
 
-		GLuint& samplerHandle = mSamplerFilter->WrapModes[(int)mTextureUnit.WrapMode];
-		if (samplerHandle == 0)
-		{
-			static const int wrapMode[] = { GL_REPEAT, GL_CLAMP_TO_EDGE };
-
-			glGenSamplers(1, &samplerHandle);
-			glSamplerParameteri(samplerHandle, GL_TEXTURE_MIN_FILTER, mSamplerFilterKey.MinFilter);
-			glSamplerParameteri(samplerHandle, GL_TEXTURE_MAG_FILTER, mSamplerFilterKey.MagFilter);
-			glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_S, wrapMode[(int)mTextureUnit.WrapMode]);
-			glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_T, wrapMode[(int)mTextureUnit.WrapMode]);
-			glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_R, wrapMode[(int)mTextureUnit.WrapMode]);
-			if (mSamplerFilterKey.MaxAnisotropy > 0.0f)
-				glSamplerParameterf(samplerHandle, GL_TEXTURE_MAX_ANISOTROPY_EXT, mSamplerFilterKey.MaxAnisotropy);
-		}
-
-		if (mTextureUnit.SamplerHandle != samplerHandle)
-		{
-			mTextureUnit.SamplerHandle = samplerHandle;
-			glBindSampler(0, samplerHandle);
-		}
-	}
-	else
-	{
-		glBindTexture(GL_TEXTURE_2D, 0);
-	}
-
-	mTexturesChanged = false;
-
-	return CheckGLError();
+            static const int wrapMode[] = { GL_REPEAT, GL_CLAMP_TO_EDGE };
+            static const int filter[] = { GL_NEAREST, GL_LINEAR };
+                            
+            if (unit.DirtyFlag & (TextureUnitDirtyFlag_MinFilter | TextureUnitDirtyFlag_MipFilter))
+            {
+                int minFilter = GetGLMinFilter(unit.MinFilter, unit.MipFilter);
+                glSamplerParameteri(samplerHandle, GL_TEXTURE_MIN_FILTER, minFilter);
+            }
+            if (unit.DirtyFlag & TextureUnitDirtyFlag_MagFilter)
+            {
+                glSamplerParameteri(samplerHandle, GL_TEXTURE_MAG_FILTER, filter[(int)unit.MagFilter]);
+            }
+            if (unit.DirtyFlag & TextureUnitDirtyFlag_WrapMode) 
+            {
+                glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_S, wrapMode[(int)unit.WrapMode]);
+                glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_T, wrapMode[(int)unit.WrapMode]);
+                glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_R, wrapMode[(int)unit.WrapMode]);
+            }
+            if (unit.DirtyFlag & TextureUnitDirtyFlag_MaxAnisotropy)
+            {
+                glSamplerParameterf(samplerHandle, GL_TEXTURE_MAX_ANISOTROPY_EXT, unit.MaxAnisotropy);
+            }
+        }
+        else
+        {
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glBindSampler(index, 0);
+        }
+        
+        unit.DirtyFlag = 0;
+        hasError |= CheckGLError();
+    }
+    
+    mTexturesChanged = false;
+    return hasError;
 }
 
 std::mutex& GLRenderDevice::GetMutex()

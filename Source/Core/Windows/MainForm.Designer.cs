@@ -191,6 +191,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.itemallmdl = new System.Windows.Forms.ToolStripMenuItem();
 			this.itemtogglefog = new System.Windows.Forms.ToolStripMenuItem();
 			this.itemtogglesky = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemtoggleclassicrendering = new System.Windows.Forms.ToolStripMenuItem();
 			this.itemtoggleeventlines = new System.Windows.Forms.ToolStripMenuItem();
 			this.itemtogglevisualverts = new System.Windows.Forms.ToolStripMenuItem();
 			this.buttonfullbrightness = new System.Windows.Forms.ToolStripButton();
@@ -224,6 +225,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.modelsshowall = new System.Windows.Forms.ToolStripMenuItem();
 			this.buttontogglefog = new System.Windows.Forms.ToolStripButton();
 			this.buttontogglesky = new System.Windows.Forms.ToolStripButton();
+			this.buttontoggleclassicrendering = new System.Windows.Forms.ToolStripButton();
 			this.buttontoggleeventlines = new System.Windows.Forms.ToolStripButton();
 			this.buttontogglevisualvertices = new System.Windows.Forms.ToolStripButton();
 			this.separatorgzmodes = new System.Windows.Forms.ToolStripSeparator();
@@ -798,6 +800,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.itemmodelmodes,
 			this.itemtogglefog,
 			this.itemtogglesky,
+			this.itemtoggleclassicrendering,
 			this.itemtoggleeventlines,
 			this.itemtogglevisualverts,
 			this.separatorhelpers,
@@ -1395,6 +1398,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.modelrendermode,
 			this.buttontogglefog,
 			this.buttontogglesky,
+			this.buttontoggleclassicrendering,
 			this.buttontoggleeventlines,
 			this.buttontogglevisualvertices,
 			this.separatorgzmodes,
@@ -1797,6 +1801,16 @@ namespace CodeImp.DoomBuilder.Windows
 			this.itemtogglesky.Text = "Render sky (Visual mode)";
 			this.itemtogglesky.Click += new System.EventHandler(this.InvokeTaggedAction);
 			// 
+			// itemclassicrendering
+			// 
+			this.itemtoggleclassicrendering.CheckOnClick = true;
+			this.itemtoggleclassicrendering.Image = global::CodeImp.DoomBuilder.Properties.Resources.ClassicRendering;
+			this.itemtoggleclassicrendering.Name = "itemtoggleclassicrendering";
+			this.itemtoggleclassicrendering.Size = new System.Drawing.Size(273, 22);
+			this.itemtoggleclassicrendering.Tag = "builder_toggleclassicrendering";
+			this.itemtoggleclassicrendering.Text = "Classic rendering (Visual mode)";
+			this.itemtoggleclassicrendering.Click += new System.EventHandler(this.InvokeTaggedAction);
+			// 
 			// itemeventlines
 			// 
 			this.itemtoggleeventlines.CheckOnClick = true;
@@ -2169,6 +2183,18 @@ namespace CodeImp.DoomBuilder.Windows
 			this.buttontogglesky.Tag = "builder_gztogglesky";
 			this.buttontogglesky.Text = "Render Sky (Visual mode)";
 			this.buttontogglesky.Click += new System.EventHandler(this.InvokeTaggedAction);
+			// 
+			// buttontoggleclassicrendering
+			// 
+			this.buttontoggleclassicrendering.CheckOnClick = true;
+			this.buttontoggleclassicrendering.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttontoggleclassicrendering.Image = global::CodeImp.DoomBuilder.Properties.Resources.ClassicRendering;
+			this.buttontoggleclassicrendering.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttontoggleclassicrendering.Name = "buttontoggleclassicrendering";
+			this.buttontoggleclassicrendering.Size = new System.Drawing.Size(23, 20);
+			this.buttontoggleclassicrendering.Tag = "builder_toggleclassicrendering";
+			this.buttontoggleclassicrendering.Text = "Classic Rendering (Visual mode)";
+			this.buttontoggleclassicrendering.Click += new System.EventHandler(this.InvokeTaggedAction);
 			// 
 			// buttontoggleeventlines
 			// 
@@ -3013,6 +3039,7 @@ namespace CodeImp.DoomBuilder.Windows
 		private System.Windows.Forms.ToolStripSeparator seperatorgeometry;
 		private System.Windows.Forms.ToolStripButton buttontogglefog;
 		private System.Windows.Forms.ToolStripButton buttontogglesky;
+		private System.Windows.Forms.ToolStripButton buttontoggleclassicrendering;
 		private System.Windows.Forms.ToolStripStatusLabel warnsLabel;
 		private System.Windows.Forms.ToolStripMenuItem itemReloadModedef;
 		private System.Windows.Forms.ToolStripMenuItem itemReloadGldefs;
@@ -3072,6 +3099,7 @@ namespace CodeImp.DoomBuilder.Windows
 		private System.Windows.Forms.ToolStripMenuItem itemallmdl;
 		private System.Windows.Forms.ToolStripMenuItem itemtogglefog;
 		private System.Windows.Forms.ToolStripMenuItem itemtogglesky;
+		private System.Windows.Forms.ToolStripMenuItem itemtoggleclassicrendering;
 		private System.Windows.Forms.ToolStripMenuItem itemtoggleeventlines;
 		private System.Windows.Forms.ToolStripMenuItem itemtogglevisualverts;
 		private ToolStripMenuItem itemimport;

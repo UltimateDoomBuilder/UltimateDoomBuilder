@@ -16,6 +16,13 @@ uniforms
 	vec4 vertexColor;
 
 	sampler2D texture1;
+	sampler2D texture2;
+	sampler2D texture3;
+
+	// classic lighting related
+	ivec2 paletteSize;
+	ivec2 colormapSize;
+	int lightLevel;
 
 	// dynamic light related
 	vec4 lightPosAndRadius[64];
@@ -32,6 +39,79 @@ uniforms
 
 functions
 {
+    // Map a color to its nearest palette entry
+    int getPaletteEntry(vec4 color)
+    {
+        int entry = 0;
+        float minDist = 99999;
+        for (int y = 0; y < paletteSize.y; y++)
+        {
+            for (int x = 0; x < paletteSize.x; x++)
+            {
+                int curEntry = y * paletteSize.x + x;
+                vec2 uv = vec2(float(x) / float(paletteSize.x), float(y) / float(paletteSize.y));
+                vec4 palColor = texture(texture2, uv);
+                float curDist = distance(palColor.xyz, color.xyz);
+                if (curDist < minDist)
+                {
+                    minDist = curDist;
+                    entry = curEntry;
+                } 
+            }
+        }
+        return entry;
+    }
+    
+    vec4 getPaletteColor(int entry)
+    {
+        float index = float(entry) + 0.5;
+        float y = index / 16.0;
+        float x = index % 16.0;
+        vec2 uv = vec2(float(x) / float(paletteSize.x), float(y) / float(paletteSize.y));
+        vec4 palColor = texture(texture2, uv);
+        return palColor;
+    }
+
+    vec4 getColorMappedColor(int entry, int depth)
+    {
+        vec2 uv = vec2((float(entry) + 0.5) / colormapSize.x, (float(depth) + 0.5) / colormapSize.y);
+        vec4 colormapColor = texture(texture3, uv);
+        return colormapColor;
+    }
+        
+    int classicLightLevelToColorMapOffset(int lightLevel, vec3 position, vec3 normal)
+    {
+        const int LIGHTLEVELS = 16;
+        const int LIGHTSEGSHIFT = 4;
+        const int NUMCOLORMAPS = 32;
+        const int MAXLIGHTSCALE = 48;
+        const int DISTMAP = 2;
+        const int DISTFACTOR = 2560; // this comes from the Eternity engine
+        
+        int scaledLightLevel = lightLevel >> LIGHTSEGSHIFT;
+        
+        if (abs(dot(normal, vec3(0, 1, 0))) < 1e-3)
+        {
+            scaledLightLevel++;
+        }
+        else if (abs(dot(normal, vec3(1, 0, 0))) < 1e-3)
+        {
+            scaledLightLevel--;
+        }
+        
+        int startmap = int(((LIGHTLEVELS-1-scaledLightLevel)*2)*NUMCOLORMAPS/LIGHTLEVELS);
+        
+        float dist = distance(position, campos.xyz);
+        int index = int(DISTFACTOR / dist);
+        if (index >= MAXLIGHTSCALE) index = MAXLIGHTSCALE - 1;
+        
+        int level = startmap - index / DISTMAP;
+        
+        if (level < 0) level = 0;
+        if (level >= NUMCOLORMAPS) level = NUMCOLORMAPS - 1;
+        return level;
+    }
+
 	// This adds fog color to current pixel color
 	vec4 getFogColor(vec3 PosW, vec4 color)
 	{
@@ -369,5 +449,45 @@ shader world3d_slope_handle extends world3d_vertex_color
 		gl_Position = projection * v2f.viewpos;
 		v2f.Color = in.Color * vertexColor;
 		v2f.UV = in.TextureCoordinate;
+	}
+}
+
+
+shader world3d_classic extends world3d_main
+{
+	fragment
+	{
+		vec4 tcolor = texture(texture1, v2f.UV);
+		int entry = getPaletteEntry(tcolor);
+	
+		int colorMapOffset = classicLightLevelToColorMapOffset(lightLevel, v2f.PosW, v2f.Normal);
+		out.FragColor = getColorMappedColor(entry, colorMapOffset);
+		out.FragColor.a = tcolor.a;
+		
+		#if defined(ALPHA_TEST)
+		if (out.FragColor.a < 0.5) discard;
+		#endif
+	}
+}
+
+shader world3d_classic_highlight extends world3d_main
+{
+	fragment
+	{
+		vec4 tcolor = texture(texture1, v2f.UV);
+		int entry = getPaletteEntry(tcolor);
+	
+		int colorMapOffset = classicLightLevelToColorMapOffset(lightLevel, v2f.PosW, v2f.Normal);
+		out.FragColor = getColorMappedColor(entry, colorMapOffset);
+		out.FragColor.a = tcolor.a;
+		
+		if (tcolor.a > 0.0)
+		{
+			out.FragColor = vec4(highlightcolor.rgb * highlightcolor.a + (tcolor.rgb - 0.4 * highlightcolor.a), max(tcolor.a + 0.25, 0.5));
+		}
+		
+		#if defined(ALPHA_TEST)
+		if (out.FragColor.a < 0.5) discard;
+		#endif
 	}
 }

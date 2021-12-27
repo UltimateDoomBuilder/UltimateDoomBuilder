@@ -74,7 +74,7 @@ bool GLTexture::SetPixels(GLRenderDevice* device, const void* data)
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, mTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, ToInternalFormat(mFormat), mWidth, mHeight, 0, ToDataFormat(mFormat), ToDataType(mFormat), data);
-	if (data != nullptr)
+	if (data != nullptr) 
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 	//

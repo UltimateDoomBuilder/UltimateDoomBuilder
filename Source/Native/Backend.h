@@ -83,9 +83,9 @@ public:
 	virtual void SetMultisampleAntialias(bool value) = 0;
 	virtual void SetZEnable(bool value) = 0;
 	virtual void SetZWriteEnable(bool value) = 0;
-	virtual void SetTexture(Texture* texture) = 0;
-	virtual void SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, MipmapFilter mipfilter, float maxanisotropy) = 0;
-	virtual void SetSamplerState(TextureAddress address) = 0;
+	virtual void SetTexture(int unit, Texture* texture) = 0;
+	virtual void SetSamplerFilter(int unit, TextureFilter minfilter, TextureFilter magfilter, MipmapFilter mipfilter, float maxanisotropy) = 0;
+	virtual void SetSamplerState(int unit, TextureAddress address) = 0;
 	virtual bool Draw(PrimitiveType type, int startIndex, int primitiveCount) = 0;
 	virtual bool DrawIndexed(PrimitiveType type, int startIndex, int primitiveCount) = 0;
 	virtual bool DrawData(PrimitiveType type, int startIndex, int primitiveCount, const void* data) = 0;

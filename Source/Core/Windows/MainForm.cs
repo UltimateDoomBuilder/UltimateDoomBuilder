@@ -2164,6 +2164,7 @@ namespace CodeImp.DoomBuilder.Windows
 			buttonsplitjoinedsectors.Checked = General.Settings.SplitJoinedSectors; //mxd
 			buttonautoclearsidetextures.Visible = General.Settings.ToolbarGeometry && maploaded; //mxd
 			buttontest.Visible = General.Settings.ToolbarTesting && maploaded;
+			buttontoggleclassicrendering.Visible = General.Settings.ToolbarViewModes && maploaded;
 
 			//mxd
 			modelrendermode.Visible = General.Settings.GZToolbarGZDoom && maploaded;
@@ -2330,6 +2331,7 @@ namespace CodeImp.DoomBuilder.Windows
 				
 				buttontogglefog.Checked = General.Settings.GZDrawFog;
 				buttontogglesky.Checked = General.Settings.GZDrawSky;
+				buttontoggleclassicrendering.Checked = General.Settings.ClassicRendering;
 				buttontoggleeventlines.Checked = General.Settings.GZShowEventLines;
 				buttontogglevisualvertices.Visible = General.Map.UDMF;
 				buttontogglevisualvertices.Checked = General.Settings.GZShowVisualVertices;
@@ -3141,6 +3143,7 @@ namespace CodeImp.DoomBuilder.Windows
 			itemtogglefixedthingsscale.Checked = General.Settings.FixedThingsScale; //mxd
 			itemtogglefog.Checked = General.Settings.GZDrawFog;
 			itemtogglesky.Checked = General.Settings.GZDrawSky;
+			itemtoggleclassicrendering.Checked = General.Settings.ClassicRendering;
 			itemtoggleeventlines.Checked = General.Settings.GZShowEventLines;
 			itemtogglevisualverts.Visible = (General.Map != null && General.Map.UDMF);
 			itemtogglevisualverts.Checked = General.Settings.GZShowVisualVertices;
@@ -3211,6 +3214,20 @@ namespace CodeImp.DoomBuilder.Windows
 			buttontogglesky.Checked = General.Settings.GZDrawSky;
 
 			General.MainWindow.DisplayStatus(StatusType.Action, "Sky rendering is " + (General.Settings.GZDrawSky ? "ENABLED" : "DISABLED"));
+			General.MainWindow.RedrawDisplay();
+			General.MainWindow.UpdateGZDoomPanel();
+		}
+		
+		//mxd
+		[BeginAction("toggleclassicrendering")]
+		internal void ToggleClassicRendering()
+		{
+			General.Settings.ClassicRendering = !General.Settings.ClassicRendering;
+
+			itemtoggleclassicrendering.Checked = General.Settings.ClassicRendering;
+			buttontoggleclassicrendering.Checked = General.Settings.ClassicRendering;
+
+			General.MainWindow.DisplayStatus(StatusType.Action, "Classic rendering is " + (General.Settings.ClassicRendering ? "ENABLED" : "DISABLED"));
 			General.MainWindow.RedrawDisplay();
 			General.MainWindow.UpdateGZDoomPanel();
 		}

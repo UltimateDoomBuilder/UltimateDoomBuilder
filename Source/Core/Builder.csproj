@@ -209,6 +209,7 @@
     <Compile Include="Controls\Scripting\ScriptLumpDocumentTab.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Data\ColorMap.cs" />
     <Compile Include="Data\DirectoryReader.cs" />
     <Compile Include="Data\FileImage.cs" />
     <Compile Include="Data\FlatImage.cs" />
@@ -1307,6 +1308,7 @@
     <None Include="Resources\Angle6.png" />
     <None Include="Resources\Angle7.png" />
     <None Include="Resources\AboutBack.png" />
+    <Content Include="Resources\ClassicRendering.png" />
     <Content Include="Resources\DB2.ico" />
     <None Include="Resources\GZDB2.ico" />
     <None Include="Resources\UDB.ico" />
@@ -1365,6 +1367,7 @@
     <None Include="Resources\ScriptError.png" />
     <None Include="Resources\ScriptConstant.png" />
     <None Include="Resources\Sky.png" />
+    <None Include="Resources\ClassicRendering.png" />
     <None Include="Resources\Update.png" />
     <None Include="Resources\Reload.png" />
     <None Include="Resources\Preferences.png" />

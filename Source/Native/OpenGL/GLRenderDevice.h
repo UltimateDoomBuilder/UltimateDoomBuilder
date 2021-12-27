@@ -54,9 +54,9 @@ public:
 	void SetMultisampleAntialias(bool value) override;
 	void SetZEnable(bool value) override;
 	void SetZWriteEnable(bool value) override;
-	void SetTexture(Texture* texture) override;
-	void SetSamplerFilter(TextureFilter minfilter, TextureFilter magfilter, MipmapFilter mipfilter, float maxanisotropy) override;
-	void SetSamplerState(TextureAddress address) override;
+	void SetTexture(int unit, Texture* texture) override;
+	void SetSamplerFilter(int unit, TextureFilter minfilter, TextureFilter magfilter, MipmapFilter mipfilter, float maxanisotropy) override;
+	void SetSamplerState(int unit, TextureAddress address) override;
 	bool Draw(PrimitiveType type, int startIndex, int primitiveCount) override;
 	bool DrawIndexed(PrimitiveType type, int startIndex, int primitiveCount) override;
 	bool DrawData(PrimitiveType type, int startIndex, int primitiveCount, const void* data) override;
@@ -114,13 +114,27 @@ public:
 		std::vector<GLIndexBuffer*> IndexBuffers;
 		std::vector<GLTexture*> Textures;
 	} mDeleteList;
+	
+	enum TextureUnitDirtyFlag
+	{
+	    TextureUnitDirtyFlag_WrapMode = 1,
+	    TextureUnitDirtyFlag_MinFilter = 2,
+	    TextureUnitDirtyFlag_MagFilter = 4,
+	    TextureUnitDirtyFlag_MipFilter = 8,
+	    TextureUnitDirtyFlag_MaxAnisotropy = 16
+	};
 
 	struct TextureUnit
 	{
 		GLTexture* Tex = nullptr;
 		TextureAddress WrapMode = TextureAddress::Wrap;
 		GLuint SamplerHandle = 0;
-	} mTextureUnit;
+		TextureFilter MinFilter = TextureFilter::Nearest;
+		TextureFilter MagFilter = TextureFilter::Nearest;
+		MipmapFilter MipFilter = MipmapFilter::None;
+		float MaxAnisotropy = 1;
+		int DirtyFlag = 0;
+	} mTextureUnit[10];
 
 	struct SamplerFilterKey
 	{
@@ -132,15 +146,6 @@ public:
 		bool operator==(const SamplerFilterKey& b) const { return memcmp(this, &b, sizeof(SamplerFilterKey)) == 0; }
 		bool operator!=(const SamplerFilterKey& b) const { return memcmp(this, &b, sizeof(SamplerFilterKey)) != 0; }
 	};
-
-	struct SamplerFilter
-	{
-		GLuint WrapModes[2] = { 0, 0 };
-	};
-
-	std::map<SamplerFilterKey, SamplerFilter> mSamplers;
-	SamplerFilterKey mSamplerFilterKey;
-	SamplerFilter* mSamplerFilter = nullptr;
 
 	int mVertexBuffer = -1;
 	int64_t mVertexBufferStartIndex = 0;

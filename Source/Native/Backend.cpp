@@ -76,9 +76,12 @@ extern "C"
 		Backend::Get()->DeleteRenderDevice(device);
 	}
 
-	const char* BuilderNative_GetError()
+	void BuilderNative_GetError(char *out, int len)
 	{
-		return GetError();
+        std::string result = mLastError;
+        result = result.substr(0, len);
+        std::copy(result.begin(), result.end(), out);
+        out[std::min(len - 1, (int)result.size())] = 0;
 	}
 
 	void RenderDevice_DeclareUniform(RenderDevice* device, UniformName name, const char* variablename, UniformType type)
@@ -161,19 +164,19 @@ extern "C"
 		device->SetZWriteEnable(value);
 	}
 
-	void RenderDevice_SetTexture(RenderDevice* device, Texture* texture)
+	void RenderDevice_SetTexture(RenderDevice* device, int unit, Texture* texture)
 	{
-		device->SetTexture(texture);
+		device->SetTexture(unit, texture);
 	}
 
-	void RenderDevice_SetSamplerFilter(RenderDevice* device, TextureFilter minfilter, TextureFilter magfilter, MipmapFilter mipfilter, float maxanisotropy)
+	void RenderDevice_SetSamplerFilter(RenderDevice* device, int unit, TextureFilter minfilter, TextureFilter magfilter, MipmapFilter mipfilter, float maxanisotropy)
 	{
-		device->SetSamplerFilter(minfilter, magfilter, mipfilter, maxanisotropy);
+		device->SetSamplerFilter(unit, minfilter, magfilter, mipfilter, maxanisotropy);
 	}
 
-	void RenderDevice_SetSamplerState(RenderDevice* device, TextureAddress address)
+	void RenderDevice_SetSamplerState(RenderDevice* device, int unit, TextureAddress address)
 	{
-		device->SetSamplerState(address);
+		device->SetSamplerState(unit, address);
 	}
 
 	bool RenderDevice_Draw(RenderDevice* device, PrimitiveType type, int startIndex, int primitiveCount)

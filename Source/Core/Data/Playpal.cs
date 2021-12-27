@@ -16,6 +16,9 @@
 
 #region ================== Namespaces
 
+using System;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using CodeImp.DoomBuilder.Rendering;
 
@@ -38,7 +41,7 @@ namespace CodeImp.DoomBuilder.Data
 		#region ================== Properties
 
 		public PixelColor this[int index] { get { return colors[index]; } }
-
+		
 		#endregion
 
 		#region ================== Constructor / Disposer
@@ -83,6 +86,18 @@ namespace CodeImp.DoomBuilder.Data
 		#endregion
 
 		#region ================== Methods
+
+		public Bitmap CreateBitmap() {
+			var bitmap = new Bitmap(16, 16, PixelFormat.Format32bppRgb);
+			for (int y = 0; y < 16; y++) {
+				for (int x = 0; x < 16; x++) {
+					int index = 16 * y + x;
+					bitmap.SetPixel(x, y, colors[index].ToColor());
+					Console.WriteLine(bitmap.GetPixel(x, y));
+				}
+			}
+			return bitmap;
+		}
 
 		#endregion
 	}

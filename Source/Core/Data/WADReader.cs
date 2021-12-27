@@ -26,6 +26,7 @@ using CodeImp.DoomBuilder.Config;
 using CodeImp.DoomBuilder.Data.Scripting;
 using CodeImp.DoomBuilder.GZBuilder.Data;
 using CodeImp.DoomBuilder.IO;
+using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.ZDoom;
 
 #endregion
@@ -305,6 +306,21 @@ namespace CodeImp.DoomBuilder.Data
                 using (Stream s = lump.GetSafeStream())
                     return new Playpal(s); // Read the PLAYPAL from stream
             }
+			return null; // No palette
+		}
+
+		public override ColorMap LoadMainColorMap(Playpal palette)
+		{
+			// Error when suspended
+			if(issuspended) throw new Exception("Data reader is suspended");
+			
+			// Look for a lump named COLORMAP
+			Lump lump = file.FindLump("COLORMAP");
+			if (lump != null) 
+			{
+				using (Stream s = lump.GetSafeStream())
+					return new ColorMap(s, palette);
+			}
 			return null; // No palette
 		}
 

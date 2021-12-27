@@ -24,9 +24,11 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <cstdint>
+#include <algorithm>
 #include <vector>
 #include <map>
 #include <memory>
+#include <string>
 
 #ifdef WIN32
 #include <Windows.h>
