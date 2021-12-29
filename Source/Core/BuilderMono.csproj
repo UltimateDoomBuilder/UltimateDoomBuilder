@@ -206,6 +206,7 @@
     <Compile Include="Controls\Scripting\ScriptLumpDocumentTab.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Data\ColorMap.cs" />
     <Compile Include="Data\DirectoryReader.cs" />
     <Compile Include="Data\FileImage.cs" />
     <Compile Include="Data\FlatImage.cs" />
