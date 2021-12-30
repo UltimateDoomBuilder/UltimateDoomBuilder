@@ -478,12 +478,13 @@ shader world3d_classic_highlight extends world3d_main
 		int entry = getPaletteEntry(tcolor);
 	
 		int colorMapOffset = classicLightLevelToColorMapOffset(lightLevel, v2f.PosW, v2f.Normal);
-		out.FragColor = getColorMappedColor(entry, colorMapOffset);
+		vec4 pcolor = getColorMappedColor(entry, colorMapOffset);
+		out.FragColor = pcolor;
 		out.FragColor.a = tcolor.a;
 		
 		if (tcolor.a > 0.0)
 		{
-			out.FragColor = vec4(highlightcolor.rgb * highlightcolor.a + (tcolor.rgb - 0.4 * highlightcolor.a), max(tcolor.a + 0.25, 0.5));
+			out.FragColor = vec4(highlightcolor.rgb * highlightcolor.a + (pcolor.rgb - 0.4 * highlightcolor.a), max(pcolor.a + 0.25, 0.5));
 		}
 		
 		#if defined(ALPHA_TEST)
