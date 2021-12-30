@@ -45,6 +45,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 		#region ================== Constants
 
 		private const double MOVE_SPEED_MULTIPLIER = 0.001;
+		protected const float PICK_RANGE = 0.98f;
+		private const float MOVE_CAMERA_DISTANCE = 64.0f;
 		
 		#endregion
 
@@ -64,6 +66,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		private bool keyright;
 		private bool keyup;
 		private bool keydown;
+		private bool orbit;
 
 		//mxd
 		private List<VisualThing> selectedVisualThings;
@@ -74,6 +77,12 @@ namespace CodeImp.DoomBuilder.VisualModes
 		private Thing playerStart;
 		private Vector3D playerStartPosition;
 		private double playerStartAngle;
+
+		private Vector3D orbitPoint;
+		private double orbitXY;
+		private double orbitZ;
+		private double orbitRadius;
+		private bool orbitPointPicked;
 
 		// For picking
 		protected PickingMode pickingmode;
@@ -90,7 +99,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		protected List<VisualSector> visiblesectors;
 		protected List<VisualGeometry> visiblegeometry;
 		protected HashSet<VisualSlope> usedslopehandles;
-		
+
 		#endregion
 
 		#region ================== Properties
@@ -395,7 +404,54 @@ namespace CodeImp.DoomBuilder.VisualModes
 		public override void OnMouseInput(Vector2D delta)
 		{
 			base.OnMouseInput(delta);
-			General.Map.VisualCamera.ProcessMouseInput(delta);
+
+			if (orbit)
+			{
+				Vector3D start = General.Map.VisualCamera.Position;
+				
+				if (!orbitPointPicked)
+				{
+					Vector3D hitPosition = GetHitPosition();
+					orbitPoint = hitPosition;
+					
+					if (!hitPosition.IsFinite())
+					{
+						return;
+					}
+					
+					orbitPointPicked = true;
+
+					Vector3D pickDelta = start - hitPosition;
+					orbitRadius = pickDelta.GetLength();
+					orbitXY = pickDelta.GetNormal().GetAngleXY();
+					orbitZ = -pickDelta.GetNormal().GetAngleZ();
+				}
+				
+				// Change camera angles with the mouse changes
+				orbitXY -= delta.x * VisualCamera.ANGLE_FROM_MOUSE;
+				if(General.Settings.InvertYAxis)
+					orbitZ -= delta.y * VisualCamera.ANGLE_FROM_MOUSE;
+				else
+					orbitZ += delta.y * VisualCamera.ANGLE_FROM_MOUSE;
+				
+				orbitXY = Angle2D.Normalized(orbitXY);
+				orbitZ = Angle2D.Normalized(orbitZ);
+
+				if (orbitZ < VisualCamera.MAX_ANGLEZ_LOW) orbitZ = VisualCamera.MAX_ANGLEZ_LOW;
+				if (orbitZ > VisualCamera.MAX_ANGLEZ_HIGH) orbitZ = VisualCamera.MAX_ANGLEZ_HIGH;
+				
+				Vector3D orbitDelta = Vector3D.FromAngleXYZ(orbitXY, orbitZ);
+
+				General.Map.VisualCamera.Position = orbitPoint - orbitDelta * orbitRadius;
+				General.Map.VisualCamera.AngleZ = orbitZ;
+				General.Map.VisualCamera.AngleXY = orbitXY;
+
+				General.Map.VisualCamera.ProcessMouseInput(new Vector2D());
+			}
+			else
+			{
+				General.Map.VisualCamera.ProcessMouseInput(delta);	
+			}
 		}
 
 		[BeginAction("moveforward", BaseAction = true)]
@@ -445,6 +501,19 @@ namespace CodeImp.DoomBuilder.VisualModes
 		{
 			keyright = false;
 		}
+		
+		[BeginAction("orbit", BaseAction = true)]
+		public virtual void BeginOrbit()
+		{
+			orbit = true;
+		}
+
+		[EndAction("orbit", BaseAction = true)]
+		public virtual void EndOrbit()
+		{
+			orbit = false;
+			orbitPointPicked = false;
+		}
 
 		[BeginAction("moveup", BaseAction = true)]
 		public virtual void BeginMoveUp()
@@ -469,6 +538,28 @@ namespace CodeImp.DoomBuilder.VisualModes
 		{
 			keydown = false;
 		}
+		
+		[BeginAction("movecameratocursor", BaseAction = true)]
+		protected virtual void MoveCameraToCursor() 
+		{
+			if (orbit)
+			{
+				orbitRadius = MOVE_CAMERA_DISTANCE;
+			}
+			else
+			{
+				Vector3D hitPosition = GetHitPosition();
+				if (!hitPosition.IsFinite())
+				{
+					return;
+				}
+
+				Vector3D start = General.Map.VisualCamera.Position;
+				Vector3D delta = start - hitPosition;
+				General.Map.VisualCamera.Position = hitPosition + delta.GetFixedLength(MOVE_CAMERA_DISTANCE);
+			}
+		}
+
 
 		//mxd
 		[BeginAction("movethingleft", BaseAction = true)]
@@ -510,14 +601,14 @@ namespace CodeImp.DoomBuilder.VisualModes
 		}
 
 		//mxd. 
-		public Vector2D GetHitPosition() 
+		public Vector3D GetHitPosition() 
 		{
 			Vector3D start = General.Map.VisualCamera.Position;
 			Vector3D delta = General.Map.VisualCamera.Target - General.Map.VisualCamera.Position;
 			delta = delta.GetFixedLength(General.Settings.ViewDistance * 0.98f);
 			VisualPickResult target = PickObject(start, start + delta);
 
-			if(target.picked == null) return new Vector2D(double.NaN, double.NaN);
+			if(target.picked == null) return new Vector3D(double.NaN, double.NaN, double.NaN);
 
 			// Now find where exactly did we hit
 			VisualGeometry vg = target.picked as VisualGeometry;
@@ -525,13 +616,19 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 
 			VisualThing vt = target.picked as VisualThing;
-			if(vt != null) return GetIntersection(start, start + delta, vt.CenterV3D, RenderDevice.V3D(vt.Center - vt.PositionV3));
+			if (vt != null)
+			{
+				Vector3D normal = start - vt.CenterV3D;
+				normal.z = 0;
+				normal = normal.GetNormal();
+				return GetIntersection(start, start + delta, vt.CenterV3D, normal);
+			}
 
-			return new Vector2D(double.NaN, double.NaN);
+			return new Vector3D(double.NaN, double.NaN, double.NaN);
 		}
 
 		//mxd. This checks intersection between line and plane 
-		private static Vector2D GetIntersection(Vector3D start, Vector3D end, Vector3D planeCenter, Vector3D planeNormal) 
+		private static Vector3D GetIntersection(Vector3D start, Vector3D end, Vector3D planeCenter, Vector3D planeNormal) 
 		{
 			Vector3D delta = new Vector3D(planeCenter.x - start.x, planeCenter.y - start.y, planeCenter.z - start.z);
 			return start + Vector3D.DotProduct(planeNormal, delta) / Vector3D.DotProduct(planeNormal, end - start) * (end - start);
@@ -1204,19 +1301,33 @@ namespace CodeImp.DoomBuilder.VisualModes
 			Vector3D camdeltapos = new Vector3D();
 			Vector3D upvec = new Vector3D(0.0, 0.0, 1.0);
 
-			// Move the camera
 			double multiplier;
 			if(General.Interface.ShiftState) multiplier = MOVE_SPEED_MULTIPLIER * 2.0f; else multiplier = MOVE_SPEED_MULTIPLIER;
-			if(keyforward) camdeltapos += camvec * cammovemul * General.Settings.MoveSpeed * multiplier * deltatime;
-			if(keybackward) camdeltapos -= camvec * cammovemul * General.Settings.MoveSpeed * multiplier * deltatime;
-			if(keyleft) camdeltapos -= camvecstrafe * cammovemul * General.Settings.MoveSpeed * multiplier * deltatime;
-			if(keyright) camdeltapos += camvecstrafe * cammovemul * General.Settings.MoveSpeed * multiplier * deltatime;
-			if(keyup) camdeltapos += upvec * cammovemul * General.Settings.MoveSpeed * multiplier * deltatime;
-			if(keydown) camdeltapos += -upvec * cammovemul * General.Settings.MoveSpeed * multiplier * deltatime;
 			
-			// Move the camera
-			General.Map.VisualCamera.ProcessMovement(camdeltapos);
-			
+			if (orbit)
+			{
+				if (keyforward) orbitRadius -= General.Settings.MoveSpeed * multiplier * deltatime;
+				if (keybackward) orbitRadius += General.Settings.MoveSpeed * multiplier * deltatime;
+
+				if (orbitRadius < 1) orbitRadius = 1f;
+
+				General.Map.VisualCamera.ProcessMovement(new Vector3D());
+			}
+			else
+			{
+				// Move the camera
+				
+				if(keyforward) camdeltapos += camvec * cammovemul * General.Settings.MoveSpeed * multiplier * deltatime;
+				if(keybackward) camdeltapos -= camvec * cammovemul * General.Settings.MoveSpeed * multiplier * deltatime;
+				if(keyleft) camdeltapos -= camvecstrafe * cammovemul * General.Settings.MoveSpeed * multiplier * deltatime;
+				if(keyright) camdeltapos += camvecstrafe * cammovemul * General.Settings.MoveSpeed * multiplier * deltatime;
+				if(keyup) camdeltapos += upvec * cammovemul * General.Settings.MoveSpeed * multiplier * deltatime;
+				if(keydown) camdeltapos += -upvec * cammovemul * General.Settings.MoveSpeed * multiplier * deltatime;
+				
+				// Move the camera
+				General.Map.VisualCamera.ProcessMovement(camdeltapos);
+			}
+
 			// Apply new camera matrices
 			renderer.PositionAndLookAt(General.Map.VisualCamera.Position, General.Map.VisualCamera.Target);
 			

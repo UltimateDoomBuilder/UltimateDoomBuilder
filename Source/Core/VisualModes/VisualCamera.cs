@@ -14,7 +14,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 	{
 		#region ================== Constants
 
-		private const double ANGLE_FROM_MOUSE = 0.0001;
+		public const double ANGLE_FROM_MOUSE = 0.0001;
 		public const double MAX_ANGLEZ_LOW = 91.0 / Angle2D.PIDEG;
 		public const double MAX_ANGLEZ_HIGH = (360.0 - 91.0) / Angle2D.PIDEG;
 		public const double THING_Z_OFFSET = 41.0;

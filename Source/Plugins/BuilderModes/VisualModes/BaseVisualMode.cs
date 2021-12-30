@@ -51,7 +51,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// Object picking
 		private const long PICK_INTERVAL = 80;
 		private const long PICK_INTERVAL_PAINT_SELECT = 10; // biwa
-		private const float PICK_RANGE = 0.98f;
 
 		// Gravity
 		private const float GRAVITY = -0.06f;
