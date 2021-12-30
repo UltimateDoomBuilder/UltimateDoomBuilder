@@ -476,8 +476,10 @@ shader world3d_classic_highlight extends world3d_main
 	{
 		vec4 tcolor = texture(texture1, v2f.UV);
 		int entry = getPaletteEntry(tcolor);
+		
+		int modifiedLightLevel = max(lightLevel, 128);
 	
-		int colorMapOffset = classicLightLevelToColorMapOffset(lightLevel, v2f.PosW, v2f.Normal);
+		int colorMapOffset = classicLightLevelToColorMapOffset(modifiedLightLevel, v2f.PosW, v2f.Normal);
 		vec4 pcolor = getColorMappedColor(entry, colorMapOffset);
 		out.FragColor = pcolor;
 		out.FragColor.a = tcolor.a;
