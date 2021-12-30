@@ -56,7 +56,11 @@ functions
                 {
                     minDist = curDist;
                     entry = curEntry;
-                } 
+                }
+                if (curDist < 1e-3)
+                {
+                    return entry;
+                }
             }
         }
         return entry;
