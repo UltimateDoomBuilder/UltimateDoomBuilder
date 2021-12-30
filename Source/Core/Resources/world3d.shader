@@ -86,9 +86,10 @@ functions
         const int NUMCOLORMAPS = 32;
         const int MAXLIGHTSCALE = 48;
         const int DISTMAP = 2;
-        const int DISTFACTOR = 2560; // this comes from the Eternity engine
         
         int scaledLightLevel = lightLevel >> LIGHTSEGSHIFT;
+        
+        bool isFlat = abs(dot(normal, vec3(0, 0, 1))) > 1e-3; 
         
         if (abs(dot(normal, vec3(0, 1, 0))) < 1e-3)
         {
@@ -99,13 +100,25 @@ functions
             scaledLightLevel--;
         }
         
-        int startmap = int(((LIGHTLEVELS-1-scaledLightLevel)*2)*NUMCOLORMAPS/LIGHTLEVELS);
-        
+        int level;
         float dist = distance(position, campos.xyz);
-        int index = int(DISTFACTOR / dist);
-        if (index >= MAXLIGHTSCALE) index = MAXLIGHTSCALE - 1;
         
-        int level = startmap - index / DISTMAP;
+        if (!isFlat) 
+        {
+            int startmap = int(((LIGHTLEVELS-1-scaledLightLevel)*2)*NUMCOLORMAPS/LIGHTLEVELS);
+            
+            // same calculation as Eternity Engine
+            int index = int(2560.0 / dist);
+            if (index >= MAXLIGHTSCALE) index = MAXLIGHTSCALE - 1;
+            level = startmap - index / DISTMAP;
+        }
+        else
+        {
+            // same calculation as Eternity Engine
+            float startmap = 2.0 * (30.0 - lightLevel / 8.0f);
+            level = int(startmap - (1280.0f / dist)) + 1;
+        }
+        
         
         if (level < 0) level = 0;
         if (level >= NUMCOLORMAPS) level = NUMCOLORMAPS - 1;
