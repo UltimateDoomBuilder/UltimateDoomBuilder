@@ -421,7 +421,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 					
 					orbitPointPicked = true;
 
-					Vector3D pickDelta = start - hitPosition;
+					Vector3D pickDelta = start - orbitPoint;
 					orbitRadius = pickDelta.GetLength();
 					orbitXY = pickDelta.GetNormal().GetAngleXY();
 					orbitZ = -pickDelta.GetNormal().GetAngleZ();
@@ -442,7 +442,17 @@ namespace CodeImp.DoomBuilder.VisualModes
 				
 				Vector3D orbitDelta = Vector3D.FromAngleXYZ(orbitXY, orbitZ);
 
-				General.Map.VisualCamera.Position = orbitPoint - orbitDelta * orbitRadius;
+				Vector3D newPosition = orbitPoint - orbitDelta * orbitRadius;
+				Vector3D positionUpdate = newPosition - General.Map.VisualCamera.Position;
+
+				General.Map.VisualCamera.Position += positionUpdate * General.Map.VisualCamera.MoveMultiplier;
+				start = General.Map.VisualCamera.Position;
+				
+				// Recalculate angles to ensure we're always looking at the orbit point
+				Vector3D updatedDelta = start - orbitPoint;
+				orbitXY = updatedDelta.GetNormal().GetAngleXY();
+				orbitZ = -updatedDelta.GetNormal().GetAngleZ();
+				
 				General.Map.VisualCamera.AngleZ = orbitZ;
 				General.Map.VisualCamera.AngleXY = orbitXY;
 
