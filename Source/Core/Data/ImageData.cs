@@ -714,7 +714,7 @@ namespace CodeImp.DoomBuilder.Data
       }
 
       texture = new Texture(General.Map.Graphics, loadedbitmap);
-      if (indexed)
+      if (wantIndexed)
       {
 	      Bitmap indexedBitmap = CreateIndexedBitmap(loadedbitmap, General.Map.Data.Palette);
 	      indexedTexture = new Texture(General.Map.Graphics, indexedBitmap);
