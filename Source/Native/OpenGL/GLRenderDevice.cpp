@@ -268,6 +268,7 @@ void GLRenderDevice::SetTexture(int unit, Texture* texture)
 	if (mTextureUnit[unit].Tex != texture)
 	{
 		mTextureUnit[unit].Tex = static_cast<GLTexture*>(texture);
+		mTextureUnit[unit].DirtyFlag |= TextureUnitDirtyFlag_Texture;
 		mNeedApply = true;
 		mTexturesChanged = true;
 	}
@@ -275,37 +276,33 @@ void GLRenderDevice::SetTexture(int unit, Texture* texture)
 
 void GLRenderDevice::SetSamplerFilter(int unit, TextureFilter minfilter, TextureFilter magfilter, MipmapFilter mipfilter, float maxanisotropy)
 {
-    // volte:
-    // All this dirty flag stuff is to prefer spurious calls to glSamplerParameter which can cause big performance hits
-    // (particularly with GL_TEXTURE_MAX_ANISOTROPY_EXT, at least on my machine)
-    
     bool dirty = false;
     
     if (mTextureUnit[unit].MinFilter != minfilter) 
     {
         mTextureUnit[unit].MinFilter = minfilter;
-        mTextureUnit[unit].DirtyFlag |= TextureUnitDirtyFlag_MinFilter;
+        mTextureUnit[unit].DirtyFlag |= TextureUnitDirtyFlag_Sampler;
         dirty = true;
     }
     
     if (mTextureUnit[unit].MagFilter != magfilter) 
     {
         mTextureUnit[unit].MagFilter = magfilter;
-        mTextureUnit[unit].DirtyFlag |= TextureUnitDirtyFlag_MagFilter;
+        mTextureUnit[unit].DirtyFlag |= TextureUnitDirtyFlag_Sampler;
         dirty = true;
     }
     
     if (mTextureUnit[unit].MipFilter != mipfilter) 
     {
         mTextureUnit[unit].MipFilter = mipfilter;
-        mTextureUnit[unit].DirtyFlag |= TextureUnitDirtyFlag_MipFilter;
+        mTextureUnit[unit].DirtyFlag |= TextureUnitDirtyFlag_Sampler;
         dirty = true;
     }
 
     if ( mTextureUnit[unit].MaxAnisotropy != maxanisotropy)
     {    
         mTextureUnit[unit].MaxAnisotropy = maxanisotropy;
-        mTextureUnit[unit].DirtyFlag |= TextureUnitDirtyFlag_MaxAnisotropy;
+        mTextureUnit[unit].DirtyFlag |= TextureUnitDirtyFlag_Sampler;
         dirty = true;        
     }
     
@@ -341,12 +338,21 @@ GLint GLRenderDevice::GetGLMinFilter(TextureFilter filter, MipmapFilter mipfilte
 	}
 }
 
+GLRenderDevice::SamplerFilterKey GLRenderDevice::GetSamplerFilterKey(TextureFilter filter, MipmapFilter mipFilter, float maxAnisotropy)
+{
+    SamplerFilterKey key;
+    key.MinFilter = GetGLMinFilter(filter, mipFilter);
+    key.MagFilter = (filter == TextureFilter::Linear) ? GL_LINEAR : GL_NEAREST;
+    key.MaxAnisotropy = maxAnisotropy;
+    return key;
+}
+
 void GLRenderDevice::SetSamplerState(int unit, TextureAddress address)
 {
 	if (mTextureUnit[unit].WrapMode != address)
 	{
 		mTextureUnit[unit].WrapMode = address;
-		mTextureUnit[unit].DirtyFlag |= TextureUnitDirtyFlag_WrapMode;
+    mTextureUnit[unit].DirtyFlag |= TextureUnitDirtyFlag_Sampler;
 		mNeedApply = true;
 		mTexturesChanged = true;
 	}
@@ -932,49 +938,47 @@ bool GLRenderDevice::ApplyTextures()
     for (int index = 0; index < 10; index++)
     {
         TextureUnit &unit = mTextureUnit[index];
-        glActiveTexture(GL_TEXTURE0 + index);
         if (unit.Tex)
         {
+            if (!unit.DirtyFlag)
+            {
+                continue;
+            }
+        
+            glActiveTexture(GL_TEXTURE0 + index);
             GLenum target = unit.Tex->IsCubeTexture() ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
     
-            glBindTexture(target, unit.Tex->GetTexture(this));
-    
-            GLuint& samplerHandle = unit.SamplerHandle;
-            if (samplerHandle == 0)
+            if (unit.DirtyFlag & TextureUnitDirtyFlag_Texture)
             {
-                glGenSamplers(1, &samplerHandle);
-                unit.DirtyFlag = 0xffffffff;
+                glBindTexture(target, unit.Tex->GetTexture(this));
             }
 
-            glBindSampler(index, samplerHandle);
+            if (unit.DirtyFlag & TextureUnitDirtyFlag_Sampler) 
+            {
+                SamplerFilterKey key = GetSamplerFilterKey(unit.MagFilter, unit.MipFilter, unit.MaxAnisotropy);
+                SamplerFilter &filter = mSamplers[key];
+                GLuint &samplerHandle = filter.WrapModes[(int)unit.WrapMode];
 
-            static const int wrapMode[] = { GL_REPEAT, GL_CLAMP_TO_EDGE };
-            static const int filter[] = { GL_NEAREST, GL_LINEAR };
-                            
-            if (unit.DirtyFlag & (TextureUnitDirtyFlag_MinFilter | TextureUnitDirtyFlag_MipFilter))
-            {
-                int minFilter = GetGLMinFilter(unit.MinFilter, unit.MipFilter);
-                glSamplerParameteri(samplerHandle, GL_TEXTURE_MIN_FILTER, minFilter);
+                if (samplerHandle == 0)
+                {
+                    static const int wrapMode[] = { GL_REPEAT, GL_CLAMP_TO_EDGE };
+
+                    glGenSamplers(1, &samplerHandle);
+                    glSamplerParameteri(samplerHandle, GL_TEXTURE_MIN_FILTER, key.MinFilter);
+                    glSamplerParameteri(samplerHandle, GL_TEXTURE_MAG_FILTER, key.MagFilter);
+                    glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_S, wrapMode[(int)unit.WrapMode]);
+                    glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_T, wrapMode[(int)unit.WrapMode]);
+                    glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_R, wrapMode[(int)unit.WrapMode]);
+                    if (key.MaxAnisotropy > 0.0f)
+                        glSamplerParameterf(samplerHandle, GL_TEXTURE_MAX_ANISOTROPY_EXT, key.MaxAnisotropy);
+                }
+
+                if (unit.SamplerHandle != samplerHandle)
+                {
+                    unit.SamplerHandle = samplerHandle;
+                    glBindSampler(index, samplerHandle);
+                }
             }
-            if (unit.DirtyFlag & TextureUnitDirtyFlag_MagFilter)
-            {
-                glSamplerParameteri(samplerHandle, GL_TEXTURE_MAG_FILTER, filter[(int)unit.MagFilter]);
-            }
-            if (unit.DirtyFlag & TextureUnitDirtyFlag_WrapMode) 
-            {
-                glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_S, wrapMode[(int)unit.WrapMode]);
-                glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_T, wrapMode[(int)unit.WrapMode]);
-                glSamplerParameteri(samplerHandle, GL_TEXTURE_WRAP_R, wrapMode[(int)unit.WrapMode]);
-            }
-            if (unit.DirtyFlag & TextureUnitDirtyFlag_MaxAnisotropy)
-            {
-                glSamplerParameterf(samplerHandle, GL_TEXTURE_MAX_ANISOTROPY_EXT, unit.MaxAnisotropy);
-            }
-        }
-        else
-        {
-            glBindTexture(GL_TEXTURE_2D, 0);
-            glBindSampler(index, 0);
         }
         
         unit.DirtyFlag = 0;

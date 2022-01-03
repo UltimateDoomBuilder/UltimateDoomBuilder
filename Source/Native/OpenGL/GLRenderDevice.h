@@ -117,11 +117,8 @@ public:
 	
 	enum TextureUnitDirtyFlag
 	{
-	    TextureUnitDirtyFlag_WrapMode = 1,
-	    TextureUnitDirtyFlag_MinFilter = 2,
-	    TextureUnitDirtyFlag_MagFilter = 4,
-	    TextureUnitDirtyFlag_MipFilter = 8,
-	    TextureUnitDirtyFlag_MaxAnisotropy = 16
+	    TextureUnitDirtyFlag_Sampler = 1,
+	    TextureUnitDirtyFlag_Texture = 2,
 	};
 
 	struct TextureUnit
@@ -146,6 +143,15 @@ public:
 		bool operator==(const SamplerFilterKey& b) const { return memcmp(this, &b, sizeof(SamplerFilterKey)) == 0; }
 		bool operator!=(const SamplerFilterKey& b) const { return memcmp(this, &b, sizeof(SamplerFilterKey)) != 0; }
 	};
+	
+	struct SamplerFilter
+    {
+        GLuint WrapModes[2] = { 0, 0 };
+    };
+
+  std::map<SamplerFilterKey, SamplerFilter> mSamplers;
+
+  SamplerFilterKey GetSamplerFilterKey(TextureFilter filter, MipmapFilter mipFilter, float maxAnisotropy);
 
 	int mVertexBuffer = -1;
 	int64_t mVertexBufferStartIndex = 0;
