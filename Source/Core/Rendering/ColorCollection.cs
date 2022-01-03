@@ -19,6 +19,7 @@
 using System;
 using System.Globalization;
 using System.Drawing;
+using CodeImp.DoomBuilder.Data;
 using Configuration = CodeImp.DoomBuilder.IO.Configuration;
 
 #endregion
@@ -273,6 +274,15 @@ namespace CodeImp.DoomBuilder.Rendering
 				cp->r = correctiontable[cp->r];
 				cp->g = correctiontable[cp->g];
 				cp->b = correctiontable[cp->b];
+			}
+		}
+
+		// This quantizes an image to a PLAYPAL lump, putting indices into an array of integers.
+		internal unsafe void QuantizeColorsToPlaypal(PixelColor* inPixels, int[] indices, Playpal playpal)
+		{
+			for (int i = 0; i < indices.Length; i++)
+			{
+				indices[i] = playpal.FindClosestColor(inPixels[i]);
 			}
 		}
 		

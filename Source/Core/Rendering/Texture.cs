@@ -97,6 +97,7 @@ namespace CodeImp.DoomBuilder.Rendering
         public TextureFormat Format { get; private set; }
 
         public object Tag { get; set; }
+        public int UserData { get; set; }
     }
 
     public class CubeTexture : BaseTexture

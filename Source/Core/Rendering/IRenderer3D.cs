@@ -46,8 +46,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		// Rendering methods
 		int CalculateBrightness(int level);
 		int CalculateBrightness(int level, Sidedef sd); //mxd
-
-		void SetClassicLightingPalette(Playpal palette);
+		
 		void SetClassicLightingColorMap(ColorMap colormap);
 		void SetHighlightedObject(IVisualPickable obj);
 		void AddSectorGeometry(VisualGeometry g);

@@ -93,10 +93,30 @@ namespace CodeImp.DoomBuilder.Data
 				for (int x = 0; x < 16; x++) {
 					int index = 16 * y + x;
 					bitmap.SetPixel(x, y, colors[index].ToColor());
-					Console.WriteLine(bitmap.GetPixel(x, y));
 				}
 			}
 			return bitmap;
+		}
+
+		public int FindClosestColor(PixelColor match)
+		{
+			float minDist = 99999;
+			int minIndex = 0;
+			for (int i = 0; i < colors.Length; i++)
+			{
+				PixelColor color = colors[i];
+				float dr = (float)match.r - (float)color.r;
+				float dg = (float)match.g - (float)color.g;
+				float db = (float)match.b - (float)color.b;
+				float sqDist = dr * dr + dg * dg + db * db;
+				if (sqDist < minDist)
+				{
+					minIndex = i;
+					minDist = sqDist;
+				}
+			}
+
+			return minIndex;
 		}
 
 		#endregion

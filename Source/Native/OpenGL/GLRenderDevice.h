@@ -115,12 +115,6 @@ public:
 		std::vector<GLTexture*> Textures;
 	} mDeleteList;
 	
-	enum TextureUnitDirtyFlag
-	{
-	    TextureUnitDirtyFlag_Sampler = 1,
-	    TextureUnitDirtyFlag_Texture = 2,
-	};
-
 	struct TextureUnit
 	{
 		GLTexture* Tex = nullptr;
@@ -130,7 +124,6 @@ public:
 		TextureFilter MagFilter = TextureFilter::Nearest;
 		MipmapFilter MipFilter = MipmapFilter::None;
 		float MaxAnisotropy = 1;
-		int DirtyFlag = 0;
 	} mTextureUnit[10];
 
 	struct SamplerFilterKey

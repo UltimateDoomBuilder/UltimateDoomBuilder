@@ -66,9 +66,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		//mxd
 		private VisualVertexHandle vertexhandle;
 		private int[] lightOffsets;
-
-		private Playpal classicLightingPalette = null;
-		private Texture classicLightingPaletteTex = null;
+		
 		private Data.ColorMap classicLightingColorMap = null;
 		private Texture classicLightingColorMapTex = null;
 		
@@ -301,23 +299,6 @@ namespace CodeImp.DoomBuilder.Rendering
 			billboard = Matrix.RotationZ((float)(anglexy + Angle2D.PI));
 		}
 		
-		// volte: Set the active palette for classic lighting
-		public void SetClassicLightingPalette(Playpal palette)
-		{
-			if (palette == classicLightingPalette) 
-			{
-				return;
-			}
-			classicLightingPalette = palette;
-			if (classicLightingPalette == null)
-			{
-				classicLightingPaletteTex = null;
-			}
-			else 
-			{
-				classicLightingPaletteTex = new Texture(graphics, classicLightingPalette.CreateBitmap());
-			}
-		}
 		
 		// volte: Set the active colormap for classic lighting
 		public void SetClassicLightingColorMap(Data.ColorMap colormap)
@@ -370,8 +351,10 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetUniform(UniformName.fogcolor, General.Colors.Background.ToColorValue());
 			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
             graphics.SetUniform(UniformName.highlightcolor, new Color4()); //mxd
-            TextureFilter texFilter = General.Settings.VisualBilinear ? TextureFilter.Linear : TextureFilter.Nearest;
-            graphics.SetSamplerFilter(texFilter, texFilter, MipmapFilter.Linear, General.Settings.FilterAnisotropy);
+            TextureFilter texFilter = (!General.Settings.ClassicRendering && General.Settings.VisualBilinear) ? TextureFilter.Linear : TextureFilter.Nearest;
+            MipmapFilter mipFilter = General.Settings.ClassicRendering ? MipmapFilter.None : MipmapFilter.Linear;
+            float aniso = General.Settings.ClassicRendering ? 0 : General.Settings.FilterAnisotropy;
+            graphics.SetSamplerFilter(texFilter, texFilter, mipFilter, aniso);
 
             // Texture addressing
             graphics.SetSamplerState(TextureAddress.Wrap);
@@ -842,14 +825,12 @@ namespace CodeImp.DoomBuilder.Rendering
             bool hadlights = false;
 
             // volte: Set textures for classic lighting
-            if (classicLightingPaletteTex != null && classicLightingColorMap != null)
+            if (classicLightingColorMap != null)
             {
-	            graphics.SetUniform(UniformName.paletteSize, new Vector2i(classicLightingPaletteTex.Width, classicLightingPaletteTex.Height));
 	            graphics.SetUniform(UniformName.colormapSize, new Vector2i(classicLightingColorMapTex.Width, classicLightingColorMapTex.Height));
-	            graphics.SetTexture(classicLightingPaletteTex, 1);
-	            graphics.SetTexture(classicLightingColorMapTex, 2);
+	            graphics.SetTexture(classicLightingColorMapTex, 1);
 	            graphics.SetSamplerFilter(TextureFilter.Nearest, TextureFilter.Nearest, MipmapFilter.None, 0, 1);
-	            graphics.SetSamplerFilter(TextureFilter.Nearest, TextureFilter.Nearest, MipmapFilter.None, 0, 2);
+	            graphics.SetSamplerState(TextureAddress.Clamp, 1);
             }
 
             // Render the geometry collected
@@ -857,9 +838,11 @@ namespace CodeImp.DoomBuilder.Rendering
 			{
 				curtexture = group.Key;
 
-                // Apply texture
-                graphics.SetTexture(curtexture.Texture);
-				
+        // Apply texture
+        Texture texture = General.Settings.ClassicRendering ? curtexture.IndexedTexture : curtexture.Texture;
+        graphics.SetTexture(texture);
+        graphics.SetUniform(UniformName.drawPaletted, texture.UserData == ImageData.TEXTURE_INDEXED);
+
 				//mxd. Sort geometry by sector index
 				group.Value.Sort((g1, g2) => g1.Sector.Sector.FixedIndex - g2.Sector.Sector.FixedIndex);
 
@@ -1001,8 +984,10 @@ namespace CodeImp.DoomBuilder.Rendering
 					
 					curtexture = group.Key;
 
-                    // Apply texture
-                    graphics.SetTexture(curtexture.Texture);
+          // Apply texture
+          Texture texture = General.Settings.ClassicRendering ? curtexture.IndexedTexture : curtexture.Texture;
+          graphics.SetTexture(texture);
+          graphics.SetUniform(UniformName.drawPaletted, texture.UserData == ImageData.TEXTURE_INDEXED);
 
 					// Render all things with this texture
 					foreach(VisualThing t in group.Value)
@@ -1234,8 +1219,11 @@ namespace CodeImp.DoomBuilder.Rendering
 				{
 					curtexture = g.Texture;
 
-                    // Apply texture
-                    graphics.SetTexture(curtexture.Texture);
+					// Apply texture
+					Texture texture = General.Settings.ClassicRendering ? curtexture.IndexedTexture : curtexture.Texture;
+					graphics.SetTexture(texture);
+					graphics.SetUniform(UniformName.drawPaletted, texture.UserData == ImageData.TEXTURE_INDEXED);
+					
 					curtexturename = g.Texture.LongName;
 				}
 
@@ -1366,8 +1354,11 @@ namespace CodeImp.DoomBuilder.Rendering
 					{
 						curtexture = t.Texture;
 
-                        // Apply texture
-                        graphics.SetTexture(curtexture.Texture);
+						// Apply texture
+						Texture texture = General.Settings.ClassicRendering ? curtexture.IndexedTexture : curtexture.Texture;
+						graphics.SetTexture(texture);
+						graphics.SetUniform(UniformName.drawPaletted, texture.UserData == ImageData.TEXTURE_INDEXED);
+						
 						curtexturename = t.Texture.LongName;
 					}
 

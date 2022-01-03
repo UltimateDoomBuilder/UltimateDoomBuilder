@@ -20,7 +20,7 @@ uniforms
 	sampler2D texture3;
 
 	// classic lighting related
-	ivec2 paletteSize;
+	int drawPaletted;
 	ivec2 colormapSize;
 	int lightLevel;
 
@@ -39,47 +39,10 @@ uniforms
 
 functions
 {
-    // Map a color to its nearest palette entry
-    int getPaletteEntry(vec4 color)
-    {
-        int entry = 0;
-        float minDist = 99999;
-        for (int y = 0; y < paletteSize.y; y++)
-        {
-            for (int x = 0; x < paletteSize.x; x++)
-            {
-                int curEntry = y * paletteSize.x + x;
-                vec2 uv = vec2(float(x) / float(paletteSize.x), float(y) / float(paletteSize.y));
-                vec4 palColor = texture(texture2, uv);
-                float curDist = distance(palColor.xyz, color.xyz);
-                if (curDist < minDist)
-                {
-                    minDist = curDist;
-                    entry = curEntry;
-                }
-                if (curDist < 1e-3)
-                {
-                    return entry;
-                }
-            }
-        }
-        return entry;
-    }
-    
-    vec4 getPaletteColor(int entry)
-    {
-        float index = float(entry) + 0.5;
-        float y = index / 16.0;
-        float x = index % 16.0;
-        vec2 uv = vec2(float(x) / float(paletteSize.x), float(y) / float(paletteSize.y));
-        vec4 palColor = texture(texture2, uv);
-        return palColor;
-    }
-
     vec4 getColorMappedColor(int entry, int depth)
     {
         vec2 uv = vec2((float(entry) + 0.5) / colormapSize.x, (float(depth) + 0.5) / colormapSize.y);
-        vec4 colormapColor = texture(texture3, uv);
+        vec4 colormapColor = texture(texture2, uv);
         return colormapColor;
     }
         
@@ -474,12 +437,23 @@ shader world3d_classic extends world3d_main
 {
 	fragment
 	{
-		vec4 tcolor = texture(texture1, v2f.UV);
-		int entry = getPaletteEntry(tcolor);
-	
-		int colorMapOffset = classicLightLevelToColorMapOffset(lightLevel, v2f.PosW, v2f.Normal);
-		out.FragColor = getColorMappedColor(entry, colorMapOffset);
-		out.FragColor.a = tcolor.a;
+        vec4 pcolor;
+		 
+		if (bool(drawPaletted))
+		{
+		    vec4 color = texture(texture1, v2f.UV);
+		    int entry = int(color.r * 255);
+		    float alpha = color.a;
+            int colorMapOffset = classicLightLevelToColorMapOffset(lightLevel, v2f.PosW, v2f.Normal);
+            pcolor = getColorMappedColor(entry, colorMapOffset);
+            pcolor.a = alpha;
+		}
+		else
+		{
+            pcolor = texture(texture1, v2f.UV);
+		}
+		
+		out.FragColor = pcolor;
 		
 		#if defined(ALPHA_TEST)
 		if (out.FragColor.a < 0.5) discard;
@@ -491,17 +465,26 @@ shader world3d_classic_highlight extends world3d_main
 {
 	fragment
 	{
-		vec4 tcolor = texture(texture1, v2f.UV);
-		int entry = getPaletteEntry(tcolor);
+		vec4 pcolor;
+		 
+		if (bool(drawPaletted))
+        {
+            vec4 color = texture(texture1, v2f.UV);
+            int entry = int(color.r * 255);
+            float alpha = color.a;
+            int modifiedLightLevel = max(lightLevel, 128);	
+            int colorMapOffset = classicLightLevelToColorMapOffset(modifiedLightLevel, v2f.PosW, v2f.Normal);
+            pcolor = getColorMappedColor(entry, colorMapOffset);
+            pcolor.a = alpha;
+        }
+        else
+        {
+            pcolor = texture(texture1, v2f.UV);
+        }
 		
-		int modifiedLightLevel = max(lightLevel, 128);
-	
-		int colorMapOffset = classicLightLevelToColorMapOffset(modifiedLightLevel, v2f.PosW, v2f.Normal);
-		vec4 pcolor = getColorMappedColor(entry, colorMapOffset);
 		out.FragColor = pcolor;
-		out.FragColor.a = tcolor.a;
 		
-		if (tcolor.a > 0.0)
+		if (pcolor.a > 0.0)
 		{
 			out.FragColor = vec4(highlightcolor.rgb * highlightcolor.a + (pcolor.rgb - 0.4 * highlightcolor.a), max(pcolor.a + 0.25, 0.5));
 		}

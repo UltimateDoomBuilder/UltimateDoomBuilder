@@ -72,7 +72,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			DeclareUniform(UniformName.slopeHandleLength, "slopeHandleLength", UniformType.Float);
             
             // volte: classic rendering
-            DeclareUniform(UniformName.paletteSize, "paletteSize", UniformType.Vec2i);
+            DeclareUniform(UniformName.drawPaletted, "drawPaletted", UniformType.Int);
             DeclareUniform(UniformName.colormapSize, "colormapSize", UniformType.Vec2i);
             DeclareUniform(UniformName.lightLevel, "lightLevel", UniformType.Int);
 
@@ -800,7 +800,7 @@ namespace CodeImp.DoomBuilder.Rendering
         sectorfogcolor,
         lightsEnabled,
 		slopeHandleLength,
-        paletteSize,
+        drawPaletted,
         colormapSize,
         lightLevel
     }
