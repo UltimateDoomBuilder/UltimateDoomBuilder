@@ -268,7 +268,6 @@ void GLRenderDevice::SetTexture(int unit, Texture* texture)
 	if (mTextureUnit[unit].Tex != texture)
 	{
 		mTextureUnit[unit].Tex = static_cast<GLTexture*>(texture);
-		mTextureUnit[unit].DirtyFlag |= TextureUnitDirtyFlag_Texture;
 		mNeedApply = true;
 		mTexturesChanged = true;
 	}
@@ -281,28 +280,24 @@ void GLRenderDevice::SetSamplerFilter(int unit, TextureFilter minfilter, Texture
     if (mTextureUnit[unit].MinFilter != minfilter) 
     {
         mTextureUnit[unit].MinFilter = minfilter;
-        mTextureUnit[unit].DirtyFlag |= TextureUnitDirtyFlag_Sampler;
         dirty = true;
     }
     
     if (mTextureUnit[unit].MagFilter != magfilter) 
     {
         mTextureUnit[unit].MagFilter = magfilter;
-        mTextureUnit[unit].DirtyFlag |= TextureUnitDirtyFlag_Sampler;
         dirty = true;
     }
     
     if (mTextureUnit[unit].MipFilter != mipfilter) 
     {
         mTextureUnit[unit].MipFilter = mipfilter;
-        mTextureUnit[unit].DirtyFlag |= TextureUnitDirtyFlag_Sampler;
         dirty = true;
     }
 
     if ( mTextureUnit[unit].MaxAnisotropy != maxanisotropy)
     {    
         mTextureUnit[unit].MaxAnisotropy = maxanisotropy;
-        mTextureUnit[unit].DirtyFlag |= TextureUnitDirtyFlag_Sampler;
         dirty = true;        
     }
     
@@ -352,7 +347,6 @@ void GLRenderDevice::SetSamplerState(int unit, TextureAddress address)
 	if (mTextureUnit[unit].WrapMode != address)
 	{
 		mTextureUnit[unit].WrapMode = address;
-    mTextureUnit[unit].DirtyFlag |= TextureUnitDirtyFlag_Sampler;
 		mNeedApply = true;
 		mTexturesChanged = true;
 	}
@@ -970,7 +964,6 @@ bool GLRenderDevice::ApplyTextures()
             }
         }
         
-        unit.DirtyFlag = 0;
         hasError |= CheckGLError();
     }
     
