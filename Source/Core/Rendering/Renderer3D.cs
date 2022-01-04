@@ -140,6 +140,11 @@ namespace CodeImp.DoomBuilder.Rendering
 		public bool ShowSelection { get { return showselection; } set { showselection = value; } }
 		public bool ShowHighlight { get { return showhighlight; } set { showhighlight = value; } }
 		
+		protected bool UseIndexedTexture
+		{
+			get { return General.Settings.ClassicRendering && !fullbrightness; }
+		}
+		
 		#endregion
 
 		#region ================== Constructor / Disposer
@@ -839,7 +844,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				curtexture = group.Key;
 
         // Apply texture
-        Texture texture = General.Settings.ClassicRendering ? curtexture.IndexedTexture : curtexture.Texture;
+        Texture texture = UseIndexedTexture ? curtexture.IndexedTexture : curtexture.Texture;
         graphics.SetTexture(texture);
         graphics.SetUniform(UniformName.drawPaletted, texture.UserData == ImageData.TEXTURE_INDEXED);
 
@@ -985,7 +990,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					curtexture = group.Key;
 
           // Apply texture
-          Texture texture = General.Settings.ClassicRendering ? curtexture.IndexedTexture : curtexture.Texture;
+          Texture texture = UseIndexedTexture ? curtexture.IndexedTexture : curtexture.Texture;
           graphics.SetTexture(texture);
           graphics.SetUniform(UniformName.drawPaletted, texture.UserData == ImageData.TEXTURE_INDEXED);
 
@@ -1220,7 +1225,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					curtexture = g.Texture;
 
 					// Apply texture
-					Texture texture = General.Settings.ClassicRendering ? curtexture.IndexedTexture : curtexture.Texture;
+					Texture texture = UseIndexedTexture ? curtexture.IndexedTexture : curtexture.Texture;
 					graphics.SetTexture(texture);
 					graphics.SetUniform(UniformName.drawPaletted, texture.UserData == ImageData.TEXTURE_INDEXED);
 					
@@ -1355,7 +1360,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						curtexture = t.Texture;
 
 						// Apply texture
-						Texture texture = General.Settings.ClassicRendering ? curtexture.IndexedTexture : curtexture.Texture;
+						Texture texture = UseIndexedTexture ? curtexture.IndexedTexture : curtexture.Texture;
 						graphics.SetTexture(texture);
 						graphics.SetUniform(UniformName.drawPaletted, texture.UserData == ImageData.TEXTURE_INDEXED);
 						
