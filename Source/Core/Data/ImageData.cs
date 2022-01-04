@@ -735,7 +735,6 @@ namespace CodeImp.DoomBuilder.Data
 		{
 			int[] indices = new int[original.Width * original.Height];
 			
-			// We can pack four indexes pixels into one 32-bit pixel of the indexed texture 
 			Bitmap indexed = new Bitmap(original.Width, original.Height, PixelFormat.Format32bppArgb);
 			BitmapData indata = original.LockBits(new Rectangle(0, 0, original.Size.Width, original.Size.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
 			PixelColor* inpixels = (PixelColor*)indata.Scan0.ToPointer();
