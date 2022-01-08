@@ -41,6 +41,7 @@ namespace CodeImp.DoomBuilder.Data
 		#region ================== Properties
 
 		public PixelColor this[int index] { get { return colors[index]; } }
+		public int Length { get { return colors.Length;  } }
 		
 		#endregion
 
@@ -92,7 +93,10 @@ namespace CodeImp.DoomBuilder.Data
 			for (int y = 0; y < 16; y++) {
 				for (int x = 0; x < 16; x++) {
 					int index = 16 * y + x;
-					bitmap.SetPixel(x, y, colors[index].ToColor());
+					if (index < colors.Length)
+					{
+						bitmap.SetPixel(x, y, colors[index].ToColor());						
+					}
 				}
 			}
 			return bitmap;

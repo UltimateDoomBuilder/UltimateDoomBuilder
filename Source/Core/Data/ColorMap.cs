@@ -77,8 +77,15 @@ namespace CodeImp.DoomBuilder.Data
 			{
 				// Read colors
 				var index = reader.ReadByte();
-				var color = palette[index];
-				colors.Add(color);
+				if (index < palette.Length)
+				{
+					var color = palette[index];
+					colors.Add(color);					
+				}
+				else
+				{
+					colors.Add(PixelColor.Transparent);
+				}
 			}
 
 			this.colors = colors.ToArray();
@@ -96,7 +103,10 @@ namespace CodeImp.DoomBuilder.Data
 			for (int y = 0; y < height; y++) {
 				for (int x = 0; x < width; x++) {
 					int index = width * y + x;
-					bitmap.SetPixel(x, y, colors[index].ToColor());
+					if (index < colors.Length)
+					{
+						bitmap.SetPixel(x, y, colors[index].ToColor());						
+					}
 				}
 			}
 			return bitmap;
