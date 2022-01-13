@@ -51,6 +51,7 @@ namespace CodeImp.DoomBuilder.Data
 		protected Vector2D scale;
 		protected bool worldpanning;
 		private bool usecolorcorrection;
+		private bool defercolorcorrection;
 		protected string filepathname; //mxd. Absolute path to the image;
 		protected string shortname; //mxd. Name in uppercase and clamped to DataManager.CLASIC_IMAGE_NAME_LENGTH
 		protected string virtualname; //mxd. Path of this name is used in TextureBrowserForm
@@ -692,34 +693,61 @@ namespace CodeImp.DoomBuilder.Data
 			if (indexed && !wantIndexed)
 			{
 				// indexed texture requested, but we didn't generate it, so we have to reload the image
+				// also switch to deferred color correction if necessary so that the paletted image isn't color corrected
 				ReleaseTexture();
 				imagestate = ImageLoadState.None;
 				wantIndexed = true;
+				defercolorcorrection = usecolorcorrection;
+				usecolorcorrection = false;
 			}
 			
 			if (imagestate == ImageLoadState.Loading)
           return General.Map.Data.LoadingTexture;
       if (loadfailed)
           return General.Map.Data.FailedTexture;
-
+      
       if (imagestate == ImageLoadState.None)
       {
-          General.Map.Data.QueueLoadImage(this);
-          return General.Map.Data.LoadingTexture;
+	      General.Map.Data.QueueLoadImage(this);
+        return General.Map.Data.LoadingTexture;
       }
       
       if (loadedbitmap == null)
       {
 	      return General.Map.Data.LoadingTexture;
       }
-
-      texture = new Texture(General.Map.Graphics, loadedbitmap);
+      
       if (wantIndexed)
       {
 	      Bitmap indexedBitmap = CreateIndexedBitmap(loadedbitmap, General.Map.Data.Palette);
 	      indexedTexture = new Texture(General.Map.Graphics, indexedBitmap);
 	      indexedTexture.UserData = TEXTURE_INDEXED;
       }
+      
+      if (defercolorcorrection)
+      {
+	      BitmapData bmpdata;
+	      try
+	      {
+		      bmpdata = loadedbitmap.LockBits(new Rectangle(0, 0, loadedbitmap.Size.Width, loadedbitmap.Size.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+	      }
+	      catch
+	      {
+		      bmpdata = null;
+	      }
+
+	      // Bitmap locked?
+	      if (bmpdata != null)
+	      {
+		      // Apply color correction
+		      PixelColor* pixels = (PixelColor*)(bmpdata.Scan0.ToPointer());
+		      General.Colors.ApplyColorCorrection(pixels, bmpdata.Width * bmpdata.Height);
+	      }
+	      
+	      loadedbitmap.UnlockBits(bmpdata);
+      }
+      
+      texture = new Texture(General.Map.Graphics, loadedbitmap);
 
       loadedbitmap.Dispose();
       loadedbitmap = null;
