@@ -30,6 +30,7 @@
 		{
 			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
 			this.continuousdrawing = new System.Windows.Forms.ToolStripButton();
+			this.radialdrawing = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.subdivslabel = new System.Windows.Forms.ToolStripLabel();
 			this.subdivs = new CodeImp.DoomBuilder.Controls.ToolStripNumericUpDown();
@@ -47,6 +48,7 @@
 			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.continuousdrawing,
             this.showguidelines,
+            this.radialdrawing,
             this.toolStripSeparator1,
             this.subdivslabel,
             this.subdivs,
@@ -184,6 +186,17 @@
 			this.showguidelines.Text = "Guidelines";
 			this.showguidelines.CheckedChanged += new System.EventHandler(this.showguidelines_CheckedChanged);
 			// 
+			// radialdrawing
+			// 
+			this.radialdrawing.CheckOnClick = true;
+			this.radialdrawing.Image = global::CodeImp.DoomBuilder.BuilderModes.Properties.Resources.Radial;
+			this.radialdrawing.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.radialdrawing.Margin = new System.Windows.Forms.Padding(2, 1, 0, 2);
+			this.radialdrawing.Name = "radialdrawing";
+			this.radialdrawing.Size = new System.Drawing.Size(82, 22);
+			this.radialdrawing.Text = "Radial drawing";
+			this.radialdrawing.CheckedChanged += new System.EventHandler(this.radialdrawing_CheckedChanged);
+			// 
 			// DrawEllipseOptionsPanel
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -207,6 +220,7 @@
 		private CodeImp.DoomBuilder.Controls.ToolStripNumericUpDown spikiness;
 		private System.Windows.Forms.ToolStripButton reset;
 		private System.Windows.Forms.ToolStripButton continuousdrawing;
+		private System.Windows.Forms.ToolStripButton radialdrawing;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ToolStripLabel anglelabel;
 		private CodeImp.DoomBuilder.Controls.ToolStripNumericUpDown angle;

@@ -46,6 +46,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		protected int height;
 		protected int minpointscount;
 		protected bool alwaysrendershapehints;
+		protected bool radialdrawing;
 
 		private bool blockupdate;
 
@@ -102,10 +103,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			panel.OnValueChanged += OptionsPanelOnValueChanged;
 			panel.OnContinuousDrawingChanged += OnContinuousDrawingChanged;
 			panel.OnShowGuidelinesChanged += OnShowGuidelinesChanged;
+			panel.OnRadialDrawingChanged += OnRadialDrawingChanged;
 
 			// Needs to be set after adding the OnContinuousDrawingChanged event...
 			panel.ContinuousDrawing = General.Settings.ReadPluginSetting("drawrectanglemode.continuousdrawing", false);
 			panel.ShowGuidelines = General.Settings.ReadPluginSetting("drawrectanglemode.showguidelines", false);
+			panel.RadialDrawing = General.Settings.ReadPluginSetting("drawrectanglemode.radialdrawing", false);
 		}
 
 		protected override void AddInterface() 
@@ -120,6 +123,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Settings.WritePluginSetting("drawrectanglemode.bevelwidth", bevelwidth);
 			General.Settings.WritePluginSetting("drawrectanglemode.continuousdrawing", panel.ContinuousDrawing);
 			General.Settings.WritePluginSetting("drawrectanglemode.showguidelines", panel.ShowGuidelines);
+			General.Settings.WritePluginSetting("drawrectanglemode.radialdrawing", panel.RadialDrawing);
 
 			// Remove the buttons
 			panel.Unregister();
@@ -317,6 +321,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			if(!p1.pos.IsFinite() || !p2.pos.IsFinite()) return;
 
+			if (radialdrawing)
+			{
+				Vector2D delta = p2.pos - p1.pos;
+				p1.pos -= delta;
+			}
+
 			// Make sure start always stays at left and up from the end
 			if (p1.pos.x < p2.pos.x) 
 			{
@@ -503,6 +513,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			bevelwidth = panel.BevelWidth;
 			subdivisions = panel.Subdivisions;
 			Update();
+		}
+		
+		protected void OnRadialDrawingChanged(object value, EventArgs e)
+		{
+			radialdrawing = (bool)value;
 		}
 
 		#endregion

@@ -8,6 +8,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public event EventHandler OnValueChanged;
 		public event EventHandler OnContinuousDrawingChanged;
 		public event EventHandler OnShowGuidelinesChanged;
+		public event EventHandler OnRadialDrawingChanged;
 
 		private bool blockevents;
 
@@ -20,6 +21,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public int MinSpikiness { get { return (int)spikiness.Minimum; } set { spikiness.Minimum = value; } }
 		public bool ContinuousDrawing { get { return continuousdrawing.Checked; } set { continuousdrawing.Checked = value; } }
 		public bool ShowGuidelines { get { return showguidelines.Checked; } set { showguidelines.Checked = value; } }
+		public bool RadialDrawing { get { return radialdrawing.Checked; } set { radialdrawing.Checked = value; } }
 		
 		public DrawEllipseOptionsPanel() 
 		{
@@ -35,6 +37,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Interface.BeginToolbarUpdate();
 			General.Interface.AddButton(continuousdrawing);
 			General.Interface.AddButton(showguidelines);
+			General.Interface.AddButton(radialdrawing);
 			General.Interface.AddButton(toolStripSeparator1);
 			General.Interface.AddButton(subdivslabel);
 			General.Interface.AddButton(subdivs);
@@ -59,6 +62,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Interface.RemoveButton(toolStripSeparator1);
 			General.Interface.RemoveButton(showguidelines);
 			General.Interface.RemoveButton(continuousdrawing);
+			General.Interface.RemoveButton(radialdrawing);
 			General.Interface.EndToolbarUpdate();
 		}
 
@@ -88,6 +92,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private void showguidelines_CheckedChanged(object sender, EventArgs e)
 		{
 			if(OnShowGuidelinesChanged != null) OnShowGuidelinesChanged(showguidelines.Checked, EventArgs.Empty);
+		}
+		
+		private void radialdrawing_CheckedChanged(object sender, EventArgs e)
+		{
+			if(OnRadialDrawingChanged != null) OnRadialDrawingChanged(radialdrawing.Checked, EventArgs.Empty);
 		}
 	}
 }
