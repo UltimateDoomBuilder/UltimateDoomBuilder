@@ -156,8 +156,17 @@ namespace CodeImp.DoomBuilder.Rendering.Shaders
                     output += string.Format("layout(location = {0}) ", location);
                 }
 
-                output += prefix + " ";
-                output += field.TypeName;
+                string typeName = field.TypeName;
+                string flat = "";
+
+                if (typeName.EndsWith("_flat"))
+                {
+                    flat = "flat ";
+                    typeName = typeName.Remove(typeName.Length - 5, 5);
+                }
+
+                output += flat + prefix + " ";
+                output += typeName;
 
                 if (field.ArrayDimensions != null)
                 {

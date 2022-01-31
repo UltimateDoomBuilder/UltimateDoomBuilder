@@ -22,7 +22,8 @@ uniforms
 	// classic lighting related
 	int drawPaletted;
 	ivec2 colormapSize;
-	int lightLevel;
+	int doomlightlevels;
+	int sectorLightLevel;
 
 	// dynamic light related
 	vec4 lightPosAndRadius[64];
@@ -45,8 +46,18 @@ functions
         vec4 colormapColor = texture(texture2, uv);
         return colormapColor;
     }
+    
+    int lightLevelFromVertexColor(vec3 color)
+    {
+        float result = max(max(color.r, color.g), color.b) * 255;
+        if (result < 192 && doomlightlevels > 0) {
+            // correct for darkening in Doom light mode
+            result = -0.666667 * (-96 - result);
+        }
+        return int(result);
+    }
         
-    int classicLightLevelToColorMapOffset(int lightLevel, vec3 position, vec3 normal)
+    int classicLightLevelToColorMapOffset(int lightLevel, vec3 position, vec3 normal, bool hvmod)
     {
         const int LIGHTLEVELS = 16;
         const int LIGHTSEGSHIFT = 4;
@@ -58,13 +69,15 @@ functions
         
         bool isFlat = abs(dot(normal, vec3(0, 0, 1))) > 1e-3; 
         
-        if (abs(dot(normal, vec3(0, 1, 0))) < 1e-3)
-        {
-            scaledLightLevel++;
-        }
-        else if (abs(dot(normal, vec3(1, 0, 0))) < 1e-3)
-        {
-            scaledLightLevel--;
+        if (hvmod) {
+            if (abs(dot(normal, vec3(0, 1, 0))) < 1e-3)
+            {
+                scaledLightLevel++;
+            }
+            else if (abs(dot(normal, vec3(1, 0, 0))) < 1e-3)
+            {
+                scaledLightLevel--;
+            }
         }
         
         int level;
@@ -86,7 +99,7 @@ functions
             level = int(startmap - (1280.0f / dist)) + 1;
         }
         
-        
+       
         if (level < 0) level = 0;
         if (level >= NUMCOLORMAPS) level = NUMCOLORMAPS - 1;
         return level;
@@ -187,6 +200,8 @@ shader world3d_main
 		vec3 PosW;
 		vec3 Normal;
 		vec4 viewpos;
+		vec3_flat flatNormal;
+		vec4_flat flatColor;
 	}
 
 	out
@@ -202,6 +217,8 @@ shader world3d_main
 		v2f.Color = in.Color;
 		v2f.UV = in.TextureCoordinate;
 		v2f.Normal = normalize((modelnormal * vec4(in.Normal, 1.0)).xyz);
+		v2f.flatColor = in.Color;
+		v2f.flatNormal = normalize(in.Normal);
 	}
 	
 	fragment
@@ -444,7 +461,8 @@ shader world3d_classic extends world3d_main
 		    vec4 color = texture(texture1, v2f.UV);
 		    int entry = int(color.r * 255);
 		    float alpha = color.a;
-            int colorMapOffset = classicLightLevelToColorMapOffset(lightLevel, v2f.PosW, v2f.Normal);
+		    int lightLevel = lightLevelFromVertexColor(v2f.flatColor.rgb);
+            int colorMapOffset = classicLightLevelToColorMapOffset(lightLevel, v2f.PosW, v2f.flatNormal, false);
             pcolor = getColorMappedColor(entry, colorMapOffset);
             pcolor.a = alpha;
 		}
@@ -472,8 +490,9 @@ shader world3d_classic_highlight extends world3d_main
             vec4 color = texture(texture1, v2f.UV);
             int entry = int(color.r * 255);
             float alpha = color.a;
-            int modifiedLightLevel = max(lightLevel, 128);	
-            int colorMapOffset = classicLightLevelToColorMapOffset(modifiedLightLevel, v2f.PosW, v2f.Normal);
+            int lightLevel = lightLevelFromVertexColor(v2f.flatColor.rgb);
+            int modifiedLightLevel = max(lightLevel, 128);	 
+            int colorMapOffset = classicLightLevelToColorMapOffset(modifiedLightLevel, v2f.PosW, v2f.flatNormal, false);
             pcolor = getColorMappedColor(entry, colorMapOffset);
             pcolor.a = alpha;
         }

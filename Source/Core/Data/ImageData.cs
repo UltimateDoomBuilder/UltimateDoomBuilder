@@ -308,7 +308,7 @@ namespace CodeImp.DoomBuilder.Data
             // Do the loading
             LocalLoadResult loadResult = LocalLoadImage();
 
-            MakeUncorrectedImage(loadResult, usecolorcorrection);
+            MakeUncorrectedImage(loadResult);
             ConvertImageFormat(loadResult, usecolorcorrection);
             MakeImagePreview(loadResult);
             MakeAlphaTestImage(loadResult);
@@ -603,20 +603,12 @@ namespace CodeImp.DoomBuilder.Data
         // Dimensions of a single preview image
         const int MAX_PREVIEW_SIZE = 256; //mxd
 
-        // This makes a copy of the image before color correction or, if color correction is disabled for this image,
-        // just references the original bitmap.
-        private void MakeUncorrectedImage(LocalLoadResult loadResult, bool usecolorcorrection)
+        // This makes a copy of the image before color correction
+        private void MakeUncorrectedImage(LocalLoadResult loadResult)
         {
 	        if (loadResult.bitmap == null)
 		        return;
-	        if (usecolorcorrection)
-	        {
-		        loadResult.uncorrected = new Bitmap(loadResult.bitmap);
-	        }
-	        else
-	        {
-		        loadResult.uncorrected = loadResult.bitmap;
-	        }
+	        loadResult.uncorrected = new Bitmap(loadResult.bitmap);
         }
 
         // This makes a preview for the given image and updates the image settings

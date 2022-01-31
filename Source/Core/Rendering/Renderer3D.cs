@@ -355,6 +355,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetUniform(UniformName.fogsettings, new Vector4f(-1.0f));
 			graphics.SetUniform(UniformName.fogcolor, General.Colors.Background.ToColorValue());
 			graphics.SetUniform(UniformName.texturefactor, new Color4(1f, 1f, 1f, 1f));
+			graphics.SetUniform(UniformName.doomlightlevels, General.Map.Config.DoomLightLevels);
             graphics.SetUniform(UniformName.highlightcolor, new Color4()); //mxd
             TextureFilter texFilter = (!General.Settings.ClassicRendering && General.Settings.VisualBilinear) ? TextureFilter.Linear : TextureFilter.Nearest;
             MipmapFilter mipFilter = General.Settings.ClassicRendering ? MipmapFilter.None : MipmapFilter.Linear;
@@ -950,7 +951,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						}
 						
 						// volte: set sector light level for classic rendering mode
-						graphics.SetUniform(UniformName.lightLevel, sector.Sector.Brightness);
+						graphics.SetUniform(UniformName.sectorLightLevel, sector.Sector.Brightness);
 
 						//mxd. Set variables for fog rendering?
 						if(wantedshaderpass > ShaderName.world3d_p7)
@@ -1060,7 +1061,7 @@ namespace CodeImp.DoomBuilder.Rendering
 							// Set the colors to use
 							if (t.Thing.Sector != null)
 							{
-								graphics.SetUniform(UniformName.lightLevel, t.Thing.Sector.Brightness);
+								graphics.SetUniform(UniformName.sectorLightLevel, t.Thing.Sector.Brightness);
 								graphics.SetUniform(UniformName.sectorfogcolor, t.Thing.Sector.FogColor);
 							}
                             graphics.SetUniform(UniformName.vertexColor, vertexcolor);
