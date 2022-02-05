@@ -418,8 +418,8 @@ namespace CodeImp.DoomBuilder.Config
 
 				// volte
 				classicRendering = cfg.ReadSetting("classicrendering", false);
-				alwaysShowVertices = cfg.ReadSetting("alwaysShowVertices", true);
-				flatShadeVertices = cfg.ReadSetting("flatShadeVertices", false);
+				alwaysShowVertices = cfg.ReadSetting("alwaysshowvertices", true);
+				flatShadeVertices = cfg.ReadSetting("flatshadevertices", false);
 				
 				//mxd. Sector defaults
 				defaultceilheight = cfg.ReadSetting("defaultceilheight", 128);
@@ -563,8 +563,8 @@ namespace CodeImp.DoomBuilder.Config
 
 			//volte
 			cfg.WriteSetting("classicrendering", classicRendering);
-			cfg.WriteSetting("alwaysShowVertices", alwaysShowVertices);
-			cfg.WriteSetting("flatShadeVertices", flatShadeVertices);
+			cfg.WriteSetting("alwaysshowvertices", alwaysShowVertices);
+			cfg.WriteSetting("flatshadevertices", flatShadeVertices);
 			
 			//mxd. Sector defaults
 			cfg.WriteSetting("defaultceilheight", defaultceilheight);
