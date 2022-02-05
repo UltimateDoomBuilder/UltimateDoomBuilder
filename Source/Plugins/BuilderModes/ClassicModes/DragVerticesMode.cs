@@ -48,7 +48,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		#endregion
 
 		#region ================== Properties
-		
+
+		public override bool AlwaysShowVertices
+		{
+			get { return true; }
+		}
+
 		#endregion
 
 		#region ================== Constructor / Disposer

@@ -51,6 +51,8 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 		public Vector2D[] Vertices { get { return verts; } }
 		public Subsector[] Subsectors { get { return ssectors; } }
 		public NodesForm Form { get { return form; } }
+		
+		public override bool AlwaysShowVertices { get { return true;  } }
 
 		#endregion
 

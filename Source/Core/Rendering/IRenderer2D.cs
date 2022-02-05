@@ -64,9 +64,9 @@ namespace CodeImp.DoomBuilder.Rendering
 		void PlotLinedefSet(ICollection<Linedef> linedefs);
 		void PlotSector(Sector s);
 		void PlotSector(Sector s, PixelColor c);
-		void PlotVertex(Vertex v, int colorindex);
-		void PlotVertexAt(Vector2D v, int colorindex);
-		void PlotVerticesSet(ICollection<Vertex> vertices);
+		void PlotVertex(Vertex v, int colorindex, bool checkMode = true);
+		void PlotVertexAt(Vector2D v, int colorindex, bool checkMode = true);
+		void PlotVerticesSet(ICollection<Vertex> vertices, bool checkMode = true);
 		void RenderThing(Thing t, PixelColor c, float alpha);
 		void RenderThingSet(ICollection<Thing> things, float alpha);
 		void RenderRectangle(RectangleF rect, float bordersize, PixelColor c, bool transformrect);

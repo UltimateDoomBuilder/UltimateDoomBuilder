@@ -128,23 +128,26 @@ namespace CodeImp.DoomBuilder.Rendering
                     for (int xp = x1; xp <= x2; xp++)
                         pixels[yp * width + xp] = c;
 
-                // Vertical edges
-                for (int yp = y1 + 1; yp <= y2 - 1; yp++)
+                if (!General.Settings.FlatShadeVertices)
                 {
-                    pixels[yp * width + x1] = l;
-                    pixels[yp * width + x2] = d;
-                }
+                    // Vertical edges
+                    for (int yp = y1 + 1; yp <= y2 - 1; yp++)
+                    {
+                        pixels[yp * width + x1] = l;
+                        pixels[yp * width + x2] = d;
+                    }
 
-                // Horizontal edges
-                for (int xp = x1 + 1; xp <= x2 - 1; xp++)
-                {
-                    pixels[y1 * width + xp] = l;
-                    pixels[y2 * width + xp] = d;
-                }
+                    // Horizontal edges
+                    for (int xp = x1 + 1; xp <= x2 - 1; xp++)
+                    {
+                        pixels[y1 * width + xp] = l;
+                        pixels[y2 * width + xp] = d;
+                    }
 
-                // Corners
-                pixels[y2 * width + x2] = d;
-                pixels[y1 * width + x1] = l;
+                    // Corners
+                    pixels[y2 * width + x2] = d;
+                    pixels[y1 * width + x1] = l;
+                }
             }
             /*
 			else

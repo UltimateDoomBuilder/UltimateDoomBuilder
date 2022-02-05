@@ -148,6 +148,8 @@ namespace CodeImp.DoomBuilder.Config
 		
 		//volte
 		private bool classicRendering;
+		private bool flatShadeVertices;
+		private bool alwaysShowVertices;
 		
 		// These are not stored in the configuration, only used at runtime
 		private int defaultbrightness;
@@ -276,6 +278,10 @@ namespace CodeImp.DoomBuilder.Config
 		
 		//volte
 		public bool ClassicRendering { get { return classicRendering; } internal set { classicRendering = value; } }
+
+		public bool FlatShadeVertices {  get { return flatShadeVertices; } internal set { flatShadeVertices = value;  } }
+
+		public bool AlwaysShowVertices {  get { return alwaysShowVertices; } internal set { alwaysShowVertices = value; } }
 
 		//mxd. Left here for compatibility reasons...
 		public string DefaultTexture { get { return General.Map != null ? General.Map.Options.DefaultWallTexture : "-"; } set { if(General.Map != null) General.Map.Options.DefaultWallTexture = value; } }
@@ -412,6 +418,8 @@ namespace CodeImp.DoomBuilder.Config
 
 				// volte
 				classicRendering = cfg.ReadSetting("classicrendering", false);
+				alwaysShowVertices = cfg.ReadSetting("alwaysShowVertices", true);
+				flatShadeVertices = cfg.ReadSetting("flatShadeVertices", false);
 				
 				//mxd. Sector defaults
 				defaultceilheight = cfg.ReadSetting("defaultceilheight", 128);
@@ -555,6 +563,8 @@ namespace CodeImp.DoomBuilder.Config
 
 			//volte
 			cfg.WriteSetting("classicrendering", classicRendering);
+			cfg.WriteSetting("alwaysShowVertices", alwaysShowVertices);
+			cfg.WriteSetting("flatShadeVertices", flatShadeVertices);
 			
 			//mxd. Sector defaults
 			cfg.WriteSetting("defaultceilheight", defaultceilheight);

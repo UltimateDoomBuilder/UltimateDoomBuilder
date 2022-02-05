@@ -288,6 +288,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.modecontrolsloolbar = new System.Windows.Forms.ToolStrip();
 			this.itemtogglecomments = new System.Windows.Forms.ToolStripMenuItem();
 			this.itemtogglefixedthingsscale = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemtogglealwaysshowvertices = new System.Windows.Forms.ToolStripMenuItem();
 			this.itemdynamicgridsize = new System.Windows.Forms.ToolStripMenuItem();
 			this.itemaligngridtolinedef = new System.Windows.Forms.ToolStripMenuItem();
 			this.itemsetgridorigintovertex = new System.Windows.Forms.ToolStripMenuItem();
@@ -795,6 +796,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.itemtogglegrid,
 			this.itemtogglecomments,
 			this.itemtogglefixedthingsscale,
+			this.itemtogglealwaysshowvertices,
 			this.separatorrendering,
 			this.itemdynlightmodes,
 			this.itemmodelmodes,
@@ -2831,6 +2833,17 @@ namespace CodeImp.DoomBuilder.Windows
 			this.itemtogglefixedthingsscale.Text = "Fixed Things Scale";
 			this.itemtogglefixedthingsscale.Click += new System.EventHandler(this.InvokeTaggedAction);
 			// 
+			// itemtogglealwaysshowvertices
+			// 
+			this.itemtogglealwaysshowvertices.Checked = true;
+			this.itemtogglealwaysshowvertices.CheckOnClick = true;
+			this.itemtogglealwaysshowvertices.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.itemtogglealwaysshowvertices.Name = "itemtogglealwaysshowvertices";
+			this.itemtogglealwaysshowvertices.Size = new System.Drawing.Size(215, 22);
+			this.itemtogglealwaysshowvertices.Tag = "builder_togglealwaysshowvertices";
+			this.itemtogglealwaysshowvertices.Text = "Always Show Vertices";
+			this.itemtogglealwaysshowvertices.Click += new System.EventHandler(this.InvokeTaggedAction);
+			// 
 			// itemdynamicgridsize
 			// 
 			this.itemdynamicgridsize.Checked = true;
@@ -3136,5 +3149,6 @@ namespace CodeImp.DoomBuilder.Windows
 		private ToolStripMenuItem itemdynamicgridsize;
 		private ToolStripMenuItem itemtogglecomments;
 		private ToolStripMenuItem itemtogglefixedthingsscale;
+		private ToolStripMenuItem itemtogglealwaysshowvertices;
 	}
 }

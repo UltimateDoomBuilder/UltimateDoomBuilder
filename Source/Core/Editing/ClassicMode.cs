@@ -89,6 +89,9 @@ namespace CodeImp.DoomBuilder.Editing
 
 		#region ================== Properties
 		
+		// If false, then vertices will not be drawn if "hide vertices outside vertex mode" is enabled
+		public virtual bool AlwaysShowVertices { get { return false;  } }
+		
 		// Mouse status
 		public Vector2D MousePos { get { return mousepos; } }
 		public Vector2D MouseLastPos { get { return mouselastpos; } }

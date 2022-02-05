@@ -66,6 +66,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.label26 = new System.Windows.Forms.Label();
 			this.label31 = new System.Windows.Forms.Label();
 			this.cbMarkExtraFloors = new System.Windows.Forms.CheckBox();
+			this.cbFlatShadeVertices = new System.Windows.Forms.CheckBox();
 			this.label32 = new System.Windows.Forms.Label();
 			this.label30 = new System.Windows.Forms.Label();
 			this.cbOldHighlightMode = new System.Windows.Forms.CheckBox();
@@ -285,7 +286,7 @@ namespace CodeImp.DoomBuilder.Windows
 			groupBox1.Controls.Add(this.defaultviewmode);
 			groupBox1.Location = new System.Drawing.Point(8, 8);
 			groupBox1.Name = "groupBox1";
-			groupBox1.Size = new System.Drawing.Size(331, 438);
+			groupBox1.Size = new System.Drawing.Size(331, 462);
 			groupBox1.TabIndex = 0;
 			groupBox1.TabStop = false;
 			groupBox1.Text = " Options ";
@@ -636,6 +637,17 @@ namespace CodeImp.DoomBuilder.Windows
         " color.");
 			this.cbMarkExtraFloors.UseVisualStyleBackColor = true;
 			// 
+			// cbFlatShadeVertices
+			// 
+			this.cbFlatShadeVertices.AutoSize = true;
+			this.cbFlatShadeVertices.Location = new System.Drawing.Point(18, 489);
+			this.cbFlatShadeVertices.Name = "cbFlatShadeVertices";
+			this.cbFlatShadeVertices.Size = new System.Drawing.Size(175, 17);
+			this.cbFlatShadeVertices.TabIndex = 1;
+			this.cbFlatShadeVertices.Text = "Flat shade vertices";
+			this.toolTip1.SetToolTip(this.cbFlatShadeVertices, "When enabled, vertices in classic mode will be drawn with flat shading instead of a raised border.");
+			this.cbFlatShadeVertices.UseVisualStyleBackColor = true;
+			// 
 			// label32
 			// 
 			this.label32.AutoSize = true;
@@ -712,7 +724,7 @@ namespace CodeImp.DoomBuilder.Windows
 			// apply
 			// 
 			this.apply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.apply.Location = new System.Drawing.Point(467, 548);
+			this.apply.Location = new System.Drawing.Point(467, 573);
 			this.apply.Name = "apply";
 			this.apply.Size = new System.Drawing.Size(112, 25);
 			this.apply.TabIndex = 0;
@@ -724,7 +736,7 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			this.cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.cancel.Location = new System.Drawing.Point(585, 548);
+			this.cancel.Location = new System.Drawing.Point(585, 573);
 			this.cancel.Name = "cancel";
 			this.cancel.Size = new System.Drawing.Size(112, 25);
 			this.cancel.TabIndex = 1;
@@ -747,7 +759,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.tabs.Name = "tabs";
 			this.tabs.Padding = new System.Drawing.Point(24, 3);
 			this.tabs.SelectedIndex = 0;
-			this.tabs.Size = new System.Drawing.Size(688, 527);
+			this.tabs.Size = new System.Drawing.Size(688, 552);
 			this.tabs.TabIndex = 0;
 			this.tabs.SelectedIndexChanged += new System.EventHandler(this.tabs_SelectedIndexChanged);
 			// 
@@ -1203,7 +1215,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.fieldofviewlabel.Name = "fieldofviewlabel";
 			this.fieldofviewlabel.Size = new System.Drawing.Size(23, 13);
 			this.fieldofviewlabel.TabIndex = 19;
-			this.fieldofviewlabel.Text = "50°";
+			this.fieldofviewlabel.Text = "50Â°";
 			// 
 			// label4
 			// 
@@ -1428,6 +1440,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.appearancegroup1.Controls.Add(this.activethingsalphalabel);
 			this.appearancegroup1.Controls.Add(this.label31);
 			this.appearancegroup1.Controls.Add(this.cbMarkExtraFloors);
+			this.appearancegroup1.Controls.Add(this.cbFlatShadeVertices);
 			this.appearancegroup1.Controls.Add(this.activethingsalpha);
 			this.appearancegroup1.Controls.Add(this.hiddenthingsalphalabel);
 			this.appearancegroup1.Controls.Add(this.label32);
@@ -2393,7 +2406,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.CancelButton = this.cancel;
-			this.ClientSize = new System.Drawing.Size(709, 585);
+			this.ClientSize = new System.Drawing.Size(709, 610);
 			this.Controls.Add(this.cancel);
 			this.Controls.Add(this.apply);
 			this.Controls.Add(this.tabs);
@@ -2559,6 +2572,7 @@ namespace CodeImp.DoomBuilder.Windows
 		private CodeImp.DoomBuilder.Controls.ColorControl color3dFloors;
 		private System.Windows.Forms.TextBox actiondescription;
 		private System.Windows.Forms.CheckBox cbMarkExtraFloors;
+		private System.Windows.Forms.CheckBox cbFlatShadeVertices;
 		private CodeImp.DoomBuilder.Controls.TransparentTrackBar recentFiles;
 		private System.Windows.Forms.Label labelRecentFiles;
 		private System.Windows.Forms.Label label25;

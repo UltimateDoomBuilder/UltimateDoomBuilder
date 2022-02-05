@@ -2951,6 +2951,19 @@ namespace CodeImp.DoomBuilder.Windows
 			// Redraw display to show changes
 			RedrawDisplay();
 		}
+		
+		//mxd. Action to toggle fixed things scale
+		[BeginAction("togglealwaysshowvertices")]
+		internal void ToggleAlwaysShowVertices()
+		{
+			General.Settings.AlwaysShowVertices = !General.Settings.AlwaysShowVertices;
+			itemtogglealwaysshowvertices.Checked = General.Settings.AlwaysShowVertices;
+			
+			DisplayStatus(StatusType.Action, "Always show vertices is " + (General.Settings.AlwaysShowVertices ? "ENABLED" : "DISABLED"));
+
+			// Redraw display to show changes
+			RedrawDisplay();
+		}
 
 		// Action to toggle snap to grid
 		[BeginAction("togglesnap")]

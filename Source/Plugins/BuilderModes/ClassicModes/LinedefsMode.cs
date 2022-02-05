@@ -77,7 +77,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		#region ================== Properties
 
 		public override object HighlightedObject { get { return highlighted; } }
-		
+
+		public override bool AlwaysShowVertices { get { return true; } }
+
 		#endregion
 
 		#region ================== Constructor / Disposer
