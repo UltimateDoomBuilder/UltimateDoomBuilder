@@ -401,10 +401,12 @@ namespace CodeImp.DoomBuilder.Windows
 			this.vertexScale.LargeChange = 1;
 			this.vertexScale.Location = new System.Drawing.Point(127, 119);
 			this.vertexScale.Minimum = 1;
+			this.vertexScale.Maximum = 40;
 			this.vertexScale.Name = "vertexScale";
 			this.vertexScale.Size = new System.Drawing.Size(116, 45);
 			this.vertexScale.TabIndex = 4;
 			this.vertexScale.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
+			this.vertexScale.TickFrequency = 4;
 			this.vertexScale.Value = 1;
 			this.vertexScale.ValueChanged += new System.EventHandler(this.vertexScale_ValueChanged);
 			// 
