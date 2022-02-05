@@ -125,10 +125,22 @@ namespace CodeImp.DoomBuilder.Rendering
 		public SurfaceManager Surfaces { get { return surfaces; } }
 		public RectangleF Viewport { get { return viewport; } } //mxd
 
+		private bool ShouldRenderVertices
+		{
+			get
+			{
+				if (!(General.Editing.Mode is ClassicMode mode))
+				{
+					return true;
+				}
+				return mode.AlwaysShowVertices || General.Settings.AlwaysShowVertices;
+			}
+		}
+
 		#endregion
 
 		#region ================== Constructor / Disposer
-		
+
 		// Constructor
 		internal Renderer2D(RenderDevice graphics) : base(graphics)
 		{
@@ -2154,18 +2166,6 @@ namespace CodeImp.DoomBuilder.Rendering
 			
 			// Go for all vertices
 			foreach(Vertex v in vertices) PlotVertex(v, DetermineVertexColor(v));
-		}
-
-		private bool ShouldRenderVertices
-		{
-			get
-			{
-				if (!(General.Editing.Mode is ClassicMode mode))
-				{
-					return true; 
-				}
-				return mode.AlwaysShowVertices || General.Settings.AlwaysShowVertices;
-			}
 		}
 
 		#endregion
