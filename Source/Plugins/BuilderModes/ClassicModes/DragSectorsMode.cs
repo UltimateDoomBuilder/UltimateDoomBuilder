@@ -170,7 +170,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Draw the dragged item highlighted
 				// This is important to know, because this item is used
 				// for snapping to the grid and snapping to nearest items
-				renderer.PlotVertex(dragitem, ColorCollection.HIGHLIGHT);
+				renderer.PlotVertex(dragitem, ColorCollection.HIGHLIGHT, false);
 				
 				// Done
 				renderer.Finish();
