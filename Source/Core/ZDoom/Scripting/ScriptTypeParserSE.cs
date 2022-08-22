@@ -9,17 +9,17 @@ using CodeImp.DoomBuilder.Data;
 //mxd. Parser used to determine which script type given text is.
 namespace CodeImp.DoomBuilder.ZDoom.Scripting
 {
-	internal sealed class ScriptTypeParserSE : ZDTextParser 
+	internal sealed class ScriptTypeParserSE : ZDTextParser
 	{
 		internal override ScriptType ScriptType { get { return scripttype; } }
 		private ScriptType scripttype;
 
-		internal ScriptTypeParserSE() 
+		internal ScriptTypeParserSE()
 		{
 			scripttype = ScriptType.UNKNOWN;
 		}
-		
-		public override bool Parse(TextResourceData data, bool clearerrors) 
+
+		public override bool Parse(TextResourceData data, bool clearerrors)
 		{
 			//mxd. Already parsed?
 			if(!base.AddTextResource(data))
@@ -32,23 +32,23 @@ namespace CodeImp.DoomBuilder.ZDoom.Scripting
 			if(!base.Parse(data, clearerrors)) return false;
 
 			// Continue until at the end of the stream
-			while(SkipWhitespace(true)) 
+			while(SkipWhitespace(true))
 			{
 				string token = ReadToken();
                 long cpos = datastream.Position;
 
-				if(!string.IsNullOrEmpty(token)) 
+				if(!string.IsNullOrEmpty(token))
 				{
 					token = token.ToUpperInvariant();
 
-					if(token == "MODEL") 
+					if(token == "MODEL")
 					{
 						SkipWhitespace(true);
 						ReadToken(); //should be model name
 						SkipWhitespace(true);
 						token = ReadToken();//should be opening brace
-						
-						if(token == "{") 
+
+						if(token == "{")
 						{
 							scripttype = ScriptType.MODELDEF;
 							return true;
@@ -63,8 +63,8 @@ namespace CodeImp.DoomBuilder.ZDoom.Scripting
 						ReadToken(); //should be script parameters/type
 						SkipWhitespace(true);
 						token = ReadToken(); //should be opening brace
-						
-						if(token == "{") 
+
+						if(token == "{")
 						{
 							scripttype = ScriptType.ACS;
 							return true;
@@ -80,7 +80,7 @@ namespace CodeImp.DoomBuilder.ZDoom.Scripting
 						token = ReadToken();
 
                         // [ZZ] note: original code compared token to REPLACES without doing ToUpper
-						if(token == ":" || token == "{" || (token != null && token.ToUpperInvariant() == "REPLACES")) 
+						if(token == ":" || token == "{" || (token != null && token.ToUpperInvariant() == "REPLACES"))
 						{
 							scripttype = ScriptType.DECORATE;
 							return true;
@@ -96,7 +96,7 @@ namespace CodeImp.DoomBuilder.ZDoom.Scripting
                             token = ReadToken();
                         }
 
-						if(token == "{") 
+						if(token == "{")
 						{
 							scripttype = ScriptType.DECORATE;
 							return true;
@@ -120,7 +120,7 @@ namespace CodeImp.DoomBuilder.ZDoom.Scripting
                         SkipWhitespace(true);
                         token = ReadToken();
 
-                        if ((otoken != "ENUM" && token == ":") || token == "{" || (otoken == "CLASS" && (token != null && token.ToUpperInvariant() == "REPLACES")))
+                        if ((otoken != "ENUM" && (token == ":" || token == ";")) || token == "{" || (otoken == "CLASS" && (token != null && token.ToUpperInvariant() == "REPLACES")))
                         {
                             scripttype = ScriptType.ZSCRIPT;
                             return true;
@@ -129,7 +129,7 @@ namespace CodeImp.DoomBuilder.ZDoom.Scripting
                         SkipWhitespace(true);
                         token = ReadToken(); //should be actor name
 
-                        if (token == "{")
+                        if (token == "{" || token == ";")
                         {
                             scripttype = ScriptType.ZSCRIPT;
                             return true;
