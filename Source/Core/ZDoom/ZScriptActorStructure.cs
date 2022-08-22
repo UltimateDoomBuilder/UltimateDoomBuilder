@@ -522,10 +522,10 @@ namespace CodeImp.DoomBuilder.ZDoom
 
 			mixins = new List<string>();
 
-            ZScriptToken cls_open = tokenizer.ExpectToken(ZScriptTokenType.OpenCurly);
+            ZScriptToken cls_open = tokenizer.ExpectToken(ZScriptTokenType.OpenCurly, ZScriptTokenType.Semicolon);
             if (cls_open == null || !cls_open.IsValid)
             {
-                parser.ReportError("Expected {, got " + ((Object)cls_open ?? "<null>").ToString());
+                parser.ReportError("Expected { or ;, got " + ((Object)cls_open ?? "<null>").ToString());
                 return;
             }
 
@@ -562,8 +562,15 @@ namespace CodeImp.DoomBuilder.ZDoom
                 ZScriptToken token = tokenizer.ExpectToken(ZScriptTokenType.Identifier, ZScriptTokenType.CloseCurly);
                 if (token == null || !token.IsValid)
                 {
-                    parser.ReportError("Expected identifier, got " + ((Object)cls_open ?? "<null>").ToString());
-                    return;
+                    if(token == null && cls_open.Type == ZScriptTokenType.Semicolon)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        parser.ReportError("Expected identifier, got " + ((Object)cls_open ?? "<null>").ToString());
+                        return;
+                    }
                 }
                 if (token.Type == ZScriptTokenType.CloseCurly) // end of class
                     break;
@@ -900,7 +907,7 @@ namespace CodeImp.DoomBuilder.ZDoom
                     else if (arraylen != -1) _args = " [" + arraylen.ToString() + "]";
                     parser.LogWarning(string.Format("{0} {1} {2}{3}", string.Join(" ", modifiers.ToArray()), string.Join(", ", types.ToArray()), name, _args));
                 }*/
-                
+
                 // update 08.02.17: add user variables from ZScript actors.
                 if (args == null && types.Count == 1) // it's a field
                 {

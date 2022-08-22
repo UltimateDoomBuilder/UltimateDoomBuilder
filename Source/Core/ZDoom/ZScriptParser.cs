@@ -262,10 +262,10 @@ namespace CodeImp.DoomBuilder.ZDoom
             string localtextresourcepath = textresourcepath; //mxd
             ZScriptTokenizer localtokenizer = tokenizer; // [ZZ]
 
-            //INFO: ZDoom DECORATE include paths can't be relative ("../actor.txt") 
-            //or absolute ("d:/project/actor.txt") 
+            //INFO: ZDoom DECORATE include paths can't be relative ("../actor.txt")
+            //or absolute ("d:/project/actor.txt")
             //or have backward slashes ("info\actor.txt")
-            //include paths are relative to the first parsed entry, not the current one 
+            //include paths are relative to the first parsed entry, not the current one
             //also include paths may or may not be quoted
             //mxd. Sanity checks
             if (string.IsNullOrEmpty(filename))
@@ -353,7 +353,7 @@ namespace CodeImp.DoomBuilder.ZDoom
                     datastream.Position = cpos;
                     return ol;
                 }
-                
+
                 if (token.Type == ZScriptTokenType.OpenParen)
                 {
                     nestingLevel++;
@@ -374,10 +374,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 
         internal bool SkipBlock(bool eatSemicolon = true)
         {
-            List<ZScriptToken> ol = new List<ZScriptToken>();
-            //
             int nestingLevel = 0;
-            //
             long cpos = datastream.Position;
             ZScriptToken token = tokenizer.ExpectToken(ZScriptTokenType.OpenCurly);
             if (token == null || !token.IsValid)
@@ -415,14 +412,72 @@ namespace CodeImp.DoomBuilder.ZDoom
                         return false;
                     }
                 }
-
-                ol.Add(token);
             }
 
             // there is POTENTIALLY a semicolon after the class definition. it's not supposed to be there, but it's acceptable (GZDoom.pk3 has this)
             cpos = datastream.Position;
             ZScriptToken tailtoken = tokenizer.ReadToken();
             if (tailtoken == null || !eatSemicolon || tailtoken.Type != ZScriptTokenType.Semicolon)
+                datastream.Position = cpos;
+
+            return true;
+        }
+
+        internal bool SkipClassBlock()
+        {
+            int nestingLevel = 0;
+            long cpos = datastream.Position;
+            ZScriptToken token = tokenizer.ExpectToken(ZScriptTokenType.OpenCurly, ZScriptTokenType.Semicolon);
+            bool semico = token.Type == ZScriptTokenType.Semicolon;
+            if (token == null || !token.IsValid)
+            {
+                ReportError("Expected { or ;, got " + ((Object)token ?? "<null>").ToString());
+                return false;
+            }
+
+            // parse everything between { and } or ; and eof
+            nestingLevel = 1;
+            while (nestingLevel > 0)
+            {
+                cpos = datastream.Position;
+                token = tokenizer.ReadToken(true);
+                //LogWarning(token.ToString());
+                if (token == null)
+                {
+                    if (semico)
+                    {
+                        nestingLevel--;
+                        break;
+                    }
+                    else
+                    {
+                        ReportError("Expected a token");
+                        return false;
+                    }
+                }
+
+                if (token.Type != ZScriptTokenType.Invalid)
+                    continue;
+
+                if (token.Value == "{")
+                {
+                    nestingLevel++;
+                }
+                else if (token.Value == "}")
+                {
+                    nestingLevel--;
+                    if (nestingLevel < 0)
+                    {
+                        ReportError("Closing parenthesis without an opening one");
+                        return false;
+                    }
+                }
+            }
+
+            // there is POTENTIALLY a semicolon after the class definition. it's not supposed to be there, but it's acceptable (GZDoom.pk3 has this)
+            cpos = datastream.Position;
+            ZScriptToken tailtoken = tokenizer.ReadToken();
+            if (tailtoken == null || tailtoken.Type != ZScriptTokenType.Semicolon)
                 datastream.Position = cpos;
 
             return true;
@@ -748,7 +803,7 @@ namespace CodeImp.DoomBuilder.ZDoom
                         return false;
                     }
                 }
-                else if (token.Type == ZScriptTokenType.OpenCurly)
+                else if (token.Type == ZScriptTokenType.Semicolon || token.Type == ZScriptTokenType.OpenCurly)
                 {
                     datastream.Position--;
                     break;
@@ -760,7 +815,7 @@ namespace CodeImp.DoomBuilder.ZDoom
             long cpos = datastream.Position;
             //List<ZScriptToken> classblocktokens = ParseBlock(false);
             //if (classblocktokens == null) return false;
-            if (!SkipBlock()) return false;
+            if (!SkipClassBlock()) return false;
 
             string log_inherits = ((tok_parentname != null) ? "inherits " + tok_parentname.Value : "");
             if (tok_replacename != null) log_inherits += ((log_inherits.Length > 0) ? ", " : "") + "replaces " + tok_replacename.Value;
@@ -1113,7 +1168,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 								}
 
 								// [ZZ] inherit arguments from game configuration
-								//      
+								//
 								if (!actor.props.ContainsKey("$clearargs"))
 								{
 									for (int i = 0; i < 5; i++)
