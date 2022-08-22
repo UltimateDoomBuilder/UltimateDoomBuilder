@@ -507,6 +507,33 @@ namespace CodeImp.DoomBuilder.ZDoom
 			return version;
 		}
 
+		private string ParseAction()
+		{
+			string[] actioncontexts = new string[] { "actor", "overlay", "weapon", "item" };
+			tokenizer.SkipWhitespace();
+			ZScriptToken token = tokenizer.ExpectToken(ZScriptTokenType.OpenParen);
+			if (token == null || !token.IsValid)
+			{
+				return "default";
+			}
+			tokenizer.SkipWhitespace();
+			token = tokenizer.ExpectToken(ZScriptTokenType.Identifier);
+			if (token == null || !token.IsValid || !actioncontexts.Contains(token.Value.ToLowerInvariant()))
+			{
+				parser.ReportError("Expected actor, overlay, weapon, or item, got " + ((Object)token ?? "<null>").ToString());
+				return null;
+			}
+			string context = token.Value.Trim();
+			tokenizer.SkipWhitespace();
+			token = tokenizer.ExpectToken(ZScriptTokenType.CloseParen);
+			if (token == null || !token.IsValid)
+			{
+				parser.ReportError("Expected ), got " + ((Object)token ?? "<null>").ToString());
+				return null;
+			}
+			return context;
+		}
+
 		internal ZScriptActorStructure(ZDTextParser zdparser, DecorateCategoryInfo catinfo, string _classname, string _replacesname, string _parentname)
         {
             this.catinfo = catinfo; //mxd
@@ -667,6 +694,13 @@ namespace CodeImp.DoomBuilder.ZDoom
                         {
                             string version = ParseVersion(b_lower == "version"); // deprecated doesn't require version string for historical reasons. (compatibility with old gzdoom.pk3)
                             if (version == null && b_lower == "version")
+                                return;
+                        }
+
+                        if (b_lower == "action")
+                        {
+                            string context = ParseAction().ToLowerInvariant();
+                            if (context == null)
                                 return;
                         }
 
