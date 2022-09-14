@@ -284,13 +284,33 @@ namespace CodeImp.DoomBuilder.ZDoom
                 return false;
             }
 
-            //mxd. Relative paths are not supported
-            if (filename.StartsWith(RELATIVE_PATH_MARKER) || filename.StartsWith(CURRENT_FOLDER_PATH_MARKER) ||
-                filename.StartsWith(ALT_RELATIVE_PATH_MARKER) || filename.StartsWith(ALT_CURRENT_FOLDER_PATH_MARKER))
-            {
-                ReportError("Relative include paths are not supported by ZDoom");
-                return false;
-            }
+			// [JD] Relative paths are supported by GZDoom since 4.8.0
+			if (filename.StartsWith(RELATIVE_PATH_MARKER) || filename.StartsWith(CURRENT_FOLDER_PATH_MARKER) ||
+				filename.StartsWith(ALT_RELATIVE_PATH_MARKER) || filename.StartsWith(ALT_CURRENT_FOLDER_PATH_MARKER))
+			{
+				List<string> pathTokens = localsourcename.Split('\\', '/').ToList();	// take full path of current source file, split to individual folders
+				pathTokens.RemoveAt(pathTokens.Count - 1);			// remove filename itself
+				pathTokens.AddRange(filename.Split('\\', '/'));			// add relative path
+				pathTokens.RemoveAll(token => token.Equals(".", StringComparison.InvariantCulture));	// remove all "." folders from the path
+
+				for (int i = 0; i < pathTokens.Count; i++)
+				{
+					if (pathTokens[i].Equals("..", StringComparison.InvariantCulture))	// for each "..": remove them and previous folder from the path
+					{
+						if (i == 0)	// cannot have ".." at start of full path
+						{
+							ReportError("Relative path escaping archive");
+							return false;
+						}
+
+						pathTokens.RemoveAt(i);
+						pathTokens.RemoveAt(i - 1);
+						i -= 2;
+					}
+				}
+
+				filename = string.Join("/", pathTokens);	// combine the included file path
+			}
 
             //mxd. Backward slashes are not supported
             if (filename.Contains("\\"))
