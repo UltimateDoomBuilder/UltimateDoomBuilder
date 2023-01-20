@@ -249,13 +249,33 @@ namespace CodeImp.DoomBuilder.ZDoom
                 if (internal_type == null)
                     return null;
                 tokenizer.SkipWhitespace();
-                token = tokenizer.ExpectToken(ZScriptTokenType.OpGreaterThan);
-                if (token == null || !token.IsValid)
+                token = tokenizer.ReadToken();
+                if (token == null || (token.Type != ZScriptTokenType.OpGreaterThan && token.Type != ZScriptTokenType.Comma))
                 {
-                    parser.ReportError("Expected >, got " + ((Object)token ?? "<null>").ToString());
+                    parser.ReportError("Expected > or ,, got " + ((Object)token ?? "<null>").ToString());
                     return null;
                 }
-                return outs + "<" + internal_type + ">";
+                else if (token.Type == ZScriptTokenType.OpGreaterThan)
+                {
+                    return outs + "<" + internal_type + ">";
+                }
+                else
+                {
+                    tokenizer.SkipWhitespace();
+                    string second_internal_type = ParseTypeName();
+                    if (second_internal_type == null)
+                        return null;
+
+                    tokenizer.SkipWhitespace();
+                    token = tokenizer.ExpectToken(ZScriptTokenType.OpGreaterThan);
+                    if (token == null || !token.IsValid)
+                    {
+                        parser.ReportError("Expected >, got " + ((Object)token ?? "<null>").ToString());
+                        return null;
+                    }
+
+                    return outs + "<" + internal_type + "," + second_internal_type + ">";
+                }
             }
             else
             {
