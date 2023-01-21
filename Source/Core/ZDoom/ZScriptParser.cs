@@ -513,14 +513,14 @@ namespace CodeImp.DoomBuilder.ZDoom
             return true;
         }
 
-        internal List<ZScriptToken> ParseBlock(bool allowsingle)
+        internal List<ZScriptToken> ParseBlock(bool allowsingle, ZScriptToken skipRead = null)
         {
             List<ZScriptToken> ol = new List<ZScriptToken>();
             //
             int nestingLevel = 0;
             //
             long cpos = datastream.Position;
-            ZScriptToken token = tokenizer.ReadToken();
+            ZScriptToken token = skipRead ?? tokenizer.ReadToken();
             if (token == null)
             {
                 ReportError("Expected a code block, got <null>");
@@ -630,7 +630,26 @@ namespace CodeImp.DoomBuilder.ZDoom
                 return false;
             }
             tokenizer.SkipWhitespace();
-            if (ParseBlock(false) == null) return false; // anything between { and }
+            token = tokenizer.ReadToken();
+            if (token == null)
+            {
+                ReportError("Expected a code block or integer type for enum, got <null>");
+                return false;
+            }
+            else if (token.Type == ZScriptTokenType.Colon)
+            {
+                tokenizer.SkipWhitespace();
+                token = tokenizer.ExpectToken(ZScriptTokenType.Identifier);
+                if (token == null || !token.IsValid)
+                {
+                    ReportError("Expected an integer type, got " + ((Object)token ?? "<null>").ToString());
+                    return false;
+                }
+
+                tokenizer.SkipWhitespace();
+                token = tokenizer.ReadToken();
+            }
+            if (ParseBlock(false, token) == null) return false; // anything between { and }
             //LogWarning(string.Format("Parsed enum {0}", token.Value));
             return true;
         }
