@@ -1,4 +1,4 @@
-
+﻿
 #region ================== Copyright (c) 2007 Pascal vd Heiden
 
 /*
@@ -336,7 +336,7 @@ namespace CodeImp.DoomBuilder.Windows
 		// This makes a beep sound
 		public void MessageBeep(MessageBeepType type)
 		{
-			General.MessageBeep(type);
+			SysCall.MessageBeep(type);
 		}
 
 		// This sets up the interface
@@ -493,14 +493,14 @@ namespace CodeImp.DoomBuilder.Windows
 		internal void LockUpdate()
 		{
 			lockupdatecount++;
-			if(lockupdatecount == 1) General.LockWindowUpdate(this.Handle);
+			if(lockupdatecount == 1) SysCall.LockWindowUpdate(this.Handle);
 		}
 
 		// This unlocks for updating
 		internal void UnlockUpdate()
 		{
 			lockupdatecount--;
-			if(lockupdatecount == 0) General.LockWindowUpdate(IntPtr.Zero);
+			if(lockupdatecount == 0) SysCall.LockWindowUpdate(IntPtr.Zero);
 			if(lockupdatecount < 0) lockupdatecount = 0;
 		}
 
@@ -4452,7 +4452,7 @@ namespace CodeImp.DoomBuilder.Windows
                 }
 
                 if (notify)
-                    General.InvokeUIActions(this);
+                    SysCall.InvokeUIActions(this);
             }
         }
 

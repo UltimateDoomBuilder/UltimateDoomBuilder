@@ -3,7 +3,6 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Config;
 using CodeImp.DoomBuilder.GZBuilder.Data;
@@ -19,9 +18,6 @@ namespace CodeImp.DoomBuilder.Controls
 	public partial class ArgumentsControl : UserControl
 	{
 		#region ================== Native stuff
-
-		[DllImport("user32.dll")]
-		private static extern int SendMessage(IntPtr hWnd, Int32 wMsg, bool wParam, Int32 lParam);
 		
 		private const int WM_SETREDRAW = 11;
 
@@ -497,12 +493,12 @@ namespace CodeImp.DoomBuilder.Controls
 
 		private void BeginUpdate()
 		{
-			SendMessage(this.Parent.Handle, WM_SETREDRAW, false, 0);
+            SysCall.SendMessage(this.Parent.Handle, WM_SETREDRAW, false, 0);
 		}
 
 		private void EndUpdate()
 		{
-			SendMessage(this.Parent.Handle, WM_SETREDRAW, true, 0);
+            SysCall.SendMessage(this.Parent.Handle, WM_SETREDRAW, true, 0);
 			this.Parent.Refresh();
 		}
 

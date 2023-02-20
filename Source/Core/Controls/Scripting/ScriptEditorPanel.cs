@@ -358,7 +358,7 @@ namespace CodeImp.DoomBuilder.Controls
 			}
 			else
 			{
-				General.MessageBeep(MessageBeepType.Default);
+                SysCall.MessageBeep(MessageBeepType.Default);
 				return false;
 			}
 		}
@@ -386,7 +386,7 @@ namespace CodeImp.DoomBuilder.Controls
 			} 
 			else 
 			{
-				General.MessageBeep(MessageBeepType.Default);
+                SysCall.MessageBeep(MessageBeepType.Default);
 				return false;
 			}
 		}
@@ -962,11 +962,11 @@ namespace CodeImp.DoomBuilder.Controls
 				else if(t.Config.Compiler != null) //mxd
 					buttoncompile_Click(this, EventArgs.Empty);
 				else
-					General.MessageBeep(MessageBeepType.Default);
+                    SysCall.MessageBeep(MessageBeepType.Default);
 			}
 			else
 			{
-				General.MessageBeep(MessageBeepType.Default);
+                SysCall.MessageBeep(MessageBeepType.Default);
 			}
 		}
 		
@@ -1007,7 +1007,7 @@ namespace CodeImp.DoomBuilder.Controls
 				case ScriptStatusType.Warning:
 					if(!newstatus.displayed)
 					{
-						General.MessageBeep(MessageBeepType.Warning);
+						SysCall.MessageBeep(MessageBeepType.Warning);
 						statusflasher.Interval = MainForm.WARNING_FLASH_INTERVAL;
 						statusflashcount = MainForm.WARNING_FLASH_COUNT;
 						statusflasher.Start();
@@ -1466,12 +1466,12 @@ namespace CodeImp.DoomBuilder.Controls
 
 		private void searchnext_Click(object sender, EventArgs e)
 		{
-			if(!ActiveTab.FindNext(GetQuickSearchOptions(), false)) General.MessageBeep(MessageBeepType.Default);
+			if(!ActiveTab.FindNext(GetQuickSearchOptions(), false)) SysCall.MessageBeep(MessageBeepType.Default);
 		}
 
 		private void searchprev_Click(object sender, EventArgs e) 
 		{
-			if(!ActiveTab.FindPrevious(GetQuickSearchOptions())) General.MessageBeep(MessageBeepType.Default);
+			if(!ActiveTab.FindPrevious(GetQuickSearchOptions())) SysCall.MessageBeep(MessageBeepType.Default);
 		}
 
 		// This flashes the status icon

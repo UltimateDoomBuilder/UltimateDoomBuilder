@@ -242,6 +242,7 @@
     <Compile Include="Dehacked\DehackedParser.cs" />
     <Compile Include="Dehacked\DehackedThing.cs" />
     <Compile Include="General\SHA256Hash.cs" />
+    <Compile Include="General\SysCall.cs" />
     <Compile Include="General\ToastManager.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

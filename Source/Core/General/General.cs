@@ -24,7 +24,6 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Text;
@@ -47,10 +46,11 @@ namespace CodeImp.DoomBuilder
 {
 	public static class General
 	{
-		#region ================== API Declarations and Mono compatibility
+
+        #region ================== Mono compatibility
 
 #if MONO_WINFORMS
-		public static void ApplyMonoListViewFix(System.Windows.Forms.ListView listview)
+        public static void ApplyMonoListViewFix(System.Windows.Forms.ListView listview)
 		{
 			if (listview.View == System.Windows.Forms.View.List)
 			{
@@ -68,71 +68,6 @@ namespace CodeImp.DoomBuilder
 #else
 		public static void ApplyMonoListViewFix(System.Windows.Forms.ListView listview) {}
 		public static void ApplyDataGridViewFix(System.Windows.Forms.DataGridView gridview) {}
-#endif
-
-#if NO_WIN32
-
-	internal static void InvokeUIActions(MainForm mainform)
-    {
-		// This implementation really should work universally, but it seemed to hang sometimes on Windows.
-		// Let's hope the mono implementation of Winforms works better.
-		mainform.Invoke(new System.Action(() => { mainform.ProcessQueuedUIActions(); }));
-	}
-
-	internal static bool MessageBeep(MessageBeepType type)
-	{
-		System.Media.SystemSounds.Beep.Play();
-		return true;
-	}
-
-	internal static bool LockWindowUpdate(IntPtr hwnd)
-	{
-		// This can be safely ignored. It is a performance/flicker optimization. It might not even be needed on Windows anymore.
-		return true;
-	}
-
-	internal unsafe static void ZeroPixels(PixelColor* pixels, int size)
-	{
-		var transparent = new PixelColor(0,0,0,0);
-		for (int i = 0; i < size; i++)
-			pixels[i] = transparent;
-	}
-
-	internal static void SetComboBoxItemHeight(ComboBox combobox, int height)
-	{
-		// Only used by FieldsEditorControl. Not sure what its purpose is, might only be visual adjustment that isn't strictly needed?
-	}
-
-#else
-		[DllImport("user32.dll")]
-		internal static extern bool LockWindowUpdate(IntPtr hwnd);
-
-		[DllImport("kernel32.dll", EntryPoint = "RtlZeroMemory", SetLastError = false)]
-		static extern void ZeroMemory(IntPtr dest, int size);
-
-		internal unsafe static void ZeroPixels(PixelColor* pixels, int size) { ZeroMemory(new IntPtr(pixels), size * sizeof(PixelColor)); }
-
-		[DllImport("user32.dll", EntryPoint = "SendMessage", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
-		static extern int SendMessage(IntPtr hwnd, uint Msg, IntPtr wParam, IntPtr lParam);
-
-		internal static void SetComboBoxItemHeight(ComboBox combobox, int height)
-		{
-			SendMessage(combobox.Handle, General.CB_SETITEMHEIGHT, new IntPtr(-1), new IntPtr(height));
-		}
-
-		[DllImport("user32.dll", EntryPoint = "PostMessage", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
-        static extern int PostMessage(IntPtr hwnd, uint Msg, IntPtr wParam, IntPtr lParam);
-
-		internal static void InvokeUIActions(MainForm mainform)
-        {
-			PostMessage(mainform.Handle, General.WM_UIACTION, IntPtr.Zero, IntPtr.Zero);
-		}
-
-		[DllImport("user32.dll", SetLastError = true)]
-		internal static extern bool MessageBeep(MessageBeepType type);
-
-		[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-		private static extern uint GetShortPathName([MarshalAs(UnmanagedType.LPTStr)] string longpath, [MarshalAs(UnmanagedType.LPTStr)]StringBuilder shortpath, uint buffersize);
 #endif
 
 		#endregion
@@ -2167,7 +2102,7 @@ namespace CodeImp.DoomBuilder
 #else
 			const int maxlen = 256;
 			StringBuilder shortname = new StringBuilder(maxlen);
-			GetShortPathName(longpath, shortname, maxlen);
+			SysCall.GetShortPathName(longpath, shortname, maxlen);
 			return shortname.ToString();
 #endif
 		}

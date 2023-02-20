@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Actions;
 using CodeImp.DoomBuilder.BuilderModes.Interface;
@@ -48,16 +47,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 	}
 
 	public class BuilderPlug : Plug
-	{
-		#region ================== API Declarations
-
-		[DllImport("user32.dll")]
-		internal static extern int GetWindowLong(IntPtr hWnd, int nIndex);
-		
-		#endregion
-		
+	{		
 		#region ================== Constants
-
+        
 		internal const int WS_HSCROLL = 0x100000;
 		internal const int WS_VSCROLL = 0x200000;
 		internal const int GWL_STYLE = -16;

@@ -435,9 +435,9 @@ namespace CodeImp.DoomBuilder
 
 			// Play a sound for warnings and errors
 			if (type == ToastType.WARNING)
-				General.MessageBeep(MessageBeepType.Warning);
+				SysCall.MessageBeep(MessageBeepType.Warning);
 			else if (type == ToastType.ERROR)
-				General.MessageBeep(MessageBeepType.Error);
+				SysCall.MessageBeep(MessageBeepType.Error);
 		}
 
 		#endregion

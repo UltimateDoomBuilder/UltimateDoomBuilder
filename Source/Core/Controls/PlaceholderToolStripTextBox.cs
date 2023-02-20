@@ -2,7 +2,6 @@
 
 using System;
 using System.Drawing;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 #endregion
@@ -13,13 +12,6 @@ namespace CodeImp.DoomBuilder.Controls
 	[ToolboxBitmap(typeof(ToolStripTextBox))]
 	public class PlaceholderToolStripTextBox : ToolStripTextBox
 	{
-		#region ================== DLL Imports
-
-		[DllImport("user32.dll", CharSet = CharSet.Auto)]
-		private static extern int SendMessage(IntPtr hWnd, int msg, int wParam, string lParam);
-
-		#endregion
-
 		#region ================== Constants
 
 		private const int EM_SETCUEBANNER = 0x1501;
@@ -70,7 +62,7 @@ namespace CodeImp.DoomBuilder.Controls
 		private void UpdatePlaceholderText()
 		{
 			#if !MONO_WINFORMS
-			SendMessage(Control.Handle, EM_SETCUEBANNER, 0, placeholder);
+			SysCall.SendMessage(Control.Handle, EM_SETCUEBANNER, 0, placeholder);
 			#endif
 		}
 

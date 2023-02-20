@@ -1,4 +1,4 @@
-
+﻿
 #region ================== Copyright (c) 2007 Pascal vd Heiden
 
 /*
@@ -288,7 +288,7 @@ namespace CodeImp.DoomBuilder.Editing
 			else
 			{
 				// Copy not allowed
-				General.MessageBeep(MessageBeepType.Warning);
+				SysCall.MessageBeep(MessageBeepType.Warning);
 			}
 			
 			// Aborted
@@ -410,14 +410,14 @@ namespace CodeImp.DoomBuilder.Editing
                     //      note that this is a hack and probably needs to be fixed properly by making it beep elsewhere so that the current active mode can decide this.
                     if (!(General.Editing.Mode is VisualMode))
                     {
-                        General.MessageBeep(MessageBeepType.Warning);
+                        SysCall.MessageBeep(MessageBeepType.Warning);
                     }
                 }
 			}
 			else
 			{
 				// Paste not allowed
-				General.MessageBeep(MessageBeepType.Warning);
+				SysCall.MessageBeep(MessageBeepType.Warning);
 			}
 		}
 		
@@ -470,7 +470,7 @@ namespace CodeImp.DoomBuilder.Editing
 			else
 			{
 				// Paste not allowed
-				General.MessageBeep(MessageBeepType.Warning);
+				SysCall.MessageBeep(MessageBeepType.Warning);
 			}
 		}
 		
@@ -524,7 +524,7 @@ namespace CodeImp.DoomBuilder.Editing
 				else
 				{
 					// Can't make a prefab right now
-					General.MessageBeep(MessageBeepType.Warning);
+					SysCall.MessageBeep(MessageBeepType.Warning);
 				}
 				
 				// Done
@@ -534,7 +534,7 @@ namespace CodeImp.DoomBuilder.Editing
 			else
 			{
 				// Create prefab not allowed
-				General.MessageBeep(MessageBeepType.Warning);
+				SysCall.MessageBeep(MessageBeepType.Warning);
 			}
 		}
 		
@@ -598,7 +598,7 @@ namespace CodeImp.DoomBuilder.Editing
 			else
 			{
 				// Insert not allowed
-				General.MessageBeep(MessageBeepType.Warning);
+				SysCall.MessageBeep(MessageBeepType.Warning);
 			}
 		}
 		
@@ -654,20 +654,20 @@ namespace CodeImp.DoomBuilder.Editing
 					}
 					else
 					{
-						General.MessageBeep(MessageBeepType.Warning);
+						SysCall.MessageBeep(MessageBeepType.Warning);
 						lastprefabfile = null;
 						General.MainWindow.UpdateInterface();
 					}
 				}
 				else
 				{
-					General.MessageBeep(MessageBeepType.Warning);
+					SysCall.MessageBeep(MessageBeepType.Warning);
 				}
 			}
 			else
 			{
 				// Insert not allowed
-				General.MessageBeep(MessageBeepType.Warning);
+				SysCall.MessageBeep(MessageBeepType.Warning);
 			}
 		}
 		

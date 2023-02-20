@@ -27,16 +27,27 @@ namespace CodeImp.DoomBuilder.Controls
 {
 	public class OptimizedListView : ListView
 	{
-		#region ================== API Declarations
+        #region ================== API Declarations
 
-		[DllImport("user32.dll")]
+#if NO_WIN32
+
+        private static int SendMessage(IntPtr window, int message, int wParam, ref LVGROUP lParam)
+        {
+            return 0;
+        }
+
+#else
+
+        [DllImport("user32.dll")]
 		private static extern int SendMessage(IntPtr window, int message, int wParam, ref LVGROUP lParam);
 
-		#endregion
+#endif
 
-		#region ================== Structs
+        #endregion
 
-		[StructLayout(LayoutKind.Sequential)]
+        #region ================== Structs
+
+        [StructLayout(LayoutKind.Sequential)]
 		private struct LVGROUP
 		{
 			public int cbSize;
@@ -53,9 +64,9 @@ namespace CodeImp.DoomBuilder.Controls
 			public int uAlign;
 		}
 
-		#endregion
+#endregion
 
-		#region ================== Enums
+#region ================== Enums
 
 		[Flags]
 		private enum GroupState
@@ -65,16 +76,16 @@ namespace CodeImp.DoomBuilder.Controls
 			EXPANDED = 0
 		}
 
-		#endregion
+#endregion
 
-		#region ================== Delegates
+#region ================== Delegates
 
 		private delegate bool CallBackSetGroupCollapsible(ListViewGroup group, bool collapsed);
 		private delegate bool CallBackGetGroupCollapsed(ListViewGroup group);
 
-		#endregion
+#endregion
 
-		#region ================== Constructor
+#region ================== Constructor
 
 		// Constructor
 		public OptimizedListView()
@@ -83,9 +94,9 @@ namespace CodeImp.DoomBuilder.Controls
 			SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 		}
 
-		#endregion
+#endregion
 
-		#region ================== Methods
+#region ================== Methods
 
 		//mxd. Collapsible groups support. Created using http://www.codeproject.com/Articles/31276/Add-Group-Collapse-Behavior-on-a-Listview-Control as a reference
 		public bool SetGroupCollapsed(ListViewGroup group, bool collapsed) 
@@ -154,6 +165,6 @@ namespace CodeImp.DoomBuilder.Controls
 			}
 		}
 
-		#endregion
+#endregion
 	}
 }

@@ -193,7 +193,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private void UpdateColumnSizes()
 		{
 			// Check if a vertical scrollbar exists and adjust the column in the listbox accordingly
-			if((BuilderPlug.GetWindowLong(list.Handle, BuilderPlug.GWL_STYLE) & BuilderPlug.WS_VSCROLL) != 0)
+			if((SysCall.GetWindowLong(list.Handle, BuilderPlug.GWL_STYLE) & BuilderPlug.WS_VSCROLL) != 0)
 				coldescription.Width = list.ClientRectangle.Width - 2;
 			else
 				coldescription.Width = list.ClientRectangle.Width - SystemInformation.VerticalScrollBarWidth - 2;

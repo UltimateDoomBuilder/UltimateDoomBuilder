@@ -602,7 +602,7 @@ namespace CodeImp.DoomBuilder.Controls
 						enumscombo.Location = new Point(cellrect.Left, cellrect.Top);
 						enumscombo.Width = cellrect.Width;
 						int internalheight = cellrect.Height - (enumscombo.Height - enumscombo.ClientRectangle.Height) - 6;
-						General.SetComboBoxItemHeight(enumscombo, internalheight);
+                        SysCall.SetComboBoxItemHeight(enumscombo, internalheight);
 						
 						// Select the value of this field (for DropDownList style combo)
 						foreach(EnumItem i in enumscombo.Items)
