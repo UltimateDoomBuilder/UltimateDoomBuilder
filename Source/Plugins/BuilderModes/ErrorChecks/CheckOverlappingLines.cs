@@ -63,9 +63,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Check if not already done
 				if(!donelines.ContainsKey(l))
 				{
-					// Temporary line
-					Line2D tl = l.Line;
-
 					// And go for all the linedefs that could overlap
 					List<BlockEntry> blocks = blockmap.GetLineBlocks(l.Start.Position, l.End.Position);
 					Dictionary<Linedef, Linedef> doneblocklines = new Dictionary<Linedef, Linedef>(blocks.Count * 3);
@@ -78,8 +75,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							{
 								double lu, du;
 
-								// Temporary line
-								Line2D td;
+								// Temporary lines
+								Line2D tl = l.Line;
+								Line2D td = d.Line;
 
 								// If vertices are off-grid and far from the map's origin the calculation of the intersection can go wrong because of rounding errors.
 								// So if any vertex is off-grid we'll to the calculations with lines that are closer to the origin. This is pretty ugly :(
@@ -98,18 +96,14 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 									// Create the two lines to check. this takes the original values, applies the offset, then rounds them to the map format's precision
 									tl = new Line2D(
-										new Vector2D(Math.Round(tl.v1.x - offset.x, General.Map.FormatInterface.VertexDecimals), Math.Round(tl.v1.y - offset.y, General.Map.FormatInterface.VertexDecimals)),
-										new Vector2D(Math.Round(tl.v2.x - offset.x, General.Map.FormatInterface.VertexDecimals), Math.Round(tl.v2.y - offset.y, General.Map.FormatInterface.VertexDecimals))
+										new Vector2D(Math.Round(l.Line.v1.x - offset.x, General.Map.FormatInterface.VertexDecimals), Math.Round(l.Line.v1.y - offset.y, General.Map.FormatInterface.VertexDecimals)),
+										new Vector2D(Math.Round(l.Line.v2.x - offset.x, General.Map.FormatInterface.VertexDecimals), Math.Round(l.Line.v2.y - offset.y, General.Map.FormatInterface.VertexDecimals))
 									);
 
 									td = new Line2D(
 										new Vector2D(Math.Round(d.Line.v1.x - offset.x, General.Map.FormatInterface.VertexDecimals), Math.Round(d.Line.v1.y - offset.y, General.Map.FormatInterface.VertexDecimals)),
 										new Vector2D(Math.Round(d.Line.v2.x - offset.x, General.Map.FormatInterface.VertexDecimals), Math.Round(d.Line.v2.y - offset.y, General.Map.FormatInterface.VertexDecimals))
 									);
-								}
-								else
-								{
-									td = d.Line;
 								}
 								
 								//mxd. This can also happen. I suppose. Some people manage to do this. I dunno how, but they do...

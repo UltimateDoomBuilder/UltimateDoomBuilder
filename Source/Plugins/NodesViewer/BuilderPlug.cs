@@ -20,6 +20,11 @@
 
 namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 {
+	internal class ToastMessages
+	{
+		public static readonly string NODESVIEWER = "nodesviewer";
+	}
+
 	public class BuilderPlug : Plug
 	{
 		#region ================== Variables
@@ -49,6 +54,9 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 
 			// Keep a static reference
 			me = this;
+
+			// Register toasts
+			General.ToastManager.RegisterToast(ToastMessages.NODESVIEWER, "Nodes Viewer Mode", "Toasts related to Nodes Viewer Mode");
 		}
 
 		// This is called when the plugin is terminated

@@ -843,6 +843,13 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 			Cursor.Current = Cursors.WaitCursor;
 			base.OnEngage();
 
+			if(General.Map.Map.Vertices.Count == 0)
+			{
+				General.ToastManager.ShowToast(ToastMessages.NODESVIEWER, ToastType.ERROR, "Failed to engage Nodes Viewer Mode", "The map is empty.", "Failed to engage Nodes Viewer Mode: the map is empty");
+				General.Editing.CancelMode();
+				return;
+			}
+
 			//mxd
 			bool haveNodes = General.Map.LumpExists("NODES");
 			bool haveZnodes = General.Map.LumpExists("ZNODES");
@@ -853,7 +860,12 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 			if(General.Map.IsChanged || !(haveZnodes || (haveNodes || haveSectors || haveSegs || haveVerts)))
 			{
 				// We need to build the nodes!
-				if(!General.Map.RebuildNodes(General.Map.ConfigSettings.NodebuilderSave, true)) return;
+				if (!General.Map.RebuildNodes(General.Map.ConfigSettings.NodebuilderSave, true))
+				{
+					General.ToastManager.ShowToast(ToastMessages.NODESVIEWER, ToastType.ERROR, "Failed to engage Nodes Viewer Mode", "Failed to rebuild the nodes.", "Failed to engage Nodes Viewer Mode: failed to rebuild the nodes");
+					General.Editing.CancelMode();
+					return;
+				}
 
 				//mxd. Update nodes availability
 				haveNodes = General.Map.LumpExists("NODES");

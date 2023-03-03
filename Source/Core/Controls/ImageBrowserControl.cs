@@ -202,6 +202,7 @@ namespace CodeImp.DoomBuilder.Controls
             General.Settings.WriteSetting(settingpath + ".classicview", classicview.Checked);
 			General.Settings.WriteSetting(settingpath + ".verticallycenteritem", list.CenterItem);
 			General.Settings.WriteSetting(settingpath + ".imagesize", list.ImageSize);
+			General.Settings.WriteSetting(settingpath + ".texturetype", texturetype);
 			
 			if (General.Map.Config.UseLongTextureNames) General.Map.Options.UseLongTextureNames = uselongtexturenames;
 

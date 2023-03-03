@@ -151,7 +151,7 @@ namespace CodeImp.DoomBuilder.Geometry
 			double div = (y4 - y3) * (v2.x - v1.x) - (x4 - x3) * (v2.y - v1.y);
 
 			// Can this be tested?
-			if(div != 0.0f)
+			if(div != 0.0)
 			{
 				// Calculate the intersection distance from the line
 				u_line = ((x4 - x3) * (v1.y - y3) - (y4 - y3) * (v1.x - x3)) / div;
@@ -160,7 +160,7 @@ namespace CodeImp.DoomBuilder.Geometry
 				u_ray = ((v2.x - v1.x) * (v1.y - y3) - (v2.y - v1.y) * (v1.x - x3)) / div;
 
 				// Return if intersecting
-				if(bounded && (u_ray < 0.0f || u_ray > 1.0f || u_line < 0.0f || u_line > 1.0f)) return false; //mxd
+				if(bounded && (u_ray < 0.0 || u_ray > 1.0 || u_line < 0.0 || u_line > 1.0)) return false; //mxd
 				return true;
 			}
 

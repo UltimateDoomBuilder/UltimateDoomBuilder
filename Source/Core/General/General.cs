@@ -612,7 +612,12 @@ namespace CodeImp.DoomBuilder
 
 			//mxd. Set CultureInfo
 			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-			
+
+			// biwa. If the default culture for threads is not set it'll screw with the culture
+			// in the FileSystemWatcher thread, which can result in incorrect string outputs
+			// See: https://github.com/jewalky/UltimateDoomBuilder/issues/858
+			CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+
 			// Set current thread name
 			Thread.CurrentThread.Name = "Main Application";
 
