@@ -49,6 +49,9 @@ namespace CodeImp.DoomBuilder.Rendering
 		public long floortexture;
 		public long ceiltexture;
 
+		// Sector flags
+		public bool hidden; // sector is hidden on textured automap
+
         //
         public double desaturation;
 		

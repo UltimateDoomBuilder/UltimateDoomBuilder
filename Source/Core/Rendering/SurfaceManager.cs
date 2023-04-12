@@ -405,6 +405,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					Array.Copy(update.ceilvertices, update.numvertices - vertsremaining, e.ceilvertices, 0, vertsinentry);
 					e.floortexture = update.floortexture;
 					e.ceiltexture = update.ceiltexture;
+					e.hidden = update.hidden;
                     e.desaturation = update.desaturation;
 					
 					entries.Add(e);
@@ -429,6 +430,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						e.ceiltexture = update.ceiltexture;
 					}
 
+					e.hidden = update.hidden;
                     e.desaturation = update.desaturation;
 
                     vertsremaining -= e.numvertices;
@@ -521,7 +523,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			{
 				foreach(SurfaceEntry entry in set.Value.entries)
 				{
-					if(entry.bbox.IntersectsWith(viewport))
+					if(SurfaceEntryIsVisible(entry, viewport))
 						AddSurfaceEntryForRendering(entry, entry.floortexture);
 				}
 			}
@@ -539,7 +541,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			{
 				foreach(SurfaceEntry entry in set.Value.entries)
 				{
-					if(entry.bbox.IntersectsWith(viewport))
+					if(SurfaceEntryIsVisible(entry, viewport))
 						AddSurfaceEntryForRendering(entry, entry.ceiltexture);
 				}
 			}
@@ -557,10 +559,20 @@ namespace CodeImp.DoomBuilder.Rendering
 			{
 				foreach(SurfaceEntry entry in set.Value.entries)
 				{
-					if(entry.bbox.IntersectsWith(viewport))
+					if(SurfaceEntryIsVisible(entry, viewport))
 						AddSurfaceEntryForRendering(entry, 0);
 				}
 			}
+		}
+
+		// Checks to see if a particular surface entry is visible in the viewport
+		private bool SurfaceEntryIsVisible(SurfaceEntry entry, RectangleF viewport)
+		{
+			// [XA] TODO: add a condition here so this only happens in automap mode
+			if (entry.hidden)
+				return false;
+
+			return entry.bbox.IntersectsWith(viewport);
 		}
 
 		// This adds a surface entry to the list of surfaces

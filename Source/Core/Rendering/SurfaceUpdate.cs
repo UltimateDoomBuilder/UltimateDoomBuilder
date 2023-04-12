@@ -36,8 +36,11 @@ namespace CodeImp.DoomBuilder.Rendering
 		public long floortexture;
 		public long ceiltexture;
 
-        //
-        public double desaturation;
+		// Sector flags
+		public bool hidden;
+
+		//
+		public double desaturation;
 		
 		// Constructor
 		internal SurfaceUpdate(int numvertices, bool updatefloor, bool updateceiling)
@@ -49,6 +52,7 @@ namespace CodeImp.DoomBuilder.Rendering
 			this.floorvertices = (updatefloor ? new FlatVertex[numvertices] : null);
 			this.ceilvertices = (updateceiling ? new FlatVertex[numvertices] : null);
 
+			this.hidden = false;
             this.desaturation = 0f;
 		}
 	}
