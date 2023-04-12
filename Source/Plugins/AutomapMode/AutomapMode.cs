@@ -95,7 +95,8 @@ namespace CodeImp.DoomBuilder.AutomapMode
 			menusform.ShowHiddenLines = General.Settings.ReadPluginSetting("automapmode.showhiddenlines", false);
 			menusform.ShowSecretSectors = General.Settings.ReadPluginSetting("automapmode.showsecretsectors", false);
 			menusform.ShowLocks = General.Settings.ReadPluginSetting("automapmode.showlocks", true);
-			menusform.ColorPreset = (ColorPreset)General.Settings.ReadPluginSetting("automapmode.colorpreset", (int)ColorPreset.DOOM);
+            menusform.ShowTextures = General.Settings.ReadPluginSetting("automapmode.showtextures", true);
+            menusform.ColorPreset = (ColorPreset)General.Settings.ReadPluginSetting("automapmode.colorpreset", (int)ColorPreset.DOOM);
 
 			// Handle events
 			menusform.OnShowHiddenLinesChanged += delegate
@@ -106,8 +107,9 @@ namespace CodeImp.DoomBuilder.AutomapMode
 
 			menusform.OnShowSecretSectorsChanged += delegate { General.Interface.RedrawDisplay(); };
 			menusform.OnShowLocksChanged += delegate { General.Interface.RedrawDisplay(); };
+            menusform.OnShowTexturesChanged += delegate { General.Interface.RedrawDisplay(); };
 
-			menusform.OnColorPresetChanged += delegate
+            menusform.OnColorPresetChanged += delegate
 			{
 				ApplyColorPreset(menusform.ColorPreset);
 				General.Interface.RedrawDisplay();
@@ -206,6 +208,11 @@ namespace CodeImp.DoomBuilder.AutomapMode
 			if(ld.Back != null && ld.Front != null && (ld.Front.Sector.FloorHeight != ld.Back.Sector.FloorHeight || ld.Front.Sector.CeilHeight != ld.Back.Sector.CeilHeight)) return true;
 
 			return false;
+		}
+
+		private bool ShowTextures()
+		{
+			return menusform.ShowTextures ^ General.Interface.ShiftState;
 		}
 
 		//mxd
@@ -318,8 +325,10 @@ namespace CodeImp.DoomBuilder.AutomapMode
 			base.OnEngage();
 			renderer.DrawMapCenter = false; //mxd
 
-			// Automap presentation without the surfaces
+			// Automap presentation; now draws surfaces for textured mode support,
+			// but the surfaces are covered up with a background layer.
 			automappresentation = new CustomPresentation();
+			automappresentation.AddLayer(new PresentLayer(RendererLayer.Surface, BlendingMode.Mask));
 			automappresentation.AddLayer(new PresentLayer(RendererLayer.Overlay, BlendingMode.Mask));
 			automappresentation.AddLayer(new PresentLayer(RendererLayer.Grid, BlendingMode.Mask));
 			automappresentation.AddLayer(new PresentLayer(RendererLayer.Geometry, BlendingMode.Alpha, 1f, true));
@@ -341,7 +350,8 @@ namespace CodeImp.DoomBuilder.AutomapMode
 			General.Settings.WritePluginSetting("automapmode.showhiddenlines", menusform.ShowHiddenLines);
 			General.Settings.WritePluginSetting("automapmode.showsecretsectors", menusform.ShowSecretSectors);
 			General.Settings.WritePluginSetting("automapmode.showlocks", menusform.ShowLocks);
-			General.Settings.WritePluginSetting("automapmode.colorpreset", (int)menusform.ColorPreset);
+            General.Settings.WritePluginSetting("automapmode.showtextures", menusform.ShowTextures);
+            General.Settings.WritePluginSetting("automapmode.colorpreset", (int)menusform.ColorPreset);
 
 			//mxd. Hide UI
 			menusform.Unregister();
@@ -393,8 +403,10 @@ namespace CodeImp.DoomBuilder.AutomapMode
 			//mxd. Render background
 			if(renderer.StartOverlay(true))
 			{
-				RectangleF screenrect = new RectangleF(0, 0, General.Interface.Display.Width, General.Interface.Display.Height);
-				renderer.RenderRectangleFilled(screenrect, ColorBackground, false);
+				if(!ShowTextures()) {
+					RectangleF screenrect = new RectangleF(0, 0, General.Interface.Display.Width, General.Interface.Display.Height);
+					renderer.RenderRectangleFilled(screenrect, ColorBackground, false);
+				}
 				renderer.Finish();
 			}
 
@@ -463,8 +475,11 @@ namespace CodeImp.DoomBuilder.AutomapMode
 
 			if(e.Control)
 			{
-				UpdateValidLinedefs();
-				General.Interface.RedrawDisplay();
+				OnCtrl();
+			}
+			if(e.Shift)
+			{
+				OnShift();
 			}
 		}
 
@@ -472,11 +487,25 @@ namespace CodeImp.DoomBuilder.AutomapMode
 		{
 			base.OnKeyUp(e);
 
-			if(!e.Control)
+			if(e.KeyCode == Keys.ControlKey)
 			{
-				UpdateValidLinedefs();
-				General.Interface.RedrawDisplay();
+				OnCtrl();
 			}
+			else if(e.KeyCode == Keys.ShiftKey)
+			{
+				OnShift();
+			}
+		}
+
+		private void OnCtrl()
+		{
+			UpdateValidLinedefs();
+			General.Interface.RedrawDisplay();
+		}
+
+		private void OnShift()
+		{
+			General.Interface.RedrawDisplay();
 		}
 
 		#endregion

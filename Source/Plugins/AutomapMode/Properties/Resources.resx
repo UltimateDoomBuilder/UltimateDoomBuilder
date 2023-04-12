@@ -127,4 +127,7 @@
   <data name="ShowLocks" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ShowLocks.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="ShowTextures" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ShowTextures.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

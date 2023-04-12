@@ -89,5 +89,15 @@ namespace CodeImp.DoomBuilder.AutomapMode.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ShowTextures {
+            get {
+                object obj = ResourceManager.GetObject("ShowTextures", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

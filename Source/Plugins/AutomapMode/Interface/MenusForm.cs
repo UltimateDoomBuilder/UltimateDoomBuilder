@@ -8,11 +8,13 @@ namespace CodeImp.DoomBuilder.AutomapMode
 		public event EventHandler OnShowHiddenLinesChanged;
 		public event EventHandler OnShowSecretSectorsChanged;
 		public event EventHandler OnShowLocksChanged;
-		internal event EventHandler OnColorPresetChanged;
+        public event EventHandler OnShowTexturesChanged;
+        internal event EventHandler OnColorPresetChanged;
 
 		public bool ShowHiddenLines { get { return showhiddenlines.Checked; } set { showhiddenlines.Checked = value; } }
 		public bool ShowSecretSectors { get { return showsecretsectors.Checked; } set { showsecretsectors.Checked = value; } }
 		public bool ShowLocks { get { return showlocks.Checked; } set { showlocks.Checked = value; } }
+		public bool ShowTextures { get { return showtextures.Checked; } set { showtextures.Checked = value; } }
 		internal AutomapMode.ColorPreset ColorPreset { get { return (AutomapMode.ColorPreset)colorpreset.SelectedIndex; } set { colorpreset.SelectedIndex = (int)value; } }
 		
 		public MenusForm()
@@ -26,6 +28,7 @@ namespace CodeImp.DoomBuilder.AutomapMode
 			General.Interface.AddButton(showhiddenlines);
 			General.Interface.AddButton(showsecretsectors);
 			if(!General.Map.DOOM) General.Interface.AddButton(showlocks);
+			if(General.Map.UDMF) General.Interface.AddButton(showtextures);
 			General.Interface.AddButton(colorpresetseparator);
 			General.Interface.AddButton(colorpresetlabel);
 			General.Interface.AddButton(colorpreset);
@@ -39,7 +42,8 @@ namespace CodeImp.DoomBuilder.AutomapMode
 			General.Interface.RemoveButton(colorpresetlabel);
 			General.Interface.RemoveButton(colorpresetseparator);
 			General.Interface.RemoveButton(showlocks);
-			General.Interface.RemoveButton(showsecretsectors);
+            General.Interface.RemoveButton(showtextures);
+            General.Interface.RemoveButton(showsecretsectors);
 			General.Interface.RemoveButton(showhiddenlines);
 			General.Interface.EndToolbarUpdate(); //mxd
 		}
@@ -57,9 +61,14 @@ namespace CodeImp.DoomBuilder.AutomapMode
 		private void showlocks_CheckedChanged(object sender, EventArgs e)
 		{
 			if(OnShowLocksChanged != null) OnShowLocksChanged(showlocks.Checked, EventArgs.Empty);
-		}
+        }
 
-		private void colorpreset_SelectedIndexChanged(object sender, EventArgs e)
+        private void showtextures_CheckedChanged(object sender, EventArgs e)
+        {
+            if (OnShowTexturesChanged != null) OnShowTexturesChanged(showtextures.Checked, EventArgs.Empty);
+        }
+
+        private void colorpreset_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if(OnColorPresetChanged != null) OnColorPresetChanged(colorpreset.SelectedIndex, EventArgs.Empty);
 		}
