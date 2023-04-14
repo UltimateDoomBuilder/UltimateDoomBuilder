@@ -122,7 +122,16 @@ namespace CodeImp.DoomBuilder.Map
 		public FlatVertex[] FlatVertices { get { return flatvertices; } }
 		public ReadOnlyCollection<LabelPositionInfo> Labels { get { return labels; } }
 
-		public bool Hidden { get { return IsFlagSet("hidden"); } }
+		public bool Hidden {
+			get
+			{
+				return IsFlagSet("hidden");
+			}
+			set
+			{
+				SetFlag("hidden", value);
+			}
+		}
 
 		//mxd. Rednering
 		public Color4 FogColor { get { return fogcolor; } }
