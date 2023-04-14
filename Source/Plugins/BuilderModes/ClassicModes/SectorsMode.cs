@@ -1220,46 +1220,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			} 
 			else if(e.Button == MouseButtons.None) // Not holding any buttons?
 			{
-				// Find the nearest linedef within highlight range
-				Linedef l = General.Map.Map.NearestLinedef(mousemappos);
-				if(l != null)
-				{
-					// Check on which side of the linedef the mouse is
-					double side = l.SideOfLine(mousemappos);
-					if(side > 0)
-					{
-						// Is there a sidedef here?
-						if(l.Back != null)
-						{
-							// Highlight if not the same
-							if(l.Back.Sector != highlighted) Highlight(l.Back.Sector);
-						}
-						else
-						{
-							// Highlight nothing
-							if(highlighted != null) Highlight(null);
-						}
-					}
-					else
-					{
-						// Is there a sidedef here?
-						if(l.Front != null)
-						{
-							// Highlight if not the same
-							if(l.Front.Sector != highlighted) Highlight(l.Front.Sector);
-						}
-						else
-						{
-							// Highlight nothing
-							if(highlighted != null) Highlight(null);
-						}
-					}
-				}
-				else
-				{
-					// Highlight nothing
-					if(highlighted != null) Highlight(null);
-				}
+				// Find the nearest sector from the mouse cursor
+				Sector s = General.Map.Map.NearestSector(mousemappos);
+
+				// Update the highlight if it has changed
+				if (highlighted != s) Highlight(s);
 
 				//mxd. Show tooltip?
 				if(General.Map.UDMF && General.Settings.RenderComments && mouselastpos != mousepos && highlighted != null && !highlighted.IsDisposed && highlighted.Fields.ContainsKey("comment"))
