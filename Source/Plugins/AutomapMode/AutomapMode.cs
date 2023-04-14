@@ -79,6 +79,7 @@ namespace CodeImp.DoomBuilder.AutomapMode
 		private PixelColor ColorBackground;
 
 		// Options
+		private bool invertLineVisibility; // CTRL to toggle
 		private bool editSectors; // SHIFT to toggle
 
 		#endregion
@@ -248,14 +249,14 @@ namespace CodeImp.DoomBuilder.AutomapMode
 			if(ld.Front.Sector.CeilHeight == ld.Back.Sector.CeilHeight && ld.Front.Sector.FloorHeight == ld.Back.Sector.FloorHeight)
 				return ColorMatchingHeight;
 
-			if(menusform.ShowHiddenLines ^ General.Interface.CtrlState) return ColorInvisible; 
+			if(menusform.ShowHiddenLines ^ invertLineVisibility) return ColorInvisible; 
 
 			return new PixelColor(255, 255, 255, 255);
 		}
 
 		private bool LinedefIsValid(Linedef ld)
 		{
-			if(menusform.ShowHiddenLines ^ General.Interface.CtrlState) return true;
+			if(menusform.ShowHiddenLines ^ invertLineVisibility) return true;
 			if(ld.IsFlagSet(BuilderPlug.Me.HiddenFlag)) return false;
 			if(ld.Back == null || ld.Front == null || ld.IsFlagSet(BuilderPlug.Me.SecretFlag)) return true;
 			if(ld.Back != null && ld.Front != null && (ld.Front.Sector.FloorHeight != ld.Back.Sector.FloorHeight || ld.Front.Sector.CeilHeight != ld.Back.Sector.CeilHeight)) return true;
@@ -557,45 +558,32 @@ namespace CodeImp.DoomBuilder.AutomapMode
 			HighlightSector(null);
 		}
 
-		// TODO: clean up this input handling, this is all pretty messy.
+		// Keyboard input handling; toggles a couple of options
 
 		public override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
 
-			if(e.Control)
-			{
-				OnCtrl();
-			}
-			if(e.Shift)
-			{
-				OnShift();
-			}
+			UpdateOptions();
 		}
 
 		public override void OnKeyUp(KeyEventArgs e)
 		{
 			base.OnKeyUp(e);
 
-			if(e.KeyCode == Keys.ControlKey)
-			{
-				OnCtrl();
-			}
-			else if(e.KeyCode == Keys.ShiftKey)
-			{
-				OnShift();
-			}
+			UpdateOptions();
 		}
 
-		private void OnCtrl()
+		private void UpdateOptions()
 		{
-			UpdateValidLinedefs();
-			General.Interface.RedrawDisplay();
-		}
-
-		private void OnShift()
-		{
-			if (editSectors != General.Interface.ShiftState) {
+			if(invertLineVisibility != General.Interface.CtrlState)
+			{
+				invertLineVisibility = General.Interface.CtrlState;
+				UpdateValidLinedefs();
+				General.Interface.RedrawDisplay();
+			}
+			if(editSectors != General.Interface.ShiftState)
+			{
 				editSectors = General.Interface.ShiftState;
 				HighlightLine(null);
 				HighlightSector(null);
