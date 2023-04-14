@@ -39,6 +39,9 @@ namespace CodeImp.DoomBuilder.Rendering
 		// Static properties
 		public static Presentation Standard { get { return standard; } }
 		public static Presentation Things { get { return things; } }
+
+		// Public properties
+		public bool SkipHiddenSectors { get; set; } // Skip drawing sectors with the "hidden" flag set (i.e. UDMF's "hide on textured automap" property)
 		
 		// Variables
 		protected internal List<PresentLayer> layers;
@@ -48,12 +51,14 @@ namespace CodeImp.DoomBuilder.Rendering
 		{
 			// Initialize
 			layers = new List<PresentLayer>();
+			SkipHiddenSectors = false;
 		}
 
 		// Copy constructor
 		public Presentation(Presentation p)
 		{
 			layers = new List<PresentLayer>(p.layers);
+			SkipHiddenSectors = p.SkipHiddenSectors;
 		}
 
 		// This creates the static instances

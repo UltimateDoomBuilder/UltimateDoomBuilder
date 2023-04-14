@@ -1618,17 +1618,17 @@ namespace CodeImp.DoomBuilder.Rendering
 				switch(viewmode)
 				{
 					case ViewMode.Brightness:
-						surfaces.RenderSectorBrightness(yviewport);
+						surfaces.RenderSectorBrightness(yviewport, present.SkipHiddenSectors);
 						surfaces.RenderSectorSurfaces(graphics);
 						break;
 							
 					case ViewMode.FloorTextures:
-						surfaces.RenderSectorFloors(yviewport);
+						surfaces.RenderSectorFloors(yviewport, present.SkipHiddenSectors);
 						surfaces.RenderSectorSurfaces(graphics);
 						break;
 							
 					case ViewMode.CeilingTextures:
-						surfaces.RenderSectorCeilings(yviewport);
+						surfaces.RenderSectorCeilings(yviewport, present.SkipHiddenSectors);
 						surfaces.RenderSectorSurfaces(graphics);
 						break;
 				}

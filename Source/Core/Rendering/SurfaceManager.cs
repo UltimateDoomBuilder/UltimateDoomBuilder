@@ -512,7 +512,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		#region ================== Rendering
 		
 		// This renders all sector floors
-		internal void RenderSectorFloors(RectangleF viewport)
+		internal void RenderSectorFloors(RectangleF viewport, bool skipHidden)
 		{
 			surfaces = new Dictionary<ImageData, List<SurfaceEntry>>();
 			surfacevertexoffsetmul = 0;
@@ -523,14 +523,14 @@ namespace CodeImp.DoomBuilder.Rendering
 			{
 				foreach(SurfaceEntry entry in set.Value.entries)
 				{
-					if(SurfaceEntryIsVisible(entry, viewport))
+					if(SurfaceEntryIsVisible(entry, viewport, skipHidden))
 						AddSurfaceEntryForRendering(entry, entry.floortexture);
 				}
 			}
 		}
 		
 		// This renders all sector ceilings
-		internal void RenderSectorCeilings(RectangleF viewport)
+		internal void RenderSectorCeilings(RectangleF viewport, bool skipHidden)
 		{
 			surfaces = new Dictionary<ImageData, List<SurfaceEntry>>();
 			surfacevertexoffsetmul = 1;
@@ -541,14 +541,14 @@ namespace CodeImp.DoomBuilder.Rendering
 			{
 				foreach(SurfaceEntry entry in set.Value.entries)
 				{
-					if(SurfaceEntryIsVisible(entry, viewport))
+					if(SurfaceEntryIsVisible(entry, viewport, skipHidden))
 						AddSurfaceEntryForRendering(entry, entry.ceiltexture);
 				}
 			}
 		}
 
 		// This renders all sector brightness levels
-		internal void RenderSectorBrightness(RectangleF viewport)
+		internal void RenderSectorBrightness(RectangleF viewport, bool skipHidden)
 		{
 			surfaces = new Dictionary<ImageData, List<SurfaceEntry>>();
 			surfacevertexoffsetmul = 0;
@@ -559,17 +559,16 @@ namespace CodeImp.DoomBuilder.Rendering
 			{
 				foreach(SurfaceEntry entry in set.Value.entries)
 				{
-					if(SurfaceEntryIsVisible(entry, viewport))
+					if(SurfaceEntryIsVisible(entry, viewport, skipHidden))
 						AddSurfaceEntryForRendering(entry, 0);
 				}
 			}
 		}
 
 		// Checks to see if a particular surface entry is visible in the viewport
-		private bool SurfaceEntryIsVisible(SurfaceEntry entry, RectangleF viewport)
+		private bool SurfaceEntryIsVisible(SurfaceEntry entry, RectangleF viewport, bool skipHidden)
 		{
-			// [XA] TODO: add a condition here so this only happens in automap mode
-			if (entry.hidden)
+			if (skipHidden && entry.hidden)
 				return false;
 
 			return entry.bbox.IntersectsWith(viewport);

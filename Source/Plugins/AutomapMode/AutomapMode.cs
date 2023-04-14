@@ -332,6 +332,7 @@ namespace CodeImp.DoomBuilder.AutomapMode
 			automappresentation.AddLayer(new PresentLayer(RendererLayer.Overlay, BlendingMode.Mask));
 			automappresentation.AddLayer(new PresentLayer(RendererLayer.Grid, BlendingMode.Mask));
 			automappresentation.AddLayer(new PresentLayer(RendererLayer.Geometry, BlendingMode.Alpha, 1f, true));
+			automappresentation.SkipHiddenSectors = true;
 			renderer.SetPresentation(automappresentation);
 
 			UpdateValidLinedefs();
