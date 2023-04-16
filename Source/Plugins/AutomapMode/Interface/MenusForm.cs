@@ -28,7 +28,7 @@ namespace CodeImp.DoomBuilder.AutomapMode
 			General.Interface.AddButton(showhiddenlines);
 			General.Interface.AddButton(showsecretsectors);
 			if(!General.Map.DOOM) General.Interface.AddButton(showlocks);
-			if(General.Map.UDMF) General.Interface.AddButton(showtextures);
+			General.Interface.AddButton(showtextures);
 			General.Interface.AddButton(colorpresetseparator);
 			General.Interface.AddButton(colorpresetlabel);
 			General.Interface.AddButton(colorpreset);
