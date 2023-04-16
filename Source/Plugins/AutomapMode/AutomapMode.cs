@@ -271,7 +271,12 @@ namespace CodeImp.DoomBuilder.AutomapMode
 
 		private bool ShowTextures()
 		{
-			return menusform.ShowTextures || editSectors;
+			return menusform.ShowTextures || EditSectors();
+		}
+
+		private bool EditSectors()
+		{
+			return editSectors && General.Map.UDMF;
 		}
 
 		//mxd
@@ -528,7 +533,7 @@ namespace CodeImp.DoomBuilder.AutomapMode
 			// Not holding any buttons?
 			if(e.Button == MouseButtons.None)
 			{
-				if (editSectors)
+				if (EditSectors())
 				{
 					// Get the nearest sector to the cursor; don't factor in the
 					// highlight range since we really just want to capture
