@@ -137,6 +137,28 @@ namespace CodeImp.DoomBuilder.AutomapMode
 
 		#region ================== Methods
 
+		// Update the current highlight
+		private void UpdateHighlight()
+		{
+			if (EditSectors())
+			{
+				// Get the nearest sector to the cursor; don't factor in the
+				// highlight range since we really just want to capture
+				// whichever sector is under the cursor.
+				Sector s = General.Map.Map.NearestSector(mousemappos);
+
+				if (s != highlightedSector) HighlightSector(s);
+			}
+			else
+			{
+				// Find the nearest linedef within highlight range
+				Linedef l = MapSet.NearestLinedefRange(validlinedefs, mousemappos, BuilderPlug.Me.HighlightRange / renderer.Scale);
+
+				// Highlight if not the same
+				if (l != highlightedLine) HighlightLine(l);
+			}
+		}
+
 		// This highlights a new line
 		private void HighlightLine(Linedef l)
 		{
@@ -533,23 +555,7 @@ namespace CodeImp.DoomBuilder.AutomapMode
 			// Not holding any buttons?
 			if(e.Button == MouseButtons.None)
 			{
-				if (EditSectors())
-				{
-					// Get the nearest sector to the cursor; don't factor in the
-					// highlight range since we really just want to capture
-					// whichever sector is under the cursor.
-					Sector s = General.Map.Map.NearestSector(mousemappos);
-
-					if (s != highlightedSector) HighlightSector(s);
-				}
-				else
-				{
-					// Find the nearest linedef within highlight range
-					Linedef l = MapSet.NearestLinedefRange(validlinedefs, mousemappos, BuilderPlug.Me.HighlightRange / renderer.Scale);
-
-					// Highlight if not the same
-					if (l != highlightedLine) HighlightLine(l);
-				}
+				UpdateHighlight();
 			}
 		}
 
@@ -593,6 +599,7 @@ namespace CodeImp.DoomBuilder.AutomapMode
 				HighlightLine(null);
 				HighlightSector(null);
 				General.Interface.RedrawDisplay();
+				UpdateHighlight();
 			}
 		}
 
