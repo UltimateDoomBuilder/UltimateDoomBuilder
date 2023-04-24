@@ -122,17 +122,6 @@ namespace CodeImp.DoomBuilder.Map
 		public FlatVertex[] FlatVertices { get { return flatvertices; } }
 		public ReadOnlyCollection<LabelPositionInfo> Labels { get { return labels; } }
 
-		public bool Hidden {
-			get
-			{
-				return IsFlagSet("hidden");
-			}
-			set
-			{
-				SetFlag("hidden", value);
-			}
-		}
-
 		//mxd. Rednering
 		public Color4 FogColor { get { return fogcolor; } }
 		public SectorFogMode FogMode { get { return fogmode; } }
@@ -420,7 +409,7 @@ namespace CodeImp.DoomBuilder.Map
 				General.Plugins.OnSectorCeilingSurfaceUpdate(this, ref updateinfo.ceilvertices);
 				updateinfo.floortexture = longfloortexname;
 				updateinfo.ceiltexture = longceiltexname;
-				updateinfo.hidden = this.Hidden;
+				updateinfo.hidden = IsFlagSet("hidden");
 				updateinfo.desaturation = this.Desaturation;
 
                 // Update surfaces
@@ -441,7 +430,7 @@ namespace CodeImp.DoomBuilder.Map
 			flatvertices.CopyTo(updateinfo.floorvertices, 0);
 			General.Plugins.OnSectorFloorSurfaceUpdate(this, ref updateinfo.floorvertices);
 			updateinfo.floortexture = longfloortexname;
-			updateinfo.hidden = this.Hidden;
+			updateinfo.hidden = IsFlagSet("hidden");
 			updateinfo.desaturation = this.Desaturation;
 
 			// Update entry
@@ -459,7 +448,7 @@ namespace CodeImp.DoomBuilder.Map
 			flatvertices.CopyTo(updateinfo.ceilvertices, 0);
 			General.Plugins.OnSectorCeilingSurfaceUpdate(this, ref updateinfo.ceilvertices);
 			updateinfo.ceiltexture = longceiltexname;
-			updateinfo.hidden = this.Hidden;
+			updateinfo.hidden = IsFlagSet("hidden");
 			updateinfo.desaturation = this.Desaturation;
 			
 			// Update entry

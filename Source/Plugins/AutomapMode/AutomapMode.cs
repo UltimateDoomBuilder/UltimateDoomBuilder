@@ -288,7 +288,7 @@ namespace CodeImp.DoomBuilder.AutomapMode
 
 		private bool SectorIsVisible(Sector s)
 		{
-			return(s != null && !s.Hidden);
+			return(s != null && !s.IsFlagSet("hidden"));
 		}
 
 		private bool ShowTextures()
@@ -518,7 +518,7 @@ namespace CodeImp.DoomBuilder.AutomapMode
 				General.Map.UndoRedo.CreateUndo("Toggle \"Not shown on textured automap\" sector flag");
 
 				// Toggle flag
-				highlightedSector.Hidden = !highlightedSector.Hidden;
+				highlightedSector.SetFlag("hidden", !highlightedSector.IsFlagSet("hidden"));
 
 				// Redraw the universe
 				General.Map.Map.Update();
