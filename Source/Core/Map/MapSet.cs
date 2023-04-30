@@ -3711,35 +3711,6 @@ namespace CodeImp.DoomBuilder.Map
 			return closest;
 		}
 
-		/// <summary>This finds the sector closest to the specified position.</summary>
-		public static Sector NearestSector(ICollection<Linedef> selection, Vector2D pos) {
-			// NOTE: that "Linedef" above isn't a typo; internally this uses the
-			// list of lines to figure out what the cursor is pointing at.
-			Linedef l = NearestLinedef(selection, pos);
-			if(l != null)
-			{
-				// Check on which side of the linedef the mouse is
-				double side = l.SideOfLine(pos);
-				if(side > 0)
-				{
-					// Is there a sidedef here?
-					if(l.Back != null)
-					{
-						return l.Back.Sector;
-					}
-				}
-				else
-				{
-					// Is there a sidedef here?
-					if(l.Front != null)
-					{
-						return l.Front.Sector;
-					}
-				}
-			}
-			return null;
-		}
-
 		#endregion
 
 		#region ================== Tools
@@ -4201,9 +4172,6 @@ namespace CodeImp.DoomBuilder.Map
 			// Return result
 			return closest;
 		}
-
-		/// <summary>This finds the sector closest to the specified position.</summary>
-		public Sector NearestSector(Vector2D pos) { return MapSet.NearestSector(linedefs, pos); }
 
 		// This performs sidedefs compression
 		// Note: Only use this for saving, because this messes up the expected data structure horribly.

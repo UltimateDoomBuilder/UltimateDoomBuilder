@@ -145,7 +145,7 @@ namespace CodeImp.DoomBuilder.AutomapMode
 				// Get the nearest sector to the cursor; don't factor in the
 				// highlight range since we really just want to capture
 				// whichever sector is under the cursor.
-				Sector s = General.Map.Map.NearestSector(mousemappos);
+				Sector s = General.Map.Map.GetSectorByCoordinates(mousemappos);
 
 				if (s != highlightedSector) HighlightSector(s);
 			}
