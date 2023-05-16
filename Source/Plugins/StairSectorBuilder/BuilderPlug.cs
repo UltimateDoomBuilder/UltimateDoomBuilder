@@ -164,6 +164,7 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 				}
 			}
 
+			General.Editing.Mode.UpdateSelectionInfo();
 			General.Interface.RedrawDisplay();
 		}
 
