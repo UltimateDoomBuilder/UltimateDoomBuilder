@@ -88,8 +88,8 @@ namespace CodeImp.DoomBuilder
 		/// </remarks>
 		static public FileLockCheckResult CheckFile(string path)
 		{
-			//mxd. Do it the clunky way? (WinXP)
-			if(Environment.OSVersion.Version.Major < 6 || RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+			//mxd. Do it the clunky way? (non-Windows)
+			if(Environment.OSVersion.Platform == PlatformID.Unix)
 			{
 				bool locked = false;
 				
