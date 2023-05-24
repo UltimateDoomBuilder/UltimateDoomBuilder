@@ -633,8 +633,10 @@ namespace CodeImp.DoomBuilder.Windows
 		private void FillControlsList(Action a)
 		{
 			actioncontrol.Items.Clear();
-			
+
 			// Fill combobox with special controls
+			actioncontrol.Items.Add(new KeyControl(Keys.Tab, "Tab"));
+
 			if(a.AllowMouse)
 			{
 				actioncontrol.Items.Add(new KeyControl(Keys.LButton, "LButton"));
