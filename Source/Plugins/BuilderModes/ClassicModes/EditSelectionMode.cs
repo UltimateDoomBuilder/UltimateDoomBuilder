@@ -2298,6 +2298,54 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Interface.RedrawDisplay();
 		}
 
+		[BeginAction("moveselectionup")]
+		public void MoveSelectionUp()
+		{
+			offset.y += General.Map.Grid.GridSize;
+
+			// Update
+			UpdateGeometry();
+			UpdateRectangleComponents();
+			General.Map.Map.Update();
+			General.Interface.RedrawDisplay();
+		}
+
+		[BeginAction("moveselectiondown")]
+		public void MoveSelectionDown()
+		{
+			offset.y -= General.Map.Grid.GridSize;
+
+			// Update
+			UpdateGeometry();
+			UpdateRectangleComponents();
+			General.Map.Map.Update();
+			General.Interface.RedrawDisplay();
+		}
+
+		[BeginAction("moveselectionleft")]
+		public void MoveSelectionLeft()
+		{
+			offset.x -= General.Map.Grid.GridSize;
+
+			// Update
+			UpdateGeometry();
+			UpdateRectangleComponents();
+			General.Map.Map.Update();
+			General.Interface.RedrawDisplay();
+		}
+
+		[BeginAction("moveselectionright")]
+		public void MoveSelectionRight()
+		{
+			offset.x += General.Map.Grid.GridSize;
+
+			// Update
+			UpdateGeometry();
+			UpdateRectangleComponents();
+			General.Map.Map.Update();
+			General.Interface.RedrawDisplay();
+		}
+
 		#endregion
 	}
 }
