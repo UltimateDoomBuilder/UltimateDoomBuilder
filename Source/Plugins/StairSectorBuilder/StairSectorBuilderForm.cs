@@ -76,6 +76,12 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
             set { sidefront.Checked = value; }
 		}
 
+		public bool SideBack
+		{
+			get { return sideback.Checked; }
+			set { sideback.Checked = value; }
+		}
+
 		public CheckBox DistinctBaseHeights
 		{
 			get { return distinctbaseheights; }
@@ -806,6 +812,9 @@ namespace CodeImp.DoomBuilder.StairSectorBuilderMode
 			distinctsectors.Checked = p.distinctsectors;
 			SingleDirection.Checked = p.singledirection;
 			DistinctBaseHeights.Checked = p.distinctbaseheights;
+
+			if (!SideFront)
+				SideBack = true;
 
 			// Auto curve TODO
 			Flipping = p.flipping;
