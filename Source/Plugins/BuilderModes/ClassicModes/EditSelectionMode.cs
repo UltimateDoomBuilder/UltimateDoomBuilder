@@ -2346,6 +2346,30 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Interface.RedrawDisplay();
 		}
 
-		#endregion
+		[BeginAction("rotateclockwise")]
+		public void RotateCW()
+		{
+			rotation += Angle2D.DegToRad(5);
+
+			// Update
+			UpdateGeometry();
+			UpdateRectangleComponents();
+			General.Map.Map.Update();
+			General.Interface.RedrawDisplay();
+		}
+
+		[BeginAction("rotatecounterclockwise")]
+		public void RotateCCW()
+		{
+			rotation -= Angle2D.DegToRad(5);
+
+			// Update
+			UpdateGeometry();
+			UpdateRectangleComponents();
+			General.Map.Map.Update();
+			General.Interface.RedrawDisplay();
+		}
+
+			#endregion
 	}
 }
