@@ -2370,6 +2370,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Interface.RedrawDisplay();
 		}
 
-			#endregion
+		#endregion
 	}
 }
