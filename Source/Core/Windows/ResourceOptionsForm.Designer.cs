@@ -185,17 +185,16 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// directorylink
 			// 
+			this.directorylink.LinkArea = new System.Windows.Forms.LinkArea(26, 29);
 			this.directorylink.LinkColor = System.Drawing.SystemColors.HotTrack;
 			this.directorylink.Location = new System.Drawing.Point(14, 127);
 			this.directorylink.Name = "directorylink";
 			this.directorylink.Size = new System.Drawing.Size(329, 54);
 			this.directorylink.TabIndex = 1;
 			this.directorylink.TabStop = true;
-			this.directorylink.Text = "The directory may use the ZDoom PK3 directory structure, Eternity PKE directory structure," +
-	" or you can choose to use the options above to load texture or flat images from the directory root.";
+			this.directorylink.Text = "The directory may use the ZDoom PK3 directory structure, or you can choose to use" +
+    " the options above to load texture or flat images from the directory root.";
 			this.directorylink.UseCompatibleTextRendering = true;
-			this.directorylink.Links.Add(26, 29, LinkType.ZDOOM);
-			this.directorylink.Links.Add(57, 32, LinkType.ETERNITY);
 			this.directorylink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.link_Click);
 			// 
 			// dir_flats
@@ -256,18 +255,16 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// pk3link
 			// 
+			this.pk3link.LinkArea = new System.Windows.Forms.LinkArea(40, 33);
 			this.pk3link.LinkColor = System.Drawing.SystemColors.HotTrack;
 			this.pk3link.Location = new System.Drawing.Point(15, 72);
 			this.pk3link.Name = "pk3link";
 			this.pk3link.Size = new System.Drawing.Size(328, 47);
 			this.pk3link.TabIndex = 7;
 			this.pk3link.TabStop = true;
-			this.pk3link.Text = "PK3 and PK7 archive files are expected to use the ZDoom archive directory structure." +
-	" PKE archive files are expected to use the Eternity archive directory structure.";
+			this.pk3link.Text = "The archive file is expected to use the ZDoom archive directory structure.";
 			this.pk3link.UseCompatibleTextRendering = true;
-			this.pk3link.Links.Add(50, 33, LinkType.ZDOOM);
-			this.pk3link.Links.Add(123, 40, LinkType.ETERNITY);
-            this.pk3link.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.link_Click);
+			this.pk3link.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.link_Click);
 			// 
 			// browsepk3
 			// 
