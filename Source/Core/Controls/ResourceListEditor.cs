@@ -723,6 +723,7 @@ namespace CodeImp.DoomBuilder.Controls
 								break;
 							case ".pk7":
 							case ".pk3":
+							case ".pke":
                             case ".ipk3":
                             case ".ipk7":
 								if(AddItem(new DataLocation(DataLocation.RESOURCE_PK3, path, false, false, false, null))) addedfiles++;

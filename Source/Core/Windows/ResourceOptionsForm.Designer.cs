@@ -92,7 +92,7 @@ namespace CodeImp.DoomBuilder.Windows
 			label3.Name = "label3";
 			label3.Size = new System.Drawing.Size(133, 13);
 			label3.TabIndex = 3;
-			label3.Text = "PK3 or PK7 File Resource:";
+			label3.Text = "PK3, PKE, or PK7 File Resource:";
 			// 
 			// tabs
 			// 
@@ -250,7 +250,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.pk3filetab.Name = "pk3filetab";
 			this.pk3filetab.Size = new System.Drawing.Size(361, 185);
 			this.pk3filetab.TabIndex = 2;
-			this.pk3filetab.Text = "From PK3/PK7";
+			this.pk3filetab.Text = "From PK3/PKE/PK7";
 			this.pk3filetab.UseVisualStyleBackColor = true;
 			// 
 			// pk3link
@@ -317,8 +317,8 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// pk3filedialog
 			// 
-			this.pk3filedialog.Filter = "Doom PK3/PK7 Files (*.pk3;*.pk7;*.ipk3;*.ipk7)|*.pk3;*.pk7;*.ipk3;*.ipk7";
-			this.pk3filedialog.Title = "Browse PK3 or PK7 File";
+			this.pk3filedialog.Filter = "Doom PK3/PKE/PK7 Files (*.pk3;*.pke;*.pk7;*.ipk3;*.ipk7)|*.pk3;*.pke;*.pk7;*.ipk3;*.ipk7";
+			this.pk3filedialog.Title = "Browse PK3, PKE, or PK7 File";
 			// 
 			// notfortesting
 			// 
