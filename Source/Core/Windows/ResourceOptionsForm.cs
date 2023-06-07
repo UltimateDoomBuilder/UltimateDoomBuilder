@@ -33,8 +33,15 @@ namespace CodeImp.DoomBuilder.Windows
 {
 	internal partial class ResourceOptionsForm : DelayedForm
 	{
-		// Variables
-		private DataLocation res;
+		// Types
+        private enum LinkType
+		{
+			ZDOOM,
+			ETERNITY
+		}
+
+        // Variables
+        private DataLocation res;
         private string startPath;
         private Controls.FolderSelectDialog dirdialog;
 		private List<string> requiredarchives;
@@ -504,7 +511,14 @@ namespace CodeImp.DoomBuilder.Windows
 		// Link clicked
 		private void link_Click(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			General.OpenWebsite("http://www.zdoom.org/wiki/Using_ZIPs_as_WAD_replacement");
+			if(e.Link.LinkData is LinkType.ETERNITY)
+			{
+				General.OpenWebsite("https://eternity.youfailit.net/wiki/ZIP");
+			}
+			else
+			{
+				General.OpenWebsite("http://www.zdoom.org/wiki/Using_ZIPs_as_WAD_replacement");
+			}
 		}
 
 		// Help
