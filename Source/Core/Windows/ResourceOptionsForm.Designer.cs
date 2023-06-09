@@ -109,7 +109,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.tabs.Name = "tabs";
 			this.tabs.Padding = new System.Drawing.Point(16, 3);
 			this.tabs.SelectedIndex = 0;
-			this.tabs.Size = new System.Drawing.Size(369, 237);
+			this.tabs.Size = new System.Drawing.Size(379, 237);
 			this.tabs.TabIndex = 0;
 			// 
 			// wadfiletab
@@ -123,7 +123,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.wadfiletab.Location = new System.Drawing.Point(4, 22);
 			this.wadfiletab.Name = "wadfiletab";
 			this.wadfiletab.Padding = new System.Windows.Forms.Padding(3);
-			this.wadfiletab.Size = new System.Drawing.Size(361, 211);
+			this.wadfiletab.Size = new System.Drawing.Size(371, 211);
 			this.wadfiletab.TabIndex = 0;
 			this.wadfiletab.Text = "From WAD File";
 			this.wadfiletab.UseVisualStyleBackColor = true;
@@ -132,7 +132,7 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			this.label6.Location = new System.Drawing.Point(14, 102);
 			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(329, 58);
+			this.label6.Size = new System.Drawing.Size(339, 58);
 			this.label6.TabIndex = 0;
 			this.label6.Text = resources.GetString("label6.Text");
 			// 
@@ -149,7 +149,7 @@ namespace CodeImp.DoomBuilder.Windows
 			// browsewad
 			// 
 			this.browsewad.Image = global::CodeImp.DoomBuilder.Properties.Resources.Folder;
-			this.browsewad.Location = new System.Drawing.Point(315, 35);
+			this.browsewad.Location = new System.Drawing.Point(325, 35);
 			this.browsewad.Name = "browsewad";
 			this.browsewad.Padding = new System.Windows.Forms.Padding(0, 0, 1, 3);
 			this.browsewad.Size = new System.Drawing.Size(28, 24);
@@ -163,7 +163,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.wadlocation.Location = new System.Drawing.Point(17, 37);
 			this.wadlocation.Name = "wadlocation";
 			this.wadlocation.ReadOnly = true;
-			this.wadlocation.Size = new System.Drawing.Size(292, 20);
+			this.wadlocation.Size = new System.Drawing.Size(302, 20);
 			this.wadlocation.TabIndex = 1;
 			this.wadlocation.TabStop = false;
 			this.wadlocation.Enter += new System.EventHandler(this.wadlocation_Enter);
@@ -181,7 +181,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.directorytab.Location = new System.Drawing.Point(4, 22);
 			this.directorytab.Name = "directorytab";
 			this.directorytab.Padding = new System.Windows.Forms.Padding(3);
-			this.directorytab.Size = new System.Drawing.Size(361, 211);
+			this.directorytab.Size = new System.Drawing.Size(371, 211);
 			this.directorytab.TabIndex = 1;
 			this.directorytab.Text = "From Directory";
 			this.directorytab.UseVisualStyleBackColor = true;
@@ -192,7 +192,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.pke_directorylink.LinkColor = System.Drawing.SystemColors.HotTrack;
 			this.pke_directorylink.Location = new System.Drawing.Point(15, 173);
 			this.pke_directorylink.Name = "pke_directorylink";
-			this.pke_directorylink.Size = new System.Drawing.Size(329, 46);
+			this.pke_directorylink.Size = new System.Drawing.Size(339, 46);
 			this.pke_directorylink.TabIndex = 7;
 			this.pke_directorylink.TabStop = true;
 			this.pke_directorylink.Text = "Alternatively, you may use the Eternity PKE directory structure.";
@@ -205,7 +205,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.pk3_directorylink.LinkColor = System.Drawing.SystemColors.HotTrack;
 			this.pk3_directorylink.Location = new System.Drawing.Point(14, 127);
 			this.pk3_directorylink.Name = "pk3_directorylink";
-			this.pk3_directorylink.Size = new System.Drawing.Size(329, 58);
+			this.pk3_directorylink.Size = new System.Drawing.Size(339, 58);
 			this.pk3_directorylink.TabIndex = 1;
 			this.pk3_directorylink.TabStop = true;
 			this.pk3_directorylink.Text = "The directory may use the ZDoom PK3 directory structure, or you can choose to use" +
@@ -265,7 +265,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.pk3filetab.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.pk3filetab.Location = new System.Drawing.Point(4, 22);
 			this.pk3filetab.Name = "pk3filetab";
-			this.pk3filetab.Size = new System.Drawing.Size(361, 211);
+			this.pk3filetab.Size = new System.Drawing.Size(371, 211);
 			this.pk3filetab.TabIndex = 2;
 			this.pk3filetab.Text = "From PK3/PKE/PK7";
 			this.pk3filetab.UseVisualStyleBackColor = true;
@@ -276,7 +276,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.pkelink.LinkColor = System.Drawing.SystemColors.HotTrack;
 			this.pkelink.Location = new System.Drawing.Point(15, 111);
 			this.pkelink.Name = "pkelink";
-			this.pkelink.Size = new System.Drawing.Size(328, 47);
+			this.pkelink.Size = new System.Drawing.Size(338, 47);
 			this.pkelink.TabIndex = 8;
 			this.pkelink.TabStop = true;
 			this.pkelink.Text = "PKE archive files are expected to use the Eternity archive directory structure.";
@@ -289,7 +289,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.pk3link.LinkColor = System.Drawing.SystemColors.HotTrack;
 			this.pk3link.Location = new System.Drawing.Point(15, 72);
 			this.pk3link.Name = "pk3link";
-			this.pk3link.Size = new System.Drawing.Size(328, 47);
+			this.pk3link.Size = new System.Drawing.Size(338, 47);
 			this.pk3link.TabIndex = 7;
 			this.pk3link.TabStop = true;
 			this.pk3link.Text = "PK3 and PK7 archive files are expected to use the ZDoom archive directory structu" +
@@ -300,7 +300,7 @@ namespace CodeImp.DoomBuilder.Windows
 			// browsepk3
 			// 
 			this.browsepk3.Image = global::CodeImp.DoomBuilder.Properties.Resources.Folder;
-			this.browsepk3.Location = new System.Drawing.Point(315, 35);
+			this.browsepk3.Location = new System.Drawing.Point(325, 35);
 			this.browsepk3.Name = "browsepk3";
 			this.browsepk3.Padding = new System.Windows.Forms.Padding(0, 0, 1, 3);
 			this.browsepk3.Size = new System.Drawing.Size(28, 24);
@@ -313,7 +313,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.pk3location.Location = new System.Drawing.Point(17, 37);
 			this.pk3location.Name = "pk3location";
 			this.pk3location.ReadOnly = true;
-			this.pk3location.Size = new System.Drawing.Size(292, 20);
+			this.pk3location.Size = new System.Drawing.Size(302, 20);
 			this.pk3location.TabIndex = 0;
 			this.pk3location.TabStop = false;
 			this.pk3location.Enter += new System.EventHandler(this.pk3location_Enter);
@@ -322,7 +322,7 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			this.cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.cancel.Location = new System.Drawing.Point(262, 330);
+			this.cancel.Location = new System.Drawing.Point(272, 330);
 			this.cancel.Name = "cancel";
 			this.cancel.Size = new System.Drawing.Size(112, 25);
 			this.cancel.TabIndex = 2;
@@ -333,7 +333,7 @@ namespace CodeImp.DoomBuilder.Windows
 			// apply
 			// 
 			this.apply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.apply.Location = new System.Drawing.Point(144, 330);
+			this.apply.Location = new System.Drawing.Point(154, 330);
 			this.apply.Name = "apply";
 			this.apply.Size = new System.Drawing.Size(112, 25);
 			this.apply.TabIndex = 1;
@@ -375,7 +375,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.checkingloader.ForeColor = System.Drawing.SystemColors.InfoText;
 			this.checkingloader.Location = new System.Drawing.Point(12, 289);
 			this.checkingloader.Name = "checkingloader";
-			this.checkingloader.Size = new System.Drawing.Size(362, 32);
+			this.checkingloader.Size = new System.Drawing.Size(372, 32);
 			this.checkingloader.TabIndex = 4;
 			this.checkingloader.Visible = false;
 			// 
@@ -404,7 +404,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.CancelButton = this.cancel;
-			this.ClientSize = new System.Drawing.Size(386, 363);
+			this.ClientSize = new System.Drawing.Size(396, 363);
 			this.Controls.Add(this.checkingloader);
 			this.Controls.Add(this.notfortesting);
 			this.Controls.Add(this.cancel);
