@@ -160,6 +160,7 @@
 #define BT_MOVEUP				262144
 #define BT_MOVEDOWN				524288
 #define BT_SHOWSCORES			1048576
+#define BT_RUN					33554432
 
 // Do whatever you want with these.
 #define BT_USER1				2097152
@@ -193,6 +194,10 @@
 #define CR_DARKGRAY				20
 #define CR_DARKGREY				20
 #define CR_CYAN					21
+#define CR_ICE					22
+#define CR_FIRE					23
+#define CR_SAPPHIRE				24
+#define CR_TEAL					25
 
 // HUD message types --------------------------------------------------------
 
@@ -294,6 +299,18 @@
 #define APROP_MaxStepHeight 44
 #define APROP_MaxDropOffHeight 45
 #define APROP_DamageType	46
+#define APROP_SoundClass	47
+#define APROP_FriendlySeeBlocks 48
+
+// New to Eternity
+#define APROP_Counter0      100
+#define APROP_Counter1      101
+#define APROP_Counter2      102
+#define APROP_Counter3      103
+#define APROP_Counter4      104
+#define APROP_Counter5      105
+#define APROP_Counter6      106
+#define APROP_Counter7      107
 
 // Render Styles ------------------------------------------------------------
 
@@ -353,6 +370,7 @@
 #define DAMAGE_NONPLAYERS			2
 #define DAMAGE_IN_AIR				4
 #define DAMAGE_SUBCLASSES_PROTECT	8
+#define DAMAGE_NO_ARMOR			16
 
 // Flags for MorphActor -----------------------------------------------------
 
@@ -731,6 +749,8 @@
 
 #define SDF_ABSANGLE			1
 #define SDF_PERMANENT			2
+#define SDF_FIXED_ZOFF			4
+#define SDF_FIXED_DISTANCE		8
 
 // Actor pointer selectors
 
@@ -982,6 +1002,7 @@
 #define BLOCKF_SIGHT 256
 #define BLOCKF_HITSCAN 512
 #define BLOCKF_SOUND 1024
+#define BLOCKF_LANDMONSTERS 2048
 
 #define FOGP_DENSITY 0
 #define FOGP_OUTSIDEDENSITY 1
@@ -990,6 +1011,8 @@
 #define PRINTNAME_LEVELNAME -1
 #define PRINTNAME_LEVEL -2
 #define PRINTNAME_SKILL -3
+#define PRINTNAME_NEXTLEVEL -4
+#define PRINTNAME_NEXTSECRET -5
 
 #define CSF_NOFAKEFLOORS 1
 #define CSF_NOBLOCKALL 2
@@ -1074,6 +1097,10 @@
 #define QF_MAX			1 << 3
 #define QF_FULLINTENSITY	1 << 4
 #define QF_WAVE			1 << 5
+#define QF_3D			1 << 6
+#define QF_GROUNDONLY		1 << 7
+#define QF_AFFECTACTORS 	1 << 8
+#define QF_SHAKEONLY		1 << 9
 
 #define WARPF_ABSOLUTEOFFSET 0x1
 #define WARPF_ABSOLUTEANGLE 0x2
@@ -1105,3 +1132,29 @@
 #define CPXF_CLOSEST     (1 << 10)
 #define CPXF_SETONPTR    (1 << 11)
 #define CPXF_CHECKSIGHT  (1 << 12)
+
+#define SECPART_Floor 0
+#define SECPART_Ceiling 1
+#define SECPART_3D 2
+
+// For Line_SetAutomapFlags; These are or'd together
+#define AMLF_Secret		(1 << 0)
+#define AMLF_DontDraw		(1 << 1)
+#define AMLF_Mapped		(1 << 2)
+#define AMLF_Revealed		(1 << 3)
+
+// For Line_SetAutomapStyle
+#define AMLS_Default		0
+#define AMLS_OneSided		1
+#define AMLS_TwoSided		2
+#define AMLS_FloorDiff		3
+#define AMLS_CeilingDiff	4
+#define AMLS_ExtraFloor		5
+#define AMLS_Special		6
+#define AMLS_Secret		7
+#define AMLS_NotSeen		8
+#define AMLS_Locked		9
+#define AMLS_IntraTeleport	10
+#define AMLS_InterTeleport	11
+#define AMLS_UnexploredSecret	12
+#define AMLS_Portal		13
