@@ -3374,6 +3374,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			BuilderPlug.Me.ShowVisualThings++;
 			if(BuilderPlug.Me.ShowVisualThings > 2) BuilderPlug.Me.ShowVisualThings = 0;
+
+			string shortmessage = "Thing visibility is now " + (BuilderPlug.Me.ShowVisualThings > 0 ? (BuilderPlug.Me.ShowVisualThings > 1 ? "ON" : "SPRITE ONLY") : "OFF") + ".";
+			string message = shortmessage;
+			string key = Actions.Action.GetShortcutKeyDesc(General.Actions.Current.ShortcutKey);
+
+			if (!string.IsNullOrEmpty(key))
+				message += $" Press '{key}' to change.";
+
+			General.ToastManager.ShowToast("showvisualthings", ToastType.INFO, "Changed thing visibility", message, new StatusInfo(StatusType.Action, shortmessage));
 		}
 
 		[BeginAction("raisebrightness8")]
