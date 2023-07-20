@@ -36,6 +36,9 @@ uniforms
 	// Slope handle length
 	float slopeHandleLength;
 
+	// Skewing
+	vec2 skew; // the x component is used to negate the texture offset for the skew computation. There must be a better way
+
 }
 
 functions
@@ -223,7 +226,7 @@ shader world3d_main
 	
 	fragment
 	{
-		vec4 tcolor = texture(texture1, v2f.UV);
+		vec4 tcolor = texture(texture1, v2f.UV + vec2(0.0, (v2f.UV.x - skew.x) * skew.y));
 		tcolor = mix(tcolor, vec4(stencilColor.rgb, tcolor.a), stencilColor.a);
 		tcolor = getDynLightContribution(tcolor, v2f.Color, v2f.PosW, v2f.Normal);
 		out.FragColor = desaturate(tcolor);
@@ -240,7 +243,7 @@ shader world3d_fullbright extends world3d_main
 {
 	fragment
 	{
-		vec4 tcolor = texture(texture1, v2f.UV);
+		vec4 tcolor = texture(texture1, v2f.UV + vec2(0.0, (v2f.UV.x - skew.x) * skew.y));
 		tcolor = mix(tcolor, vec4(stencilColor.rgb, tcolor.a), stencilColor.a);
 		tcolor.a *= v2f.Color.a;
 		out.FragColor = tcolor;
@@ -257,7 +260,7 @@ shader world3d_main_highlight extends world3d_main
 {
 	fragment
 	{
-		vec4 tcolor = texture(texture1, v2f.UV);
+		vec4 tcolor = texture(texture1, v2f.UV + vec2(0.0, (v2f.UV.x - skew.x) * skew.y));
 		tcolor = mix(tcolor, vec4(stencilColor.rgb, tcolor.a), stencilColor.a);
 		tcolor = getDynLightContribution(tcolor, v2f.Color, v2f.PosW, v2f.Normal);
 		if (tcolor.a == 0.0)
@@ -284,7 +287,7 @@ shader world3d_fullbright_highlight extends world3d_fullbright
 {
 	fragment
 	{
-		vec4 tcolor = texture(texture1, v2f.UV);
+		vec4 tcolor = texture(texture1, v2f.UV + vec2(0.0, (v2f.UV.x - skew.x) * skew.y));
 		tcolor = mix(tcolor, vec4(stencilColor.rgb, tcolor.a), stencilColor.a);
 		if(tcolor.a == 0.0)
 		{
@@ -362,7 +365,7 @@ shader world3d_main_fog extends world3d_main
 {
 	fragment
 	{
-		vec4 tcolor = texture(texture1, v2f.UV);
+		vec4 tcolor = texture(texture1, v2f.UV + vec2(0.0, (v2f.UV.x - skew.x) * skew.y));
 		tcolor = mix(tcolor, vec4(stencilColor.rgb, tcolor.a), stencilColor.a);
 		tcolor = getDynLightContribution(tcolor, v2f.Color, v2f.PosW, v2f.Normal);
 		if (tcolor.a == 0.0)
@@ -386,7 +389,7 @@ shader world3d_main_highlight_fog extends world3d_main_fog
 {
 	fragment
 	{
-		vec4 tcolor = texture(texture1, v2f.UV);
+		vec4 tcolor = texture(texture1, v2f.UV + vec2(0.0, (v2f.UV.x - skew.x) * skew.y));
 		tcolor = mix(tcolor, vec4(stencilColor.rgb, tcolor.a), stencilColor.a);
 		tcolor = vec4(getDynLightContribution(tcolor, v2f.Color, v2f.PosW, v2f.Normal).rgb, tcolor.a);
 		if (tcolor.a == 0.0)
@@ -458,7 +461,7 @@ shader world3d_classic extends world3d_main
 		 
 		if (bool(drawPaletted))
 		{
-		    vec4 color = texture(texture1, v2f.UV);
+			vec4 color = texture(texture1, v2f.UV + vec2(0.0, (v2f.UV.x - skew.x) * skew.y));
 		    int entry = int(color.r * 255);
 		    float alpha = color.a;
 		    int lightLevel = lightLevelFromVertexColor(v2f.flatColor.rgb);
@@ -487,7 +490,7 @@ shader world3d_classic_highlight extends world3d_main
 		 
 		if (bool(drawPaletted))
         {
-            vec4 color = texture(texture1, v2f.UV);
+			vec4 color = texture(texture1, v2f.UV + vec2(0.0, (v2f.UV.x - skew.x) * skew.y));
             int entry = int(color.r * 255);
             float alpha = color.a;
             int lightLevel = lightLevelFromVertexColor(v2f.flatColor.rgb);

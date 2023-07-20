@@ -77,6 +77,8 @@ namespace CodeImp.DoomBuilder.Rendering
             DeclareUniform(UniformName.doomlightlevels, "doomlightlevels", UniformType.Int);
             DeclareUniform(UniformName.sectorLightLevel, "sectorLightLevel", UniformType.Int);
 
+            DeclareUniform(UniformName.skew, "skew", UniformType.Vec2f);
+
             // 2d fsaa
             CompileShader(ShaderName.display2d_fsaa, "display2d.shader", "display2d_fsaa");
             
@@ -804,7 +806,8 @@ namespace CodeImp.DoomBuilder.Rendering
         drawPaletted,
         colormapSize,
         sectorLightLevel,
-        doomlightlevels
+        doomlightlevels,
+        skew
     }
 
     public enum VertexFormat : int { Flat, World }

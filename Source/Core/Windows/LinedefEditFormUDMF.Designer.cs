@@ -1042,7 +1042,6 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// custombackbutton
 			// 
-			this.custombackbutton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.custombackbutton.Location = new System.Drawing.Point(98, 170);
 			this.custombackbutton.Name = "custombackbutton";
 			this.custombackbutton.Size = new System.Drawing.Size(130, 25);

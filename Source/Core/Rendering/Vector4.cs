@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace CodeImp.DoomBuilder.Rendering
 {
@@ -45,6 +47,34 @@ namespace CodeImp.DoomBuilder.Rendering
         public float Z;
         public float W;
 
+        public static float Dot(Vector4f a, Vector4f b)
+        {
+            return a.X * b.X + a.Y * b.Y + a.Z * b.Z + a.W * b.W;
+        }
+
+        public float Length()
+        {
+            return (float)Math.Sqrt(Dot(this, this));
+        }
+
+        public static Vector4f Normalize(Vector4f v)
+        {
+            v.Normalize();
+            return v;
+        }
+
+        public void Normalize()
+        {
+            float len = Length();
+            if (len > 0.0f)
+            {
+                X /= len;
+                Y /= len;
+                Z /= len;
+                W /= len;
+            }
+        }
+
         public override bool Equals(object o)
         {
             if (o is Vector4f)
@@ -56,6 +86,16 @@ namespace CodeImp.DoomBuilder.Rendering
             {
                 return false;
             }
+        }
+
+        public static Vector4f operator *(Vector4f vec, float scalar)
+        {
+            return new Vector4f(vec.X * scalar, vec.Y * scalar, vec.Z * scalar, vec.W * scalar);
+        }
+
+        public static Vector4f operator *(float scalar, Vector4f vec)
+        {
+            return new Vector4f(vec.X * scalar, vec.Y * scalar, vec.Z * scalar, vec.W * scalar);
         }
 
         public static Vector4f operator +(Vector4f left, Vector4f right)

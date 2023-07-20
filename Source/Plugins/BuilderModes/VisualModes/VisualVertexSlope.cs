@@ -37,7 +37,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 			angle = line.GetAngle();
 
-			if (ld.Front.Sector != s)
+			if (ld.Front?.Sector != s)
 				clockwise = !clockwise;
 		}
 	}

@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.Rendering;
@@ -56,7 +57,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// We have no destructor
 			GC.SuppressFinalize(this);
 		}
-		
+
 		// This builds the geometry. Returns false when no geometry created.
 		public override bool Setup()
 		{
@@ -69,12 +70,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			Vector2D tscale = new Vector2D(Sidedef.Fields.GetValue("scalex_mid", 1.0),
 										   Sidedef.Fields.GetValue("scaley_mid", 1.0));
-            Vector2D tscaleAbs = new Vector2D(Math.Abs(tscale.x), Math.Abs(tscale.y));
+			Vector2D tscaleAbs = new Vector2D(Math.Abs(tscale.x), Math.Abs(tscale.y));
 			Vector2D toffset = new Vector2D(Sidedef.Fields.GetValue("offsetx_mid", 0.0),
 											Sidedef.Fields.GetValue("offsety_mid", 0.0));
-			
+
 			// Left and right vertices for this sidedef
-			if(Sidedef.IsFront)
+			if (Sidedef.IsFront)
 			{
 				vl = new Vector2D(Sidedef.Line.Start.Position.x, Sidedef.Line.Start.Position.y);
 				vr = new Vector2D(Sidedef.Line.End.Position.x, Sidedef.Line.End.Position.y);
@@ -87,20 +88,20 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			// Load sector data
 			SectorData sd = mode.GetSectorData(Sidedef.Sector);
-			
+
 			// Texture given?
-			if(Sidedef.LongMiddleTexture != MapSet.EmptyLongName)
+			if (Sidedef.LongMiddleTexture != MapSet.EmptyLongName)
 			{
 				// Load texture
 				base.Texture = General.Map.Data.GetTextureImage(Sidedef.LongMiddleTexture);
-				if(base.Texture == null || base.Texture is UnknownImage)
+				if (base.Texture == null || base.Texture is UnknownImage)
 				{
 					base.Texture = General.Map.Data.UnknownTexture3D;
 					setuponloadedtexture = Sidedef.LongMiddleTexture;
 				}
 				else
 				{
-					if(!base.Texture.IsImageLoaded)
+					if (!base.Texture.IsImageLoaded)
 						setuponloadedtexture = Sidedef.LongMiddleTexture;
 				}
 			}
@@ -141,26 +142,26 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// height is 0 then the TexturePlane doesn't work!
 			TexturePlane tp = new TexturePlane();
 			double floorbias = (Sidedef.Sector.CeilHeight == Sidedef.Sector.FloorHeight) ? 1.0 : 0.0;
-			if(Sidedef.Line.IsFlagSet(General.Map.Config.LowerUnpeggedFlag))
+			if (Sidedef.Line.IsFlagSet(General.Map.Config.LowerUnpeggedFlag))
 			{
 				// When lower unpegged is set, the middle texture is bound to the bottom
 				tp.tlt.y = tsz.y - (Sidedef.Sector.CeilHeight - Sidedef.Sector.FloorHeight);
 			}
 			tp.trb.x = tp.tlt.x + Math.Round(Sidedef.Line.Length); //mxd. (G)ZDoom snaps texture coordinates to integral linedef length
 			tp.trb.y = tp.tlt.y + (Sidedef.Sector.CeilHeight - (Sidedef.Sector.FloorHeight + floorbias));
-			
+
 			// Apply texture offset
 			tp.tlt += tof;
 			tp.trb += tof;
-			
+
 			// Transform pixel coordinates to texture coordinates
 			tp.tlt /= tsz;
 			tp.trb /= tsz;
-			
+
 			// Left top and right bottom of the geometry that
 			tp.vlt = new Vector3D(vl.x, vl.y, Sidedef.Sector.CeilHeight);
 			tp.vrb = new Vector3D(vr.x, vr.y, Sidedef.Sector.FloorHeight + floorbias);
-			
+
 			// Make the right-top coordinates
 			tp.trt = new Vector2D(tp.trb.x, tp.tlt.y);
 			tp.vrt = new Vector3D(tp.vrb.x, tp.vrb.y, tp.vlt.z);
@@ -170,21 +171,21 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			double fr = sd.Floor.plane.GetZ(vr);
 			double cl = sd.Ceiling.plane.GetZ(vl);
 			double cr = sd.Ceiling.plane.GetZ(vr);
-			
+
 			// Anything to see?
-			if(((cl - fl) > 0.01f) || ((cr - fr) > 0.01f))
+			if (((cl - fl) > 0.01f) || ((cr - fr) > 0.01f))
 			{
 				// Keep top and bottom planes for intersection testing
 				top = sd.Ceiling.plane;
 				bottom = sd.Floor.plane;
-				
+
 				// Create initial polygon, which is just a quad between floor and ceiling
 				WallPolygon poly = new WallPolygon();
 				poly.Add(new Vector3D(vl.x, vl.y, fl));
 				poly.Add(new Vector3D(vl.x, vl.y, cl));
 				poly.Add(new Vector3D(vr.x, vr.y, cr));
 				poly.Add(new Vector3D(vr.x, vr.y, fr));
-				
+
 				// Determine initial color
 				int lightlevel = lightabsolute ? lightvalue : sd.Ceiling.brightnessbelow + lightvalue;
 
@@ -198,18 +199,22 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				List<WallPolygon> polygons = new List<WallPolygon> { poly };
 				ClipExtraFloors(polygons, sd.ExtraFloors, false); //mxd
 
-				if(polygons.Count > 0)
+				if (polygons.Count > 0)
 				{
 					// Process the polygon and create vertices
 					List<WorldVertex> verts = CreatePolygonVertices(polygons, tp, sd, lightvalue, lightabsolute);
-					if(verts.Count > 2)
+					if (verts.Count > 2)
 					{
 						base.SetVertices(verts);
+
+						// Set skewing
+						UpdateSkew();
+
 						return true;
 					}
 				}
 			}
-			
+
 			base.SetVertices(null); //mxd
 			return false;
 		}
@@ -287,7 +292,36 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			SectorData sd = mode.GetSectorDataEx(Sector.Sector);
 			if(sd != null) sd.Reset(true);
 		}
-		
+
+		/// <summary>
+		/// Updates the value for texture skewing. Has to be done after the texture and vertices are set.
+		/// </summary>
+		public void UpdateSkew()
+		{
+			// Reset
+			skew = new Vector2f(0.0f);
+
+			if (!General.Map.Config.SidedefTextureSkewing)
+				return;
+
+			string skewtype = Sidedef.Fields.GetValue("skew_middle_type", "none");
+
+			// We don't have to check for back because this it's single-sided
+			if ((skewtype == "front_floor" || skewtype == "front_ceiling") && Texture != null)
+			{
+				double leftz, rightz;
+				Plane plane = skewtype == "front_floor" ? Sector.GetSectorData().Floor.plane : Sector.GetSectorData().Ceiling.plane;
+
+				leftz = plane.GetZ(Sidedef.Line.Start.Position);
+				rightz = plane.GetZ(Sidedef.Line.End.Position);
+
+				skew = new Vector2f(
+					Vertices.Min(v => v.u), // Get the lowest horizontal texture offset
+					(float)((rightz - leftz) / Sidedef.Line.Length * ((double)Texture.Width / Texture.Height))
+					);
+			}
+		}
+
 		#endregion
 	}
 }

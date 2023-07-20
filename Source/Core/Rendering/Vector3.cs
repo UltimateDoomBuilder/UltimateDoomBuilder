@@ -116,6 +116,16 @@ namespace CodeImp.DoomBuilder.Rendering
             return X.GetHashCode() + Y.GetHashCode() + Z.GetHashCode();
         }
 
+        public static Vector3f operator *(Vector3f vec, float scalar)
+        {
+            return new Vector3f(vec.X * scalar, vec.Y * scalar, vec.Z * scalar);
+        }
+
+        public static Vector3f operator *(float scalar, Vector3f vec)
+        {
+            return new Vector3f(vec.X * scalar, vec.Y * scalar, vec.Z * scalar);
+        }
+
         public static Vector3f operator +(Vector3f left, Vector3f right)
         {
             return new Vector3f(left.X + right.X, left.Y + right.Y, left.Z + right.Z);

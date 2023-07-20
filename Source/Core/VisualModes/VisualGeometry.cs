@@ -76,6 +76,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 		protected VisualGeometryType geometrytype;
 		protected string partname; //UDMF part name
 		protected bool renderassky;
+
+		protected Vector2f skew;
 		
 		#endregion
 
@@ -117,6 +119,11 @@ namespace CodeImp.DoomBuilder.VisualModes
 		/// </summary>
 		public bool Selected { get { return selected; } set { selected = value; } }
 
+		/// <summary>
+		/// How much a texture is skewed.
+		/// </summary>
+		public Vector2f Skew { get { return skew; } }
+
 		#endregion
 
 		#region ================== Constructor / Destructor
@@ -128,6 +135,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		{
 			this.sector = vs;
 			this.geometrytype = VisualGeometryType.UNKNOWN; //mxd
+			skew = new Vector2f(0.0f);
 		}
 
 		/// <summary>
@@ -138,6 +146,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 			this.sector = vs;
 			this.sidedef = sd;
 			this.geometrytype = VisualGeometryType.UNKNOWN; //mxd
+			skew = new Vector2f(0.0f);
 		}
 
 		#endregion

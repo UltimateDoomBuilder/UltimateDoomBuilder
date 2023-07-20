@@ -23,7 +23,7 @@ using System.Drawing.Drawing2D;
 using CodeImp.DoomBuilder.Data;
 using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.GZBuilder.Data;
-using CodeImp.DoomBuilder.GZBuilder.MD3;
+using CodeImp.DoomBuilder.GZBuilder.Models;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.VisualModes;
 using CodeImp.DoomBuilder.GZBuilder;
@@ -974,13 +974,19 @@ namespace CodeImp.DoomBuilder.Rendering
                         // [ZZ] include desaturation factor
                         graphics.SetUniform(UniformName.desaturation, (float)sector.Sector.Desaturation);
 
+						// Skew
+						graphics.SetUniform(UniformName.skew, g.Skew);
+
 						// Render!
 						graphics.Draw(PrimitiveType.TriangleList, g.VertexOffset, g.Triangles);
 					}
 				}
 			}
 
-            graphics.SetUniform(UniformName.lightsEnabled, false);
+			// Done with geometry, reset potentially lingering skew setting
+			graphics.SetUniform(UniformName.skew, new Vector2f(0.0f, 0.0f));
+
+			graphics.SetUniform(UniformName.lightsEnabled, false);
 
             // Get things for this pass
             if (thingspass.Count > 0)
@@ -1295,8 +1301,11 @@ namespace CodeImp.DoomBuilder.Rendering
                     //
                     graphics.SetUniform(UniformName.desaturation, (float)sector.Sector.Desaturation);
 
-                    // Set the colors to use
-                    graphics.SetUniform(UniformName.sectorfogcolor, sector.Sector.FogColor);
+					// Skew
+					graphics.SetUniform(UniformName.skew, g.Skew);
+
+					// Set the colors to use
+					graphics.SetUniform(UniformName.sectorfogcolor, sector.Sector.FogColor);
                     graphics.SetUniform(UniformName.highlightcolor, CalculateHighlightColor((g == highlighted) && showhighlight, (g.Selected && showselection)));
 
                     // Render!
@@ -1305,7 +1314,10 @@ namespace CodeImp.DoomBuilder.Rendering
                 else graphics.SetUniform(UniformName.desaturation, 0.0f);
             }
 
-            graphics.SetUniform(UniformName.lightsEnabled, false);
+			// Done with geometry, reset potentially lingering skew setting
+			graphics.SetUniform(UniformName.skew, new Vector2f(0.0f, 0.0f));
+
+			graphics.SetUniform(UniformName.lightsEnabled, false);
 
             // Get things for this pass
             if (thingspass.Count > 0)
@@ -1439,8 +1451,8 @@ namespace CodeImp.DoomBuilder.Rendering
                         //
                         graphics.SetUniform(UniformName.desaturation, (float)t.Thing.Sector.Desaturation);
 
-                        // Apply changes
-                        graphics.SetUniform(UniformName.world, world);
+						// Apply changes
+						graphics.SetUniform(UniformName.world, world);
 
                         // Apply buffer
                         graphics.SetVertexBuffer(t.GeometryBuffer);

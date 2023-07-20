@@ -36,12 +36,15 @@ namespace CodeImp.DoomBuilder.ZDoom
                     return;
             }
 
+            // TODO: Zscript allows complex mathematical opeartions, not use addition.
+            // example: Goto Spawn + 5 * 2 - 7;
+            // Values of identifies are not used right now and always use 0
             tokenizer.SkipWhitespace();
             token = tokenizer.ExpectToken(ZScriptTokenType.OpAdd);
             if (token != null && token.IsValid)
             {
                 tokenizer.SkipWhitespace();
-                token = tokenizer.ExpectToken(ZScriptTokenType.Integer);
+                token = tokenizer.ExpectToken(ZScriptTokenType.Integer, ZScriptTokenType.Identifier);
                 if (token == null || !token.IsValid)
                 {
                     parser.ReportError("Expected state offset, got " + ((Object)token ?? "<null>").ToString());

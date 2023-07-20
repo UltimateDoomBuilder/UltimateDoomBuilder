@@ -152,6 +152,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				// Reset settings
 				points.Clear();
+				gridpoints.Clear();
 				labels.Clear();
 				drawingautoclosed = false;
 

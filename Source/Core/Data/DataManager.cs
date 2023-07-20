@@ -29,7 +29,7 @@ using System.Windows.Forms;
 using CodeImp.DoomBuilder.Config;
 using CodeImp.DoomBuilder.Data.Scripting;
 using CodeImp.DoomBuilder.GZBuilder.Data;
-using CodeImp.DoomBuilder.GZBuilder.MD3;
+using CodeImp.DoomBuilder.GZBuilder.Models;
 using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.IO;
 using CodeImp.DoomBuilder.Map;
@@ -830,7 +830,7 @@ namespace CodeImp.DoomBuilder.Data
 			if(modeldefentries[type].LoadState != ModelLoadState.None) return true;
 
 			//create models
-			ModelReader.Load(modeldefentries[type], containers);
+			ModelLoader.Load(modeldefentries[type], containers);
 
 			if(modeldefentries[type].Model != null) 
 			{
@@ -3557,7 +3557,7 @@ namespace CodeImp.DoomBuilder.Data
 			// Load the skysphere model...
 			BoundingBoxSizes bbs = new BoundingBoxSizes();
 			Stream modeldata = General.ThisAssembly.GetManifestResourceStream("CodeImp.DoomBuilder.Resources.SkySphere.md3");
-			ModelReader.MD3LoadResult meshes = ModelReader.ReadMD3Model(ref bbs, new Dictionary<int, string>(), modeldata, 0);
+			ModelLoadResult meshes = MD3ModelLoader.Load(ref bbs, new Dictionary<int, string>(), modeldata, 0);
 			if(meshes.Meshes.Count != 3) throw new Exception("Skybox creation failed: " 
 				+ (string.IsNullOrEmpty(meshes.Errors) ? "skybox model must contain 3 surfaces" : meshes.Errors));
 

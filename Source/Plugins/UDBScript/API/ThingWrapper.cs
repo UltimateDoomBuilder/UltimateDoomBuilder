@@ -515,6 +515,8 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 		public SectorWrapper getSector()
 		{
 			thing.DetermineSector();
+			if (thing.Sector == null)
+				return null;
 			return new SectorWrapper(thing.Sector);
 		}
 

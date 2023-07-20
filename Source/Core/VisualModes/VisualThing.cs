@@ -26,7 +26,7 @@ using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Rendering;
 using Plane = CodeImp.DoomBuilder.Geometry.Plane;
 using CodeImp.DoomBuilder.GZBuilder;
-using CodeImp.DoomBuilder.GZBuilder.MD3;
+using CodeImp.DoomBuilder.GZBuilder.Models;
 
 #endregion
 

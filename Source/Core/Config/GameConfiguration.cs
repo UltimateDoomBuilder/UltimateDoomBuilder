@@ -114,6 +114,7 @@ namespace CodeImp.DoomBuilder.Config
 		private readonly bool distinctwallbrightness;
 		private readonly bool distinctsidedefpartbrightness;
 		private readonly bool sectormultitag;
+		private readonly bool sidedeftextureskewing;
 
 		// Skills
 		private readonly List<SkillInfo> skills;
@@ -293,6 +294,7 @@ namespace CodeImp.DoomBuilder.Config
 		public bool DistinctWallBrightness { get { return distinctwallbrightness; } }
 		public bool DistinctSidedefPartBrightness { get { return distinctsidedefpartbrightness; } }
 		public bool SectorMultiTag { get { return sectormultitag; } }
+		public bool SidedefTextureSkewing { get { return sidedeftextureskewing; } }
 
 		// Texture/flat/voxel sources
 		public IDictionary TextureRanges { get { return textureranges; } }
@@ -470,6 +472,7 @@ namespace CodeImp.DoomBuilder.Config
 			localsidedeftextureoffsets = (cfg.ReadSetting("localsidedeftextureoffsets", false)); //MaxW
 			effect3dfloorsupport = cfg.ReadSetting("effect3dfloorsupport", false);
 			planeequationsupport = cfg.ReadSetting("planeequationsupport", false);
+			sidedeftextureskewing = cfg.ReadSetting("sidedeftextureskewing", false);
 			distinctfloorandceilingbrightness = cfg.ReadSetting("distinctfloorandceilingbrightness", false);
 			distinctwallbrightness = cfg.ReadSetting("distinctwallbrightness", false);
 			distinctsidedefpartbrightness = cfg.ReadSetting("distinctsidedefpartbrightness", false);
