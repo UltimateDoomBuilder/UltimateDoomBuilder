@@ -809,6 +809,16 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 								// All the cloned things are now the things we want to drag
 								dragthings = clonedthings;
+
+								// Update things filter
+								General.Map.ThingsFilter.Update();
+								General.Interface.RefreshInfo();
+
+								//mxd. Update helper lines
+								UpdateHelperObjects();
+
+								// Redraw
+								General.Interface.RedrawDisplay();
 							}
 						}
 
