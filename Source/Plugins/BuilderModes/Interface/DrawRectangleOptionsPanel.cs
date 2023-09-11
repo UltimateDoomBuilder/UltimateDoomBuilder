@@ -9,6 +9,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public event EventHandler OnContinuousDrawingChanged;
 		public event EventHandler OnShowGuidelinesChanged;
 		public event EventHandler OnRadialDrawingChanged;
+		public event EventHandler OnPlaceThingsAtVerticesChanged;
 
 		private bool blockevents;
 
@@ -21,6 +22,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public bool ContinuousDrawing { get { return continuousdrawing.Checked; } set { continuousdrawing.Checked = value; } }
 		public bool ShowGuidelines { get { return showguidelines.Checked; } set { showguidelines.Checked = value; } }
 		public bool RadialDrawing { get { return radialdrawing.Checked; } set { radialdrawing.Checked = value; } }
+		public bool PlaceThingsAtVertices { get { return placethingsatvertices.Checked; } set { placethingsatvertices.Checked = value; } }
 
 		public DrawRectangleOptionsPanel() 
 		{
@@ -36,6 +38,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Interface.AddButton(continuousdrawing);
 			General.Interface.AddButton(showguidelines);
 			General.Interface.AddButton(radialdrawing);
+			General.Interface.AddButton(placethingsatvertices);
 			General.Interface.AddButton(toolStripSeparator1);
 			General.Interface.AddButton(radiuslabel);
 			General.Interface.AddButton(radius);
@@ -55,6 +58,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Interface.RemoveButton(radiuslabel);
 			General.Interface.RemoveButton(toolStripSeparator1);
 			General.Interface.RemoveButton(showguidelines);
+			General.Interface.RemoveButton(placethingsatvertices);
 			General.Interface.RemoveButton(continuousdrawing);
 			General.Interface.RemoveButton(radialdrawing);
 			General.Interface.EndToolbarUpdate();
@@ -90,6 +94,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private void radialdrawing_CheckedChanged(object sender, EventArgs e)
 		{
 			if(OnRadialDrawingChanged != null) OnRadialDrawingChanged(radialdrawing.Checked, EventArgs.Empty);
+		}
+
+		private void placethingsatvertices_CheckedChanged(object sender, EventArgs e)
+		{
+			if (OnPlaceThingsAtVerticesChanged != null) OnPlaceThingsAtVerticesChanged(placethingsatvertices.Checked, EventArgs.Empty);
 		}
 	}
 }
