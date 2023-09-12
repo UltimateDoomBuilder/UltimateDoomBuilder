@@ -1474,7 +1474,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				foreach(Thing t in selected) 
 				{
 					ThingTypeInfo info = General.Map.Data.GetThingInfo(t.Type);
-					if(info == null || info.Category == null || info.Category.Arrow == 0)
+					if(info == null || info.FixedRotation == true)
 						continue;
 
 					int newangle = Angle2D.RealToDoom(Vector2D.GetAngle(mousemappos, t.Position) + Angle2D.PI);
@@ -1488,7 +1488,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				foreach(Thing t in selected) 
 				{
 					ThingTypeInfo info = General.Map.Data.GetThingInfo(t.Type);
-					if(info == null || info.Category == null || info.Category.Arrow == 0)
+					if(info == null || info.FixedRotation == true)
 						continue;
 
 					int newangle = Angle2D.RealToDoom(Vector2D.GetAngle(mousemappos, t.Position));
