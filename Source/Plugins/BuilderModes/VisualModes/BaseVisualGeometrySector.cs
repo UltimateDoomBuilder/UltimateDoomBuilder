@@ -101,7 +101,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public virtual void SelectNeighbours(bool select, bool withSameTexture, bool withSameHeight) { } //mxd
 
 		//mxd
-		override protected void PerformAutoSelection()
+		override public void PerformAutoSelection()
 		{
 			if(!performautoselection) return;
 			if(Triangles > 0)

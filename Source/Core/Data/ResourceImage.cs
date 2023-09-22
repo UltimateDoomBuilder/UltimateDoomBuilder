@@ -47,7 +47,7 @@ namespace CodeImp.DoomBuilder.Data
 			SetName(resourcename);
 
 			// Temporarily load resource from memory
-			Stream bitmapdata = assembly.GetManifestResourceStream(resourcename);
+			Stream bitmapdata = assembly.GetManifestResourceStream(resourcename); 
 			Bitmap bmp = (Bitmap)Image.FromStream(bitmapdata);
 
 			// Get width and height from image

@@ -94,7 +94,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		#region ================== Methods
 
 		//mxd
-		override protected void PerformAutoSelection()
+		public override void PerformAutoSelection()
 		{
 			if(!performautoselection) return;
 			if(Triangles > 0)

@@ -653,39 +653,39 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					}
 
 					// Start dragging the selection
-					if(!BuilderPlug.Me.DontMoveGeometryOutsideMapBoundary || CanDrag()) //mxd
+					if(!BuilderPlug.Me.DontMoveGeometryOutsideMapBoundary || CanDrag(dragvertices)) //mxd
 						General.Editing.ChangeMode(new DragVerticesMode(mousedownmappos, dragvertices));
 				}
 			}
 		}
 
 		//mxd. Check if any selected vertex is outside of map boundary
-		private static bool CanDrag()
+		private static bool CanDrag(ICollection<Vertex> dragvertices)
 		{
-			ICollection<Vertex> selectedverts = General.Map.Map.GetSelectedVertices(true);
 			int unaffectedCount = 0;
 
-			foreach(Vertex v in selectedverts) 
+			foreach(Vertex v in dragvertices) 
 			{
 				// Make sure the vertex is inside the map boundary
 				if(v.Position.x < General.Map.Config.LeftBoundary || v.Position.x > General.Map.Config.RightBoundary
 					|| v.Position.y > General.Map.Config.TopBoundary || v.Position.y < General.Map.Config.BottomBoundary) 
 				{
-
-					v.Selected = false;
 					unaffectedCount++;
 				}
 			}
 
-			if(unaffectedCount == selectedverts.Count) 
+			if (unaffectedCount == dragvertices.Count)
 			{
-				General.Interface.DisplayStatus(StatusType.Warning, "Unable to drag selection: " + (selectedverts.Count == 1 ? "selected vertex is" : "all of selected vertices are") + " outside of map boundary!");
+				General.Interface.DisplayStatus(StatusType.Warning, "Unable to drag selection: " + (dragvertices.Count == 1 ? "selected vertex is" : "all of selected vertices are") + " outside of map boundary!");
 				General.Interface.RedrawDisplay();
 				return false;
 			}
-			
-			if(unaffectedCount > 0)
+
+			if (unaffectedCount > 0)
+			{
 				General.Interface.DisplayStatus(StatusType.Warning, unaffectedCount + " of selected vertices " + (unaffectedCount == 1 ? "is" : "are") + " outside of map boundary!");
+				return false;
+			}
 
 			return true;
 		}

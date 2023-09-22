@@ -1333,19 +1333,18 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					}
 
 					// Start dragging the selection
-					if(!BuilderPlug.Me.DontMoveGeometryOutsideMapBoundary || CanDrag()) //mxd
+					if(!BuilderPlug.Me.DontMoveGeometryOutsideMapBoundary || CanDrag(dragsectors)) //mxd
 						General.Editing.ChangeMode(new DragSectorsMode(mousedownmappos, dragsectors));
 				}
 			}
 		}
 
 		//mxd. Check if any selected sector is outside of map boundary
-		private bool CanDrag() 
+		private bool CanDrag(ICollection<Sector> dragsectors) 
 		{
-			ICollection<Sector> selectedsectors = General.Map.Map.GetSelectedSectors(true);
 			int unaffectedCount = 0;
 
-			foreach(Sector s in selectedsectors) 
+			foreach(Sector s in dragsectors) 
 			{
 				// Make sure the sector is inside the map boundary
 				foreach(Sidedef sd in s.Sidedefs) 
@@ -1355,24 +1354,25 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						|| sd.Line.End.Position.x < General.Map.Config.LeftBoundary || sd.Line.End.Position.x > General.Map.Config.RightBoundary
 						|| sd.Line.End.Position.y > General.Map.Config.TopBoundary || sd.Line.End.Position.y < General.Map.Config.BottomBoundary) 
 					{
-						SelectSector(s, false, false);
 						unaffectedCount++;
 						break;
 					}
 				}
 			}
 
-			if(unaffectedCount == selectedsectors.Count) 
+			if (unaffectedCount == dragsectors.Count)
 			{
-				General.Interface.DisplayStatus(StatusType.Warning, "Unable to drag selection: " + (selectedsectors.Count == 1 ? "selected sector is" : "all of selected sectors are") + " outside of map boundary!");
+				General.Interface.DisplayStatus(StatusType.Warning, "Unable to drag selection: " + (dragsectors.Count == 1 ? "selected sector is" : "all of selected sectors are") + " outside of map boundary!");
 				General.Interface.RedrawDisplay();
 				return false;
 			}
 
-			if(unaffectedCount > 0)
+			if (unaffectedCount > 0)
+			{
 				General.Interface.DisplayStatus(StatusType.Warning, unaffectedCount + " of selected sectors " + (unaffectedCount == 1 ? "is" : "are") + " outside of map boundary!");
+				return false;
+			}
 
-			UpdateSelectedLabels(); //mxd
 			return true;
 		}
 

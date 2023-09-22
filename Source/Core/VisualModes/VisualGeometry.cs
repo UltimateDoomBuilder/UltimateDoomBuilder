@@ -164,7 +164,6 @@ namespace CodeImp.DoomBuilder.VisualModes
 				triangles = vertices.Length / 3;
 
 				CalculateNormals(); //mxd
-				PerformAutoSelection(); //mxd
 			} 
 			else 
 			{
@@ -285,7 +284,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		}
 
 		//mxd
-		protected abstract void PerformAutoSelection();
+		public abstract void PerformAutoSelection();
 
 		#endregion
 	}

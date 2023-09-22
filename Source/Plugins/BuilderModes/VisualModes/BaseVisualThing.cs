@@ -217,10 +217,16 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(!info.Bright)
 				{
 					Vector3D thingpos = new Vector3D(Thing.Position.x, Thing.Position.y, Thing.Position.z + sd.Floor.plane.GetZ(Thing.Position));
-					SectorLevel level = sd.GetLevelAboveOrAt(thingpos);
+
+					// If is thing's height is flush to a 3D floor top it's not rendered at the brightness of the 3D floor, so take the level above that.
+					// It's actually a bit more intricate, since GZDoom can render multiple vertical brightness levels for each thing, which UDB can't,
+					// so this is more of a workaround than a real solution
+					// See https://github.com/jewalky/UltimateDoomBuilder/issues/940
+					//SectorLevel level = sd.GetLevelAboveOrAt(thingpos);
+					SectorLevel level = sd.GetLevelAbove(thingpos);
 
 					//mxd. Let's use point on floor plane instead of Thing.Sector.FloorHeight;
-					if(nointeraction && level == null && sd.LightLevels.Count > 0) level = sd.LightLevels[sd.LightLevels.Count - 1];
+					if (nointeraction && level == null && sd.LightLevels.Count > 0) level = sd.LightLevels[sd.LightLevels.Count - 1];
 
 					//mxd. Use the light level of the highest surface when a thing is above highest sector level.
 					if(level != null)
@@ -322,12 +328,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					// Determine sprite size and offset
 					float radius = sprite.ScaledWidth * 0.5f;
 					float height = sprite.ScaledHeight;
-					ISpriteImage spriteimg = sprite as ISpriteImage;
-					if(spriteimg != null)
-					{
-						offsets.x = radius - spriteimg.OffsetX;
-						offsets.y = spriteimg.OffsetY - height;
-					}
+					offsets.x = radius - (sprite.OffsetX == int.MinValue ? 0 : sprite.OffsetX) * sprite.Scale.x;
+					offsets.y = (sprite.OffsetY == int.MinValue ? 0 : sprite.OffsetY) * sprite.Scale.y - height;
 
 					// Scale by thing type/actor scale
 					// We do this after the offset x/y determination above, because that is entirely in sprite pixels space

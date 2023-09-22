@@ -213,6 +213,9 @@ namespace CodeImp.DoomBuilder.VisualModes
 					}
 			}
 
+			if (potentialhandles.Count == 0)
+				return null;
+
 			handle = potentialhandles.OrderByDescending(h => Vector2D.Distance(h.Vertex.Position, vertex.Position)).First();
 
 			if (handle == this)

@@ -112,6 +112,8 @@ namespace CodeImp.DoomBuilder.Data
 				// Store source properteis
 				sourcesize = new Size(overridden.Width, overridden.Height);
 				sourcescale = overridden.Scale;
+				offsetx = overridden.OffsetX;
+				offsety = overridden.OffsetY;
 			}
 		}
 

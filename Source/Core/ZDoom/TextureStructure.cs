@@ -249,7 +249,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 			float scaley = ((yscale == 0.0f) ? General.Map.Config.DefaultTextureScale : 1f / yscale);
 
 			// Make texture
-			TEXTURESImage tex = new TEXTURESImage(name, virtualpath, width, height, scalex, scaley, worldpanning, texturenamespace, optional, nulltexture);
+			TEXTURESImage tex = new TEXTURESImage(name, virtualpath, width, height, xoffset, yoffset, scalex, scaley, worldpanning, texturenamespace, optional, nulltexture);
 
 			// Add patches
 			foreach(PatchStructure p in patches) tex.AddPatch(new TexturePatch(p));//mxd

@@ -678,9 +678,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		[BeginAction("exporttoimage")]
 		private void ExportToImage()
 		{
-			// Convert geometry selection to sectors
-			General.Map.Map.ConvertSelection(SelectionType.Sectors);
-
 			// Get sectors
 			ICollection<Sector> sectors = General.Map.Map.SelectedSectorsCount == 0 ? General.Map.Map.Sectors : General.Map.Map.GetSelectedSectors(true);
 			if (sectors.Count == 0)

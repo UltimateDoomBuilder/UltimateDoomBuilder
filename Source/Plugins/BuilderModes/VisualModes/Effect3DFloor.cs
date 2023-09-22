@@ -157,10 +157,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(sd.FloorGlow == null || !sd.FloorGlow.Fullbright) ceiling.color = 0;
 			}
 
-			// Apply alpha
-			floor.alpha = alpha;
-			ceiling.alpha = alpha;
-
 			//mxd
 			floor.extrafloor = true;
 			ceiling.extrafloor = true;
@@ -171,9 +167,17 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			sloped3dfloor = ((alpha < 255 || renderadditive) &&
 							 (Angle2D.RadToDeg(ceiling.plane.Normal.GetAngleZ()) != 270 ||
 							  Angle2D.RadToDeg(floor.plane.Normal.GetAngleZ()) != 90));
-			
+
+			// As GZDoom doesn't support translucent 3D floors make is fully opaque
+			if (sloped3dfloor)
+				alpha = 255;
+
+			// Apply alpha
+			floor.alpha = alpha;
+			ceiling.alpha = alpha;
+
 			// Do not adjust light? (works only for non-vavoom types)
-			if(!vavoomtype)
+			if (!vavoomtype)
 			{
 				bool disablelighting =  ((linedef.Args[2] & (int)Flags.DisableLighting)  == (int)Flags.DisableLighting); //mxd
 				bool restrictlighting = ((linedef.Args[2] & (int)Flags.RestrictLighting) == (int)Flags.RestrictLighting); //mxd

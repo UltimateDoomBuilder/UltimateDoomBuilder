@@ -1078,19 +1078,18 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					}
 
 					// Start dragging the selection
-					if(!BuilderPlug.Me.DontMoveGeometryOutsideMapBoundary || CanDrag()) //mxd
+					if(!BuilderPlug.Me.DontMoveGeometryOutsideMapBoundary || CanDrag(draglines)) //mxd
 						General.Editing.ChangeMode(new DragLinedefsMode(mousedownmappos, draglines));
 				}
 			}
 		}
 
 		//mxd. Check if any selected linedef is outside of map boundary
-		private static bool CanDrag() 
+		private static bool CanDrag(ICollection<Linedef> draglines) 
 		{
-			ICollection<Linedef> selectedlines = General.Map.Map.GetSelectedLinedefs(true);
 			int unaffectedCount = 0;
 
-			foreach(Linedef l in selectedlines) 
+			foreach(Linedef l in draglines) 
 			{
 				// Make sure the linedef is inside the map boundary
 				if(l.Start.Position.x < General.Map.Config.LeftBoundary || l.Start.Position.x > General.Map.Config.RightBoundary
@@ -1098,21 +1097,22 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					|| l.End.Position.x < General.Map.Config.LeftBoundary || l.End.Position.x > General.Map.Config.RightBoundary
 					|| l.End.Position.y > General.Map.Config.TopBoundary || l.End.Position.y < General.Map.Config.BottomBoundary) 
 				{
-
-					l.Selected = false;
 					unaffectedCount++;
 				}
 			}
 
-			if(unaffectedCount == selectedlines.Count) 
+			if (unaffectedCount == draglines.Count)
 			{
-				General.Interface.DisplayStatus(StatusType.Warning, "Unable to drag selection: " + (selectedlines.Count == 1 ? "selected linedef is" : "all of selected linedefs are") + " outside of map boundary!");
+				General.Interface.DisplayStatus(StatusType.Warning, "Unable to drag selection: " + (draglines.Count == 1 ? "selected linedef is" : "all of selected linedefs are") + " outside of map boundary!");
 				General.Interface.RedrawDisplay();
 				return false;
 			}
 
-			if(unaffectedCount > 0)
+			if (unaffectedCount > 0)
+			{
 				General.Interface.DisplayStatus(StatusType.Warning, unaffectedCount + " of selected linedefs " + (unaffectedCount == 1 ? "is" : "are") + " outside of map boundary!");
+				return false;
+			}
 
 			return true;
 		}

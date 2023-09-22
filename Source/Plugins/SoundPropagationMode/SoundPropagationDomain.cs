@@ -108,7 +108,7 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 			}
 		}
 
-		private static bool IsSoundBlockedByHeight(Linedef ld)
+		public static bool IsSoundBlockedByHeight(Linedef ld)
 		{
 			if(ld.Back == null || ld.Front == null) return false;
 

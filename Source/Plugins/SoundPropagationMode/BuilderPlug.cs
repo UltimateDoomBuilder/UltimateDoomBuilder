@@ -41,6 +41,12 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 	// Make sure the class is public, because only public classes can be seen
 	// by the core.
 	//
+
+	internal class ToastMessages
+	{
+		public static readonly string SOUNDPROPAGATIONMODE = "soundpropagationmode";
+	}
+
 	public class BuilderPlug : Plug
 	{
 		#region ================== Constants
@@ -170,6 +176,9 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 
 			// Keep a static reference
             me = this;
+
+			// Register toasts
+			General.ToastManager.RegisterToast(ToastMessages.SOUNDPROPAGATIONMODE, "Sound propagation mode", "Toasts related to sound propagation mode");
 		}
 
 		public override void OnMapOpenBegin()
