@@ -700,8 +700,8 @@ namespace CodeImp.DoomBuilder
 				{
 					// Problem! Can't save the map like this!
 					General.ShowErrorMessage("Unable to save the map: there are too many unique sidedefs!" + Environment.NewLine + Environment.NewLine
-						+ "Sidedefs before compresion: " + initialsidescount + Environment.NewLine
-						+ "Sidedefs after compresion: " + outputset.Sidedefs.Count
+						+ "Sidedefs before compression: " + initialsidescount + Environment.NewLine
+						+ "Sidedefs after compression: " + outputset.Sidedefs.Count
 						+ " (" + (outputset.Sidedefs.Count - io.MaxSidedefs) + " sidedefs above the limit)", MessageBoxButtons.OK);
 					General.MainWindow.DisplayStatus(oldstatus);
 					return false;
