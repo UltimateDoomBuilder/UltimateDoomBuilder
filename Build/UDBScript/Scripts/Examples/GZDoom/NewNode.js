@@ -1,4 +1,4 @@
-/// <reference path="../../udbscript.d.ts" />
+/// <reference path="../../../udbscript.d.ts" />
 
 `#version 4`;
 
@@ -22,6 +22,9 @@ gridsnap
 
 
 let mpos = UDB.Map.mousePosition;
+
+if(!mpos.isFinite())
+	UDB.die('Mouse cursor must be inside the map');
 
 
 let nodetype = 9022;
