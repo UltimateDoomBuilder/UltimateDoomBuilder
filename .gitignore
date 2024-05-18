@@ -32,3 +32,7 @@ bin
 /Build/OpenGLDebug.log
 /Source/Native/*.log
 /Build/builder
+Build/System.Buffers.dll
+Build/System.Memory.dll
+Build/System.Numerics.Vectors.dll
+Build/System.Runtime.CompilerServices.Unsafe.dll
