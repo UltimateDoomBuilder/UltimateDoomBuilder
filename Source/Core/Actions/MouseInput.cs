@@ -55,6 +55,10 @@ namespace CodeImp.DoomBuilder.Actions
 				mouse = null;
 			}
 
+			#if MONO_WINFORMS
+			MouseInput_ShowCursor(false);
+			#endif
+
 			// We have no destructor
 			GC.SuppressFinalize(this);
 		}
@@ -67,6 +71,10 @@ namespace CodeImp.DoomBuilder.Actions
 				mouse.Dispose();
 				mouse = null;
 			}
+
+			#if MONO_WINFORMS
+			MouseInput_ShowCursor(true);
+			#endif
 		}
 
 		#endregion
@@ -113,6 +121,11 @@ namespace CodeImp.DoomBuilder.Actions
 		}
 
 		#endregion
+
+		#if MONO_WINFORMS
+		[DllImport("BuilderNative.dll", CallingConvention = CallingConvention.Cdecl)]
+		private static extern void MouseInput_ShowCursor(bool show);
+		#endif
 	}
 
 	public struct MouseState
