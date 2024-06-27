@@ -147,7 +147,7 @@
 			// 
 			this.angle.AutoSize = false;
 			this.angle.Increment = new decimal(new int[] {
-            8,
+            5,
             0,
             0,
             0});
