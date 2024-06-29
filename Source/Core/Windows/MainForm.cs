@@ -4172,14 +4172,20 @@ namespace CodeImp.DoomBuilder.Windows
 		// Returns the new texture name or the same texture name when cancelled
 		public string BrowseTexture(IWin32Window owner, string initialvalue)
 		{
-			return TextureBrowserForm.Browse(owner, initialvalue, false);//mxd
+			BreakExclusiveMouseInput();
+			string tex = TextureBrowserForm.Browse(owner, initialvalue, false);//mxd
+			ResumeExclusiveMouseInput();
+			return tex;
 		}
 
 		// This browses for a flat
 		// Returns the new flat name or the same flat name when cancelled
 		public string BrowseFlat(IWin32Window owner, string initialvalue)
 		{
-			return TextureBrowserForm.Browse(owner, initialvalue, true); //mxd. was FlatBrowserForm
+			BreakExclusiveMouseInput();
+			string tex = TextureBrowserForm.Browse(owner, initialvalue, true); //mxd. was FlatBrowserForm
+			ResumeExclusiveMouseInput();
+			return tex;
 		}
 		
 		// This browses the lindef types
