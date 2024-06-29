@@ -408,6 +408,9 @@ namespace CodeImp.DoomBuilder.Controls
 		protected override void OnMouseDoubleClick(MouseEventArgs e)
 		{
 			base.OnMouseDoubleClick(e);
+			//TODO: testing this on Windows, it looks like General.Interface.CtrlState and 
+			//  General.Interface.ShiftState are always false, because as the main window
+			//  doesn't have focus and won't update these states
 			if(General.Interface.CtrlState || General.Interface.ShiftState || selection.Count != 1)
 				return;
 

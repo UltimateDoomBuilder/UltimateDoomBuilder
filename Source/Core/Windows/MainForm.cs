@@ -4172,9 +4172,20 @@ namespace CodeImp.DoomBuilder.Windows
 		// Returns the new texture name or the same texture name when cancelled
 		public string BrowseTexture(IWin32Window owner, string initialvalue)
 		{
+
+			DisableProcessing();
+			#if MONO_WINFORMS
+			//Mono's Winforms treat dialogs a little differently
+			//  they don't implicitly take focus from the parent window
+			//  and keyboard input from focus window isn't reset when the dialog takes focus
 			BreakExclusiveMouseInput();
+			ReleaseAllKeys();
+			#endif
 			string tex = TextureBrowserForm.Browse(owner, initialvalue, false);//mxd
+			#if MONO_WINFORMS
 			ResumeExclusiveMouseInput();
+			#endif
+			EnableProcessing();
 			return tex;
 		}
 
@@ -4182,9 +4193,19 @@ namespace CodeImp.DoomBuilder.Windows
 		// Returns the new flat name or the same flat name when cancelled
 		public string BrowseFlat(IWin32Window owner, string initialvalue)
 		{
+			DisableProcessing();
+			#if MONO_WINFORMS
+			//Mono's Winforms treat dialogs a little differently
+			//  they don't implicitly take focus from the parent window
+			//  and keyboard input from focus window isn't reset when the dialog takes focus
 			BreakExclusiveMouseInput();
+			ReleaseAllKeys();
+			#endif
 			string tex = TextureBrowserForm.Browse(owner, initialvalue, true); //mxd. was FlatBrowserForm
+			#if MONO_WINFORMS
 			ResumeExclusiveMouseInput();
+			#endif
+			EnableProcessing();
 			return tex;
 		}
 		
