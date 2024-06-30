@@ -124,7 +124,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						renderstyle = Thing.Fields.GetValue("renderstyle", renderstyle).ToLowerInvariant();
 					}
 
-					if((renderstyle == "add" || renderstyle == "translucent" || renderstyle == "subtract" || renderstyle == "translucentstencil") 
+					if((renderstyle == "add" || renderstyle == "translucent" || renderstyle == "subtract" || renderstyle == "translucentstencil" || renderstyle == "addshaded") 
 						&& Thing.Fields.ContainsKey("alpha"))
 					{
 						alpha = (byte)(General.Clamp(Thing.Fields.GetValue("alpha", info.Alpha), 0.0, 1.0) * 255.0);
@@ -175,6 +175,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 					case "add":
                     case "addstencil":
+					case "addshaded":
 						RenderPass = RenderPass.Additive;
 						break;
 
