@@ -283,6 +283,7 @@ namespace CodeImp.DoomBuilder.Controls
         {
             bool flag = false;
 
+#if !MONO_WINFORMS
             if (Environment.OSVersion.Version.Major >= 6)
             {
                 var r = new Reflector("System.Windows.Forms");
@@ -313,6 +314,7 @@ namespace CodeImp.DoomBuilder.Controls
             }
             else
             {
+#endif
                 var fbd = new FolderBrowserDialog();
                 fbd.Description = this.Title;
                 fbd.SelectedPath = this.InitialDirectory;
@@ -320,7 +322,9 @@ namespace CodeImp.DoomBuilder.Controls
                 if (fbd.ShowDialog(new WindowWrapper(hWndOwner)) != DialogResult.OK) return false;
                 ofd.FileName = fbd.SelectedPath;
                 flag = true;
+#if !MONO_WINFORMS
             }
+#endif
 
             return flag;
         }
