@@ -173,7 +173,9 @@ namespace CodeImp.DoomBuilder.Controls
             "96",
             "128",
             "192",
-            "256"});
+            "256",
+			"384",
+			"512"});
 			this.sizecombo.Location = new System.Drawing.Point(43, 32);
 			this.sizecombo.Margin = new System.Windows.Forms.Padding(3, 3, 6, 3);
 			this.sizecombo.Name = "sizecombo";
