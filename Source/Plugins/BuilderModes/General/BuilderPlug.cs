@@ -662,6 +662,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				idStudioExporter exporter = new idStudioExporter();
 				exporter.Export(form);
+				MessageBox.Show("Map exported successfully", "idStudio Exporter", MessageBoxButtons.OK, MessageBoxIcon.Information,
+					MessageBoxDefaultButton.Button1);
 			}
 		}
 

@@ -32,16 +32,14 @@
             this.label1 = new System.Windows.Forms.Label();
             this.gui_FolderBtn = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label5 = new System.Windows.Forms.Label();
+            this.gui_zShift = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
             this.gui_yShift = new System.Windows.Forms.NumericUpDown();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.gui_xShift = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
-            this.gui_zDownscale = new System.Windows.Forms.NumericUpDown();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.gui_xyDownscale = new System.Windows.Forms.NumericUpDown();
+            this.gui_Downscale = new System.Windows.Forms.NumericUpDown();
             this.gbTextureControls = new System.Windows.Forms.GroupBox();
             this.gui_ExportTextures = new System.Windows.Forms.CheckBox();
             this.gui_CancelBtn = new System.Windows.Forms.Button();
@@ -49,11 +47,13 @@
             this.gui_fileTree = new System.Windows.Forms.TreeView();
             this.label8 = new System.Windows.Forms.Label();
             this.gui_MapName = new System.Windows.Forms.TextBox();
+            this.gui_ShowTextCount = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gui_zShift)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gui_yShift)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gui_xShift)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gui_zDownscale)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gui_xyDownscale)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gui_Downscale)).BeginInit();
             this.gbTextureControls.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -86,16 +86,14 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.label5);
+            this.groupBox1.Controls.Add(this.gui_zShift);
+            this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.gui_yShift);
             this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.gui_xShift);
             this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Controls.Add(this.gui_zDownscale);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.gui_xyDownscale);
+            this.groupBox1.Controls.Add(this.gui_Downscale);
             this.groupBox1.Location = new System.Drawing.Point(12, 71);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(423, 75);
@@ -103,14 +101,41 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Transformations";
             // 
-            // label5
+            // gui_zShift
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(38, 47);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(36, 13);
-            this.label5.TabIndex = 12;
-            this.label5.Text = "Shifts:";
+            this.gui_zShift.Increment = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.gui_zShift.Location = new System.Drawing.Point(315, 43);
+            this.gui_zShift.Maximum = new decimal(new int[] {
+            1000000,
+            0,
+            0,
+            0});
+            this.gui_zShift.Minimum = new decimal(new int[] {
+            1000000,
+            0,
+            0,
+            -2147483648});
+            this.gui_zShift.Name = "gui_zShift";
+            this.gui_zShift.Size = new System.Drawing.Size(67, 20);
+            this.gui_zShift.TabIndex = 13;
+            this.gui_zShift.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(268, 45);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(41, 13);
+            this.label2.TabIndex = 12;
+            this.label2.Text = "Z Shift:";
             // 
             // gui_yShift
             // 
@@ -119,7 +144,7 @@
             0,
             0,
             0});
-            this.gui_yShift.Location = new System.Drawing.Point(226, 45);
+            this.gui_yShift.Location = new System.Drawing.Point(195, 43);
             this.gui_yShift.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -142,20 +167,20 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(203, 47);
+            this.label6.Location = new System.Drawing.Point(148, 45);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(17, 13);
+            this.label6.Size = new System.Drawing.Size(41, 13);
             this.label6.TabIndex = 10;
-            this.label6.Text = "Y:";
+            this.label6.Text = "Y Shift:";
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(96, 47);
+            this.label7.Location = new System.Drawing.Point(28, 45);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(17, 13);
+            this.label7.Size = new System.Drawing.Size(41, 13);
             this.label7.TabIndex = 9;
-            this.label7.Text = "X:";
+            this.label7.Text = "X Shift:";
             // 
             // gui_xShift
             // 
@@ -164,7 +189,7 @@
             0,
             0,
             0});
-            this.gui_xShift.Location = new System.Drawing.Point(119, 45);
+            this.gui_xShift.Location = new System.Drawing.Point(75, 43);
             this.gui_xShift.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -189,69 +214,28 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(6, 21);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(68, 13);
+            this.label4.Size = new System.Drawing.Size(63, 13);
             this.label4.TabIndex = 7;
-            this.label4.Text = "Downscales:";
+            this.label4.Text = "Downscale:";
             // 
-            // gui_zDownscale
+            // gui_Downscale
             // 
-            this.gui_zDownscale.DecimalPlaces = 2;
-            this.gui_zDownscale.Location = new System.Drawing.Point(226, 19);
-            this.gui_zDownscale.Maximum = new decimal(new int[] {
+            this.gui_Downscale.DecimalPlaces = 2;
+            this.gui_Downscale.Location = new System.Drawing.Point(75, 19);
+            this.gui_Downscale.Maximum = new decimal(new int[] {
             1000,
             0,
             0,
             0});
-            this.gui_zDownscale.Minimum = new decimal(new int[] {
+            this.gui_Downscale.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.gui_zDownscale.Name = "gui_zDownscale";
-            this.gui_zDownscale.Size = new System.Drawing.Size(67, 20);
-            this.gui_zDownscale.TabIndex = 6;
-            this.gui_zDownscale.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(203, 21);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(17, 13);
-            this.label3.TabIndex = 5;
-            this.label3.Text = "Z:";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(89, 21);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(24, 13);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "XY:";
-            // 
-            // gui_xyDownscale
-            // 
-            this.gui_xyDownscale.DecimalPlaces = 2;
-            this.gui_xyDownscale.Location = new System.Drawing.Point(119, 19);
-            this.gui_xyDownscale.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.gui_xyDownscale.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.gui_xyDownscale.Name = "gui_xyDownscale";
-            this.gui_xyDownscale.Size = new System.Drawing.Size(67, 20);
-            this.gui_xyDownscale.TabIndex = 0;
-            this.gui_xyDownscale.Value = new decimal(new int[] {
+            this.gui_Downscale.Name = "gui_Downscale";
+            this.gui_Downscale.Size = new System.Drawing.Size(67, 20);
+            this.gui_Downscale.TabIndex = 0;
+            this.gui_Downscale.Value = new decimal(new int[] {
             1,
             0,
             0,
@@ -259,6 +243,8 @@
             // 
             // gbTextureControls
             // 
+            this.gbTextureControls.Controls.Add(this.label3);
+            this.gbTextureControls.Controls.Add(this.gui_ShowTextCount);
             this.gbTextureControls.Controls.Add(this.gui_ExportTextures);
             this.gbTextureControls.Location = new System.Drawing.Point(12, 162);
             this.gbTextureControls.Name = "gbTextureControls";
@@ -322,6 +308,24 @@
             this.gui_MapName.Size = new System.Drawing.Size(327, 20);
             this.gui_MapName.TabIndex = 13;
             // 
+            // gui_ShowTextCount
+            // 
+            this.gui_ShowTextCount.AutoSize = true;
+            this.gui_ShowTextCount.Location = new System.Drawing.Point(19, 20);
+            this.gui_ShowTextCount.Name = "gui_ShowTextCount";
+            this.gui_ShowTextCount.Size = new System.Drawing.Size(109, 13);
+            this.gui_ShowTextCount.TabIndex = 1;
+            this.gui_ShowTextCount.Text = "[FILE COUNT HERE]";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(19, 42);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(190, 13);
+            this.label3.TabIndex = 14;
+            this.label3.Text = "Exporting textures may take some time.";
+            // 
             // idStudioExporterForm
             // 
             this.AcceptButton = this.gui_ExportBtn;
@@ -349,10 +353,10 @@
             this.Text = "Export to idStudio";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gui_zShift)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gui_yShift)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gui_xShift)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gui_zDownscale)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gui_xyDownscale)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gui_Downscale)).EndInit();
             this.gbTextureControls.ResumeLayout(false);
             this.gbTextureControls.PerformLayout();
             this.ResumeLayout(false);
@@ -366,12 +370,8 @@
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Button gui_FolderBtn;
 		private System.Windows.Forms.GroupBox groupBox1;
-		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.NumericUpDown gui_xyDownscale;
-		private System.Windows.Forms.Label label3;
-		private System.Windows.Forms.NumericUpDown gui_zDownscale;
+		private System.Windows.Forms.NumericUpDown gui_Downscale;
 		private System.Windows.Forms.Label label4;
-		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.NumericUpDown gui_yShift;
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.Label label7;
@@ -383,5 +383,9 @@
 		private System.Windows.Forms.TreeView gui_fileTree;
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.TextBox gui_MapName;
+		private System.Windows.Forms.NumericUpDown gui_zShift;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Label gui_ShowTextCount;
+		private System.Windows.Forms.Label label3;
 	}
 }

@@ -28,20 +28,20 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 	{
 		public string modPath;
 		public string mapName;
-		public float xyDownscale;
-		public float zDownscale;
+		public float downscale;
 		public float xShift;
 		public float yShift;
+		public float zShift;
 		public bool exportTextures;
 
 		public idStudioExportSettings(idStudioExporterForm form)
 		{
 			modPath = form.ModPath;
 			mapName = form.MapName;
-			xyDownscale = form.xyDownscale;
-			zDownscale = form.zDownscale;
+			downscale = form.Downscale;
 			xShift = form.xShift;
 			yShift = form.yShift;
+			zShift = form.zShift;
 			exportTextures = form.ExportTextures;
 		}
 	}
@@ -66,7 +66,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 		private void ExportLevel()
 		{
 			string mapPath = Path.Combine(cfg.modPath, "base/maps/");
-			General.ErrorLogger.Add(ErrorType.Warning, cfg.modPath);
+			//General.ErrorLogger.Add(ErrorType.Warning, cfg.modPath);
 			Directory.CreateDirectory(mapPath);
 			rootWriter = new idStudioMapWriter(cfg);
 			idStudioMapWriter wadToBrushRef = rootWriter.AddRefmap("wadtobrush");
@@ -82,12 +82,12 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				foreach(Vector2D dv in s.Triangles.Vertices)
 				{
 					idVertex fv = new idVertex();
-					fv.x = ((float)dv.x + cfg.xShift) / cfg.xyDownscale;
-					fv.y = ((float)dv.y + cfg.yShift) / cfg.xyDownscale;
+					fv.x = ((float)dv.x + cfg.xShift) / cfg.downscale;
+					fv.y = ((float)dv.y + cfg.yShift) / cfg.downscale;
 					verts.Add(fv);
 				}
-				float floorHeight = s.FloorHeight / cfg.zDownscale;
-				float ceilingHeight = s.CeilHeight / cfg.zDownscale;
+				float floorHeight = (s.FloorHeight + cfg.zShift) / cfg.downscale;
+				float ceilingHeight = (s.CeilHeight + cfg.zShift) / cfg.downscale;
 
 				// Given in clockwise winding order
 				//General.ErrorLogger.Add(ErrorType.Warning, "HAs " + verts.Count + " verts");
@@ -129,18 +129,18 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				idVertex v1 = new idVertex();
 				{
 					Vector2D vec = line.Start.Position;
-					v0.x = ((float)vec.x + cfg.xShift) / cfg.xyDownscale;
-					v0.y = ((float)vec.y + cfg.yShift) / cfg.xyDownscale;
+					v0.x = ((float)vec.x + cfg.xShift) / cfg.downscale;
+					v0.y = ((float)vec.y + cfg.yShift) / cfg.downscale;
 					vec = line.End.Position;
-					v1.x = ((float)vec.x + cfg.xShift) / cfg.xyDownscale;
-					v1.y = ((float)vec.y + cfg.yShift) / cfg.xyDownscale;
+					v1.x = ((float)vec.x + cfg.xShift) / cfg.downscale;
+					v1.y = ((float)vec.y + cfg.yShift) / cfg.downscale;
 				}
 
 				Sidedef front = line.Front;
-				float frontOffsetX = front.OffsetX / cfg.xyDownscale;
-				float frontOffsetY = front.OffsetY / cfg.zDownscale;
-				float frontFloor = front.Sector.FloorHeight / cfg.zDownscale;
-				float frontCeil = front.Sector.CeilHeight / cfg.zDownscale;
+				float frontOffsetX = front.OffsetX / cfg.downscale;
+				float frontOffsetY = front.OffsetY / cfg.downscale;
+				float frontFloor = (front.Sector.FloorHeight + cfg.zShift) / cfg.downscale;
+				float frontCeil = (front.Sector.CeilHeight + cfg.zShift) / cfg.downscale;
 				int frontSectIndex = front.Sector.Index;
 
 				// If true, this is a one-sided linedef
@@ -153,10 +153,10 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				}
 
 				Sidedef back = line.Back;
-				float backOffsetX = back.OffsetX / cfg.xyDownscale;
-				float backOffsetY = back.OffsetY / cfg.zDownscale;
-				float backFloor = back.Sector.FloorHeight / cfg.zDownscale;
-				float backCeil = back.Sector.CeilHeight / cfg.zDownscale;
+				float backOffsetX = back.OffsetX / cfg.downscale;
+				float backOffsetY = back.OffsetY / cfg.downscale;
+				float backFloor = (back.Sector.FloorHeight + cfg.zShift) / cfg.downscale;
+				float backCeil = (back.Sector.CeilHeight + cfg.zShift) / cfg.downscale;
 				int backSectIndex = back.Sector.Index;
 
 				// Texture pegging is based on the lowest/highest floor/ceiling - so we must distinguish
@@ -420,26 +420,32 @@ entity {{
 
 		private void BeginBrushDef(BrushType type, int sectorNum)
 		{
-			//writer.Append("{\n\thandle = " + brushHandle++ + "\n\tbrushDef3 {");
+			void AddGroup(in string g)
+			{
+				writer.Append("\t\t\"" + g + "\"\n");
+			}
 			writer.Append("{\n\thandle = " + brushHandle++ + "\n\tgroups {\n");
 
-			writer.Append("\t\t\"sectors/" + sectorNum);
 			switch(type)
 			{
 				case BrushType.FLOOR:
-				writer.Append("/floor\"\n\t\t\"nav\"");
+				AddGroup("sectors/" + sectorNum + "/floor");
+				AddGroup("floors/" + sectorNum);
+				AddGroup("nav");
 				break;
 
 				case BrushType.CEIL:
-				writer.Append("/ceiling\"");
+				AddGroup("sectors/" + sectorNum + "/ceiling");
+				AddGroup("ceilings/" + sectorNum);
 				break;
 
 				case BrushType.WALL:
-				writer.Append("/walls\"");
+				AddGroup("sectors/" + sectorNum + "/walls");
+				AddGroup("walls/" + sectorNum);
 				break;
 			}
 
-			writer.Append("\n\t}\n\tbrushDef3 {");
+			writer.Append("\t}\n\tbrushDef3 {");
 		}
 
 		private void WritePlane(idPlane p)
@@ -506,8 +512,8 @@ entity {{
 			writer.Append("\n\t\t");
 
 			ImageData dimensions = General.Map.Data.GetTextureImage(texture);
-			float xScale = 1.0f / dimensions.Width * cfg.xyDownscale;
-			float yScale = 1.0f / dimensions.Height * cfg.zDownscale;
+			float xScale = 1.0f / dimensions.Width * cfg.downscale;
+			float yScale = 1.0f / dimensions.Height * cfg.downscale;
 
 			/*
 			* We must shift the texture grid such that the origin is centered on
@@ -569,8 +575,8 @@ entity {{
 			ImageData dimensions = General.Map.Data.GetFlatImage(texture);
 			float xRatio = 1.0f / dimensions.Width;
 			float yRatio = 1.0f / dimensions.Height;
-			float xScale = xRatio * cfg.xyDownscale;
-			float yScale = yRatio * cfg.xyDownscale;
+			float xScale = xRatio * cfg.downscale;
+			float yScale = yRatio * cfg.downscale;
 			float xShift = -xRatio * cfg.xShift;
 			float yShift = yRatio * cfg.yShift;
 

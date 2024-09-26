@@ -20,13 +20,13 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 
 		public string MapName { get { return gui_MapName.Text; } }
 
-		public float xyDownscale { get { return (float)gui_xyDownscale.Value; } }
-
-		public float zDownscale { get { return (float)gui_zDownscale.Value; } }
+		public float Downscale { get { return (float)gui_Downscale.Value; } }
 
 		public float xShift { get { return (float)gui_xShift.Value; } }
 
 		public float yShift { get { return (float)gui_yShift.Value; } }
+
+		public float zShift { get { return (float)gui_zShift.Value; } }
 
 		public bool ExportTextures { get { return gui_ExportTextures.Checked; } }
 
@@ -36,8 +36,14 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 
 			gui_ModPath.Text = Path.GetDirectoryName(General.Map.FilePathName);
 			gui_MapName.Text = General.Map.Options.LevelName.ToLower();
+			gui_Downscale.Value = 20;
 			gui_xShift.Value = 0;
 			gui_yShift.Value = 0;
+			gui_zShift.Value = 0;
+
+			int imageCount = General.Map.Data.Textures.Count + General.Map.Data.Flats.Count;
+			gui_ShowTextCount.Text = String.Format("{0} TGA images and {1} material2 decls will be created.",
+				imageCount + 1, imageCount);
 		}
 
 		private void evt_FolderButton(object sender, EventArgs e)
