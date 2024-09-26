@@ -47,6 +47,8 @@
             this.gui_CancelBtn = new System.Windows.Forms.Button();
             this.gui_ExportBtn = new System.Windows.Forms.Button();
             this.gui_fileTree = new System.Windows.Forms.TreeView();
+            this.label8 = new System.Windows.Forms.Label();
+            this.gui_MapName = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gui_yShift)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gui_xShift)).BeginInit();
@@ -94,7 +96,7 @@
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.gui_xyDownscale);
-            this.groupBox1.Location = new System.Drawing.Point(12, 50);
+            this.groupBox1.Location = new System.Drawing.Point(12, 71);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(423, 75);
             this.groupBox1.TabIndex = 3;
@@ -258,7 +260,7 @@
             // gbTextureControls
             // 
             this.gbTextureControls.Controls.Add(this.gui_ExportTextures);
-            this.gbTextureControls.Location = new System.Drawing.Point(12, 141);
+            this.gbTextureControls.Location = new System.Drawing.Point(12, 162);
             this.gbTextureControls.Name = "gbTextureControls";
             this.gbTextureControls.Size = new System.Drawing.Size(423, 100);
             this.gbTextureControls.TabIndex = 4;
@@ -304,6 +306,22 @@
             this.gui_fileTree.Size = new System.Drawing.Size(423, 305);
             this.gui_fileTree.TabIndex = 11;
             // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(4, 42);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(62, 13);
+            this.label8.TabIndex = 12;
+            this.label8.Text = "Map Name:";
+            // 
+            // gui_MapName
+            // 
+            this.gui_MapName.Location = new System.Drawing.Point(72, 39);
+            this.gui_MapName.Name = "gui_MapName";
+            this.gui_MapName.Size = new System.Drawing.Size(327, 20);
+            this.gui_MapName.TabIndex = 13;
+            // 
             // idStudioExporterForm
             // 
             this.AcceptButton = this.gui_ExportBtn;
@@ -311,6 +329,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.CancelButton = this.gui_CancelBtn;
             this.ClientSize = new System.Drawing.Size(447, 610);
+            this.Controls.Add(this.gui_MapName);
+            this.Controls.Add(this.label8);
             this.Controls.Add(this.gui_fileTree);
             this.Controls.Add(this.gui_CancelBtn);
             this.Controls.Add(this.gui_ExportBtn);
@@ -361,5 +381,7 @@
 		private System.Windows.Forms.Button gui_CancelBtn;
 		private System.Windows.Forms.Button gui_ExportBtn;
 		private System.Windows.Forms.TreeView gui_fileTree;
+		private System.Windows.Forms.Label label8;
+		private System.Windows.Forms.TextBox gui_MapName;
 	}
 }

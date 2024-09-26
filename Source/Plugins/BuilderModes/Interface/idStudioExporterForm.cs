@@ -18,6 +18,8 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 	{
 		public string ModPath { get { return gui_ModPath.Text; } }
 
+		public string MapName { get { return gui_MapName.Text; } }
+
 		public float xyDownscale { get { return (float)gui_xyDownscale.Value; } }
 
 		public float zDownscale { get { return (float)gui_zDownscale.Value; } }
@@ -33,6 +35,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 			InitializeComponent();
 
 			gui_ModPath.Text = Path.GetDirectoryName(General.Map.FilePathName);
+			gui_MapName.Text = General.Map.Options.LevelName.ToLower();
 			gui_xShift.Value = 0;
 			gui_yShift.Value = 0;
 		}
@@ -51,6 +54,35 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 
 		private void evt_ButtonExport(object sender, EventArgs e)
 		{
+			// Validate mapname
+			{
+				string mname = gui_MapName.Text;
+				bool validname = true;
+				if (mname.Length == 0)
+					validname = false;
+				if (mname[0] < 'a' || mname[0] > 'z')
+					validname = false;
+				foreach(char c in mname)
+				{
+					if (c >= 'a' && c <= 'z')
+						continue;
+					if (c >= '0' && c <= '9')
+						continue;
+					if (c == '_')
+						continue;
+					validname = false;
+					break;
+				}
+
+				if (!validname)
+				{
+					MessageBox.Show("Map names must be all lowercase, numbers and underscores only. First char must be letter.",
+						"Invalid Map Name", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+					return;
+				}
+					
+			}
+
 			this.DialogResult = DialogResult.OK;
 			this.Close();
 		}
