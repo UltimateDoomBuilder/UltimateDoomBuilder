@@ -41,14 +41,16 @@
             this.label4 = new System.Windows.Forms.Label();
             this.gui_Downscale = new System.Windows.Forms.NumericUpDown();
             this.gbTextureControls = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.gui_ShowTextCount = new System.Windows.Forms.Label();
             this.gui_ExportTextures = new System.Windows.Forms.CheckBox();
             this.gui_CancelBtn = new System.Windows.Forms.Button();
             this.gui_ExportBtn = new System.Windows.Forms.Button();
             this.gui_fileTree = new System.Windows.Forms.TreeView();
             this.label8 = new System.Windows.Forms.Label();
             this.gui_MapName = new System.Windows.Forms.TextBox();
-            this.gui_ShowTextCount = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gui_zShift)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gui_yShift)).BeginInit();
@@ -252,6 +254,24 @@
             this.gbTextureControls.TabIndex = 4;
             this.gbTextureControls.TabStop = false;
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(19, 42);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(190, 13);
+            this.label3.TabIndex = 14;
+            this.label3.Text = "Exporting textures may take some time.";
+            // 
+            // gui_ShowTextCount
+            // 
+            this.gui_ShowTextCount.AutoSize = true;
+            this.gui_ShowTextCount.Location = new System.Drawing.Point(19, 20);
+            this.gui_ShowTextCount.Name = "gui_ShowTextCount";
+            this.gui_ShowTextCount.Size = new System.Drawing.Size(109, 13);
+            this.gui_ShowTextCount.TabIndex = 1;
+            this.gui_ShowTextCount.Text = "[FILE COUNT HERE]";
+            // 
             // gui_ExportTextures
             // 
             this.gui_ExportTextures.AutoSize = true;
@@ -308,23 +328,23 @@
             this.gui_MapName.Size = new System.Drawing.Size(327, 20);
             this.gui_MapName.TabIndex = 13;
             // 
-            // gui_ShowTextCount
+            // label5
             // 
-            this.gui_ShowTextCount.AutoSize = true;
-            this.gui_ShowTextCount.Location = new System.Drawing.Point(19, 20);
-            this.gui_ShowTextCount.Name = "gui_ShowTextCount";
-            this.gui_ShowTextCount.Size = new System.Drawing.Size(109, 13);
-            this.gui_ShowTextCount.TabIndex = 1;
-            this.gui_ShowTextCount.Text = "[FILE COUNT HERE]";
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(12, 575);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(149, 13);
+            this.label5.TabIndex = 14;
+            this.label5.Text = "This tool is still in development";
             // 
-            // label3
+            // label9
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(19, 42);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(190, 13);
-            this.label3.TabIndex = 14;
-            this.label3.Text = "Exporting textures may take some time.";
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(12, 588);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(208, 13);
+            this.label9.TabIndex = 15;
+            this.label9.Text = "Not all map features may convert correctly.";
             // 
             // idStudioExporterForm
             // 
@@ -333,6 +353,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.CancelButton = this.gui_CancelBtn;
             this.ClientSize = new System.Drawing.Size(447, 610);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.gui_MapName);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.gui_fileTree);
@@ -387,5 +409,7 @@
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label gui_ShowTextCount;
 		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Label label5;
+		private System.Windows.Forms.Label label9;
 	}
 }
