@@ -277,9 +277,9 @@
             this.gui_ExportTextures.AutoSize = true;
             this.gui_ExportTextures.Location = new System.Drawing.Point(6, 0);
             this.gui_ExportTextures.Name = "gui_ExportTextures";
-            this.gui_ExportTextures.Size = new System.Drawing.Size(100, 17);
+            this.gui_ExportTextures.Size = new System.Drawing.Size(129, 17);
             this.gui_ExportTextures.TabIndex = 0;
-            this.gui_ExportTextures.Text = "Export Textures";
+            this.gui_ExportTextures.Text = "Export WAD Textures";
             this.gui_ExportTextures.UseVisualStyleBackColor = true;
             // 
             // gui_CancelBtn
@@ -315,11 +315,11 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(4, 42);
+            this.label8.Location = new System.Drawing.Point(9, 42);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(62, 13);
+            this.label8.Size = new System.Drawing.Size(57, 13);
             this.label8.TabIndex = 12;
-            this.label8.Text = "Map Name:";
+            this.label8.Text = "File Name:";
             // 
             // gui_MapName
             // 
