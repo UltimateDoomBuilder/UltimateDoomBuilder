@@ -654,6 +654,19 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 		#region ================== Actions (mxd)
 
+		[BeginAction("exporttoidstudio")]
+		private void ExportToidStudio()
+		{
+			idStudioExporterForm form = new idStudioExporterForm();
+			if(form.ShowDialog() == DialogResult.OK)
+			{
+				idStudioExporter exporter = new idStudioExporter();
+				exporter.Export(form);
+				MessageBox.Show("Map exported successfully", "idStudio Exporter", MessageBoxButtons.OK, MessageBoxIcon.Information,
+					MessageBoxDefaultButton.Button1);
+			}
+		}
+
 		[BeginAction("exporttoobj")]
 		private void ExportToObj() 
 		{
