@@ -200,7 +200,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 					geoWriter.WriteWallBrush(v0, v1, frontFloor, backFloor, drawHeight, front.LowTexture, frontOffsetX, backSectIndex);
 
 					int stepHeightCheck = back.Sector.FloorHeight - front.Sector.FloorHeight;
-					if (stepHeightCheck < 24)
+					if (stepHeightCheck <= 24) // TODO: Consider adding a check for linedef's "impassable" flag
 						geoWriter.WriteStepBrush(v0, v1, lowerFloor, higherFloor, backSectIndex);
 				}
 				if (!front.MiddleTexture.Equals("-"))
@@ -227,7 +227,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 					geoWriter.WriteWallBrush(v1, v0, backFloor, frontFloor, drawHeight, back.LowTexture, backOffsetX, frontSectIndex);
 
 					int stepHeightCheck = front.Sector.FloorHeight - back.Sector.FloorHeight;
-					if (stepHeightCheck < 24)
+					if (stepHeightCheck <= 24)
 						geoWriter.WriteStepBrush(v1, v0, lowerFloor, higherFloor, frontSectIndex);
 				}
 				if (!back.MiddleTexture.Equals("-"))
@@ -426,9 +426,7 @@ entity {{
 				writer.Append(refmapEntity);
 			}
 
-			string fullPath = cfg.modPath + "/base/maps/"
-				+ fileName + (IsRoot() ? ".map" : ".refmap");
-
+			string fullPath = Path.Combine(cfg.modPath, "base/maps/", fileName + (IsRoot() ? ".map" : ".refmap"));
 			/*
 			 * A very stupid problem:
 			 * - idStudio's map parser will not accept uppercase scientific notation
@@ -788,14 +786,14 @@ entity {{
 			// PART ONE - Write the art file
 			// The way we get the bitmap ensures a "correct" bitmap independent
 			// of UDB's brightness preference is produced
-			string artPath = artDir + subFolder + img.Name + ".tga";
+			string artPath = Path.Combine(artDir, subFolder, img.Name + ".tga");
 			WriteTGA(artPath, new Bitmap(img.LocalGetBitmap(false)));
 
 
 			// PART 2 - Write the material2 decl
 			bool useAlpha = img.IsTranslucent || img.IsMasked;
 
-			string matPath = matDir + subFolder + img.Name + ".decl";
+			string matPath = Path.Combine(matDir, subFolder, img.Name + ".decl");
 
 			string format;
 
@@ -824,7 +822,7 @@ entity {{
 					for(int h = 0; h < blackHeight; h++)
 						black.SetPixel(w, h, pixel);
 
-				WriteTGA(path_black, black);
+				WriteTGA(Path.Combine(modPath, path_black), black);
 			}
 
 			string artDir = Path.Combine(modPath, "base/art/wadtobrush/");
