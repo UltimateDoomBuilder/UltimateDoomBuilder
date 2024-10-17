@@ -1809,7 +1809,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					if(General.Map.Data.MapInfo.LightAttenuationMode == "InverseSquare")
 					{
 						float diameter = lt.LightRadius * 2;
-						attn = inverseSquareDistanceAttenuation(dist, lt.LightRadius, Math.Min(1500.0f, (diameter * diameter) / 10), lt.LightLinearity);
+						attn = inverseSquareDistanceAttenuation(Math.Max(dist, (float)Math.Sqrt(lt.LightRadius) * 2), diameter, Math.Min(1500.0f, (diameter * diameter) / 10), lt.LightLinearity);
 					}
 					else
 					{
