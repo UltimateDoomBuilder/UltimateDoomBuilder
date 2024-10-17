@@ -53,6 +53,8 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 		// biwa
 		private bool forceworldpanning;
 
+		private string lightAttenuationMode;
+
 		#endregion
 
 		#region ================== Properties
@@ -83,6 +85,7 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 
 		// biwa
 		public bool ForceWorldPanning { get { return forceworldpanning; } internal set { forceworldpanning = value; isdefined = true; } }
+		public string LightAttenuationMode { get { return lightAttenuationMode; } internal set { lightAttenuationMode = value; isdefined = true; } }
 
 		#endregion
 
