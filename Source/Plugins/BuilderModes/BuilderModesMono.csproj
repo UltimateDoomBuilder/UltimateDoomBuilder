@@ -181,6 +181,10 @@
     <Compile Include="Interface\FindReplaceForm.Designer.cs">
       <DependentUpon>FindReplaceForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Interface\idStudioExporterForm.cs" />
+    <Compile Include="Interface\idStudioExporterForm.Designer.cs">
+      <DependentUpon>idStudioExporterForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Interface\ImageExportSettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -211,6 +215,7 @@
     <Compile Include="Interface\SlopeArchForm.Designer.cs">
       <DependentUpon>SlopeArchForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="IO\idStudioExporter.cs" />
     <Compile Include="IO\ImageExporter.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -229,6 +234,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Interface\ChangeMapElementIndexForm.resx">
       <DependentUpon>ChangeMapElementIndexForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interface\idStudioExporterForm.resx">
+      <DependentUpon>idStudioExporterForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Interface\ImageExportSettingsForm.resx">
       <DependentUpon>ImageExportSettingsForm.cs</DependentUpon>
