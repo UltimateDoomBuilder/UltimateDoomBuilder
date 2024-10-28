@@ -271,6 +271,11 @@ namespace CodeImp.DoomBuilder.Windows
 			// Paste options
 			pasteoptions.Setup(General.Settings.PasteOptions.Copy());
 
+			// Recovery
+			autosave.Checked = General.Settings.Autosave;
+			autosavecount.Value = General.Settings.AutosaveCount;
+			autosaveinterval.Value = General.Settings.AutosaveInterval;
+
 			// Toasts
 			cbToastsEnabled.Checked = General.ToastManager.Enabled;
 			tbToastDuration.Text = (General.ToastManager.Duration / 1000).ToString();
@@ -452,6 +457,11 @@ namespace CodeImp.DoomBuilder.Windows
 			// Paste options
 			General.Settings.PasteOptions = pasteoptions.GetOptions();
 
+			// Recovery
+			General.Settings.Autosave = autosave.Checked;
+			General.Settings.AutosaveCount = autosavecount.Value;
+			General.Settings.AutosaveInterval = autosaveinterval.Value;
+
 			// Toasts
 			General.ToastManager.Enabled = cbToastsEnabled.Checked;
 			General.ToastManager.Anchor = (ToastAnchor)int.Parse((string)gbToastPosition.Controls.OfType<RadioButton>().FirstOrDefault(rb => rb.Checked).Tag);
@@ -462,10 +472,9 @@ namespace CodeImp.DoomBuilder.Windows
 				if(lvi.Tag is ToastRegistryEntry tre)
 					General.ToastManager.Registry[tre.Name].Enabled = lvi.Checked;
 			}
-			
+
 			// Let the plugins know we're closing
 			General.Plugins.OnClosePreferences(controller);
-
 			
 			// Close
 			this.DialogResult = DialogResult.OK;
@@ -1301,6 +1310,25 @@ namespace CodeImp.DoomBuilder.Windows
 
 		#endregion
 
+		#region ================== Recovery
+
+		private void autosave_CheckedChanged(object sender, EventArgs e)
+		{
+			// Enable or disable all controls except the enable/disable checkbox in the group box
+			foreach(Control c in autosavegroupbox.Controls)
+			{
+				if (c == autosave || c == autosavedisabledwarning)
+					continue;
+
+				c.Enabled = autosave.Checked;
+			}
+
+			autosavedisabledwarning.Visible = !autosave.Checked;
+
+		}
+
+		#endregion
+
 		#region ================== Toasts
 
 		private void tbToastDuration_WhenTextChanged(object sender, EventArgs e)
@@ -1330,6 +1358,16 @@ namespace CodeImp.DoomBuilder.Windows
 
 				c.Enabled = cbToastsEnabled.Checked;
 			}
+		}
+
+		private void autosaveinterval_ValueChanged(object sender, EventArgs e)
+		{
+			autosaveintervallabel.Text = $"{autosaveinterval.Value} minute" + (autosaveinterval.Value > 1 ? "s" : "");
+		}
+
+		private void autosavecount_ValueChanged(object sender, EventArgs e)
+		{
+			autosavecountlabel.Text = autosavecount.Value.ToString();
 		}
 
 		#endregion

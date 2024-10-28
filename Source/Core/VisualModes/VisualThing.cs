@@ -26,7 +26,7 @@ using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Rendering;
 using Plane = CodeImp.DoomBuilder.Geometry.Plane;
 using CodeImp.DoomBuilder.GZBuilder;
-using CodeImp.DoomBuilder.GZBuilder.MD3;
+using CodeImp.DoomBuilder.GZBuilder.Models;
 
 #endregion
 
@@ -91,6 +91,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 		private Vector3f position_v3;
 		private float lightDelta; //used in light animation
 		private Vector3D[] boundingBox;
+
+		private float lightLinearity;
 		
 		//gldefs light
 		private Vector3f lightOffset;
@@ -144,6 +146,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		//mxd. light properties
 		public GZGeneral.LightData LightType { get { return lightType; } }
 		public float LightRadius { get { return lightRadius; } }
+		public float LightLinearity { get { return lightLinearity; } }
         public float LightSpotRadius1 { get { return lightSpotRadius1; } }
         public float LightSpotRadius2 { get { return lightSpotRadius2; } }
         public Color4 LightColor { get { return lightColor; } }
@@ -667,6 +670,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 		//mxd. Update light info
 		public void UpdateLight()
 		{
+			lightLinearity = (float)thing.Fields.GetValue("light_linearity", 0.0);
+			
             lightType = thing.DynamicLightType;
             if (lightType == null || lightType.LightType == GZGeneral.LightType.SUN)
                 return;
@@ -678,8 +683,8 @@ namespace CodeImp.DoomBuilder.VisualModes
                 {
                     if (ld.LightDef != GZGeneral.LightDef.POINT_SUBTRACTIVE) // normal, additive, attenuated
                     {
-						// ZDRay static lights have an intensity that's set through the thing's alpha value
-						float intensity = ld.LightRenderStyle == GZGeneral.LightRenderStyle.STATIC ? (float)thing.Fields.GetValue("alpha", 1.0) : 1.0f;
+						// ALL lights have an intensity that's set through the thing's alpha value
+						float intensity = (float)thing.Fields.GetValue("alpha", 1.0);
 
                         //lightColor.Alpha used in shader to perform some calculations based on light type
                         lightColor = new Color4(
@@ -718,7 +723,7 @@ namespace CodeImp.DoomBuilder.VisualModes
                     if (ld.LightDef != GZGeneral.LightDef.SPOT_SUBTRACTIVE)
                     {
 						// ZDRay static lights have an intensity that's set through the thing's alpha value
-						float intensity = ld.LightRenderStyle == GZGeneral.LightRenderStyle.STATIC ? (float)thing.Fields.GetValue("alpha", 1.0) : 1.0f;
+						float intensity = ld.LightRenderStyle == GZGeneral.LightRenderStyle.LIGHTMAP ? (float)thing.Fields.GetValue("alpha", 1.0) : 1.0f;
 
 						lightColor = new Color4(
                             c1 / DYNLIGHT_INTENSITY_SCALER * intensity,

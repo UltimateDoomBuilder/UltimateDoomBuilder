@@ -29,6 +29,8 @@ uniforms
 	vec4 lightPosAndRadius[64];
 	vec4 lightOrientation[64]; // this is a vector that points in light's direction
 	vec2 light2Radius[64]; // this is used with spotlights
+	vec2 lightStrengthAndLinearity[64]; // this is used with vkdoom lights
+	float useLightStrength;
 	vec4 lightColor[64];
 	float ignoreNormals;
 	float lightsEnabled;
@@ -36,10 +38,20 @@ uniforms
 	// Slope handle length
 	float slopeHandleLength;
 
+	// Skewing
+	vec2 skew; // the x component is used to negate the texture offset for the skew computation. There must be a better way
+
 }
 
 functions
 {
+	float inverseSquareDistanceAttenuation(float dist, float radius, float strength, float linearity)
+	{
+		float a = dist / radius;
+		float b = clamp(1.0 - a * a * a * a, 0.0, 1.0);
+		return mix((b * b) / (dist * dist + 1.0) * strength, clamp((radius - dist) / radius, 0.0, 1.0), linearity);
+	}
+	
     vec4 getColorMappedColor(int entry, int depth)
     {
         vec2 uv = vec2((float(entry) + 0.5) / colormapSize.x, (float(depth) + 0.5) / colormapSize.y);
@@ -121,7 +133,7 @@ functions
 		return vec4(mix(texel.rgb, vec3(gray), desaturation), texel.a);
 	}
 
-	vec3 getOneDynLightContribution(vec3 PosW, vec3 Normal, vec3 light, vec4 lColor, vec4 lPosAndRadius, vec4 lOrientation, vec2 l2Radius)
+	vec3 getOneDynLightContribution(vec3 PosW, vec3 Normal, vec3 light, vec4 lColor, vec4 lPosAndRadius, vec4 lOrientation, vec2 l2Radius, vec2 lStrengthAndLinearity)
 	{
 
 		//is face facing away from light source?
@@ -139,7 +151,15 @@ functions
 			return light;
 
 		float power = 1.0;
-		power *= max(lPosAndRadius.w - dist, 0.0) / lPosAndRadius.w;
+
+		if(useLightStrength > 0.0)
+		{
+			power *= inverseSquareDistanceAttenuation(dist, lPosAndRadius.w, lStrengthAndLinearity.x, lStrengthAndLinearity.y);
+		}
+		else
+		{
+			power *= max(lPosAndRadius.w - dist, 0.0) / lPosAndRadius.w;
+		}
 
 		if (lOrientation.w > 0.5)
 		{
@@ -174,8 +194,8 @@ functions
 				if (lightColor[i].a == 0)
 					break;
 				if (lightColor[i].a < 0.4) // additive
-					addlight = getOneDynLightContribution(PosW, Normal, addlight, lightColor[i], lightPosAndRadius[i], lightOrientation[i], light2Radius[i]);
-				else light = getOneDynLightContribution(PosW, Normal, light, lightColor[i], lightPosAndRadius[i], lightOrientation[i], light2Radius[i]);
+					addlight = getOneDynLightContribution(PosW, Normal, addlight, lightColor[i], lightPosAndRadius[i], lightOrientation[i], light2Radius[i], lightStrengthAndLinearity[i]);
+				else light = getOneDynLightContribution(PosW, Normal, light, lightColor[i], lightPosAndRadius[i], lightOrientation[i], light2Radius[i], lightStrengthAndLinearity[i]);
 			}
 		}
 
@@ -223,7 +243,7 @@ shader world3d_main
 	
 	fragment
 	{
-		vec4 tcolor = texture(texture1, v2f.UV);
+		vec4 tcolor = texture(texture1, v2f.UV + vec2(0.0, (v2f.UV.x - skew.x) * skew.y));
 		tcolor = mix(tcolor, vec4(stencilColor.rgb, tcolor.a), stencilColor.a);
 		tcolor = getDynLightContribution(tcolor, v2f.Color, v2f.PosW, v2f.Normal);
 		out.FragColor = desaturate(tcolor);
@@ -240,7 +260,7 @@ shader world3d_fullbright extends world3d_main
 {
 	fragment
 	{
-		vec4 tcolor = texture(texture1, v2f.UV);
+		vec4 tcolor = texture(texture1, v2f.UV + vec2(0.0, (v2f.UV.x - skew.x) * skew.y));
 		tcolor = mix(tcolor, vec4(stencilColor.rgb, tcolor.a), stencilColor.a);
 		tcolor.a *= v2f.Color.a;
 		out.FragColor = tcolor;
@@ -257,7 +277,7 @@ shader world3d_main_highlight extends world3d_main
 {
 	fragment
 	{
-		vec4 tcolor = texture(texture1, v2f.UV);
+		vec4 tcolor = texture(texture1, v2f.UV + vec2(0.0, (v2f.UV.x - skew.x) * skew.y));
 		tcolor = mix(tcolor, vec4(stencilColor.rgb, tcolor.a), stencilColor.a);
 		tcolor = getDynLightContribution(tcolor, v2f.Color, v2f.PosW, v2f.Normal);
 		if (tcolor.a == 0.0)
@@ -284,7 +304,7 @@ shader world3d_fullbright_highlight extends world3d_fullbright
 {
 	fragment
 	{
-		vec4 tcolor = texture(texture1, v2f.UV);
+		vec4 tcolor = texture(texture1, v2f.UV + vec2(0.0, (v2f.UV.x - skew.x) * skew.y));
 		tcolor = mix(tcolor, vec4(stencilColor.rgb, tcolor.a), stencilColor.a);
 		if(tcolor.a == 0.0)
 		{
@@ -362,7 +382,7 @@ shader world3d_main_fog extends world3d_main
 {
 	fragment
 	{
-		vec4 tcolor = texture(texture1, v2f.UV);
+		vec4 tcolor = texture(texture1, v2f.UV + vec2(0.0, (v2f.UV.x - skew.x) * skew.y));
 		tcolor = mix(tcolor, vec4(stencilColor.rgb, tcolor.a), stencilColor.a);
 		tcolor = getDynLightContribution(tcolor, v2f.Color, v2f.PosW, v2f.Normal);
 		if (tcolor.a == 0.0)
@@ -386,7 +406,7 @@ shader world3d_main_highlight_fog extends world3d_main_fog
 {
 	fragment
 	{
-		vec4 tcolor = texture(texture1, v2f.UV);
+		vec4 tcolor = texture(texture1, v2f.UV + vec2(0.0, (v2f.UV.x - skew.x) * skew.y));
 		tcolor = mix(tcolor, vec4(stencilColor.rgb, tcolor.a), stencilColor.a);
 		tcolor = vec4(getDynLightContribution(tcolor, v2f.Color, v2f.PosW, v2f.Normal).rgb, tcolor.a);
 		if (tcolor.a == 0.0)
@@ -458,7 +478,7 @@ shader world3d_classic extends world3d_main
 		 
 		if (bool(drawPaletted))
 		{
-		    vec4 color = texture(texture1, v2f.UV);
+			vec4 color = texture(texture1, v2f.UV + vec2(0.0, (v2f.UV.x - skew.x) * skew.y));
 		    int entry = int(color.r * 255);
 		    float alpha = color.a;
 		    int lightLevel = lightLevelFromVertexColor(v2f.flatColor.rgb);
@@ -487,7 +507,7 @@ shader world3d_classic_highlight extends world3d_main
 		 
 		if (bool(drawPaletted))
         {
-            vec4 color = texture(texture1, v2f.UV);
+			vec4 color = texture(texture1, v2f.UV + vec2(0.0, (v2f.UV.x - skew.x) * skew.y));
             int entry = int(color.r * 255);
             float alpha = color.a;
             int lightLevel = lightLevelFromVertexColor(v2f.flatColor.rgb);

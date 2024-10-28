@@ -172,7 +172,7 @@ extern "C"
 
 RawMouse* RawMouse_New(void* hwnd)
 {
-#ifdef WIN32
+#if defined(WIN32)
 	return new RawMouse(hwnd);
 #else
 	return nullptr;
@@ -192,6 +192,30 @@ float RawMouse_GetX(RawMouse* mouse)
 float RawMouse_GetY(RawMouse* mouse)
 {
 	return mouse->GetY();
+}
+
+#ifdef UDB_LINUX
+#include <X11/extensions/Xfixes.h>
+
+static Display *display = NULL;
+#endif
+
+void MouseInput_ShowCursor(bool show)
+{
+#ifdef UDB_LINUX
+	if (display == NULL)
+	{
+		display = XOpenDisplay(NULL);
+		if (display == NULL)
+			return;
+    }
+
+	if (show)
+		XFixesShowCursor(display, DefaultRootWindow(display));
+	else
+		XFixesHideCursor(display, DefaultRootWindow(display));
+	XSync(display, True);
+#endif
 }
 
 }

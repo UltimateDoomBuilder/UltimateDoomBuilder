@@ -92,23 +92,29 @@
 
 // Player properties --------------------------------------------------------
 
-#define PROP_FROZEN                     0
-#define PROP_NOTARGET                   1
-#define PROP_INSTANTWEAPONSWITCH        2
-#define PROP_FLY			3
-#define PROP_TOTALLYFROZEN		4
-#define PROP_BUDDHA			16
+#define PROP_FROZEN					0
+#define PROP_NOTARGET				1
+#define PROP_INSTANTWEAPONSWITCH	2
+#define PROP_FLY					3
+#define PROP_TOTALLYFROZEN			4
+#define PROP_BUDDHA					16
+#define PROP_BUDDHA2				17
+#define PROP_FRIGHTENING 			18
+#define PROP_NOCLIP 				19
+#define PROP_NOCLIP2 				20
+#define PROP_GODMODE 				21
+#define PROP_GODMODE2 				22
 
 // The following properties correspond to powers given by certain items
 #define PROP_INVULNERABILITY		5
-#define PROP_STRENGTH			6
-#define PROP_INVISIBILITY		7
-#define PROP_RADIATIONSUIT		8
-#define PROP_ALLMAP			9
-#define PROP_INFRARED			10
-#define PROP_WEAPONLEVEL2		11
-#define PROP_FLIGHT			12
-#define PROP_SPEED			15
+#define PROP_STRENGTH				6
+#define PROP_INVISIBILITY			7
+#define PROP_RADIATIONSUIT			8
+#define PROP_ALLMAP					9
+#define PROP_INFRARED				10
+#define PROP_WEAPONLEVEL2			11
+#define PROP_FLIGHT					12
+#define PROP_SPEED					15
 
 // Player input -------------------------------------------------------------
 
@@ -301,6 +307,7 @@
 #define APROP_DamageType	46
 #define APROP_SoundClass	47
 #define APROP_FriendlySeeBlocks 48
+#define APROP_WaterDepth 49
 
 // New to Eternity
 #define APROP_Counter0      100
@@ -354,6 +361,7 @@
 #define PLAYERINFO_PLAYERCLASS	7
 #define PLAYERINFO_FOV			8
 #define PLAYERINFO_DESIREDFOV	9
+#define PLAYERINFO_FVIEWBOB		10
 
 
 // Flags for ReplaceTextures ------------------------------------------------
@@ -976,6 +984,7 @@
 #define CHANGELEVEL_NOINTERMISSION 16
 #define CHANGELEVEL_RESETHEALTH	32
 #define CHANGELEVEL_PRERAISEWEAPON 64
+#define CHANGELEVEL_NOAUTOSAVE 128 // VKDoom
 
 #define NO_CHANGE 32767.0
 
@@ -1101,6 +1110,7 @@
 #define QF_GROUNDONLY		1 << 7
 #define QF_AFFECTACTORS 	1 << 8
 #define QF_SHAKEONLY		1 << 9
+#define QF_DAMAGEFALLOFF	1 << 10
 
 #define WARPF_ABSOLUTEOFFSET 0x1
 #define WARPF_ABSOLUTEANGLE 0x2
@@ -1158,3 +1168,16 @@
 #define AMLS_InterTeleport	11
 #define AMLS_UnexploredSecret	12
 #define AMLS_Portal		13
+
+// Lump reading stuff.
+#define LUMP_OPEN_FULLPATH 1
+
+#define LUMP_READ_BYTE 0
+#define LUMP_READ_UBYTE 1
+#define LUMP_READ_SHORT 2
+#define LUMP_READ_USHORT 3
+#define LUMP_READ_INT 4
+#define LUMP_READ_FLOAT 5
+                
+#define LUMP_INFO_SIZE 0
+#define LUMP_INFO_NAME 1

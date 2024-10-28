@@ -272,12 +272,13 @@ namespace CodeImp.DoomBuilder.Map
 				{
 					// Create resource
 					DataLocation res = new DataLocation();
-					
+
 					// Copy information from Configuration to ResourceLocation
-					if(resinfo.Contains("type") && (resinfo["type"] is int)) res.type = (int)resinfo["type"];
-					if(resinfo.Contains("location") && (resinfo["location"] is string)) res.location = (string)resinfo["location"];
-					if(resinfo.Contains("textures") && (resinfo["textures"] is bool)) res.option1 = (bool)resinfo["textures"];
-					if(resinfo.Contains("flats") && (resinfo["flats"] is bool)) res.option2 = (bool)resinfo["flats"];
+					if (resinfo.Contains("type") && (resinfo["type"] is int)) res.type = (int)resinfo["type"];
+					if (resinfo.Contains("location") && (resinfo["location"] is string)) res.location = (string)resinfo["location"];
+					if (resinfo.Contains("textures") && (resinfo["textures"] is bool)) res.option1 = (bool)resinfo["textures"];
+					if (resinfo.Contains("flats") && (resinfo["flats"] is bool)) res.option2 = (bool)resinfo["flats"];
+					if (resinfo.Contains("notfortesting") && (resinfo["notfortesting"] is int)) res.notfortesting = Convert.ToBoolean(resinfo["notfortesting"]);
 
 					// Add resource
 					AddResource(res);

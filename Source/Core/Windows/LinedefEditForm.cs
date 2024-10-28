@@ -176,10 +176,13 @@ namespace CodeImp.DoomBuilder.Windows
 			foreach(LinedefActivateInfo ai in activation.Items)
 				if((fl.Activate & ai.Index) == ai.Index) activation.SelectedItem = ai;
 
-			// Action/tags
-			action.Value = fl.Action;
+			// Action/tags. We have to make sure the action control is initialized properly even when the default value is set
+			if (action.Value != fl.Action)
+				action.Value = fl.Action;
+			else
+				action_ValueChanges(action, EventArgs.Empty);
 
-			if(General.Map.FormatInterface.HasLinedefTag) //mxd
+			if (General.Map.FormatInterface.HasLinedefTag) //mxd
 			{
 				tagSelector.Setup(UniversalType.LinedefTag);
 				tagSelector.SetTag(fl.Tag);

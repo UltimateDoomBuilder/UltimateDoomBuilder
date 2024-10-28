@@ -94,6 +94,9 @@ namespace CodeImp.DoomBuilder.Windows
 				tabs.TabPages.Remove(tabcustom);
 				panelHeightControls.Visible = false;
 			}
+
+			if (!General.Map.Config.VertexHeightSupport)
+				panelHeightControls.Enabled = false;
 			
 			// Decimals allowed?
 			if(General.Map.FormatInterface.VertexDecimals > 0)

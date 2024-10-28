@@ -50,11 +50,12 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 		public bool ApplySectorColors;
 		public bool Brightmap;
 		public bool Tiles;
+		public bool Transparency;
 		public PixelFormat PixelFormat;
 		public ImageFormat ImageFormat;
 		public float Scale;
 
-		public ImageExportSettings(string path, string name, string extension, bool floor, bool fullbright, bool applysectorcolors, bool brightmap, bool tiles, float scale, PixelFormat pformat, ImageFormat iformat)
+		public ImageExportSettings(string path, string name, string extension, bool floor, bool fullbright, bool applysectorcolors, bool brightmap, bool transparency, bool tiles, float scale, PixelFormat pformat, ImageFormat iformat)
 		{
 			Path = path;
 			Name = name;
@@ -63,6 +64,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			Brightmap = brightmap;
 			Tiles = tiles;
 			Fullbright = fullbright;
+			Transparency = transparency;
 			ApplySectorColors = applysectorcolors;
 			PixelFormat = pformat;
 			ImageFormat = iformat;
@@ -201,11 +203,15 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			// The texture
 			using (Graphics gtexture = Graphics.FromImage(texturebitmap))
 			{
-				gtexture.Clear(Color.Black); // If we don't clear to black we'll see seams where the sectors touch, due to the AA
+				if (!settings.Transparency)
+				{
+					gtexture.Clear(Color.Black); // If we don't clear to black we'll see seams where the sectors touch, due to the AA
+					gtexture.SmoothingMode = SmoothingMode.AntiAlias; // Without AA the sector edges will be quite rough
+				}
+
 				gtexture.InterpolationMode = InterpolationMode.HighQualityBilinear;
 				gtexture.CompositingQuality = CompositingQuality.HighQuality;
-				gtexture.PixelOffsetMode = PixelOffsetMode.HighQuality;
-				gtexture.SmoothingMode = SmoothingMode.AntiAlias; // Without AA the sector edges will be quite rough
+				gtexture.PixelOffsetMode = PixelOffsetMode.HighQuality;				
 
 				using (GraphicsPath gpath = new GraphicsPath())
 				{

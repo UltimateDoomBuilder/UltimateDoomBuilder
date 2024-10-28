@@ -506,6 +506,10 @@ namespace CodeImp.DoomBuilder.Actions
             // Update pressed keys
             if (!repeat) pressedkeys.Add(strippedkey);
 
+			if (key == 0) {
+				return false;
+			}
+
             // Add action to active list
             Action[] acts = GetActionsByKey(key);
             bool absorbed = acts.Length > 0;

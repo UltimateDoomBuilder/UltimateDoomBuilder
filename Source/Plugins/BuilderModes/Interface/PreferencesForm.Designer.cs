@@ -80,6 +80,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			this.label10 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this.heightbysidedef = new System.Windows.Forms.ComboBox();
+			this.usebuggyfloodselect = new System.Windows.Forms.CheckBox();
 			this.tabs.SuspendLayout();
 			this.taboptions.SuspendLayout();
 			this.groupBox5.SuspendLayout();
@@ -275,6 +276,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// 
 			// groupBox3
 			// 
+			this.groupBox3.Controls.Add(this.usebuggyfloodselect);
 			this.groupBox3.Controls.Add(this.selectafterundoredo);
 			this.groupBox3.Controls.Add(this.useoppositesmartpivothandle);
 			this.groupBox3.Controls.Add(this.additivepaintselect);
@@ -291,7 +293,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			this.groupBox3.Controls.Add(this.additiveselect);
 			this.groupBox3.Location = new System.Drawing.Point(284, 139);
 			this.groupBox3.Name = "groupBox3";
-			this.groupBox3.Size = new System.Drawing.Size(379, 360);
+			this.groupBox3.Size = new System.Drawing.Size(379, 390);
 			this.groupBox3.TabIndex = 3;
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = " Options ";
@@ -732,6 +734,16 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			this.heightbysidedef.Size = new System.Drawing.Size(309, 21);
 			this.heightbysidedef.TabIndex = 0;
 			// 
+			// usebuggyfloodselect
+			// 
+			this.usebuggyfloodselect.AutoSize = true;
+			this.usebuggyfloodselect.Location = new System.Drawing.Point(13, 359);
+			this.usebuggyfloodselect.Name = "usebuggyfloodselect";
+			this.usebuggyfloodselect.Size = new System.Drawing.Size(206, 17);
+			this.usebuggyfloodselect.TabIndex = 13;
+			this.usebuggyfloodselect.Text = "Use buggy flood select in Visual Mode";
+			this.usebuggyfloodselect.UseVisualStyleBackColor = true;
+			// 
 			// PreferencesForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -812,5 +824,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private System.Windows.Forms.ComboBox eventlinelabelstyle;
 		private System.Windows.Forms.CheckBox useoppositesmartpivothandle;
 		private System.Windows.Forms.CheckBox selectafterundoredo;
+		private System.Windows.Forms.CheckBox usebuggyfloodselect;
 	}
 }

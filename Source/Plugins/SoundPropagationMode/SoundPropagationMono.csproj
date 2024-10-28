@@ -116,6 +116,7 @@
     <Compile Include="Interface\SoundEnvironmentPanel.Designer.cs">
       <DependentUpon>SoundEnvironmentPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="LeakFinder.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -123,6 +124,7 @@
     </Compile>
     <Compile Include="SoundEnvironment.cs" />
     <Compile Include="SoundEnvironmentMode.cs" />
+    <Compile Include="SoundNode.cs" />
     <Compile Include="SoundPropagationDomain.cs" />
     <Compile Include="Windows\ColorConfiguration.cs">
       <SubType>Form</SubType>
@@ -190,6 +192,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Hints.cfg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

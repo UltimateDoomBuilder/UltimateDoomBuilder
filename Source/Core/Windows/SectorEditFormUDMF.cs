@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Controls;
 using CodeImp.DoomBuilder.Geometry;
@@ -187,8 +188,14 @@ namespace CodeImp.DoomBuilder.Windows
 		{
 			InitializeComponent();
 
+			DoUDMFControls(this);
+
+			// Plane equation slopes are handled internally instead through the UDMF fields, so they need special attention
+			EnableDisableControlAndChildren(gbCeilingSLope, General.Map.Config.PlaneEquationSupport);
+			EnableDisableControlAndChildren(gbFloorSlope, General.Map.Config.PlaneEquationSupport);
+
 			//mxd. Load settings
-			if(General.Settings.StoreSelectedEditTab)
+			if (General.Settings.StoreSelectedEditTab)
 			{
 				int activetab = General.Settings.ReadSetting("windows." + configname + ".activetab", 0);
 				tabs.SelectTab(activetab);
@@ -220,10 +227,6 @@ namespace CodeImp.DoomBuilder.Windows
 			{
 				renderstyles = new List<string>();
 			}
-			floorRenderStyle.Enabled = (renderstyles.Count > 0);
-			labelfloorrenderstyle.Enabled = (renderstyles.Count > 0);
-			ceilRenderStyle.Enabled = (renderstyles.Count > 0);
-			labelceilrenderstyle.Enabled = (renderstyles.Count > 0);
 
 			// Fill renderstyles
 			foreach(string name in General.Map.Config.SectorRenderStyles.Values) 
@@ -243,10 +246,6 @@ namespace CodeImp.DoomBuilder.Windows
 			{
 				portalrenderstyles = new List<string>();
 			}
-			floorportalrenderstyle.Enabled = (portalrenderstyles.Count > 0);
-			floorportalrenderstylelabel.Enabled = (portalrenderstyles.Count > 0);
-			ceilportalrenderstyle.Enabled = (portalrenderstyles.Count > 0);
-			ceilportalrenderstylelabel.Enabled = (portalrenderstyles.Count > 0);
 
 			// Fill portal renderstyles
 			foreach(string name in General.Map.Config.SectorPortalRenderStyles.Values)
@@ -836,6 +835,36 @@ namespace CodeImp.DoomBuilder.Windows
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// Enables or disables controls depending on if their tag is one of the UDMF fields set in the game config.
+		/// </summary>
+		/// <param name="control">Control to process</param>
+		private void DoUDMFControls(Control control)
+		{
+			if (control.Tag is string name && !string.IsNullOrWhiteSpace(name))
+			{
+				EnableDisableControlAndChildren(control, General.Map.Config.SectorFields.Any(f => f.Name == name));
+			}
+			else
+			{
+				foreach (Control c in control.Controls)
+					DoUDMFControls(c);
+			}
+		}
+
+		/// <summary>
+		/// Enables or disables a control and all its children.
+		/// </summary>
+		/// <param name="control">Control the enable or disable</param>
+		/// <param name="state">If to enable or disable</param>
+		private void EnableDisableControlAndChildren(Control control, bool state)
+		{
+			control.Enabled = state;
+
+			foreach (Control c in control.Controls)
+				EnableDisableControlAndChildren(c, state);
 		}
 
 		#endregion

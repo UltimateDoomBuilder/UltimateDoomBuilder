@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Config;
 using CodeImp.DoomBuilder.Controls;
@@ -137,8 +138,12 @@ namespace CodeImp.DoomBuilder.Windows
 			// Initialize
 			InitializeComponent();
 
+			DoUDMFControls(tabproperties, General.Map.Config.LinedefFields);
+			DoUDMFControls(tabfront, General.Map.Config.SidedefFields);
+			DoUDMFControls(tabback, General.Map.Config.SidedefFields);
+
 			// Widow setup
-			if(General.Settings.StoreSelectedEditTab)
+			if (General.Settings.StoreSelectedEditTab)
 			{
 				int activetab = General.Settings.ReadSetting("windows." + configname + ".activetab", 0);
 				
@@ -179,8 +184,6 @@ namespace CodeImp.DoomBuilder.Windows
 					lockpick.Items.Add(item);
 				}
 			}
-			lockpick.Enabled = (keynumbers.Count > 0);
-			labellockpick.Enabled = (keynumbers.Count > 0);
 			
 			// Initialize image selectors
 			fronthigh.Initialize();
@@ -227,38 +230,6 @@ namespace CodeImp.DoomBuilder.Windows
 			lightbackupper.Setup(VisualModes.VisualGeometryType.WALL_UPPER);
 			lightbackmiddle.Setup(VisualModes.VisualGeometryType.WALL_MIDDLE);
 			lightbacklower.Setup(VisualModes.VisualGeometryType.WALL_LOWER);
-
-			// Disable top/mid/bottom texture offset controls?
-			if (!General.Map.Config.UseLocalSidedefTextureOffsets)
-			{
-				pfcFrontOffsetTop.Enabled = false;
-				pfcFrontOffsetMid.Enabled = false;
-				pfcFrontOffsetBottom.Enabled = false;
-
-				pfcBackOffsetTop.Enabled = false;
-				pfcBackOffsetMid.Enabled = false;
-				pfcBackOffsetBottom.Enabled = false;
-
-				labelFrontOffsetTop.Enabled = false;
-				labelFrontOffsetMid.Enabled = false;
-				labelFrontOffsetBottom.Enabled = false;
-
-				labelBackOffsetTop.Enabled = false;
-				labelBackOffsetMid.Enabled = false;
-				labelBackOffsetBottom.Enabled = false;
-			}
-
-			// Diable brightness controls?
-			if(!General.Map.Config.DistinctWallBrightness)
-			{
-				lightFront.Enabled = false;
-				cbLightAbsoluteFront.Enabled = false;
-				resetfrontlight.Enabled = false;
-
-				lightBack.Enabled = false;
-				cbLightAbsoluteBack.Enabled = false;
-				resetbacklight.Enabled = false;
-			}
 		}
 
 		#endregion
@@ -321,7 +292,10 @@ namespace CodeImp.DoomBuilder.Windows
 			if(lockpick.SelectedIndex == -1) lockpick.Text = locknumber.ToString();
 
 			// Action
-			action.Value = fl.Action;
+			if (action.Value != fl.Action)
+				action.Value = fl.Action;
+			else
+				action_ValueChanges(action, EventArgs.Empty);
 
 			//mxd. Args
 			argscontrol.SetValue(fl, true);
@@ -704,6 +678,36 @@ namespace CodeImp.DoomBuilder.Windows
 			OnValuesChanged?.Invoke(this, EventArgs.Empty);
 		}
 
+		/// <summary>
+		/// Enables or disables controls depending on if their tag is one of the UDMF fields set in the game config.
+		/// </summary>
+		/// <param name="control">Control to process</param>
+		private void DoUDMFControls(Control control, List<UniversalFieldInfo> info)
+		{
+			if (control.Tag is string name && !string.IsNullOrWhiteSpace(name))
+			{
+				EnableDisableControlAndChildren(control, info.Any(f => f.Name == name));
+			}
+			else
+			{
+				foreach (Control c in control.Controls)
+					DoUDMFControls(c, info);
+			}
+		}
+
+		/// <summary>
+		/// Enables or disables a control and all its children.
+		/// </summary>
+		/// <param name="control">Control the enable or disable</param>
+		/// <param name="state">If to enable or disable</param>
+		private void EnableDisableControlAndChildren(Control control, bool state)
+		{
+			control.Enabled = state;
+
+			foreach (Control c in control.Controls)
+				EnableDisableControlAndChildren(c, state);
+		}
+
 		#endregion
 
 		#region ================== Events
@@ -1017,7 +1021,7 @@ namespace CodeImp.DoomBuilder.Windows
 			List<MapElement> sides = new List<MapElement>(lines.Count);
 			foreach(Linedef l in lines) if(l.Front != null) sides.Add(l.Front);
 
-			if(!CustomFieldsForm.ShowDialog(this, "Front side custom fields", "sidedef", sides, General.Map.Config.SidedefFields)) return;
+			if(!CustomFieldsForm.ShowDialog(this, MakeUndo, "Front side custom fields", "sidedef", sides, General.Map.Config.SidedefFields)) return;
 
 			//Apply values
 			Sidedef fs = General.GetByIndex(sides, 0) as Sidedef;
@@ -1080,7 +1084,7 @@ namespace CodeImp.DoomBuilder.Windows
 			foreach(Linedef l in lines) if(l.Back != null) sides.Add(l.Back);
 
 			// Edit these
-			if(!CustomFieldsForm.ShowDialog(this, "Back side custom fields", "sidedef", sides, General.Map.Config.SidedefFields)) return;
+			if(!CustomFieldsForm.ShowDialog(this, MakeUndo, "Back side custom fields", "sidedef", sides, General.Map.Config.SidedefFields)) return;
 
 			//Apply values
 			Sidedef fs = General.GetByIndex(sides, 0) as Sidedef;

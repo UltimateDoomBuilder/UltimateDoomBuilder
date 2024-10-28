@@ -101,13 +101,16 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					curve = CurveTools.CurveThroughPoints(verts, 0.5f, 0.75f, segmentlength);
 
 					// Render lines
-					for(int i = 1; i < curve.Shape.Count; i++) 
+					if (!placethingsatvertices)
 					{
-						// Determine line color
-						PixelColor c = snaptonearest ? stitchcolor : losecolor;
+						for (int i = 1; i < curve.Shape.Count; i++)
+						{
+							// Determine line color
+							PixelColor c = snaptonearest ? stitchcolor : losecolor;
 
-						// Render line
-						renderer.RenderLine(curve.Shape[i - 1], curve.Shape[i], LINE_THICKNESS, c, true);
+							// Render line
+							renderer.RenderLine(curve.Shape[i - 1], curve.Shape[i], LINE_THICKNESS, c, true);
+						}
 					}
 
 					//render "inactive" vertices
@@ -237,7 +240,27 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				}
 
 				// Make the drawing
-				if(Tools.DrawLines(verts, true, BuilderPlug.Me.AutoAlignTextureOffsetsOnCreate)) //mxd
+				if (placethingsatvertices)
+				{
+					List<Vector2D> points = new List<Vector2D>();
+					for (int i = 0; i < verts.Count; i++) 
+						if (!points.Contains(verts[i].pos)) points.Add(verts[i].pos);
+
+					PlaceThingsAtPositions(points);
+
+					// Snap to map format accuracy
+					General.Map.Map.SnapAllToAccuracy();
+
+					// Clear selection
+					General.Map.Map.ClearAllSelected();
+
+					// Update cached values
+					General.Map.Map.Update();
+
+					// Map is changed
+					General.Map.IsChanged = true;
+				}
+				else if (Tools.DrawLines(verts, true, BuilderPlug.Me.AutoAlignTextureOffsetsOnCreate)) //mxd
 				{
 					// Snap to map format accuracy
 					General.Map.Map.SnapAllToAccuracy();
@@ -249,11 +272,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					General.Map.Map.Update();
 
 					//mxd. Outer sectors may require some splittin...
-					if(General.Settings.SplitJoinedSectors) Tools.SplitOuterSectors(General.Map.Map.GetMarkedLinedefs(true));
+					if (General.Settings.SplitJoinedSectors) Tools.SplitOuterSectors(General.Map.Map.GetMarkedLinedefs(true));
 
 					// Edit new sectors?
 					List<Sector> newsectors = General.Map.Map.GetMarkedSectors(true);
-					if(BuilderPlug.Me.EditNewSector && (newsectors.Count > 0))
+					if (BuilderPlug.Me.EditNewSector && (newsectors.Count > 0))
 						General.Interface.ShowEditSectors(newsectors);
 
 					// Update the used textures
@@ -320,10 +343,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			panel.OnValueChanged += OptionsPanelOnValueChanged;
 			panel.OnContinuousDrawingChanged += OnContinuousDrawingChanged;
 			panel.OnAutoCloseDrawingChanged += OnAutoCloseDrawingChanged;
+			panel.OnPlaceThingsAtVerticesChanged += OnPlaceThingsAtVerticesChanged;
 
 			// Needs to be set after adding the events...
 			panel.ContinuousDrawing = General.Settings.ReadPluginSetting("drawcurvemode.continuousdrawing", false);
-			panel.AutoCloseDrawing = General.Settings.ReadPluginSetting("drawlinesmode.autoclosedrawing", false);
+			panel.AutoCloseDrawing = General.Settings.ReadPluginSetting("drawcurvemode.autoclosedrawing", false);
+			panel.PlaceThingsAtVertices = General.Settings.ReadPluginSetting("drawcurvemode.placethingsatvertices", false);
 		}
 
 		protected override void AddInterface()
@@ -336,7 +361,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Store settings
 			General.Settings.WritePluginSetting("drawcurvemode.segmentlength", segmentlength);
 			General.Settings.WritePluginSetting("drawcurvemode.continuousdrawing", panel.ContinuousDrawing);
-			General.Settings.WritePluginSetting("drawlinesmode.autoclosedrawing", panel.AutoCloseDrawing);
+			General.Settings.WritePluginSetting("drawcurvemode.autoclosedrawing", panel.AutoCloseDrawing);
+			General.Settings.WritePluginSetting("drawcurvemode.placethingsatvertices", panel.PlaceThingsAtVertices);
 
 			// Remove the buttons
 			panel.Unregister();

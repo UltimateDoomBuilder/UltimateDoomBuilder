@@ -241,7 +241,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public void OnEditBegin() { }
 		public void OnMouseMove(MouseEventArgs e) { }
 		public void OnChangeTargetBrightness(bool up) { }
-		public void OnChangeTextureOffset(int horizontal, int vertical, bool doSurfaceAngleCorrection) { }
+		public bool OnChangeTextureOffset(int horizontal, int vertical, bool doSurfaceAngleCorrection) { return true; }
 		public void OnChangeScale(int incrementX, int incrementY) { }
 		public void OnSelectTexture() { }
 		public void OnCopyTexture() { }
@@ -261,7 +261,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public void ApplyUpperUnpegged(bool set) { }
 		public void ApplyLowerUnpegged(bool set) { }
 		public string GetTextureName() { return ""; }
-		public void SelectNeighbours(bool select, bool withSameTexture, bool withSameHeight) { } //mxd
+		public void SelectNeighbours(bool select, bool withSameTexture, bool withSameHeight, bool stopatselected) { } //mxd
 		public virtual void OnPaintSelectBegin() { } // biwa
 		public virtual void OnPaintSelectEnd() { } // biwa
 

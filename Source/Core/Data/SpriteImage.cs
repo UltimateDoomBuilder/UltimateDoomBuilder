@@ -35,20 +35,6 @@ namespace CodeImp.DoomBuilder.Data
 
 	public sealed class SpriteImage : ImageData, ISpriteImage
 	{
-		#region ================== Variables
-
-		private int offsetx;
-		private int offsety;
-		
-		#endregion
-
-		#region ================== Properties
-
-		public int OffsetX { get { return offsetx; } }
-		public int OffsetY { get { return offsety; } }
-		
-		#endregion
-		
 		#region ================== Constructor / Disposer
 
 		// Constructor

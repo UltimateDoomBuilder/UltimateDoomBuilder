@@ -261,7 +261,6 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			{
 				case Highlight.Body:
 					Vector2D diff = GridSetup.SnappedToGrid(pos, gridsize, gridsizeinv) - GridSetup.SnappedToGrid(lastpos, gridsize, gridsizeinv);
-					Debug.WriteLine("diff: " + (diff).ToString());
 					outerleft += diff.x;
 					outerright += diff.x;
 					outertop += diff.y;
@@ -320,11 +319,12 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 					);
 
 					// The way our blockmap is built and queried we will always get exactly one block
-					if (blocks[0].Sectors.Count == 0)
-					{
-						positions.Add(new Vector2D(x + margin, y - margin));
-						numsectors--;
-					}
+					// Try the next position of the current one is occupied by another sector
+					if (blocks[0].Sectors.Any(s => SectorInNewControlSectorSpace(x, y, s)))
+						continue;
+
+					positions.Add(new Vector2D(x + margin, y - margin));
+					numsectors--;
 
 					if (numsectors == 0)
 						return positions;
@@ -357,25 +357,79 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 					);
 
 					// The way our blockmap is built and queried we will always get exactly one block
-					if (blocks[0].Sectors.Count == 0)
-					{
-						Point p = new Point(x + margin, y - margin);
+					// Try the next position of the current one is occupied by another sector
+					if (blocks[0].Sectors.Any(s => SectorInNewControlSectorSpace(x, y, s)))
+						continue;
 
-						dv.Add(SectorVertex(p.X, p.Y));
-						dv.Add(SectorVertex(p.X + BuilderPlug.Me.ControlSectorArea.SectorSize, p.Y));
-						dv.Add(SectorVertex(p.X + BuilderPlug.Me.ControlSectorArea.SectorSize, p.Y - BuilderPlug.Me.ControlSectorArea.SectorSize));
-						dv.Add(SectorVertex(p.X, p.Y - BuilderPlug.Me.ControlSectorArea.SectorSize));
-						dv.Add(SectorVertex(p.X, p.Y));
+					Point p = new Point(x + margin, y - margin);
 
-						numsectors--;
+					dv.Add(SectorVertex(p.X, p.Y));
+					dv.Add(SectorVertex(p.X + BuilderPlug.Me.ControlSectorArea.SectorSize, p.Y));
+					dv.Add(SectorVertex(p.X + BuilderPlug.Me.ControlSectorArea.SectorSize, p.Y - BuilderPlug.Me.ControlSectorArea.SectorSize));
+					dv.Add(SectorVertex(p.X, p.Y - BuilderPlug.Me.ControlSectorArea.SectorSize));
+					dv.Add(SectorVertex(p.X, p.Y));
 
-						if (numsectors == 0)
-							return dv;
-					}
+					numsectors--;
+
+					if (numsectors == 0)
+						return dv;
 				}
 			}
 
 			throw new NoSpaceInCSAException("No space left for control sectors");
+		}
+
+		/// <summary>
+		/// Checks if the given sector and position for the new control sector intersect in any way.
+		/// </summary>
+		/// <param name="x">Leftmost X position of the new control sector space</param>
+		/// <param name="y">Topmost Y position of the new control sector space</param>
+		/// <param name="sector">The sector to check against</param>
+		/// <returns>true if there's an intersection, false if there isn't</returns>
+		private bool SectorInNewControlSectorSpace(int x, int y, Sector sector)
+		{
+			int margin = (int)((gridsize - sectorsize) / 2);
+			HashSet<Vertex> sectorvertices = new HashSet<Vertex>();
+
+			// Any of the sector's sidedef's linedef's vertices inside the new control sector's space?
+			foreach (Sidedef sd in sector.Sidedefs)
+			{
+				sectorvertices.Add(sd.Line.Start);
+				sectorvertices.Add(sd.Line.End);
+			}
+
+			foreach (Vertex v in sectorvertices)
+				if (v.Position.x >= x + margin && v.Position.x <= x + margin + sectorsize && v.Position.y <= y - margin && v.Position.y >= y - margin - sectorsize)
+					return true;
+
+			// Any of the new vertex positions in the sector?
+			Vector2D[] points = new Vector2D[]
+			{
+				new Vector2D(x + margin, y - margin),
+				new Vector2D(x + margin + sectorsize, y - margin -sectorsize),
+		 		new Vector2D(x + margin + sectorsize, y - margin - sectorsize),
+				new Vector2D(x + margin, y -margin)
+			};
+
+			foreach (Vector2D v in points)
+				if (sector.Intersect(v))
+					return true;
+
+			// Any of the new lines and the sector's lines overlapping?
+			Line2D[] lines = new Line2D[]
+			{
+				new Line2D(points[0], points[1]),
+				new Line2D(points[1], points[2]),
+				new Line2D(points[2], points[3]),
+				new Line2D(points[3], points[0])
+			};
+
+			foreach (Sidedef sd in sector.Sidedefs)
+				foreach (Line2D line in lines)
+					if (Line2D.GetIntersection(sd.Line.Line, line))
+						return true;
+
+			return false;
 		}
 
 		public bool Inside(float x, float y)

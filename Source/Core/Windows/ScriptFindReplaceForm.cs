@@ -174,7 +174,7 @@ namespace CodeImp.DoomBuilder.Windows
 			findbox.Text = findtext;
 			findbox.SelectAll();
 			findbox.Items.AddRange(findtexts.ToArray());
-			findinbox.SelectedIndex = searchmode;
+			findinbox.SelectedIndex = searchmode > findinbox.Items.Count - 1 ? 0 : searchmode;
 			findmatchcase.Checked = matchcase;
 			findwholeword.Checked = matchwholeword;
 
@@ -186,7 +186,7 @@ namespace CodeImp.DoomBuilder.Windows
 			replacebox.MaxDropDownItems = MAX_DROPDOWN_ITEMS;
 			replacebox.Text = replacetext;
 			replacebox.Items.AddRange(replacetexts.ToArray());
-			replaceinbox.SelectedIndex = searchmode;
+			replaceinbox.SelectedIndex = searchmode > replaceinbox.Items.Count - 1 ? 0 : searchmode;
 			replacematchcase.Checked = matchcase;
 			replacewholeword.Checked = matchwholeword;
 
@@ -226,6 +226,17 @@ namespace CodeImp.DoomBuilder.Windows
 			{
 				General.Settings.WriteSetting("windows." + configname + ".replacetexts", replacedata);
 			}
+		}
+
+		// The form doesn't have a regular "close" button, so we have to intercept the Esc key
+		protected override bool ProcessDialogKey(Keys keyData)
+		{
+			if (ModifierKeys == Keys.None && keyData == Keys.Escape)
+			{
+				this.Hide();
+				return true;
+			}
+			return base.ProcessDialogKey(keyData);
 		}
 
 		#endregion
@@ -385,6 +396,24 @@ namespace CodeImp.DoomBuilder.Windows
 			if(tabs.SelectedTab == tabfind) findbox.Focus();
 			else if(tabs.SelectedTab == tabreplace) replacefindbox.Focus();
 			else throw new NotImplementedException("Unsupported tab type");
+		}
+
+		private void findbox_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.Enter)
+				findnextbutton_Click(sender, EventArgs.Empty);
+		}
+
+		private void replacefindbox_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.Enter)
+				findnextbutton_Click(sender, EventArgs.Empty);
+		}
+
+		private void replacebox_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.Enter)
+				replacebutton_Click(sender, EventArgs.Empty);
 		}
 
 		#endregion

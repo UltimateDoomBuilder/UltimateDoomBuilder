@@ -590,23 +590,30 @@ namespace CodeImp.DoomBuilder.Config
 			if (renderradius == 0)
 				renderradius = radius;
 
-			//mxd. DistanceCheck. The value is CVAR. Also we'll need squared value
-			if(actor.HasPropertyWithValue("distancecheck"))
+			// DistanceCheck. The value is CVAR. Also we'll need squared value
+			if (actor.HasPropertyWithValue("distancecheck"))
 			{
 				string cvarname = actor.GetPropertyValueString("distancecheck", 0);
-				if(!General.Map.Data.CVars.Integers.ContainsKey(cvarname))
+				if (General.Map.Data.CVars.AllNames.Contains(cvarname))
 				{
-					General.ErrorLogger.Add(ErrorType.Error, "Error in actor \"" + title + "\":" + index + ". DistanceCheck property references undefined cvar \"" + cvarname + "\"");
-					distancechecksq = double.MaxValue;
+					if (!General.Map.Data.CVars.Integers.ContainsKey(cvarname))
+					{
+						General.ErrorLogger.Add(ErrorType.Error, "Error in actor \"" + title + "\":" + index + ". DistanceCheck property references cvar \"" + cvarname + "\" which has to be of type int, but is not");
+						distancechecksq = double.MaxValue;
+					}
+					else
+					{
+						distancechecksq = Math.Pow(General.Map.Data.CVars.Integers[cvarname], 2);
+					}
 				}
 				else
 				{
-					distancechecksq = Math.Pow(General.Map.Data.CVars.Integers[cvarname], 2);
+					General.ErrorLogger.Add(ErrorType.Error, "Error in actor \"" + title + "\":" + index + ". DistanceCheck property references undefined cvar \"" + cvarname + "\"");
 				}
 			}
 
 			//mxd. Renderstyle
-			if(actor.HasPropertyWithValue("renderstyle") && !actor.HasProperty("$ignorerenderstyle"))
+			if (actor.HasPropertyWithValue("renderstyle") && !actor.HasProperty("$ignorerenderstyle"))
 				renderstyle = actor.GetPropertyValueString("renderstyle", 0, true).ToLower();
 
 			//mxd. Alpha

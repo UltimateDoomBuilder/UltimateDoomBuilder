@@ -48,6 +48,8 @@ namespace CodeImp.DoomBuilder.Data
 		protected long longname;
 		protected int width;
 		protected int height;
+		protected int offsetx;
+		protected int offsety;
 		protected Vector2D scale;
 		protected bool worldpanning;
 		private bool usecolorcorrection;
@@ -141,6 +143,8 @@ namespace CodeImp.DoomBuilder.Data
 		public int MipMapLevels { get { return mipmaplevels; } set { mipmaplevels = value; } }
 		public virtual int Width { get { return width; } }
 		public virtual int Height { get { return height; } }
+		public int OffsetX { get { return offsetx; } }
+		public int OffsetY { get { return offsety; } }
 		//mxd. Scaled texture size is integer in ZDoom.
 		public virtual float ScaledWidth { get { return (float)Math.Round(width * scale.x); } }
 		public virtual float ScaledHeight { get { return (float)Math.Round(height * scale.y); } }

@@ -496,6 +496,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			else if(editpressed && prevoffset != 0)
 			{
 				int newangle = 0;
+				int newvertices = panel.Vertices;
 				if(panel.FixedCurve)
 				{
 					// Flip required?
@@ -513,7 +514,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					//TODO: there surely is a way to get new angle without iteration...
 					double targetoffset = radius.GetLength() * u;
 					double prevdiff = double.MaxValue;
-					int increment = (clampvalue ? panel.AngleIncrement : 1);
+					bool clampToKeyEllipseSegments = General.Interface.CtrlState && General.Interface.AltState;
+
+					int increment = (clampToKeyEllipseSegments ? 15 : clampvalue ? panel.AngleIncrement : 1);
 					for(int i = 1; i < panel.MaximumAngle; i += increment)
 					{
 						// Calculate diameter for current angle...
@@ -530,7 +533,19 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					}
 
 					// Clamp to 5 deg increments
-					if(clampvalue) newangle = (newangle / panel.AngleIncrement) * panel.AngleIncrement; 
+					if(clampvalue) newangle = (newangle / increment) * increment; 
+					
+					if(clampToKeyEllipseSegments)
+					{
+						newvertices = Math.Abs(newangle) / increment - 1;
+
+						if(newvertices < 1)
+							newvertices = 1;
+						if(newangle < 30)
+						{
+							newangle = 0;
+						}
+					}
 				}
 				else
 				{
@@ -543,7 +558,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				}
 
 				// Set new angle without triggering the update...
-				panel.SetValues(panel.Vertices, panel.Distance, newangle, panel.FixedCurve, panel.FixedCurveOutwards);
+				panel.SetValues(newvertices, panel.Distance, newangle, panel.FixedCurve, panel.FixedCurveOutwards);
 
 				// Update hint text
 				hintlabel.Text = "Angle: " + panel.Angle;

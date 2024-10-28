@@ -138,6 +138,7 @@
   -->
   <ItemGroup>
     <Compile Include="Compilers\AccCompiler.cs" />
+	<Compile Include="Compilers\BccCompiler.cs" />
     <Compile Include="Compilers\NodesCompiler.cs" />
     <Compile Include="Config\ArgumentInfo.cs" />
     <Compile Include="Config\ExternalCommandSettings.cs" />
@@ -233,9 +234,19 @@
     <Compile Include="Data\FileImage.cs" />
     <Compile Include="Data\FlatImage.cs" />
     <Compile Include="Data\ImageLoadState.cs" />
+    <Compile Include="General\AutoSaver.cs" />
     <Compile Include="General\Hasher.cs" />
     <Compile Include="General\SHA256Hash.cs" />
     <Compile Include="General\ToastManager.cs" />
+    <Compile Include="GZBuilder\Models\GZModel.cs" />
+    <Compile Include="GZBuilder\Models\IQMModelLoader.cs" />
+    <Compile Include="GZBuilder\Models\ModelLoader.cs" />
+    <Compile Include="GZBuilder\Models\UnrealModelLoader.cs" />
+    <Compile Include="GZBuilder\Models\KVXModelLoader.cs" />
+    <Compile Include="GZBuilder\Models\MD2ModelLoader.cs" />
+    <Compile Include="GZBuilder\Models\MD3ModelLoader.cs" />
+    <Compile Include="GZBuilder\Models\OBJModelLoader.cs" />
+    <Compile Include="GZBuilder\Models\ModelLoadResult.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1099,8 +1110,6 @@
     <Compile Include="ZDoom\ModeldefStructure.cs" />
     <Compile Include="ZDoom\Scripting\ScriptTypeParserSE.cs" />
     <Compile Include="GZBuilder\GZGeneral.cs" />
-    <Compile Include="GZBuilder\md3\GZModel.cs" />
-    <Compile Include="GZBuilder\md3\ModelReader.cs" />
     <Compile Include="ZDoom\Scripting\AcsParserSE.cs" />
     <Compile Include="Windows\ExceptionDialog.cs">
       <SubType>Form</SubType>
@@ -1410,7 +1419,6 @@
     <None Include="Resources\PuzzlePiece.png" />
     <None Include="Resources\Search.png" />
     <None Include="Resources\SnapVerts.png" />
-    <EmbeddedResource Include="Resources\UDMF_UI.cfg" />
     <None Include="Resources\Unlink.png" />
     <None Include="Resources\Unpin.png" />
     <None Include="Resources\Pin.png" />

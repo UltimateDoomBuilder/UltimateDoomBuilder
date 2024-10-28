@@ -10,10 +10,10 @@ jobs:
       fail-fast: false
       matrix:
         config:
-        - {
-            name: "macOS",
-            os: macos-latest
-          }
+#        - {
+#            name: "macOS",
+#            os: macos-latest
+#          }
         - {
             name: "Linux",
             os: ubuntu-latest
@@ -28,7 +28,7 @@ jobs:
           make mac
         elif [[ "${{ runner.os }}" == 'Linux' ]]; then
           sudo apt-get update
-          sudo apt install mesa-common-dev
+          sudo apt install mesa-common-dev libxfixes-dev
           make linux
         fi
 
@@ -57,8 +57,8 @@ jobs:
           fi
         done
 
-    - name: Upload Package
-      uses: actions/upload-artifact@v1
-      with:
-        path: Build
-        name: "UDB_${{ matrix.config.name }}"
+#    - name: Upload Package
+#      uses: actions/upload-artifact@v1
+#      with:
+#        path: Build
+#        name: "UDB_${{ matrix.config.name }}"

@@ -23,6 +23,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
@@ -239,6 +240,9 @@ namespace CodeImp.DoomBuilder
 		// Toasts
 		private static ToastManager toastmanager;
 
+		// Autosaving
+		private static AutoSaver autosaver;
+
 		#endregion
 
 		#region ================== Properties
@@ -284,10 +288,18 @@ namespace CodeImp.DoomBuilder
 		public static ErrorLogger ErrorLogger { get { return errorlogger; } }
 		public static string CommitHash { get { return commithash; } } //mxd
 		public static ToastManager ToastManager { get => toastmanager; }
+		internal static AutoSaver AutoSaver { get => autosaver; }
 
 		#endregion
 
 		#region ================== Configurations
+
+		/// <summary>
+		/// Checks if a given game configuration file exists.
+		/// </summary>
+		/// <param name="filename">The file name of the game configuration file.</param>
+		/// <returns>true if the game configuration exists, false if it doesn't</returns>
+		internal static bool ConfigurationInfoExist(string filename) => configs.Any(ci => string.Compare(Path.GetFileNameWithoutExtension(ci.Filename), Path.GetFileNameWithoutExtension(filename), true) == 0);
 
 		// This returns the game configuration info by filename
 		internal static ConfigurationInfo GetConfigurationInfo(string filename)
@@ -808,6 +820,9 @@ namespace CodeImp.DoomBuilder
 				if(General.Settings.CheckForUpdates) UpdateChecker.PerformCheck(false);
 #endif
 
+				// Prepare autosaving
+				autosaver = new AutoSaver();
+
 				// Run application from the main window
 				Application.Run(mainwindow);
 			}
@@ -821,6 +836,7 @@ namespace CodeImp.DoomBuilder
 		private static void RegisterToasts()
 		{
 			toastmanager.RegisterToast("resourcewarningsanderrors", "Resource warnings and errors", "When there are errors or warning while (re)loading the resources");
+			toastmanager.RegisterToast("autosave", "Autosave", "Notifications related to autosaving");
 		}
 
 		// This parses the command line arguments
@@ -1160,7 +1176,7 @@ namespace CodeImp.DoomBuilder
 
 					//mxd. Also reset the clock...
 					MainWindow.ResetClock();
-					
+
 					Cursor.Current = Cursors.Default;
 				}
 			}

@@ -15,6 +15,7 @@ using CodeImp.DoomBuilder.VisualModes;
 using CodeImp.DoomBuilder.Windows;
 using CodeImp.DoomBuilder.BuilderModes.Interface;
 using System.Windows.Forms;
+using System.Linq;
 
 #endregion
 
@@ -65,7 +66,14 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			BasePath = form.BasePath;
 			ActorPath = form.ActorPath;
 			ModelPath = form.ModelPath;
-			SkipTextures = form.SkipTextures;
+
+			// Only skip textures if we're exporting for GZDoom
+			if (ExportForGZDoom)
+				SkipTextures = form.SkipTextures;
+			else
+				SkipTextures = new List<string>();
+
+
 			IgnoreControlSectors = form.IgnoreControlSectors;
 			NormalizeLowestVertex = form.NormalizeLowestVertex;
 			CenterModel = form.CenterModel;
@@ -139,8 +147,11 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 								continue;
 							}
 
-							Bitmap bmp = id.ExportBitmap();
-                            lock (bmp)
+							//Bitmap bmp = id.ExportBitmap();
+							// The image might have a color correction applied, but we need it without. So we use LocalGetBitmap, because it reloads the image,
+							// but doesn't applie the color correction if we set UseColorCorrection to false first
+							Bitmap bmp = new Bitmap(id.LocalGetBitmap(false));
+							lock (bmp)
                             {
 								string filepath = Path.Combine(settings.ObjPath, Path.GetDirectoryName(s), Path.GetFileNameWithoutExtension(s) + ".png");
 
@@ -171,7 +182,11 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 								continue;
 							}
 
-							Bitmap bmp = id.ExportBitmap();
+							//Bitmap bmp = id.ExportBitmap();
+							// The image might have a color correction applied, but we need it without. So we use LocalGetBitmap, because it reloads the image,
+							// but doesn't applie the color correction if we set UseColorCorrection to false first
+							Bitmap bmp = new Bitmap(id.LocalGetBitmap(false));
+
 
 							// Handle duplicate names
 							string flatname = s;
@@ -388,7 +403,50 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				if (addvs)
 				{
 					BaseVisualSector bvs = mode.CreateBaseVisualSector(s);
-					if (bvs != null) visualSectors.Add(bvs);
+
+					if (bvs != null)
+					{
+						// When the visual sector is created yet unseen wall textures are not fully loaded in time, which can result in the
+						// texture coordinates (UV) ending up as NaN. This can happen if the export is started before the textures are loaded
+						// (for example by opening the texture browser or going into visual mode. So make sure the textures are loaded immediately.
+						// After that the visual sector has to be rebuilt. This only seems to affect wall textures, not floors/ceilings
+						// See https://github.com/UltimateDoomBuilder/UltimateDoomBuilder/issues/1015
+						foreach (VisualSidedefParts vsp in bvs.Sides.Values)
+						{
+							if (vsp.upper?.Texture != null && vsp.upper.Texture.ImageState != ImageLoadState.Ready)
+								vsp.upper.Texture.LocalGetBitmap(true);
+
+							if (vsp.middlesingle?.Texture != null && vsp.middlesingle.Texture.ImageState != ImageLoadState.Ready)
+								vsp.middlesingle.Texture.LocalGetBitmap(true);
+
+							if (vsp.middledouble?.Texture != null && vsp.middledouble.Texture.ImageState != ImageLoadState.Ready)
+								vsp.middledouble.Texture.LocalGetBitmap(true);
+
+							if (vsp.lower?.Texture != null && vsp.lower.Texture.ImageState != ImageLoadState.Ready)
+								vsp.lower.Texture.LocalGetBitmap(true);
+
+							if (vsp.middle3d != null)
+							{
+								foreach (VisualMiddle3D vm in vsp.middle3d.Where(o => o.Texture != null && o.Texture.ImageState != ImageLoadState.Ready))
+								{
+									vm.Texture.LocalGetBitmap(true);
+								}
+							}
+
+							if (vsp.middleback != null)
+							{
+								foreach (VisualMiddleBack vm in vsp.middleback.Where(o => o.Texture != null && o.Texture.ImageState != ImageLoadState.Ready))
+								{
+									vm.Texture.LocalGetBitmap(true);
+								}
+							}
+						}
+
+						// Rebuild the visual sector so that the texture coordinates are guaranteed to be correct
+						bvs.Rebuild();
+
+						visualSectors.Add(bvs);
+					}
 				}
 			}
 
@@ -513,11 +571,13 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 							foreach(VisualMiddle3D m3d in part.middle3d) 
 							{
 								if(m3d.Vertices == null) continue;
-								texture = m3d.GetControlLinedef().Front.MiddleTexture;
+								texture = m3d.GetTextureName();
 								if (!skipTextures.Contains(texture))
 								{
 									CheckTextureName(ref texturegeo, ref texture);
-									texturegeo[texture].AddRange(OptimizeGeometry(m3d.Vertices, m3d.GeometryType));
+									// 3D floor sides are cut so that there are only triangles for the visible parts. Some of those might be
+									// triangles and not rectangles, so we can't optimize them into rectangles
+									texturegeo[texture].AddRange(OptimizeGeometry(m3d.Vertices, m3d.GeometryType, true));
 								}
 							}
 						}

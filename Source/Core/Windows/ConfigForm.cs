@@ -808,8 +808,6 @@ namespace CodeImp.DoomBuilder.Windows
 		private void cbEngineSelector_SelectedIndexChanged(object sender, EventArgs e) 
 		{
 			if(cbEngineSelector.SelectedIndex == -1) return;
-
-			preventchanges = true;
 			
 			//set new values
 			configinfo.CurrentEngineIndex = cbEngineSelector.SelectedIndex;
@@ -834,8 +832,6 @@ namespace CodeImp.DoomBuilder.Windows
 			skill.Value = skilllevel - 1; //mxd. WHY???
 			skill.Value = skilllevel;
 			customparameters.Checked = configinfo.CustomParameters;
-
-			preventchanges = false;
 		}
 
 		//mxd

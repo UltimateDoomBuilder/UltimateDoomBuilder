@@ -74,6 +74,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// Linedefs that will be edited
 		ICollection<Linedef> editlines;
 
+		// Autosave
+		private bool allowautosave;
+
 		#endregion
 
 		#region ================== Properties
@@ -281,8 +284,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					offset.y %= texture.Height / s.Fields.GetValue((alignFloors ? "yscalefloor" : "yscaleceiling"), 1.0);
 				}
 
-				UniFields.SetFloat(s.Fields, (alignFloors ? "xpanningfloor" : "xpanningceiling"), Math.Round(-offset.x), 0.0);
-				UniFields.SetFloat(s.Fields, (alignFloors ? "ypanningfloor" : "ypanningceiling"), Math.Round(offset.y), 0.0);
+				UniFields.SetFloat(s.Fields, (alignFloors ? "xpanningfloor" : "xpanningceiling"), Math.Round(-offset.x, 6), 0.0);
+				UniFields.SetFloat(s.Fields, (alignFloors ? "ypanningfloor" : "ypanningceiling"), Math.Round(offset.y, 6), 0.0);
 
 				//update
 				s.UpdateNeeded = true;
@@ -359,7 +362,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(curdistance < closest2) closest2 = curdistance;
 
 				// Return closer one
-				return (int)(closest1 - closest2);
+				// biwa: the difference between closest1 and closest2 can exceed the capacity of int, and that
+				// sometimes seem to cause problems, resulting in the sorting to throw an ArgumentException
+				// because of inconsistent results. Making sure to only return -1, 0, or 1 seems to fix the issue
+				// See https://github.com/UltimateDoomBuilder/UltimateDoomBuilder/issues/1053
+				return (closest1 - closest2) < 0 ? -1 : ((closest1 - closest2) > 0 ? 1 : 0);
 			});
 
 			return result;
@@ -629,6 +636,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Map.Map.ConvertSelection(SelectionType.Linedefs);
 			UpdateSelectionInfo(); //mxd
 			SetupSectorLabels(); //mxd
+
+			// By default we allow autosave
+			allowautosave = true;
 		}
 		
 		// Mode disengages
@@ -834,10 +844,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				{
 					if(General.Interface.IsActiveWindow)
 					{
+						// Prevent autosave while the editing dialog is shown
+						allowautosave = false;
+
 						// Show line edit dialog
 						General.Interface.OnEditFormValuesChanged += linedefEditForm_OnValuesChanged;
 						DialogResult result = General.Interface.ShowEditLinedefs(editlines);
 						General.Interface.OnEditFormValuesChanged -= linedefEditForm_OnValuesChanged;
+
+						allowautosave = true;
 
 						General.Map.Map.Update();
 						
@@ -1078,19 +1093,18 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					}
 
 					// Start dragging the selection
-					if(!BuilderPlug.Me.DontMoveGeometryOutsideMapBoundary || CanDrag()) //mxd
+					if(!BuilderPlug.Me.DontMoveGeometryOutsideMapBoundary || CanDrag(draglines)) //mxd
 						General.Editing.ChangeMode(new DragLinedefsMode(mousedownmappos, draglines));
 				}
 			}
 		}
 
 		//mxd. Check if any selected linedef is outside of map boundary
-		private static bool CanDrag() 
+		private static bool CanDrag(ICollection<Linedef> draglines) 
 		{
-			ICollection<Linedef> selectedlines = General.Map.Map.GetSelectedLinedefs(true);
 			int unaffectedCount = 0;
 
-			foreach(Linedef l in selectedlines) 
+			foreach(Linedef l in draglines) 
 			{
 				// Make sure the linedef is inside the map boundary
 				if(l.Start.Position.x < General.Map.Config.LeftBoundary || l.Start.Position.x > General.Map.Config.RightBoundary
@@ -1098,21 +1112,22 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					|| l.End.Position.x < General.Map.Config.LeftBoundary || l.End.Position.x > General.Map.Config.RightBoundary
 					|| l.End.Position.y > General.Map.Config.TopBoundary || l.End.Position.y < General.Map.Config.BottomBoundary) 
 				{
-
-					l.Selected = false;
 					unaffectedCount++;
 				}
 			}
 
-			if(unaffectedCount == selectedlines.Count) 
+			if (unaffectedCount == draglines.Count)
 			{
-				General.Interface.DisplayStatus(StatusType.Warning, "Unable to drag selection: " + (selectedlines.Count == 1 ? "selected linedef is" : "all of selected linedefs are") + " outside of map boundary!");
+				General.Interface.DisplayStatus(StatusType.Warning, "Unable to drag selection: " + (draglines.Count == 1 ? "selected linedef is" : "all of selected linedefs are") + " outside of map boundary!");
 				General.Interface.RedrawDisplay();
 				return false;
 			}
 
-			if(unaffectedCount > 0)
+			if (unaffectedCount > 0)
+			{
 				General.Interface.DisplayStatus(StatusType.Warning, unaffectedCount + " of selected linedefs " + (unaffectedCount == 1 ? "is" : "are") + " outside of map boundary!");
+				return false;
+			}
 
 			return true;
 		}
@@ -1247,6 +1262,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			base.OnMapElementsChanged();
 
 			CreateBlockmap();
+		}
+
+		public override bool OnAutoSaveBegin()
+		{
+			return allowautosave;
 		}
 
 		//mxd

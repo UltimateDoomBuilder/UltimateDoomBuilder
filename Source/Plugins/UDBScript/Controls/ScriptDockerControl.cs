@@ -243,6 +243,7 @@ namespace CodeImp.DoomBuilder.UDBScript
 				if (result != null)
 				{
 					filetree.SelectedNodes.Add(result);
+					result.EnsureVisible();
 					break;
 				}
 			}

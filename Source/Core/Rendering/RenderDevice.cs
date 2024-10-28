@@ -70,12 +70,18 @@ namespace CodeImp.DoomBuilder.Rendering
             DeclareUniform(UniformName.sectorfogcolor, "sectorfogcolor", UniformType.Vec4f);
             DeclareUniform(UniformName.lightsEnabled, "lightsEnabled", UniformType.Float);
 			DeclareUniform(UniformName.slopeHandleLength, "slopeHandleLength", UniformType.Float);
+
+			// vkdoom lights
+            DeclareUniform(UniformName.lightStrengthAndLinearity, "lightStrengthAndLinearity", UniformType.Vec2fArray);
+            DeclareUniform(UniformName.useLightStrength, "useLightStrength", UniformType.Float);
             
             // volte: classic rendering
             DeclareUniform(UniformName.drawPaletted, "drawPaletted", UniformType.Int);
             DeclareUniform(UniformName.colormapSize, "colormapSize", UniformType.Vec2i);
             DeclareUniform(UniformName.doomlightlevels, "doomlightlevels", UniformType.Int);
             DeclareUniform(UniformName.sectorLightLevel, "sectorLightLevel", UniformType.Int);
+
+            DeclareUniform(UniformName.skew, "skew", UniformType.Vec2f);
 
             // 2d fsaa
             CompileShader(ShaderName.display2d_fsaa, "display2d.shader", "display2d_fsaa");
@@ -804,7 +810,10 @@ namespace CodeImp.DoomBuilder.Rendering
         drawPaletted,
         colormapSize,
         sectorLightLevel,
-        doomlightlevels
+        doomlightlevels,
+        skew,
+		lightStrengthAndLinearity,
+		useLightStrength
     }
 
     public enum VertexFormat : int { Flat, World }

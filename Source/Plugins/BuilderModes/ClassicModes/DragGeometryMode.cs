@@ -60,7 +60,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		protected ICollection<Thing> unselectedthings; //mxd
 
 		// List of things, which should be moved
-		private ICollection<Thing> thingstodrag; //mxd
+		protected ICollection<Thing> thingstodrag; //mxd
 
 		//mxd. List of sectors
 		private List<Sector> selectedsectors;
@@ -133,7 +133,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Make list of selected vertices and things
 			selectedverts = General.Map.Map.GetMarkedVertices(true);
 			selectedthings = General.Map.Map.GetSelectedThings(true); //mxd
-			thingstodrag = (BuilderPlug.Me.SyncronizeThingEdit ? selectedthings : new List<Thing>()); //mxd
+
+			// Only set the things to drag if they weren't set by the inherited modes
+			if(thingstodrag == null)
+				thingstodrag = (BuilderPlug.Me.SyncronizeThingEdit ? selectedthings : new List<Thing>()); //mxd
 
 			// Make list of non-selected vertices and things
 			// Non-selected vertices will be used for snapping to nearest items
@@ -429,7 +432,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				//mxd. Update floor/ceiling texture offsets and slopes?
 				if (General.Map.UDMF)
 				{
-					Dictionary<Sector, List<Sector>> threedfloorcontrolsectors = new Dictionary<Sector, List<Sector>>();
 					Vector2D offset = dragitem.Position - dragitemposition;
 
 					// Sectors may've been created/removed when applying dragging...
@@ -438,6 +440,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 					// Sectors that have to be updated. They contain the dragged sectors, but also 3D floor control sectors
 					HashSet<Sector> updatesectors = new HashSet<Sector>(draggedsectors);
+					// Keep track of control sectors in general, and control sectors relevant to other dragged sectors
+					HashSet<Sector> controlsectors = new HashSet<Sector>();
+					HashSet<Sector> addcontrolsectors = new HashSet<Sector>();
 
 					// Check if the dragged sectors are referenced as 3D floors, and add the control sectors to the list of
 					// sectors that need updating
@@ -446,12 +451,21 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						if (ld.Action != 160) // Action 160 defines a 3D floor
 							continue;
 
+						if (ld.Args[0] == 0) // First argument of the action is the sector tag. 0 is not a valid value
+							continue;
+
+						if (ld.Front == null) // Must have a front side
+							continue;
+
+						controlsectors.Add(ld.Front.Sector);
+
 						foreach (Sector s in draggedsectors)
 						{
-							if (ld.Args[0] == 0 || !s.Tags.Contains(ld.Args[0])) // First argument of the action is the sector tag. 0 is not a valid value
+							if (!s.Tags.Contains(ld.Args[0]))
 								continue;
 
 							updatesectors.Add(ld.Front.Sector);
+							addcontrolsectors.Add(ld.Front.Sector);
 						}
 					}
 
@@ -459,6 +473,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					foreach (Sector s in updatesectors)
 					{
 						bool updateoffsets = (draggedsectors.Contains(s) && BuilderPlug.Me.LockSectorTextureOffsetsWhileDragging) || (!draggedsectors.Contains(s) && BuilderPlug.Me.Lock3DFloorSectorTextureOffsetsWhileDragging);
+						bool updateslopes = !((controlsectors.Contains(s) ^ addcontrolsectors.Contains(s)) && draggedsectors.Contains(s));
 
 						// Update texture offsets
 						if (updateoffsets)
@@ -521,20 +536,23 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							}
 						}
 
-						// Update floor slope?
-						if (s.FloorSlope.GetLengthSq() > 0 && !double.IsNaN(s.FloorSlopeOffset / s.FloorSlope.z))
+						if (updateslopes)
 						{
-							Plane floor = new Plane(s.FloorSlope, s.FloorSlopeOffset);
-							Vector2D center = new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2);
-							s.FloorSlopeOffset = -Vector3D.DotProduct(s.FloorSlope, new Vector3D(center + offset, floor.GetZ(center)));
-						}
+							// Update floor slope?
+							if (s.FloorSlope.GetLengthSq() > 0 && !double.IsNaN(s.FloorSlopeOffset / s.FloorSlope.z))
+							{
+								Plane floor = new Plane(s.FloorSlope, s.FloorSlopeOffset);
+								Vector2D center = new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2);
+								s.FloorSlopeOffset = -Vector3D.DotProduct(s.FloorSlope, new Vector3D(center + offset, floor.GetZ(center)));
+							}
 
-						// Update ceiling slope?
-						if (s.CeilSlope.GetLengthSq() > 0 && !double.IsNaN(s.CeilSlopeOffset / s.CeilSlope.z))
-						{
-							Plane ceiling = new Plane(s.CeilSlope, s.CeilSlopeOffset);
-							Vector2D center = new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2);
-							s.CeilSlopeOffset = -Vector3D.DotProduct(s.CeilSlope, new Vector3D(center + offset, ceiling.GetZ(center)));
+							// Update ceiling slope?
+							if (s.CeilSlope.GetLengthSq() > 0 && !double.IsNaN(s.CeilSlopeOffset / s.CeilSlope.z))
+							{
+								Plane ceiling = new Plane(s.CeilSlope, s.CeilSlopeOffset);
+								Vector2D center = new Vector2D(s.BBox.X + s.BBox.Width / 2, s.BBox.Y + s.BBox.Height / 2);
+								s.CeilSlopeOffset = -Vector3D.DotProduct(s.CeilSlope, new Vector3D(center + offset, ceiling.GetZ(center)));
+							}
 						}
 					}
 				}

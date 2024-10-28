@@ -141,6 +141,7 @@
   -->
   <ItemGroup>
     <Compile Include="Compilers\AccCompiler.cs" />
+    <Compile Include="Compilers\BccCompiler.cs" />
     <Compile Include="Compilers\NodesCompiler.cs" />
     <Compile Include="Config\ArgumentInfo.cs" />
     <Compile Include="Config\ExternalCommandSettings.cs" />
@@ -241,9 +242,19 @@
     <Compile Include="Dehacked\DehackedFrame.cs" />
     <Compile Include="Dehacked\DehackedParser.cs" />
     <Compile Include="Dehacked\DehackedThing.cs" />
+    <Compile Include="General\AutoSaver.cs" />
     <Compile Include="General\Hasher.cs" />
     <Compile Include="General\SHA256Hash.cs" />
     <Compile Include="General\ToastManager.cs" />
+    <Compile Include="GZBuilder\Models\GZModel.cs" />
+    <Compile Include="GZBuilder\Models\IQMModelLoader.cs" />
+    <Compile Include="GZBuilder\Models\ModelLoader.cs" />
+    <Compile Include="GZBuilder\Models\UnrealModelLoader.cs" />
+    <Compile Include="GZBuilder\Models\KVXModelLoader.cs" />
+    <Compile Include="GZBuilder\Models\MD2ModelLoader.cs" />
+    <Compile Include="GZBuilder\Models\MD3ModelLoader.cs" />
+    <Compile Include="GZBuilder\Models\OBJModelLoader.cs" />
+    <Compile Include="GZBuilder\Models\ModelLoadResult.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -681,9 +692,9 @@
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
-    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="System.Memory" />
+    <Reference Include="System.Numerics.Vectors" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="TabControlEX, Version=0.0.3271.41578, Culture=neutral, PublicKeyToken=1db242dc828e4b4e">
@@ -1107,8 +1118,6 @@
     <Compile Include="ZDoom\ModeldefStructure.cs" />
     <Compile Include="ZDoom\Scripting\ScriptTypeParserSE.cs" />
     <Compile Include="GZBuilder\GZGeneral.cs" />
-    <Compile Include="GZBuilder\md3\GZModel.cs" />
-    <Compile Include="GZBuilder\md3\ModelReader.cs" />
     <Compile Include="ZDoom\Scripting\AcsParserSE.cs" />
     <Compile Include="Windows\ExceptionDialog.cs">
       <SubType>Form</SubType>
@@ -1421,7 +1430,6 @@
     <None Include="Resources\PuzzlePiece.png" />
     <None Include="Resources\Search.png" />
     <None Include="Resources\SnapVerts.png" />
-    <EmbeddedResource Include="Resources\UDMF_UI.cfg" />
     <None Include="Resources\Unlink.png" />
     <None Include="Resources\Unpin.png" />
     <None Include="Resources\Pin.png" />
@@ -1603,6 +1611,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <PreBuildEvent>echo Current Output Directory: %25cd%25
 echo Copying platform-appropriate Updater.ini.

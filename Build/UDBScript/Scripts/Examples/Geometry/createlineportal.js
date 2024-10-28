@@ -77,7 +77,7 @@ let newtag = UDB.Map.getNewTag();
 
 // Set the action, arg, and tag of both lines
 lines[0].action = lines[1].action = 301; // Line_QuickPortal
-lines[0].args[0] = lines[1].args[0] = 0;
+for(let i=0; i <= 4; i++) lines[0].args[i] = lines[1].args[i] = 0;
 lines[0].tag = lines[1].tag = newtag;
 
 // Draw the sectors behind the portal

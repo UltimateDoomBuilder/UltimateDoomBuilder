@@ -52,12 +52,14 @@ namespace CodeImp.DoomBuilder.Data
 		#region ================== Constructor / Disposer
 
 		// Constructor
-		public TEXTURESImage(string name, string virtualpath, int width, int height, float scalex, float scaley, 
+		public TEXTURESImage(string name, string virtualpath, int width, int height, int offsetx, int offsety, float scalex, float scaley, 
 			bool worldpanning, TextureNamespace texturenamespace, bool optional, bool nulltexture)
 		{
 			// Initialize
 			this.width = width;
 			this.height = height;
+			this.offsetx = offsetx;
+			this.offsety = offsety;
 			this.scale.x = scalex;
 			this.scale.y = scaley;
 			this.worldpanning = worldpanning;

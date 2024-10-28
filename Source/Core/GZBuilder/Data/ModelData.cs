@@ -1,7 +1,7 @@
 ﻿#region ================== Namespaces
 
 using System.Collections.Generic;
-using CodeImp.DoomBuilder.GZBuilder.MD3;
+using CodeImp.DoomBuilder.GZBuilder.Models;
 using CodeImp.DoomBuilder.Rendering;
 
 #endregion

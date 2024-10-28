@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this.tbExportPath = new System.Windows.Forms.TextBox();
 			this.browse = new System.Windows.Forms.Button();
 			this.label1 = new System.Windows.Forms.Label();
@@ -48,6 +49,8 @@
 			this.progress = new System.Windows.Forms.ProgressBar();
 			this.lbPhase = new System.Windows.Forms.Label();
 			this.cbApplySectorColors = new System.Windows.Forms.CheckBox();
+			this.cbTransparency = new System.Windows.Forms.CheckBox();
+			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.SuspendLayout();
 			// 
 			// tbExportPath
@@ -78,8 +81,9 @@
 			// 
 			// close
 			// 
+			this.close.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.close.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.close.Location = new System.Drawing.Point(360, 153);
+			this.close.Location = new System.Drawing.Point(360, 172);
 			this.close.Name = "close";
 			this.close.Size = new System.Drawing.Size(75, 23);
 			this.close.TabIndex = 7;
@@ -89,7 +93,8 @@
 			// 
 			// export
 			// 
-			this.export.Location = new System.Drawing.Point(279, 153);
+			this.export.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.export.Location = new System.Drawing.Point(279, 172);
 			this.export.Name = "export";
 			this.export.Size = new System.Drawing.Size(75, 23);
 			this.export.TabIndex = 6;
@@ -182,7 +187,7 @@
 			// cbBrightmap
 			// 
 			this.cbBrightmap.AutoSize = true;
-			this.cbBrightmap.Location = new System.Drawing.Point(279, 84);
+			this.cbBrightmap.Location = new System.Drawing.Point(279, 109);
 			this.cbBrightmap.Name = "cbBrightmap";
 			this.cbBrightmap.Size = new System.Drawing.Size(106, 17);
 			this.cbBrightmap.TabIndex = 15;
@@ -192,7 +197,7 @@
 			// cbTiles
 			// 
 			this.cbTiles.AutoSize = true;
-			this.cbTiles.Location = new System.Drawing.Point(279, 108);
+			this.cbTiles.Location = new System.Drawing.Point(279, 132);
 			this.cbTiles.Name = "cbTiles";
 			this.cbTiles.Size = new System.Drawing.Size(110, 17);
 			this.cbTiles.TabIndex = 16;
@@ -224,7 +229,8 @@
 			// 
 			// progress
 			// 
-			this.progress.Location = new System.Drawing.Point(12, 153);
+			this.progress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.progress.Location = new System.Drawing.Point(12, 172);
 			this.progress.Name = "progress";
 			this.progress.Size = new System.Drawing.Size(261, 23);
 			this.progress.Step = 1;
@@ -233,8 +239,9 @@
 			// 
 			// lbPhase
 			// 
+			this.lbPhase.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.lbPhase.AutoSize = true;
-			this.lbPhase.Location = new System.Drawing.Point(14, 127);
+			this.lbPhase.Location = new System.Drawing.Point(14, 146);
 			this.lbPhase.Name = "lbPhase";
 			this.lbPhase.Size = new System.Drawing.Size(45, 13);
 			this.lbPhase.TabIndex = 20;
@@ -246,12 +253,24 @@
 			this.cbApplySectorColors.AutoSize = true;
 			this.cbApplySectorColors.Checked = true;
 			this.cbApplySectorColors.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.cbApplySectorColors.Location = new System.Drawing.Point(279, 61);
+			this.cbApplySectorColors.Location = new System.Drawing.Point(279, 63);
 			this.cbApplySectorColors.Name = "cbApplySectorColors";
 			this.cbApplySectorColors.Size = new System.Drawing.Size(115, 17);
 			this.cbApplySectorColors.TabIndex = 14;
 			this.cbApplySectorColors.Text = "Apply sector colors";
 			this.cbApplySectorColors.UseVisualStyleBackColor = true;
+			// 
+			// cbTransparency
+			// 
+			this.cbTransparency.AutoSize = true;
+			this.cbTransparency.Location = new System.Drawing.Point(279, 86);
+			this.cbTransparency.Name = "cbTransparency";
+			this.cbTransparency.Size = new System.Drawing.Size(115, 17);
+			this.cbTransparency.TabIndex = 21;
+			this.cbTransparency.Text = "Allow transparency";
+			this.toolTip.SetToolTip(this.cbTransparency, "Unoccupied parts of the images will be transparent.\r\nWorks with transparent textu" +
+        "res, too.\r\n\r\nAntialiasing will be disabled.");
+			this.cbTransparency.UseVisualStyleBackColor = true;
 			// 
 			// ImageExportSettingsForm
 			// 
@@ -259,7 +278,8 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.close;
-			this.ClientSize = new System.Drawing.Size(447, 188);
+			this.ClientSize = new System.Drawing.Size(447, 208);
+			this.Controls.Add(this.cbTransparency);
 			this.Controls.Add(this.lbPhase);
 			this.Controls.Add(this.progress);
 			this.Controls.Add(this.label4);
@@ -312,5 +332,7 @@
 		private System.Windows.Forms.ProgressBar progress;
 		private System.Windows.Forms.Label lbPhase;
 		private System.Windows.Forms.CheckBox cbApplySectorColors;
+		private System.Windows.Forms.CheckBox cbTransparency;
+		private System.Windows.Forms.ToolTip toolTip;
 	}
 }

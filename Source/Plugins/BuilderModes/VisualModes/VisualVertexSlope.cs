@@ -37,7 +37,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 			angle = line.GetAngle();
 
-			if (ld.Front.Sector != s)
+			if (ld.Front?.Sector != s)
 				clockwise = !clockwise;
 		}
 	}
@@ -212,6 +212,9 @@ namespace CodeImp.DoomBuilder.VisualModes
 									potentialhandles.Add(checkhandle);
 					}
 			}
+
+			if (potentialhandles.Count == 0)
+				return null;
 
 			handle = potentialhandles.OrderByDescending(h => Vector2D.Distance(h.Vertex.Position, vertex.Position)).First();
 

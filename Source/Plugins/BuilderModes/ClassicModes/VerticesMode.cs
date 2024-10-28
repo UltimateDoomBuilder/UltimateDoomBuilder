@@ -62,6 +62,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// Vertices that will be edited
 		ICollection<Vertex> editvertices;
 
+		// Autosave
+		private bool allowautosave;
+
 		#endregion
 
 		#region ================== Properties
@@ -127,6 +130,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Convert geometry selection to vertices only
 			General.Map.Map.ConvertSelection(SelectionType.Vertices);
 			UpdateSelectionInfo(); //mxd
+
+			// By default we allow autosave
+			allowautosave = true;
 		}
 
 		// Mode disengages
@@ -409,10 +415,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				{
 					if(General.Interface.IsActiveWindow)
 					{
+						// Prevent autosave while the editing dialog is shown
+						allowautosave = false;
+
 						//mxd. Show realtime vertex edit dialog
 						General.Interface.OnEditFormValuesChanged += vertexEditForm_OnValuesChanged;
 						DialogResult result = General.Interface.ShowEditVertices(editvertices);
 						General.Interface.OnEditFormValuesChanged -= vertexEditForm_OnValuesChanged;
+
+						allowautosave = true;
 
 						// Update entire display
 						UpdateSelectionInfo(); //mxd
@@ -653,39 +664,44 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					}
 
 					// Start dragging the selection
-					if(!BuilderPlug.Me.DontMoveGeometryOutsideMapBoundary || CanDrag()) //mxd
+					if(!BuilderPlug.Me.DontMoveGeometryOutsideMapBoundary || CanDrag(dragvertices)) //mxd
 						General.Editing.ChangeMode(new DragVerticesMode(mousedownmappos, dragvertices));
 				}
 			}
 		}
 
-		//mxd. Check if any selected vertex is outside of map boundary
-		private static bool CanDrag()
+		public override bool OnAutoSaveBegin()
 		{
-			ICollection<Vertex> selectedverts = General.Map.Map.GetSelectedVertices(true);
+			return allowautosave;
+		}
+
+		//mxd. Check if any selected vertex is outside of map boundary
+		private static bool CanDrag(ICollection<Vertex> dragvertices)
+		{
 			int unaffectedCount = 0;
 
-			foreach(Vertex v in selectedverts) 
+			foreach(Vertex v in dragvertices) 
 			{
 				// Make sure the vertex is inside the map boundary
 				if(v.Position.x < General.Map.Config.LeftBoundary || v.Position.x > General.Map.Config.RightBoundary
 					|| v.Position.y > General.Map.Config.TopBoundary || v.Position.y < General.Map.Config.BottomBoundary) 
 				{
-
-					v.Selected = false;
 					unaffectedCount++;
 				}
 			}
 
-			if(unaffectedCount == selectedverts.Count) 
+			if (unaffectedCount == dragvertices.Count)
 			{
-				General.Interface.DisplayStatus(StatusType.Warning, "Unable to drag selection: " + (selectedverts.Count == 1 ? "selected vertex is" : "all of selected vertices are") + " outside of map boundary!");
+				General.Interface.DisplayStatus(StatusType.Warning, "Unable to drag selection: " + (dragvertices.Count == 1 ? "selected vertex is" : "all of selected vertices are") + " outside of map boundary!");
 				General.Interface.RedrawDisplay();
 				return false;
 			}
-			
-			if(unaffectedCount > 0)
+
+			if (unaffectedCount > 0)
+			{
 				General.Interface.DisplayStatus(StatusType.Warning, unaffectedCount + " of selected vertices " + (unaffectedCount == 1 ? "is" : "are") + " outside of map boundary!");
+				return false;
+			}
 
 			return true;
 		}

@@ -146,9 +146,9 @@ namespace CodeImp.DoomBuilder.ZDoom
 							return false;
 						}
 
-						if(modelext != ".md3" && modelext != ".md2" && modelext != ".3d" && modelext != ".obj")
+						if(modelext != ".md3" && modelext != ".md2" && modelext != ".3d" && modelext != ".obj" && modelext != ".iqm")
 						{
-							parser.ReportError("Model \"" + token + "\" won't be loaded. Only Unreal 3D, MD2, MD3, and OBJ models are supported");
+							parser.ReportError("Model \"" + token + "\" won't be loaded. Only Unreal 3D, MD2, MD3, OBJ and IQM models are supported");
 							return false;
 						}
 

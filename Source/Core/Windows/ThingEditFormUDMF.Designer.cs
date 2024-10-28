@@ -165,6 +165,7 @@
 			this.cbrandomroll.Name = "cbrandomroll";
 			this.cbrandomroll.Size = new System.Drawing.Size(66, 17);
 			this.cbrandomroll.TabIndex = 5;
+			this.cbrandomroll.Tag = "roll";
 			this.cbrandomroll.Text = "Random";
 			this.cbrandomroll.UseVisualStyleBackColor = true;
 			this.cbrandomroll.CheckedChanged += new System.EventHandler(this.cbrandomroll_CheckedChanged);
@@ -176,6 +177,7 @@
 			this.cbrandompitch.Name = "cbrandompitch";
 			this.cbrandompitch.Size = new System.Drawing.Size(66, 17);
 			this.cbrandompitch.TabIndex = 3;
+			this.cbrandompitch.Tag = "pitch";
 			this.cbrandompitch.Text = "Random";
 			this.cbrandompitch.UseVisualStyleBackColor = true;
 			this.cbrandompitch.CheckedChanged += new System.EventHandler(this.cbrandompitch_CheckedChanged);
@@ -208,6 +210,7 @@
 			this.roll.Size = new System.Drawing.Size(60, 24);
 			this.roll.StepValues = null;
 			this.roll.TabIndex = 4;
+			this.roll.Tag = "roll";
 			this.roll.WhenTextChanged += new System.EventHandler(this.roll_WhenTextChanged);
 			// 
 			// labelroll
@@ -236,6 +239,7 @@
 			this.pitch.Size = new System.Drawing.Size(60, 24);
 			this.pitch.StepValues = null;
 			this.pitch.TabIndex = 2;
+			this.pitch.Tag = "pitch";
 			this.pitch.WhenTextChanged += new System.EventHandler(this.pitch_WhenTextChanged);
 			// 
 			// labelpitch
@@ -295,6 +299,7 @@
 			this.labelGravity.Name = "labelGravity";
 			this.labelGravity.Size = new System.Drawing.Size(43, 13);
 			this.labelGravity.TabIndex = 18;
+			this.labelGravity.Tag = "gravity";
 			this.labelGravity.Text = "Gravity:";
 			this.tooltip.SetToolTip(this.labelGravity, "Positive values are multiplied with the class\'s property.\r\nNegative values are us" +
         "ed as their absolute.\r\nDefault is 1.0.");
@@ -399,6 +404,7 @@
 			this.rollControl.Name = "rollControl";
 			this.rollControl.Size = new System.Drawing.Size(64, 64);
 			this.rollControl.TabIndex = 20;
+			this.rollControl.Tag = "roll";
 			this.rollControl.AngleChanged += new System.EventHandler(this.rollControl_AngleChanged);
 			// 
 			// grouppitch
@@ -420,6 +426,7 @@
 			this.pitchControl.Name = "pitchControl";
 			this.pitchControl.Size = new System.Drawing.Size(64, 64);
 			this.pitchControl.TabIndex = 20;
+			this.pitchControl.Tag = "pitch";
 			this.pitchControl.AngleChanged += new System.EventHandler(this.pitchControl_AngleChanged);
 			// 
 			// groupangle
@@ -594,6 +601,7 @@
 			this.floatbobphase.Size = new System.Drawing.Size(72, 24);
 			this.floatbobphase.StepValues = null;
 			this.floatbobphase.TabIndex = 4;
+			this.floatbobphase.Tag = "floatbobphase";
 			// 
 			// label1
 			// 
@@ -602,6 +610,7 @@
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(86, 13);
 			this.label1.TabIndex = 27;
+			this.label1.Tag = "floatbobphase";
 			this.label1.Text = "Float bob phase:";
 			// 
 			// conversationID
@@ -621,6 +630,7 @@
 			this.conversationID.Size = new System.Drawing.Size(72, 24);
 			this.conversationID.StepValues = null;
 			this.conversationID.TabIndex = 3;
+			this.conversationID.Tag = "conversation";
 			// 
 			// labelID
 			// 
@@ -629,6 +639,7 @@
 			this.labelID.Name = "labelID";
 			this.labelID.Size = new System.Drawing.Size(86, 13);
 			this.labelID.TabIndex = 25;
+			this.labelID.Tag = "conversation";
 			this.labelID.Text = "Conversation ID:";
 			// 
 			// health
@@ -648,6 +659,7 @@
 			this.health.Size = new System.Drawing.Size(72, 24);
 			this.health.StepValues = null;
 			this.health.TabIndex = 2;
+			this.health.Tag = "health";
 			// 
 			// label10
 			// 
@@ -658,6 +670,7 @@
 			this.label10.Name = "label10";
 			this.label10.Size = new System.Drawing.Size(41, 13);
 			this.label10.TabIndex = 22;
+			this.label10.Tag = "health";
 			this.label10.Text = "Health:";
 			this.tooltip.SetToolTip(this.label10, "Positive values are multiplied with the class\'s property.\r\nNegative values are us" +
         "ed as their absolute.\r\nDefault is 1.");
@@ -679,6 +692,7 @@
 			this.score.Size = new System.Drawing.Size(72, 24);
 			this.score.StepValues = null;
 			this.score.TabIndex = 1;
+			this.score.Tag = "score";
 			// 
 			// label9
 			// 
@@ -687,6 +701,7 @@
 			this.label9.Name = "label9";
 			this.label9.Size = new System.Drawing.Size(38, 13);
 			this.label9.TabIndex = 20;
+			this.label9.Tag = "score";
 			this.label9.Text = "Score:";
 			// 
 			// gravity
@@ -706,6 +721,7 @@
 			this.gravity.Size = new System.Drawing.Size(72, 24);
 			this.gravity.StepValues = null;
 			this.gravity.TabIndex = 0;
+			this.gravity.Tag = "gravity";
 			// 
 			// grouprendering
 			// 
@@ -731,6 +747,7 @@
 			this.resetalpha.Name = "resetalpha";
 			this.resetalpha.Size = new System.Drawing.Size(23, 23);
 			this.resetalpha.TabIndex = 69;
+			this.resetalpha.Tag = "alpha";
 			this.tooltip.SetToolTip(this.resetalpha, "Reset");
 			this.resetalpha.UseVisualStyleBackColor = true;
 			this.resetalpha.Click += new System.EventHandler(this.resetalpha_Click);
@@ -741,6 +758,7 @@
 			this.labelScale.Name = "labelScale";
 			this.labelScale.Size = new System.Drawing.Size(80, 14);
 			this.labelScale.TabIndex = 32;
+			this.labelScale.Tag = "scalex";
 			this.labelScale.Text = "Scale:";
 			this.labelScale.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
@@ -757,6 +775,7 @@
 			this.scale.Name = "scale";
 			this.scale.Size = new System.Drawing.Size(186, 26);
 			this.scale.TabIndex = 0;
+			this.scale.Tag = "scalex";
 			this.scale.OnValuesChanged += new System.EventHandler(this.scale_OnValuesChanged);
 			// 
 			// color
@@ -768,6 +787,7 @@
 			this.color.Name = "color";
 			this.color.Size = new System.Drawing.Size(207, 31);
 			this.color.TabIndex = 3;
+			this.color.Tag = "fillcolor";
 			// 
 			// alpha
 			// 
@@ -786,6 +806,7 @@
 			this.alpha.Size = new System.Drawing.Size(72, 24);
 			this.alpha.StepValues = null;
 			this.alpha.TabIndex = 2;
+			this.alpha.Tag = "alpha";
 			this.alpha.WhenTextChanged += new System.EventHandler(this.alpha_WhenTextChanged);
 			// 
 			// label8
@@ -795,6 +816,7 @@
 			this.label8.Name = "label8";
 			this.label8.Size = new System.Drawing.Size(37, 13);
 			this.label8.TabIndex = 25;
+			this.label8.Tag = "alpha";
 			this.label8.Text = "Alpha:";
 			// 
 			// renderStyle
@@ -805,6 +827,7 @@
 			this.renderStyle.Name = "renderStyle";
 			this.renderStyle.Size = new System.Drawing.Size(156, 21);
 			this.renderStyle.TabIndex = 1;
+			this.renderStyle.Tag = "renderstyle";
 			this.renderStyle.SelectedIndexChanged += new System.EventHandler(this.renderStyle_SelectedIndexChanged);
 			// 
 			// labelrenderstyle
@@ -814,6 +837,7 @@
 			this.labelrenderstyle.Name = "labelrenderstyle";
 			this.labelrenderstyle.Size = new System.Drawing.Size(69, 13);
 			this.labelrenderstyle.TabIndex = 23;
+			this.labelrenderstyle.Tag = "renderstyle";
 			this.labelrenderstyle.Text = "Render style:";
 			// 
 			// actiongroup

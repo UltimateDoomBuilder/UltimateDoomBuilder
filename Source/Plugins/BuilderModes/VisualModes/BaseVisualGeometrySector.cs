@@ -98,10 +98,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// This changes the height
 		protected abstract void ChangeHeight(int amount);
 		protected abstract void ChangeTextureScale(int incrementX, int incrementY); //mxd
-		public virtual void SelectNeighbours(bool select, bool withSameTexture, bool withSameHeight) { } //mxd
+		public virtual void SelectNeighbours(bool select, bool withSameTexture, bool withSameHeight, bool stopatselected) { } //mxd
 
 		//mxd
-		override protected void PerformAutoSelection()
+		override public void PerformAutoSelection()
 		{
 			if(!performautoselection) return;
 			if(Triangles > 0)
@@ -848,15 +848,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		}
 
 		// Texture offset change
-		public virtual void OnChangeTextureOffset(int horizontal, int vertical, bool doSurfaceAngleCorrection)
+		public virtual bool OnChangeTextureOffset(int horizontal, int vertical, bool doSurfaceAngleCorrection)
 		{
-			if(horizontal == 0 && vertical == 0) return; //mxd
+			if(horizontal == 0 && vertical == 0) return false; //mxd
 			
 			//mxd
 			if(!General.Map.UDMF) 
 			{
 				General.Interface.DisplayStatus(StatusType.Warning, "Floor/ceiling texture offsets cannot be changed in this map format!");
-				return;
+				return false;
 			}
 
 			if((General.Map.UndoRedo.NextUndo == null) || (General.Map.UndoRedo.NextUndo.TicketID != undoticket))
@@ -914,6 +914,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 
 			if(vs != null) vs.UpdateSectorGeometry(false);
+
+			return true;
 		}
 
 		//mxd

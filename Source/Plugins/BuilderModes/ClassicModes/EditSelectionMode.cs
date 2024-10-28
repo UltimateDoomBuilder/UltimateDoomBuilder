@@ -87,11 +87,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			public readonly SurfaceTextureInfo Floor;
 			public readonly SurfaceTextureInfo Ceiling;
+			public readonly Vertex FirstVertex;
+			public readonly Vector2D PreviousFirstVertexPosition;
 
 			public SectorTextureInfo(Sector s)
 			{
-				// Get transform properties
-				Floor.Offset = new Vector2D(UniFields.GetFloat(s.Fields, "xpanningfloor", 0.0), UniFields.GetFloat(s.Fields, "ypanningfloor", 0.0));
+				FirstVertex = s.Sidedefs.First<Sidedef>().Line.Start;
+                PreviousFirstVertexPosition = FirstVertex.Position;
+                // Get transform properties
+                Floor.Offset = new Vector2D(UniFields.GetFloat(s.Fields, "xpanningfloor", 0.0), UniFields.GetFloat(s.Fields, "ypanningfloor", 0.0));
 				Ceiling.Offset = new Vector2D(UniFields.GetFloat(s.Fields, "xpanningceiling", 0.0), UniFields.GetFloat(s.Fields, "ypanningceiling", 0.0));
 				Floor.Scale = new Vector2D(UniFields.GetFloat(s.Fields, "xscalefloor", 1.0), -UniFields.GetFloat(s.Fields, "yscalefloor", 1.0));
 				Ceiling.Scale = new Vector2D(UniFields.GetFloat(s.Fields, "xscaleceiling", 1.0), -UniFields.GetFloat(s.Fields, "yscaleceiling", 1.0));
@@ -105,7 +109,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// Surface name
 				Floor.Part = "floor";
 				Ceiling.Part = "ceiling";
-			}
+
+            }
 
 			private static Size GetTextureSize(long hash)
 			{
@@ -879,15 +884,20 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			foreach(KeyValuePair<Sector, SectorTextureInfo> group in selectedsectors) 
 			{
-				group.Key.Fields.BeforeFieldsChange();
+				Sector eachSector = group.Key;
+				SectorTextureInfo eachSectorTexInfo = group.Value;
+				Vector2D newFirstVertexPosition = new Vector2D( Math.Round(eachSectorTexInfo.FirstVertex.Position.x, General.Map.FormatInterface.VertexDecimals),
+																Math.Round(eachSectorTexInfo.FirstVertex.Position.y, General.Map.FormatInterface.VertexDecimals) );
 
-				// Apply transforms
-				UpdateTextureTransform(group.Key.Fields, group.Value.Ceiling /*, transformceiloffsets, rotateceiloffsets, scaleceiloffsets */);
-				UpdateTextureTransform(group.Key.Fields, group.Value.Floor /*, transformflooroffsets, rotateflooroffsets, scaleflooroffsets */);
+                eachSector.Fields.BeforeFieldsChange();
 
-				// Update cache
-				group.Key.UpdateNeeded = true;
-				group.Key.UpdateCache();
+                // Apply transforms
+                UpdateTextureTransform(eachSector.Fields, eachSectorTexInfo.Ceiling, newFirstVertexPosition, eachSectorTexInfo.PreviousFirstVertexPosition);
+				UpdateTextureTransform(eachSector.Fields, eachSectorTexInfo.Floor, newFirstVertexPosition, eachSectorTexInfo.PreviousFirstVertexPosition);
+
+                // Update cache
+                eachSector.UpdateNeeded = true;
+                eachSector.UpdateCache();
 			}
 
 			// Map was changed
@@ -895,18 +905,40 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		}
 
 		//mxd. This updates texture transforms in given UniFields
-		private void UpdateTextureTransform(UniFields fields, SurfaceTextureInfo si /*, bool transformoffsets, bool rotateoffsets, bool scaleoffsets */)
+		private void UpdateTextureTransform(UniFields fields, SurfaceTextureInfo si, Vector2D newReferencePosition, Vector2D previousReferencePosition)
 		{
 			if ((si.Part == "floor" && pinfloortextures) || (si.Part == "ceiling" && pinceilingtextures))
 			{
-				double texrotation = Angle2D.PI2 - rotation;
+                if (si.Scale.x != 0 && si.Scale.y != 0)
+                {
+                    double selectionRotationRad = Angle2D.PI2 - rotation;
+					double newSurfaceRotationRad = selectionRotationRad + si.Rotation;
 
-				double trotation = texrotation + si.Rotation;
-				Vector2D o = ((referencepoint - selectionbasecenter).GetRotated(-trotation) + selectionbasecenter + this.offset - this.baseoffset).GetRotated(trotation);
+                    Vector2D textureSize = new Vector2D ((double)si.TextureSize.Width / si.Scale.x,
+						                                 (double)si.TextureSize.Height / -si.Scale.y);
 
-				fields["xpanning" + si.Part] = new UniValue(UniversalType.Float, Math.Round(-o.x + si.Offset.x, General.Map.FormatInterface.VertexDecimals));
-				fields["ypanning" + si.Part] = new UniValue(UniversalType.Float, Math.Round(o.y + si.Offset.y, General.Map.FormatInterface.VertexDecimals));
-				fields["rotation" + si.Part] = new UniValue(UniversalType.Float, General.ClampAngle(Math.Round(Angle2D.RadToDeg(trotation), General.Map.FormatInterface.VertexDecimals)));
+					double previousSurfaceRotationRad = Angle2D.PI2 - si.Rotation;
+
+                    //Set the new surface texture rotation
+                    double newSurfaceRotationDegrees = General.ClampAngle(Math.Round(Angle2D.RadToDeg(newSurfaceRotationRad), General.Map.FormatInterface.VertexDecimals));
+					fields["rotation" + si.Part] = new UniValue(UniversalType.Float, newSurfaceRotationDegrees);
+
+					//Find the offset required to place the texture origin point at the reference vector
+					Vector2D globalOffsetForNewReferencePoint = ConvertToOffsetCoordinates(newReferencePosition);
+					Vector2D surfaceOffsetForNewReferencePoint = GetClampedOffsetVector(globalOffsetForNewReferencePoint.GetRotated(-newSurfaceRotationRad), textureSize);
+
+                    //find an "origin point offset" using the previous texture offset, relative to our reference vertex
+                    Vector2D rotatedPreviousReferencePosition = GetClampedOffsetVector(previousReferencePosition.GetRotated(-previousSurfaceRotationRad), textureSize);
+                    Vector2D previousSurfaceOffset = ConvertToOffsetCoordinates(GetClampedOffsetVector(si.Offset, textureSize));
+                    Vector2D localSurfaceAdjustment = rotatedPreviousReferencePosition - previousSurfaceOffset;
+
+					//Adjust our offset by applying using the "origin point offset" to the offset for our reference vertex
+					Vector2D adjustedSurfaceOffset = GetClampedOffsetVector(surfaceOffsetForNewReferencePoint - ConvertToOffsetCoordinates(localSurfaceAdjustment), textureSize);
+
+					//Set the new texture offset
+					fields["xpanning" + si.Part] = new UniValue(UniversalType.Float, adjustedSurfaceOffset.x);
+					fields["ypanning" + si.Part] = new UniValue(UniversalType.Float, adjustedSurfaceOffset.y);
+				}
 			}
 			else
 			{
@@ -917,6 +949,25 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				//fields["xscale" + si.Part] = new UniValue(UniversalType.Float, Math.Round(si.Scale.x * scale.x, General.Map.FormatInterface.VertexDecimals));
 				//fields["yscale" + si.Part] = new UniValue(UniversalType.Float, Math.Round(-si.Scale.y * scale.y, General.Map.FormatInterface.VertexDecimals));
 			}
+		}
+
+		private Vector2D ConvertToOffsetCoordinates(Vector2D v)
+		{
+			return new Vector2D(-v.x, v.y);
+		}
+
+		private Vector2D GetClampedOffsetVector(Vector2D v, Vector2D textureSize)
+		{
+			Vector2D roundedV = new Vector2D(
+				Math.Round(v.x, General.Map.FormatInterface.VertexDecimals),
+				Math.Round(v.y, General.Map.FormatInterface.VertexDecimals));
+			Vector2D roundedTextureSize = new Vector2D(
+				Math.Round(textureSize.x, General.Map.FormatInterface.VertexDecimals),
+				Math.Round(textureSize.y, General.Map.FormatInterface.VertexDecimals));
+
+			return new Vector2D(roundedV.x % roundedTextureSize.x,
+								roundedV.y % roundedTextureSize.y);
+
 		}
 
 		//mxd. This restores texture transforms for all sectors
@@ -1300,8 +1351,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if (General.Map.UDMF)
 			{
 				foreach (Sector s in General.Map.Map.GetSectorsFromLinedefs(selectedlines))
-					if(!s.Fields.ContainsKey(MapSet.VIRTUAL_SECTOR_FIELD)) // Ignore sectors that have the VIRTUAL_SECTOR_FIELD UDMF field created when cloning the MapSet when copying
-						selectedsectors.Add(s, new SectorTextureInfo(s));
+				{
+					if (!s.Fields.ContainsKey(MapSet.VIRTUAL_SECTOR_FIELD)) // Ignore sectors that have the VIRTUAL_SECTOR_FIELD UDMF field created when cloning the MapSet when copying
+					{
+						selectedsectors.Add(s, new SectorTextureInfo(s)); 
+
+					}
+				}
 			}
 			
 			// Array to keep original coordinates

@@ -33,18 +33,26 @@ namespace CodeImp.DoomBuilder.Windows
 	{
 		// Keep a list of elements
 		private ICollection<MapElement> elements;
-		
+
+		// Action that runs the undo method from the caller
+		private Action makeundo;
+
 		// Constructor
-		public CustomFieldsForm()
+		public CustomFieldsForm(Action makeundo)
 		{
+			this.makeundo = makeundo;
+
+			if (makeundo == null)
+				throw new NotImplementedException("No method to create an undo snapshot specified. This would potentially lead to data loss.");
+
 			// Initialize
 			InitializeComponent();
 		}
 
 		// This shows the dialog, returns false when cancelled
-		public static bool ShowDialog(IWin32Window owner, string title, string elementname, ICollection<MapElement> elements, List<UniversalFieldInfo> fixedfields)
+		public static bool ShowDialog(IWin32Window owner, Action makeundo, string title, string elementname, ICollection<MapElement> elements, List<UniversalFieldInfo> fixedfields)
 		{
-			CustomFieldsForm f = new CustomFieldsForm();
+			CustomFieldsForm f = new CustomFieldsForm(makeundo);
 			f.Setup(title, elementname, elements, fixedfields);
 			bool result = (f.ShowDialog(owner) == DialogResult.OK);
 			f.Dispose();
@@ -76,8 +84,11 @@ namespace CodeImp.DoomBuilder.Windows
 		// OK clicked
 		private void apply_Click(object sender, EventArgs e)
 		{
+			// Create an undo snapshot using the method specified by the caller
+			makeundo();
+
 			// Apply fields to all elements
-			foreach(MapElement el in elements) fieldslist.Apply(el.Fields);
+			foreach (MapElement el in elements) fieldslist.Apply(el.Fields);
 			
 			// Done
 			General.Map.IsChanged = true;
