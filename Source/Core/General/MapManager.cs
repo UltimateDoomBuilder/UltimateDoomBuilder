@@ -177,6 +177,9 @@ namespace CodeImp.DoomBuilder
 				// Let the plugins know
 				General.Plugins.OnMapCloseBegin();
 
+				// Stop autosaving
+				General.AutoSaver.StopTimer();
+
 				// Stop processing
 				General.MainWindow.StopProcessing();
 
@@ -343,6 +346,9 @@ namespace CodeImp.DoomBuilder
 			renderer2d.SetViewMode((ViewMode)General.Settings.DefaultViewMode);
 			General.Settings.SetDefaultThingFlags(config.DefaultThingFlags);
 
+			// Autosaver
+			General.AutoSaver.InitializeTimer();
+
 			// Success
 			this.changed = false;
 			this.maploading = false; //mxd
@@ -415,7 +421,16 @@ namespace CodeImp.DoomBuilder
 
 			// Copy the map lumps to the temp file
 			General.WriteLogLine("Copying map lumps to temporary file...");
-			CopyLumpsByType(mapwad, options.CurrentName, tempwadreader.WadFile, TEMP_MAP_HEADER, true, true, true, true);
+			if (!CopyLumpsByType(mapwad, options.CurrentName, tempwadreader.WadFile, TEMP_MAP_HEADER, true, true, true, true))
+			{
+				// Ooops, the map doesn't exit. This should only happend when run from the command line using the "-map" parameter
+				General.ErrorLogger.Add(ErrorType.Error, $"Map \"{options.CurrentName}\" does not exist in file \"{filepathname}\".");
+
+				// Close the map file
+				mapwad.Dispose();
+
+				return false;
+			}
 
 			// Close the map file
 			mapwad.Dispose();
@@ -461,6 +476,9 @@ namespace CodeImp.DoomBuilder
 
 			// Center map in screen
 			//if(General.Editing.Mode is ClassicMode) (General.Editing.Mode as ClassicMode).CenterInScreen();
+
+			// Autosaver
+			General.AutoSaver.InitializeTimer();
 
 			// Success
 			this.changed = maprestored; //mxd
@@ -575,6 +593,9 @@ namespace CodeImp.DoomBuilder
 				}
 			}
 
+			// Autosaver
+			General.AutoSaver.InitializeTimer();
+
 			// Success
 			this.changed = maprestored;
 			this.maploading = false;
@@ -666,6 +687,26 @@ namespace CodeImp.DoomBuilder
 		}
 
 		/// <summary>
+		/// Autosaves the map.
+		/// </summary>
+		/// <returns>The result of the autosave</returns>
+		internal AutosaveResult AutoSave()
+		{
+			// If the map doesn't exist on a medium we can't make autosaves
+			if (string.IsNullOrWhiteSpace(filepathname))
+				return AutosaveResult.NoFileName;
+
+			// Generat the file name. This is the current file name, a dot, and the map slot, for example
+			// cacowardwinner.wad.MAP01
+			// the SaveMap method will add an ".autosaveX" due to the save purpose being Autosave
+			string autosavefilename = filepathname + "." + options.CurrentName;
+			General.Plugins.OnMapSaveBegin(SavePurpose.Autosave);
+			bool result = SaveMap(autosavefilename, SavePurpose.Autosave);
+			General.Plugins.OnMapSaveEnd(SavePurpose.Autosave);
+			return result ? AutosaveResult.Success : AutosaveResult.Error;
+		}
+
+		/// <summary>
 		/// This writes the map structures to the temporary file.
 		/// </summary>
 		private bool WriteMapToTempFile()
@@ -700,8 +741,8 @@ namespace CodeImp.DoomBuilder
 				{
 					// Problem! Can't save the map like this!
 					General.ShowErrorMessage("Unable to save the map: there are too many unique sidedefs!" + Environment.NewLine + Environment.NewLine
-						+ "Sidedefs before compresion: " + initialsidescount + Environment.NewLine
-						+ "Sidedefs after compresion: " + outputset.Sidedefs.Count
+						+ "Sidedefs before compression: " + initialsidescount + Environment.NewLine
+						+ "Sidedefs after compression: " + outputset.Sidedefs.Count
 						+ " (" + (outputset.Sidedefs.Count - io.MaxSidedefs) + " sidedefs above the limit)", MessageBoxButtons.OK);
 					General.MainWindow.DisplayStatus(oldstatus);
 					return false;
@@ -755,6 +796,10 @@ namespace CodeImp.DoomBuilder
 		// Initializes for an existing map
 		internal bool SaveMap(string newfilepathname, SavePurpose purpose) 
 		{
+			// Add the autosave suffix. As all existing autosave will be shifted up this is static
+			if (purpose == SavePurpose.Autosave)
+				newfilepathname += ".autosave1";
+
 			string settingsfile;
 			WAD targetwad = null;
 			bool includenodes;
@@ -776,27 +821,31 @@ namespace CodeImp.DoomBuilder
 				hashtest.Dispose();
 			}
 
-			// Scripts changed?
-			bool localscriptschanged = CheckScriptChanged();
-
-			// If the scripts window is open, save the scripts first
-			if(IsScriptsWindowOpen) scriptwindow.Editor.ImplicitSave();
-
-			// Only recompile scripts when the scripts have changed or there are compiler errors (mxd)
-			// (not when only the map changed)
-			if((localscriptschanged || errors.Count > 0) && !CompileScriptLumps()) 
+			// Do script stuff if not autosaving
+			if (purpose != SavePurpose.Autosave)
 			{
-				// Compiler failure
-				if(errors.Count > 0)
-					General.ShowErrorMessage("Error while compiling scripts: " + errors[0].description, MessageBoxButtons.OK);
-				else
-					General.ShowErrorMessage("Unknown compiler error while compiling scripts!", MessageBoxButtons.OK);
-			}
+				// Scripts changed?
+				bool localscriptschanged = CheckScriptChanged();
 
-			// Show script window if there are any errors and we are going to test the map
-			// and always update the errors on the scripts window.
-			if((errors.Count > 0) && (scriptwindow == null) && (purpose == SavePurpose.Testing)) ShowScriptEditor();
-			if(scriptwindow != null) scriptwindow.Editor.ShowErrors(errors, false);
+				// If the scripts window is open, save the scripts first
+				if (IsScriptsWindowOpen) scriptwindow.Editor.ImplicitSave();
+
+				// Only recompile scripts when the scripts have changed or there are compiler errors (mxd)
+				// (not when only the map changed)
+				if ((localscriptschanged || errors.Count > 0) && !CompileScriptLumps())
+				{
+					// Compiler failure
+					if (errors.Count > 0)
+						General.ShowErrorMessage("Error while compiling scripts: " + errors[0].description, MessageBoxButtons.OK);
+					else
+						General.ShowErrorMessage("Unknown compiler error while compiling scripts!", MessageBoxButtons.OK);
+				}
+
+				// Show script window if there are any errors and we are going to test the map
+				// and always update the errors on the scripts window.
+				if ((errors.Count > 0) && (scriptwindow == null) && (purpose == SavePurpose.Testing)) ShowScriptEditor();
+				if (scriptwindow != null) scriptwindow.Editor.ShowErrors(errors, false);
+			}
 
 			// Only write the map and rebuild nodes when the actual map has changed
 			// (not when only scripts have changed)
@@ -805,14 +854,22 @@ namespace CodeImp.DoomBuilder
 				// Write the current map structures to the temp file
 				if(!WriteMapToTempFile()) return false;
 
-				// Get the corresponding nodebuilder
-				string nodebuildername = (purpose == SavePurpose.Testing) ? configinfo.NodebuilderTest : configinfo.NodebuilderSave;
+				// Only build nodes when not autosaving
+				if (purpose != SavePurpose.Autosave)
+				{
+					// Get the corresponding nodebuilder
+					string nodebuildername = (purpose == SavePurpose.Testing) ? configinfo.NodebuilderTest : configinfo.NodebuilderSave;
 
-				// Build the nodes
-				StatusInfo oldstatus = General.MainWindow.Status;
-				General.MainWindow.DisplayStatus(StatusType.Busy, "Building map nodes...");
-				includenodes = (!string.IsNullOrEmpty(nodebuildername) && BuildNodes(nodebuildername, true));
-				General.MainWindow.DisplayStatus(oldstatus);
+					// Build the nodes
+					StatusInfo oldstatus = General.MainWindow.Status;
+					General.MainWindow.DisplayStatus(StatusType.Busy, "Building map nodes...");
+					includenodes = (!string.IsNullOrEmpty(nodebuildername) && BuildNodes(nodebuildername, true));
+					General.MainWindow.DisplayStatus(oldstatus);
+				}
+				else
+				{
+					includenodes = false;
+				}
 
 				//mxd. Compress temp file...
 				tempwadreader.WadFile.Compress();
@@ -928,16 +985,34 @@ namespace CodeImp.DoomBuilder
 						}
 					}
 
-					// Backup existing file, if any
-					if(File.Exists(newfilepathname + ".backup3")) File.Delete(newfilepathname + ".backup3");
-					if(File.Exists(newfilepathname + ".backup2")) File.Move(newfilepathname + ".backup2", newfilepathname + ".backup3");
-					if(File.Exists(newfilepathname + ".backup1")) File.Move(newfilepathname + ".backup1", newfilepathname + ".backup2");
-					File.Copy(newfilepathname, newfilepathname + ".backup1");
+					if (purpose == SavePurpose.Autosave)
+					{
+						string autosavefilepathname = Path.Combine(Path.GetDirectoryName(newfilepathname), Path.GetFileNameWithoutExtension(newfilepathname));
+
+						// Delete the last autosave if it exists
+						if (File.Exists($"{autosavefilepathname}.autosave{General.Settings.AutosaveCount}"))
+							File.Delete($"{autosavefilepathname}.autosave{General.Settings.AutosaveCount}");
+
+						// Move all other autosaves up by one
+						for (int i = General.Settings.AutosaveCount-1; i > 0; i--)
+						{
+							if (File.Exists($"{autosavefilepathname}.autosave{i}"))
+								File.Move($"{autosavefilepathname}.autosave{i}", $"{autosavefilepathname}.autosave{i + 1}");
+						}
+					}
+					else
+					{
+						// Backup existing file, if any
+						if (File.Exists(newfilepathname + ".backup3")) File.Delete(newfilepathname + ".backup3");
+						if (File.Exists(newfilepathname + ".backup2")) File.Move(newfilepathname + ".backup2", newfilepathname + ".backup3");
+						if (File.Exists(newfilepathname + ".backup1")) File.Move(newfilepathname + ".backup1", newfilepathname + ".backup2");
+						File.Copy(newfilepathname, newfilepathname + ".backup1");
+					}
 				}
 
 				// Except when saving INTO another file,
 				// kill the target file if it is different from source file
-				if((purpose != SavePurpose.IntoFile) && (newfilepathname != filepathname)) 
+				if ((purpose != SavePurpose.IntoFile) && (newfilepathname != filepathname))
 				{
 					// Kill target file
 					if(File.Exists(newfilepathname)) File.Delete(newfilepathname);
@@ -1043,8 +1118,8 @@ namespace CodeImp.DoomBuilder
 			// Resume data resources
 			data.Resume();
 
-			// Not saved for testing purpose?
-			if(purpose != SavePurpose.Testing) 
+			// Not saved for testing or autosave purpose?
+			if(purpose != SavePurpose.Testing && purpose != SavePurpose.Autosave) 
 			{
 				// Saved in a different file?
 				if(newfilepathname != filepathname) 
@@ -1068,6 +1143,9 @@ namespace CodeImp.DoomBuilder
 					// Warning only
 					General.ErrorLogger.Add(ErrorType.Warning, "Could not write the map settings configuration file. " + e.GetType().Name + ": " + e.Message);
 				}
+
+				// Autosaver
+				General.AutoSaver.InitializeTimer();
 
 				// Changes saved
 				changed = false;
@@ -1595,7 +1673,7 @@ namespace CodeImp.DoomBuilder
 		}
 
 		// This copies specific map lumps from one WAD to another
-		private void CopyLumpsByType(WAD source, string sourcemapname,
+		private bool CopyLumpsByType(WAD source, string sourcemapname,
 									 WAD target, string targetmapname,
 									 bool copyrequired, bool copyblindcopy,
 									 bool copynodebuild, bool copyscript,
@@ -1669,7 +1747,11 @@ namespace CodeImp.DoomBuilder
 
 				target.WriteHeaders(); //mxd
                 target.Compress(); // [ZZ]
+
+				return true;
 			}
+
+			return false;
 		}
 
 		// This finds a lump within the range of known lump names
@@ -2475,6 +2557,16 @@ namespace CodeImp.DoomBuilder
 					foreach(Thing t in General.Map.Map.Things) t.TranslateToUDMF();
 				}
 
+				// Make sure the raw flags are up to date
+				if (oldiotype == typeof(DoomMapSetIO) || oldiotype == typeof(HexenMapSetIO))
+				{
+					foreach (Thing t in General.Map.map.Things)
+						t.UpdateRawFlagsFromFlags();
+
+					foreach (Linedef ld in General.Map.Map.Linedefs)
+						ld.UpdateRawFlagsFromFlags();
+				}
+
 				config = new GameConfiguration(configinfo.Configuration); //mxd
 				configinfo.ApplyDefaults(config);
 				General.Editing.UpdateCurrentEditModes();
@@ -2527,6 +2619,16 @@ namespace CodeImp.DoomBuilder
 						for(int i = 0; i < l.Args.Length; i++) l.Args[i] = 0;
 					foreach(Thing t in General.Map.Map.Things)
 						for(int i = 0; i < t.Args.Length; i++) t.Args[i] = 0;
+				}
+
+				// Make sure the flags dictionary is up to date with flags that did not exist in the old game configuration
+				if ((oldiotype == typeof(DoomMapSetIO) || oldiotype == typeof(HexenMapSetIO)) && (io is DoomMapSetIO || io is HexenMapSetIO))
+				{
+					foreach (Thing t in General.Map.Map.Things)
+						t.UpdateFlagsFromRawFlags();
+
+					foreach (Linedef ld in General.Map.Map.Linedefs)
+						ld.UpdateFlagsFromRawFlags();
 				}
 
 				map.UpdateCustomLinedefColors();

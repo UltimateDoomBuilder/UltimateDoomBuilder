@@ -35,7 +35,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		void OnMouseMove(MouseEventArgs e);
 		void OnChangeTargetHeight(int amount);
 		void OnChangeTargetBrightness(bool up);
-		void OnChangeTextureOffset(int horizontal, int vertical, bool doSurfaceAngleCorrection);
+		bool OnChangeTextureOffset(int horizontal, int vertical, bool doSurfaceAngleCorrection);
 		void OnChangeScale(int incrementX, int incrementY); //mxd
 		void OnResetTextureOffset();
 		void OnResetLocalTextureOffset(); //mxd. This should reset upper/middle/lower offsets (UDMF only)
@@ -64,6 +64,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		
 		// Other methods
 		string GetTextureName();
-		void SelectNeighbours(bool select, bool matchtexture, bool matchheight); //mxd
+		void SelectNeighbours(bool select, bool matchtexture, bool matchheight, bool stopatselected); //mxd
 	}
 }

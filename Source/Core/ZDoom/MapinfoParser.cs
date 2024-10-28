@@ -474,6 +474,10 @@ namespace CodeImp.DoomBuilder.ZDoom
 						if(!ParseLightMode()) return false;
 						break;
 
+					case "lightattenuationmode":
+						if(!ParseLightAttenuationMode()) return false;
+						break;
+
                     // [ZZ]
                     case "pixelratio":
                         if (!ParsePixelRatio()) return false;
@@ -731,6 +735,19 @@ namespace CodeImp.DoomBuilder.ZDoom
 
 			// Store
 			mapinfo.LightMode = (MapInfo.GZDoomLightMode)val;
+
+			// All done here
+			return true;
+		} 
+		private bool ParseLightAttenuationMode()
+		{
+			SkipWhitespace(true);
+			if(!NextTokenIs("=")) return false; // New format only
+			SkipWhitespace(true);
+			string token = StripQuotes(ReadToken());
+
+			// Store
+			mapinfo.LightAttenuationMode = token;
 
 			// All done here
 			return true;

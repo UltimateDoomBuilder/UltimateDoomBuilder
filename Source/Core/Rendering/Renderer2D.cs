@@ -592,7 +592,7 @@ namespace CodeImp.DoomBuilder.Rendering
 						color = new PixelColor(255, (byte)((t.Args[0] & 0xFF0000) >> 16), (byte)((t.Args[0] & 0x00FF00) >> 8), (byte)((t.Args[0] & 0x0000FF)));
 
 					// ZDRay static lights have an intensity that's set through the thing's alpha value
-					if (t.DynamicLightType.LightDef == GZGeneral.LightDef.SPOT_STATIC)
+					if (t.DynamicLightType.LightDef == GZGeneral.LightDef.SPOT_LIGHTMAP)
 					{
 						double intensity = t.Fields.GetValue("alpha", 1.0);
 						if (intensity != 1.0)
@@ -608,7 +608,7 @@ namespace CodeImp.DoomBuilder.Rendering
 				}
 
 				// Point light
-				if (t.DynamicLightType.LightDef == GZGeneral.LightDef.POINT_STATIC)
+				if (t.DynamicLightType.LightDef == GZGeneral.LightDef.POINT_LIGHTMAP)
 				{
 					// ZDRay static lights have an intensity that's set through the thing's alpha value
 					double intensity = t.Fields.GetValue("alpha", 1.0);

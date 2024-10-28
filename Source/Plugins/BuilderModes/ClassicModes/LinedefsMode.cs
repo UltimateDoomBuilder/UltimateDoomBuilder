@@ -74,6 +74,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// Linedefs that will be edited
 		ICollection<Linedef> editlines;
 
+		// Autosave
+		private bool allowautosave;
+
 		#endregion
 
 		#region ================== Properties
@@ -281,8 +284,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					offset.y %= texture.Height / s.Fields.GetValue((alignFloors ? "yscalefloor" : "yscaleceiling"), 1.0);
 				}
 
-				UniFields.SetFloat(s.Fields, (alignFloors ? "xpanningfloor" : "xpanningceiling"), Math.Round(-offset.x), 0.0);
-				UniFields.SetFloat(s.Fields, (alignFloors ? "ypanningfloor" : "ypanningceiling"), Math.Round(offset.y), 0.0);
+				UniFields.SetFloat(s.Fields, (alignFloors ? "xpanningfloor" : "xpanningceiling"), Math.Round(-offset.x, 6), 0.0);
+				UniFields.SetFloat(s.Fields, (alignFloors ? "ypanningfloor" : "ypanningceiling"), Math.Round(offset.y, 6), 0.0);
 
 				//update
 				s.UpdateNeeded = true;
@@ -359,7 +362,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(curdistance < closest2) closest2 = curdistance;
 
 				// Return closer one
-				return (int)(closest1 - closest2);
+				// biwa: the difference between closest1 and closest2 can exceed the capacity of int, and that
+				// sometimes seem to cause problems, resulting in the sorting to throw an ArgumentException
+				// because of inconsistent results. Making sure to only return -1, 0, or 1 seems to fix the issue
+				// See https://github.com/UltimateDoomBuilder/UltimateDoomBuilder/issues/1053
+				return (closest1 - closest2) < 0 ? -1 : ((closest1 - closest2) > 0 ? 1 : 0);
 			});
 
 			return result;
@@ -629,6 +636,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Map.Map.ConvertSelection(SelectionType.Linedefs);
 			UpdateSelectionInfo(); //mxd
 			SetupSectorLabels(); //mxd
+
+			// By default we allow autosave
+			allowautosave = true;
 		}
 		
 		// Mode disengages
@@ -834,10 +844,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				{
 					if(General.Interface.IsActiveWindow)
 					{
+						// Prevent autosave while the editing dialog is shown
+						allowautosave = false;
+
 						// Show line edit dialog
 						General.Interface.OnEditFormValuesChanged += linedefEditForm_OnValuesChanged;
 						DialogResult result = General.Interface.ShowEditLinedefs(editlines);
 						General.Interface.OnEditFormValuesChanged -= linedefEditForm_OnValuesChanged;
+
+						allowautosave = true;
 
 						General.Map.Map.Update();
 						
@@ -1247,6 +1262,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			base.OnMapElementsChanged();
 
 			CreateBlockmap();
+		}
+
+		public override bool OnAutoSaveBegin()
+		{
+			return allowautosave;
 		}
 
 		//mxd

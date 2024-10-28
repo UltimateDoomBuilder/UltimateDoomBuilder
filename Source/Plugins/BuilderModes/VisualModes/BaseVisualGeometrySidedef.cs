@@ -585,12 +585,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		}
 
 		//mxd
-        public void SelectNeighbours(bool select, bool matchtexture, bool matchheight)
+        public void SelectNeighbours(bool select, bool matchtexture, bool matchheight, bool stopatselected)
         {
-            SelectNeighbours(select, matchtexture, matchheight, true, true);
+            SelectNeighbours(select, matchtexture, matchheight, true, true, stopatselected);
         }
 
-		private void SelectNeighbours(bool select, bool matchtexture, bool matchheight, bool clearlinedefs, bool forward)
+		private void SelectNeighbours(bool select, bool matchtexture, bool matchheight, bool clearlinedefs, bool forward, bool stopatselected)
 		{
 			if(Sidedef.Sector == null || Triangles < 1 || (!matchtexture && !matchheight)) return;
 
@@ -608,8 +608,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				mode.RemoveSelectedObject(this);
 			}
 
-            // [ZZ] use the marking system.
-            if (clearlinedefs) General.Map.Map.ClearMarkedLinedefs(false);
+			// [ZZ] use the marking system.
+			if (clearlinedefs)
+			{
+				General.Map.Map.ClearMarkedLinedefs(false);
+				General.Map.Map.ClearMarkedSidedefs(false);
+			}
+
             Sidedef.Line.Marked = true;
 
             // Select
@@ -618,21 +623,21 @@ namespace CodeImp.DoomBuilder.BuilderModes
             if (forward)
             {
                 v = Sidedef.IsFront ? Sidedef.Line.End : Sidedef.Line.Start;
-                SelectNeighbourLines(v.Linedefs, v, rect, select, matchtexture, matchheight, true);
+                SelectNeighbourLines(v.Linedefs, v, rect, select, matchtexture, matchheight, true, stopatselected);
                 v = Sidedef.IsFront ? Sidedef.Line.Start : Sidedef.Line.End;
-                SelectNeighbourLines(v.Linedefs, v, rect, select, matchtexture, matchheight, false);
+                SelectNeighbourLines(v.Linedefs, v, rect, select, matchtexture, matchheight, false, stopatselected);
             }
             else
             {
                 v = Sidedef.IsFront ? Sidedef.Line.Start : Sidedef.Line.End;
-                SelectNeighbourLines(v.Linedefs, v, rect, select, matchtexture, matchheight, false);
+                SelectNeighbourLines(v.Linedefs, v, rect, select, matchtexture, matchheight, false, stopatselected);
                 v = Sidedef.IsFront ? Sidedef.Line.End : Sidedef.Line.Start;
-                SelectNeighbourLines(v.Linedefs, v, rect, select, matchtexture, matchheight, true);
+                SelectNeighbourLines(v.Linedefs, v, rect, select, matchtexture, matchheight, true, stopatselected);
             }
 		}
 
 		//mxd
-		private void SelectNeighbourLines(IEnumerable<Linedef> lines, Vertex v, Rectangle sourcerect, bool select, bool matchtexture, bool matchheight, bool forward)
+		private void SelectNeighbourLines(IEnumerable<Linedef> lines, Vertex v, Rectangle sourcerect, bool select, bool matchtexture, bool matchheight, bool forward, bool stopatselected)
 		{
 			foreach(Linedef line in lines)
 			{
@@ -650,12 +655,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
                 if (next == null || next.Sector == null)
                     continue;
 
-                SelectNeighbourSideParts(next, sourcerect, select, matchtexture, matchheight, forward);
+                SelectNeighbourSideParts(next, sourcerect, select, matchtexture, matchheight, forward, stopatselected);
 			}
 		}
 
 		//mxd
-		private void SelectNeighbourSideParts(Sidedef side, Rectangle sourcerect, bool select, bool matchtexture, bool matchheight, bool forward)
+		private void SelectNeighbourSideParts(Sidedef side, Rectangle sourcerect, bool select, bool matchtexture, bool matchheight, bool forward, bool stopatselected)
 		{
             if (side.Line.Marked)
                 return;
@@ -664,30 +669,30 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(s != null)
 			{
 				VisualSidedefParts parts = s.GetSidedefParts(side);
-				SelectNeighbourSidePart(parts.lower, sourcerect, select, matchtexture, matchheight, forward);
-				SelectNeighbourSidePart(parts.middlesingle, sourcerect, select, matchtexture, matchheight, forward);
-				SelectNeighbourSidePart(parts.middledouble, sourcerect, select, matchtexture, matchheight, forward);
-				SelectNeighbourSidePart(parts.upper, sourcerect, select, matchtexture, matchheight, forward);
+				SelectNeighbourSidePart(parts.lower, sourcerect, select, matchtexture, matchheight, forward, stopatselected);
+				SelectNeighbourSidePart(parts.middlesingle, sourcerect, select, matchtexture, matchheight, forward, stopatselected);
+				SelectNeighbourSidePart(parts.middledouble, sourcerect, select, matchtexture, matchheight, forward, stopatselected);
+				SelectNeighbourSidePart(parts.upper, sourcerect, select, matchtexture, matchheight, forward, stopatselected);
 
 				if(parts.middle3d != null)
 				{
 					foreach(VisualMiddle3D middle3D in parts.middle3d)
-						SelectNeighbourSidePart(middle3D, sourcerect, select, matchtexture, matchheight, forward);
+						SelectNeighbourSidePart(middle3D, sourcerect, select, matchtexture, matchheight, forward, stopatselected);
 				}
 			}
 		}
 
 		//mxd
-		private void SelectNeighbourSidePart(BaseVisualGeometrySidedef visualside, Rectangle sourcerect, bool select, bool matchtexture, bool matchheight, bool forward)
+		private void SelectNeighbourSidePart(BaseVisualGeometrySidedef visualside, Rectangle sourcerect, bool select, bool matchtexture, bool matchheight, bool forward, bool stopatselected)
 		{
-			if(visualside != null && visualside.Triangles > 0 && visualside.Selected != select)
+			if (visualside != null && visualside.Triangles > 0 && !visualside.Sidedef.Marked && (!stopatselected || (visualside.Selected != select)))
 			{
 				Rectangle r = BuilderModesTools.GetSidedefPartSize(visualside);
 				if(r.Width == 0 || r.Height == 0) return;
 				if((!matchtexture || (visualside.Texture == Texture && r.IntersectsWith(sourcerect))) &&
 				   (!matchheight || (sourcerect.Height == r.Height && sourcerect.Y == r.Y)))
 				{
-					visualside.SelectNeighbours(select, matchtexture, matchheight, false, forward);
+					visualside.SelectNeighbours(select, matchtexture, matchheight, false, forward, stopatselected);
 				}
 			}
 		}
@@ -1660,7 +1665,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		}
 		
 		// Texture offset change
-		public virtual void OnChangeTextureOffset(int horizontal, int vertical, bool doSurfaceAngleCorrection)
+		public virtual bool OnChangeTextureOffset(int horizontal, int vertical, bool doSurfaceAngleCorrection)
 		{
 			if((General.Map.UndoRedo.NextUndo == null) || (General.Map.UndoRedo.NextUndo.TicketID != undoticket))
 				undoticket = mode.CreateUndo("Change texture offsets");
@@ -1695,6 +1700,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			//mxd. Update linked effects
 			SectorData sd = mode.GetSectorDataEx(Sector.Sector);
 			if(sd != null) sd.Reset(true);
+
+			return true;
 		}
 
 		//mxd

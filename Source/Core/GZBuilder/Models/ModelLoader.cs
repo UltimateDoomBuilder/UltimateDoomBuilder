@@ -39,14 +39,16 @@ namespace CodeImp.DoomBuilder.GZBuilder.Models
                 }
             }
 
-            //clear unneeded data
-            mde.SkinNames = null;
-            mde.ModelNames = null;
-
             if (mde.Model.Meshes == null || mde.Model.Meshes.Count == 0)
             {
                 mde.Model = null;
-            }
+			}
+			else
+			{
+				//clear unneeded data
+				mde.SkinNames = null;
+				mde.ModelNames = null;
+			}
         }
 
         private static void LoadModel(ModelData mde, List<DataReader> containers)

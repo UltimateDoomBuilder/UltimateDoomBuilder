@@ -72,7 +72,7 @@ namespace CodeImp.DoomBuilder.UDBScript
 	{
 		#region ================== Constants
 
-		private static readonly string SCRIPT_FOLDER = "udbscript";
+		private static readonly string SCRIPT_FOLDER = "UDBScript";
 		public static readonly uint UDB_SCRIPT_VERSION = 5;
 
 		#endregion
@@ -133,11 +133,11 @@ namespace CodeImp.DoomBuilder.UDBScript
 
 			General.Actions.BindMethods(this);
 
-			string scriptspath = Path.Combine(General.AppPath, SCRIPT_FOLDER, "scripts");
+			string scriptspath = Path.Combine(General.AppPath, SCRIPT_FOLDER, "Scripts");
 
 			if (Directory.Exists(scriptspath))
 			{
-				watcher = new FileSystemWatcher(Path.Combine(General.AppPath, SCRIPT_FOLDER, "scripts"));
+				watcher = new FileSystemWatcher(Path.Combine(General.AppPath, SCRIPT_FOLDER, "Scripts"));
 				watcher.NotifyFilter = NotifyFilters.CreationTime | NotifyFilters.DirectoryName | NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.Size;
 				watcher.IncludeSubdirectories = true;
 				watcher.Changed += OnWatcherEvent;
@@ -358,7 +358,7 @@ namespace CodeImp.DoomBuilder.UDBScript
 			lock (lockobj)
 			{
 				scriptinfo = new List<ScriptInfo>();
-				scriptdirectorystructure = LoadScriptDirectoryStructure(Path.Combine(General.AppPath, SCRIPT_FOLDER, "scripts"));
+				scriptdirectorystructure = LoadScriptDirectoryStructure(Path.Combine(General.AppPath, SCRIPT_FOLDER, "Scripts"));
 
 				scriptslots = new Dictionary<int, ScriptInfo>();
 				for(int i=0; i < NUM_SCRIPT_SLOTS; i++)

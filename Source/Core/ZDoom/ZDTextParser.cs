@@ -254,6 +254,11 @@ namespace CodeImp.DoomBuilder.ZDoom
 							// Skip entire line
 							char c4 = c3;
 							while((c4 != '\n') && (datastream.Position < datastream.Length)) { c4 = (char)datareader.ReadByte(); }
+							
+							// Reached end of file?
+							if (datastream.Position == datastream.Length)
+								return true;
+
 							c = c4;
 						}
 						else
@@ -540,6 +545,8 @@ namespace CodeImp.DoomBuilder.ZDoom
 				return false;
 			}
 
+			long prevstreamposition = DataStream.Position;
+
 			string token = ReadToken();
 
 			if(string.Compare(token, expectedtoken, true) != 0)
@@ -547,7 +554,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 				if(reporterror) ReportError("Expected \"" + expectedtoken + "\", but got \"" + token + "\"");
 
 				// Rewind so this structure can be read again
-				DataStream.Seek(-token.Length - 1, SeekOrigin.Current);
+				DataStream.Seek(prevstreamposition, SeekOrigin.Begin);
 				return false;
 			}
 

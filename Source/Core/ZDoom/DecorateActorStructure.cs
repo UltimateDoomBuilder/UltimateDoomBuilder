@@ -14,11 +14,13 @@ namespace CodeImp.DoomBuilder.ZDoom
     {
         #region ================== DECORATE Actor Structure parsing
 
+        private DecorateParser parser;
+
         internal DecorateActorStructure(ZDTextParser zdparser, DecorateCategoryInfo catinfo)
         {
             this.catinfo = catinfo; //mxd
 
-            DecorateParser parser = (DecorateParser)zdparser;
+            parser = (DecorateParser)zdparser;
             bool done = false; //mxd
 
             // First next token is the class name
@@ -170,6 +172,10 @@ namespace CodeImp.DoomBuilder.ZDoom
                         break;
 
                     case "states":
+                        // Skip cast type if there is one
+                        if (!SkipCastTypes())
+                            return;
+
 						if (!parser.NextTokenIs("{", true))
 							return;
 
@@ -456,6 +462,59 @@ namespace CodeImp.DoomBuilder.ZDoom
             }
         }
 
-        #endregion
-    }
+        /// <summary>
+        /// Skips state cast type, it one exists.
+        /// </summary>
+        /// <returns>true if there was nothing to skip or if skippen succeeded, false if it failed</returns>
+		private bool SkipCastTypes()
+		{
+            // Alloed casts, see https://zdoom.org/wiki/Converting_DECORATE_code_to_ZScript#Cast_types
+            string[] allowedcasts = { "actor", "overlay", "weapon", "item" };
+
+            // Skip cast types, which can be defined like this:
+            //   States(Actor, Item)
+            // See https://github.com/UltimateDoomBuilder/UltimateDoomBuilder/issues/977
+            if (parser.NextTokenIs("(", false))
+            {
+                while (parser.SkipWhitespace(true))
+                {
+                    string token = parser.ReadToken().ToLowerInvariant();
+
+                    if(!allowedcasts.Contains(token))
+					{
+                        parser.ReportError($"Unexpected cast type \"{token}\", expected one of: " + string.Join(", ", allowedcasts));
+                        return false;
+					}
+
+                    parser.SkipWhitespace(true);
+
+                    // Get next token
+                    token = parser.ReadToken();
+
+                    // End of cast type?
+                    if(token == ")")
+                        return true;
+
+                    // More cast types coming?
+                    if (token == ",")
+                        continue;
+
+                    // No comma or brace after a cast type, so report an error and return
+                    parser.ReportError($"Expected \",\", or \")\", got {token}");
+                    return false;
+                }
+            }
+            else
+            {
+                // We get here if there was no cast type
+                return true;
+            }
+
+            // We should never get here, since we'll return in the parsing loop,
+            // but we need to make the compiler happy
+            return false;
+        }
+
+		#endregion
+	}
 }

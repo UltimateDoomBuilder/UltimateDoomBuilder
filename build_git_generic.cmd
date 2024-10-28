@@ -13,7 +13,7 @@ ECHO.     Files in the 'GIT_Build' directory may be overwritten.
 ECHO.
 ECHO.
 
-SET STUDIODIR=c:\Program Files (x86)\Microsoft Visual Studio\2019\Community
+SET STUDIODIR=C:\Program Files\Microsoft Visual Studio\2022\Community
 SET HHWDIR=c:\Program Files (x86)\HTML Help Workshop
 SET SEVENZIPDIR=c:\Program Files\7-Zip
 SET ISSDIR=c:\Program Files (x86)\Inno Setup 6

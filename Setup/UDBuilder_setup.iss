@@ -17,7 +17,7 @@ AppVersion={#UDB_GetVersionString} ({#UDB_arch})
 AppPublisher=ZZYZX
 AppPublisherURL=https://forum.zdoom.org/memberlist.php?mode=viewprofile&u=7527
 AppSupportURL=https://forum.zdoom.org/viewtopic.php?f=232&t=66745
-AppUpdatesURL=https://devbuilds.drdteam.org/ultimatedoombuilder/
+AppUpdatesURL=https://ultimatedoombuilder.github.io/
 DefaultDirName={userpf}\Ultimate Doom Builder
 DefaultGroupName=Ultimate Doom Builder
 AllowNoIcons=true

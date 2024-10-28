@@ -304,21 +304,48 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if (!General.Map.Config.SidedefTextureSkewing)
 				return;
 
-			string skewtype = Sidedef.Fields.GetValue("skew_middle_type", "none");
-
-			// We don't have to check for back because this it's single-sided
-			if ((skewtype == "front_floor" || skewtype == "front_ceiling") && Texture != null)
+			if (General.Map.Config.SkewStyle == Config.SkewStyle.GZDoom)
 			{
-				double leftz, rightz;
-				Plane plane = skewtype == "front_floor" ? Sector.GetSectorData().Floor.plane : Sector.GetSectorData().Ceiling.plane;
+				int skewtype = Sidedef.Fields.GetValue("skew_middle", 0);
 
-				leftz = plane.GetZ(Sidedef.Line.Start.Position);
-				rightz = plane.GetZ(Sidedef.Line.End.Position);
+				if (skewtype > 0 && skewtype <= 2 && Texture != null)
+				{
+					Plane plane;
+					Vector2D start = Sidedef.IsFront ? Sidedef.Line.Start.Position : Sidedef.Line.End.Position;
+					Vector2D end = Sidedef.IsFront ? Sidedef.Line.End.Position : Sidedef.Line.Start.Position;
 
-				skew = new Vector2f(
-					Vertices.Min(v => v.u), // Get the lowest horizontal texture offset
-					(float)((rightz - leftz) / Sidedef.Line.Length * ((double)Texture.Width / Texture.Height))
+					if (skewtype == 1)
+						plane = Sector.GetSectorData().Floor.plane;
+					else // skewtype 2
+						plane = Sector.GetSectorData().Ceiling.plane;
+
+					double leftz = plane.GetZ(start);
+					double rightz = plane.GetZ(end);
+
+					skew = new Vector2f(
+						Vertices.Min(v => v.u), // Get the lowest horizontal texture offset
+						(float)((rightz - leftz) / Sidedef.Line.Length * ((double)Texture.Width / Texture.Height) * Sidedef.Fields.GetValue("scaley_mid", 1.0) / Sidedef.Fields.GetValue("scalex_mid", 1.0))
 					);
+				}
+			}
+			else if (General.Map.Config.SkewStyle == Config.SkewStyle.EternityEngine)
+			{
+				string skewtype = Sidedef.Fields.GetValue("skew_middle_type", "none");
+
+				// We don't have to check for back because this it's single-sided
+				if ((skewtype == "front_floor" || skewtype == "front_ceiling") && Texture != null)
+				{
+					double leftz, rightz;
+					Plane plane = skewtype == "front_floor" ? Sector.GetSectorData().Floor.plane : Sector.GetSectorData().Ceiling.plane;
+
+					leftz = plane.GetZ(Sidedef.Line.Start.Position);
+					rightz = plane.GetZ(Sidedef.Line.End.Position);
+
+					skew = new Vector2f(
+						Vertices.Min(v => v.u), // Get the lowest horizontal texture offset
+						(float)((rightz - leftz) / Sidedef.Line.Length * ((double)Texture.Width / Texture.Height))
+						);
+				}
 			}
 		}
 

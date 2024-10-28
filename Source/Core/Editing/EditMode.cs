@@ -264,6 +264,9 @@ namespace CodeImp.DoomBuilder.Editing
 		// This should be called by global actions (i.e. that are not part of an editing mode) when they changed map elements,
 		// so that the mode can react to it (for example by rebuilding a blockmap)
 		public virtual void OnMapElementsChanged() { }
+
+		public virtual bool OnAutoSaveBegin() { return attributes.Volatile ? false : true; } // Called before autosave is done. Returns false if autosave should not be done. By default volatile modes prevent autosave
+		public virtual void OnAutoSaveEnd() { }
 		
 		#endregion
 	}

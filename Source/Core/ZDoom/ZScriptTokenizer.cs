@@ -30,6 +30,7 @@ namespace CodeImp.DoomBuilder.ZDoom
         LineComment, // // blablabla
         BlockComment, // /* blablabla */
         Whitespace, // whitespace is a legit token.
+        Region, // #region, #endregion
 
         // invalid token
         Invalid,
@@ -199,7 +200,7 @@ namespace CodeImp.DoomBuilder.ZDoom
         {
             while (true)
             {
-                ZScriptToken tok = ExpectToken(ZScriptTokenType.Newline, ZScriptTokenType.BlockComment, ZScriptTokenType.LineComment, ZScriptTokenType.Whitespace);
+                ZScriptToken tok = ExpectToken(ZScriptTokenType.Newline, ZScriptTokenType.BlockComment, ZScriptTokenType.LineComment, ZScriptTokenType.Whitespace, ZScriptTokenType.Region);
                 if (tok == null || !tok.IsValid) break;
             }
         }
@@ -460,7 +461,7 @@ namespace CodeImp.DoomBuilder.ZDoom
             return null;
         }
 
-        private ZScriptToken TryReadStringOrComment(bool allowstring, bool allowname, bool allowblock, bool allowline)
+        private ZScriptToken TryReadStringOrComment(bool allowstring, bool allowname, bool allowblock, bool allowline, bool allowregion)
         {
             long cpos = LastPosition = reader.BaseStream.Position;
             char c;
@@ -552,7 +553,41 @@ namespace CodeImp.DoomBuilder.ZDoom
                         }
                         break;
                     }
+                case '#': // #region and #endregion
+                    {
+                        if (!allowregion) break;
+                        char cnext;
+                        SB.Length = 0;
 
+                        // Read until the end of the line
+                        while (true)
+                        {
+                            try
+							{
+                                cnext = reader.ReadChar();
+							}
+                            catch(EndOfStreamException)
+							{
+                                break;
+							}
+                            if(cnext == '\n')
+							{
+                                reader.BaseStream.Position--;
+                                break;
+							}
+
+                            SB.Append(cnext);
+                        }
+
+                        string line = SB.ToString();
+
+                        // GZDoom actually doesn't care what's coming after #region or #endregion, so something like #regionlalala is valid.
+                        // But they have to be in lower case
+                        if (line.StartsWith("region") || line.StartsWith("endregion"))
+                            return new ZScriptToken() { Position = cpos, Type = ZScriptTokenType.Region, Value = "" };
+
+                        break;
+                    }
                 case '"':
                 case '\'':
                     {
@@ -586,7 +621,6 @@ namespace CodeImp.DoomBuilder.ZDoom
                             }
                         }
                     }
-
             }
 
             reader.BaseStream.Position = cpos;
@@ -642,11 +676,12 @@ namespace CodeImp.DoomBuilder.ZDoom
                 bool bblockcomment = oneof.Contains(ZScriptTokenType.BlockComment);
                 bool bstring = oneof.Contains(ZScriptTokenType.String);
                 bool bname = oneof.Contains(ZScriptTokenType.Name);
+                bool bregion = oneof.Contains(ZScriptTokenType.Region);
 
-                if (bstring || bname || bblockcomment || blinecomment)
+                if (bstring || bname || bblockcomment || blinecomment || bregion)
                 {
                     // try to expect a string
-                    ZScriptToken tok = TryReadStringOrComment(bstring, bname, bblockcomment, blinecomment);
+                    ZScriptToken tok = TryReadStringOrComment(bstring, bname, bblockcomment, blinecomment, bregion);
                     if (tok != null) return tok;
                 }
 
@@ -721,7 +756,7 @@ namespace CodeImp.DoomBuilder.ZDoom
                     if (tok != null) return tok;
                 }
 
-                tok = TryReadStringOrComment(true, true, true, true);
+                tok = TryReadStringOrComment(true, true, true, true, true);
                 if (tok != null) return tok;
 
                 if (!short_circuit)

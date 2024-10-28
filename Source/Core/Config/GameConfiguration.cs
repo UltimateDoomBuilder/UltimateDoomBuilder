@@ -47,6 +47,13 @@ namespace CodeImp.DoomBuilder.Config
 		}
 	}
 
+	public enum SkewStyle
+	{
+		None,
+		GZDoom,
+		EternityEngine
+	}
+
 	public class GameConfiguration
 	{
 		#region ================== Constants
@@ -110,6 +117,7 @@ namespace CodeImp.DoomBuilder.Config
 		private readonly bool localsidedeftextureoffsets; //MaxW
 		private readonly bool effect3dfloorsupport;
 		private readonly bool planeequationsupport;
+		private readonly bool vertexheightsupport;
 		private readonly bool distinctfloorandceilingbrightness;
 		private readonly bool distinctwallbrightness;
 		private readonly bool distinctsidedefpartbrightness;
@@ -216,6 +224,9 @@ namespace CodeImp.DoomBuilder.Config
 		// Dehacked
 		private DehackedData dehackeddata;
 
+		// Skew style
+		private SkewStyle skewstyle;
+
         #endregion
 
         #region ================== Properties
@@ -290,6 +301,7 @@ namespace CodeImp.DoomBuilder.Config
 		public bool UseLocalSidedefTextureOffsets { get { return localsidedeftextureoffsets; } } //MaxW
 		public bool Effect3DFloorSupport { get { return effect3dfloorsupport; } }
 		public bool PlaneEquationSupport { get { return planeequationsupport; } }
+		public bool VertexHeightSupport { get { return vertexheightsupport; } }
 		public bool DistinctFloorAndCeilingBrightness { get { return distinctfloorandceilingbrightness; } }
 		public bool DistinctWallBrightness { get { return distinctwallbrightness; } }
 		public bool DistinctSidedefPartBrightness { get { return distinctsidedefpartbrightness; } }
@@ -311,6 +323,7 @@ namespace CodeImp.DoomBuilder.Config
 		public List<FlagTranslation> ThingFlagsTranslation { get { return thingflagstranslation; } }
 		public Dictionary<string, ThingFlagsCompareGroup> ThingFlagsCompare { get { return thingflagscompare; } } //mxd
 		public Dictionary<string, string> ThingRenderStyles { get { return thingrenderstyles; } } //mxd
+		public IReadOnlyDictionary<int, ThingTypeInfo> ThingTypes { get { return things; } }
 		
 		// Linedefs
 		public IDictionary<string, string> LinedefFlags { get { return linedefflags; } }
@@ -375,6 +388,9 @@ namespace CodeImp.DoomBuilder.Config
 
 		// Dehacked
 		public DehackedData DehackedData { get { return dehackeddata; } }
+
+		// Skew style
+		public SkewStyle SkewStyle { get { return skewstyle; } }
 		
 		#endregion
 
@@ -472,6 +488,7 @@ namespace CodeImp.DoomBuilder.Config
 			localsidedeftextureoffsets = (cfg.ReadSetting("localsidedeftextureoffsets", false)); //MaxW
 			effect3dfloorsupport = cfg.ReadSetting("effect3dfloorsupport", false);
 			planeequationsupport = cfg.ReadSetting("planeequationsupport", false);
+			vertexheightsupport = cfg.ReadSetting("vertexheightsupport", false);
 			sidedeftextureskewing = cfg.ReadSetting("sidedeftextureskewing", false);
 			distinctfloorandceilingbrightness = cfg.ReadSetting("distinctfloorandceilingbrightness", false);
 			distinctwallbrightness = cfg.ReadSetting("distinctwallbrightness", false);
@@ -606,6 +623,16 @@ namespace CodeImp.DoomBuilder.Config
 
 			// Dehacked
 			dehackeddata = new DehackedData(cfg, "dehacked");
+
+			// Determine skew style
+			skewstyle = SkewStyle.None;
+			if (sidedeftextureskewing)
+			{
+				if (sidedeffields.Any(lf => lf.Name == "skew_top" || lf.Name == "skew_middle" || lf.Name == "skew_bottom"))
+					skewstyle = SkewStyle.GZDoom;
+				else if (sidedeffields.Any(lf => lf.Name == "skew_top_type" || lf.Name == "skew_middle_type" || lf.Name == "skew_bottom_type"))
+					skewstyle = SkewStyle.EternityEngine;
+			}
 		}
 
 		// Destructor
@@ -1377,7 +1404,58 @@ namespace CodeImp.DoomBuilder.Config
 
 			return supported;
 		}
-		
+
+		/// <summary>
+		/// Checks if a MapElement type has a UDMF field or flag defined.
+		/// </summary>
+		/// <typeparam name="T">Type inherited from MapElement</typeparam>
+		/// <param name="name">Name of the UDMF field or flag</param>
+		/// <returns>true if the field or flag exists, false if it doesn't</returns>
+		public bool HasUniversalFieldOrFlag<T>(string name) where T : MapElement
+		{
+			Type type = typeof(T);
+			List<UniversalFieldInfo> ufi;
+			Dictionary<string, string> flags;
+
+			if (type == typeof(Thing))
+			{
+				ufi = thingfields;
+				flags = thingflags;
+			}
+			else if (type == typeof(Linedef))
+			{
+				ufi = linedeffields;
+				flags = linedefflags;
+			}
+			else if (type == typeof(Sidedef))
+			{
+				ufi = sidedeffields;
+				flags = sidedefflags;
+			}
+			else if (type == typeof(Sector))
+			{
+				ufi = sectorfields;
+				flags = sectorflags;
+			}
+			else if (type == typeof(Vertex))
+			{
+				ufi = vertexfields;
+				flags = new Dictionary<string, string>(); // Vertices don't have flags
+			}
+			else
+				throw new NotSupportedException("Unsupported MapElement type: " + type.Name);
+
+			// Check for regular UDMF fields
+			if (ufi.Where(f => f.Name == name).FirstOrDefault() != null)
+				return true;
+
+			// Check for flags
+			if (flags.ContainsKey(name))
+				return true;
+
+			return false;
+		}
+	
 		#endregion
 	}
 }

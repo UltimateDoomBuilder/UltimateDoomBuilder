@@ -210,6 +210,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.findbox.Name = "findbox";
 			this.findbox.Size = new System.Drawing.Size(276, 21);
 			this.findbox.TabIndex = 0;
+			this.findbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.findbox_KeyDown);
 			// 
 			// tabreplace
 			// 
@@ -244,6 +245,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.replacebox.Name = "replacebox";
 			this.replacebox.Size = new System.Drawing.Size(276, 21);
 			this.replacebox.TabIndex = 1;
+			this.replacebox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.replacebox_KeyDown);
 			// 
 			// label5
 			// 
@@ -288,6 +290,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.replacefindbox.Name = "replacefindbox";
 			this.replacefindbox.Size = new System.Drawing.Size(276, 21);
 			this.replacefindbox.TabIndex = 0;
+			this.replacefindbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.replacefindbox_KeyDown);
 			// 
 			// label4
 			// 

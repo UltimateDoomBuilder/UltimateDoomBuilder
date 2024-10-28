@@ -64,15 +64,23 @@ namespace CodeImp.DoomBuilder.ZDoom
 						SkipWhitespace(false);
 						if(!ReadSignedInt(ref locknum))
 						{
-							ReportError("Expected lock number");
+							ReportError("Expected a valid lock number");
 							return false;
 						}
 
-						//wiki: The locknumber must be in the 1-to-255 range
-						if(locknum < 1 || locknum > 255)
+						if(locknum < 1)
 						{
-							ReportError("The locknumber must be in the [1 .. 255] range, but is " + locknum);
+							ReportError("The locknumber must be a positive number, but is " + locknum);
 							return false;
+						}
+
+						// In Hexen format locks can only be specified as line action arguments,
+						// and they are limited to up to 255 in Hexen format
+						// We'll keep parsing, and just not add the lock when the closing curly
+						// is parsed. But we log the warning here to get the correct line number
+						if (locknum > 255 && General.Map != null && !General.Map.UDMF)
+						{
+							LogWarning($"Lock number {locknum} is too big for the used map format. Maximum is 255. The lock will be ignored");
 						}
 
 						// Store position
@@ -174,9 +182,18 @@ namespace CodeImp.DoomBuilder.ZDoom
 								datastream.Position = curpos;
 							}
 
-							// Add to collections
-							locks[locknum] = locktitle;
-							if(mapcolor.a == 255) mapcolors[locknum] = mapcolor;
+
+							// In Hexen format locks can only be specified as line action arguments,
+							// and they are limited to up to 255 in Hexen format, so only add the lock
+							// if the number can be used.
+							// We're not logging a warning here, because we already did that when initially
+							// parsing the lock number, so that we have the correct line number
+							if ((General.Map != null && General.Map.UDMF) || (locknum > 0 && locknum < 255))
+							{
+								// Add to collections
+								locks[locknum] = locktitle;
+								if (mapcolor.a == 255) mapcolors[locknum] = mapcolor;
+							}
 						}
 
 						// Reset values

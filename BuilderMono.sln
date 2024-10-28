@@ -1,36 +1,38 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29201.188
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Builder", "Source\Core\BuilderMono.csproj", "{818B3D10-F791-4C3F-9AF5-BB2D0079B63C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuilderMono", "Source\Core\BuilderMono.csproj", "{818B3D10-F791-4C3F-9AF5-BB2D0079B63C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuilderModes", "Source\Plugins\BuilderModes\BuilderModesMono.csproj", "{B42D5AA0-F9A6-4234-9C4B-A05B11A64851}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuilderModesMono", "Source\Plugins\BuilderModes\BuilderModesMono.csproj", "{B42D5AA0-F9A6-4234-9C4B-A05B11A64851}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuilderEffects", "Source\Plugins\BuilderEffects\BuilderEffectsMono.csproj", "{B859BE0F-A992-476D-A642-FA8EFE94AAA5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuilderEffectsMono", "Source\Plugins\BuilderEffects\BuilderEffectsMono.csproj", "{B859BE0F-A992-476D-A642-FA8EFE94AAA5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorPicker", "Source\Plugins\ColorPicker\ColorPickerMono.csproj", "{A4761900-0EA3-4FE4-A919-847FD5080EFC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorPickerMono", "Source\Plugins\ColorPicker\ColorPickerMono.csproj", "{A4761900-0EA3-4FE4-A919-847FD5080EFC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagExplorer", "Source\Plugins\TagExplorer\TagExplorerMono.csproj", "{BE7917F3-E6FE-4D5B-8FA9-B8E7668AC731}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagExplorerMono", "Source\Plugins\TagExplorer\TagExplorerMono.csproj", "{BE7917F3-E6FE-4D5B-8FA9-B8E7668AC731}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommentsPanel", "Source\Plugins\CommentsPanel\CommentsPanelMono.csproj", "{58BD8A5B-1B48-435D-8473-A92F27D06C49}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommentsPanelMono", "Source\Plugins\CommentsPanel\CommentsPanelMono.csproj", "{58BD8A5B-1B48-435D-8473-A92F27D06C49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NodesViewer", "Source\Plugins\NodesViewer\NodesViewerMono.csproj", "{9F244231-6A0C-42A6-87C5-ED9620DEE096}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NodesViewerMono", "Source\Plugins\NodesViewer\NodesViewerMono.csproj", "{9F244231-6A0C-42A6-87C5-ED9620DEE096}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagRange", "Source\Plugins\TagRange\TagRangeMono.csproj", "{F49EFF6D-51CB-4E49-8223-AAE653C5B62F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagRangeMono", "Source\Plugins\TagRange\TagRangeMono.csproj", "{F49EFF6D-51CB-4E49-8223-AAE653C5B62F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisplaneExplorer", "Source\Plugins\VisplaneExplorer\VisplaneExplorerMono.csproj", "{CF670175-7099-4090-A330-EE25C7230139}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisplaneExplorerMono", "Source\Plugins\VisplaneExplorer\VisplaneExplorerMono.csproj", "{CF670175-7099-4090-A330-EE25C7230139}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoundPropagation", "Source\Plugins\SoundPropagationMode\SoundPropagationMono.csproj", "{F59B344C-DD50-4DB7-ADDD-56AAD66450AF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoundPropagationMono", "Source\Plugins\SoundPropagationMode\SoundPropagationMono.csproj", "{F59B344C-DD50-4DB7-ADDD-56AAD66450AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StairSectorBuilder", "Source\Plugins\StairSectorBuilder\StairSectorBuilderMono.csproj", "{3F365121-906B-409D-BB1E-37E0A78056C2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StairSectorBuilderMono", "Source\Plugins\StairSectorBuilder\StairSectorBuilderMono.csproj", "{3F365121-906B-409D-BB1E-37E0A78056C2}"
 	ProjectSection(ProjectDependencies) = postProject
 		{818B3D10-F791-4C3F-9AF5-BB2D0079B63C} = {818B3D10-F791-4C3F-9AF5-BB2D0079B63C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutomapMode", "Source\Plugins\AutomapMode\AutomapModeMono.csproj", "{B33F68D5-1335-400C-A1D7-7F5602A030EF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutomapModeMono", "Source\Plugins\AutomapMode\AutomapModeMono.csproj", "{B33F68D5-1335-400C-A1D7-7F5602A030EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThreeDFloorMode", "Source\Plugins\3DFloorMode\ThreeDFloorModeMono.csproj", "{88CFD996-027B-4CBE-9828-26B2728B6127}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThreeDFloorModeMono", "Source\Plugins\3DFloorMode\ThreeDFloorModeMono.csproj", "{88CFD996-027B-4CBE-9828-26B2728B6127}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UDBScriptMono", "Source\Plugins\UDBScript\UDBScriptMono.csproj", "{3088C327-5FFB-49A0-8D40-58E92D89DF07}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -252,6 +254,22 @@ Global
 		{88CFD996-027B-4CBE-9828-26B2728B6127}.Release|x64.Build.0 = Release|x64
 		{88CFD996-027B-4CBE-9828-26B2728B6127}.Release|x86.ActiveCfg = Release|x86
 		{88CFD996-027B-4CBE-9828-26B2728B6127}.Release|x86.Build.0 = Release|x86
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Debug + Profiler|x64.ActiveCfg = Debug|x64
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Debug + Profiler|x64.Build.0 = Debug|x64
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Debug + Profiler|x86.ActiveCfg = Debug|x86
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Debug + Profiler|x86.Build.0 = Debug|x86
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Debug|x64.ActiveCfg = Debug|x64
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Debug|x64.Build.0 = Debug|x64
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Debug|x86.ActiveCfg = Debug|x86
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Debug|x86.Build.0 = Debug|x86
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Release + Profiler|x64.ActiveCfg = Release|x64
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Release + Profiler|x64.Build.0 = Release|x64
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Release + Profiler|x86.ActiveCfg = Release|x86
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Release + Profiler|x86.Build.0 = Release|x86
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Release|x64.ActiveCfg = Release|x64
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Release|x64.Build.0 = Release|x64
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Release|x86.ActiveCfg = Release|x86
+		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

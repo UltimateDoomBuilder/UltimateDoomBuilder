@@ -16,6 +16,7 @@
 
 #region ================== Namespaces
 
+using CodeImp.DoomBuilder.Config;
 using System;
 using System.Globalization;
 
@@ -33,6 +34,7 @@ namespace CodeImp.DoomBuilder.Types
 		#region ================== Variables
 
 		private double value;
+		private double defaultvalue;
 
 		#endregion
 
@@ -41,6 +43,19 @@ namespace CodeImp.DoomBuilder.Types
 		#endregion
 
 		#region ================== Methods
+
+		public override void SetupArgument(TypeHandlerAttribute attr, ArgumentInfo arginfo)
+		{
+			defaultvalue = (double)arginfo.DefaultValue;
+			base.SetupArgument(attr, arginfo);
+		}
+
+		public override void SetupField(TypeHandlerAttribute attr, UniversalFieldInfo fieldinfo)
+		{
+			// The default value might be given as int instead as a floating point number, so try to convert it
+			defaultvalue = (fieldinfo == null || fieldinfo.Default == null) ? 0.0 : Convert.ToDouble(fieldinfo.Default);
+			base.SetupField(attr, fieldinfo);
+		}
 
 		public override void SetValue(object value)
 		{
@@ -87,7 +102,7 @@ namespace CodeImp.DoomBuilder.Types
 
 		public override object GetDefaultValue()
 		{
-			return 0.0;
+			return defaultvalue;
 		}
 
 		#endregion

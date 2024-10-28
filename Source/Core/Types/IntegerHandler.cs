@@ -51,6 +51,12 @@ namespace CodeImp.DoomBuilder.Types
 			base.SetupArgument(attr, arginfo);
 		}
 
+		public override void SetupField(TypeHandlerAttribute attr, UniversalFieldInfo fieldinfo)
+		{
+			defaultvalue = (fieldinfo == null || fieldinfo.Default == null) ? 0 : (int)fieldinfo.Default;
+			base.SetupField(attr, fieldinfo);
+		}
+
 		public override void SetValue(object value)
 		{
 			// Null?

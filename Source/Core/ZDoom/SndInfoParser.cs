@@ -17,6 +17,14 @@ namespace CodeImp.DoomBuilder.ZDoom
 		private Dictionary<int, AmbientSoundInfo> ambientsounds;
 		private Dictionary<string, SoundInfo> sounds;
 		private SoundInfo globalprops;
+		
+		// There are two formats supported, with the old format being
+		//	logicalname lumpname
+		// and the new format being
+		//  logicalname = lumpname
+		// Only one format may be used
+		private enum SndInfoFormat { None, Old, New }
+		private SndInfoFormat format = SndInfoFormat.None;
 
 		#endregion
 
@@ -46,8 +54,11 @@ namespace CodeImp.DoomBuilder.ZDoom
 
 		public override bool Parse(TextResourceData data, bool clearerrors)
 		{
+			// We have to reset the format, since it's per file, not globally
+			format = SndInfoFormat.None;
+
 			//mxd. Already parsed?
-			if(!base.AddTextResource(data))
+			if (!base.AddTextResource(data))
 			{
 				if(clearerrors) ClearError();
 				return true;
@@ -389,6 +400,17 @@ namespace CodeImp.DoomBuilder.ZDoom
 			// Check logicalname
 			logicalname = StripTokenQuotes(logicalname);
 			if(string.IsNullOrEmpty(logicalname)) return false;
+
+			// Check sound assignment format and report an error if both the old and new format is used
+			if ((format == SndInfoFormat.New && !NextTokenIs("=", false)) || (format == SndInfoFormat.Old && NextTokenIs("=", false)))
+			{
+				ReportError("Mixing old and new sound assignment format is not permitted");
+				return false;
+			}
+			else if(format == SndInfoFormat.None)
+			{
+				format = NextTokenIs("=", false) ? SndInfoFormat.New : SndInfoFormat.Old;
+			}				
 
 			// Read lumpname
 			if(!SkipWhitespace(true)) return false;

@@ -279,16 +279,19 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		}
 
 		//mxd
-		public override void OnChangeTextureOffset(int horizontal, int vertical, bool doSurfaceAngleCorrection)
+		public override bool OnChangeTextureOffset(int horizontal, int vertical, bool doSurfaceAngleCorrection)
 		{
+			bool appliedoffset = false;
+
 			// Only do this when not done yet in this call
 			// Because we may be able to select the same 3D floor multiple times through multiple sectors
 			SectorData sd = mode.GetSectorData(level.sector);
 			if(!sd.CeilingChanged)
 			{
-				sd.CeilingChanged = true;
-				base.OnChangeTextureOffset(horizontal, vertical, doSurfaceAngleCorrection);
+				sd.CeilingChanged = appliedoffset = base.OnChangeTextureOffset(horizontal, vertical, doSurfaceAngleCorrection);
 			}
+
+			return appliedoffset;
 		}
 
 		// Move texture coordinates
@@ -579,7 +582,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		}
 
 		//mxd
-		public override void SelectNeighbours(bool select, bool withSameTexture, bool withSameHeight) 
+		public override void SelectNeighbours(bool select, bool withSameTexture, bool withSameHeight, bool stopatselected) 
 		{
 			if(!withSameTexture && !withSameHeight) return;
 
@@ -615,7 +618,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 							//(de)select regular visual floor?
 							if(select != vs.Floor.Selected) 
-								vs.Floor.SelectNeighbours(select, withSameTexture, withSameHeight);
+								vs.Floor.SelectNeighbours(select, withSameTexture, withSameHeight, stopatselected);
 						}
 					} 
 					else // Regular ceiling or vavoom-type extra ceiling
@@ -628,7 +631,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 							//(de)select regular visual ceiling?
 							if(select != vs.Ceiling.Selected) 
-								vs.Ceiling.SelectNeighbours(select, withSameTexture, withSameHeight);
+								vs.Ceiling.SelectNeighbours(select, withSameTexture, withSameHeight, stopatselected);
 						}
 					}
 
@@ -639,7 +642,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						if((!withSameTexture || level.sector.LongCeilTexture == ec.level.sector.LongCeilTexture) &&
 							(!withSameHeight || level.sector.CeilHeight == ec.level.sector.CeilHeight)) 
 						{
-							ec.SelectNeighbours(select, withSameTexture, withSameHeight);
+							ec.SelectNeighbours(select, withSameTexture, withSameHeight, stopatselected);
 						}
 					}
 
@@ -650,7 +653,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						if((!withSameTexture || level.sector.LongCeilTexture == ef.Level.sector.LongFloorTexture) &&
 							(!withSameHeight || level.sector.CeilHeight == ef.Level.sector.FloorHeight)) 
 						{
-							ef.SelectNeighbours(select, withSameTexture, withSameHeight);
+							ef.SelectNeighbours(select, withSameTexture, withSameHeight, stopatselected);
 						}
 					}
 				}

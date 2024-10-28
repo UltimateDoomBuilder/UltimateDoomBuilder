@@ -220,7 +220,7 @@ namespace CodeImp.DoomBuilder.IO
 				Thing t = map.CreateThing();
 				if(t != null)
 				{
-					t.Update(type, x, y, height, angledeg, pitch, roll, scaleX, scaleY, stringflags, tag, special, args);
+					t.Update(type, x, y, height, angledeg, pitch, roll, scaleX, scaleY, stringflags, 0, tag, special, args);
 
 					// Custom fields
 					ReadCustomFields(c, t, "thing");
@@ -302,7 +302,7 @@ namespace CodeImp.DoomBuilder.IO
 					Linedef l = map.CreateLinedef(vertexlink[v1], vertexlink[v2]);
 					if(l != null)
 					{
-						l.Update(stringflags, 0, tags, special, args);
+						l.Update(stringflags, 0, 0,tags, special, args);
 						l.UpdateCache();
 
 						// Custom fields

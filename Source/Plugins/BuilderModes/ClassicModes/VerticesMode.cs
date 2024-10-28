@@ -62,6 +62,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// Vertices that will be edited
 		ICollection<Vertex> editvertices;
 
+		// Autosave
+		private bool allowautosave;
+
 		#endregion
 
 		#region ================== Properties
@@ -127,6 +130,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Convert geometry selection to vertices only
 			General.Map.Map.ConvertSelection(SelectionType.Vertices);
 			UpdateSelectionInfo(); //mxd
+
+			// By default we allow autosave
+			allowautosave = true;
 		}
 
 		// Mode disengages
@@ -409,10 +415,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				{
 					if(General.Interface.IsActiveWindow)
 					{
+						// Prevent autosave while the editing dialog is shown
+						allowautosave = false;
+
 						//mxd. Show realtime vertex edit dialog
 						General.Interface.OnEditFormValuesChanged += vertexEditForm_OnValuesChanged;
 						DialogResult result = General.Interface.ShowEditVertices(editvertices);
 						General.Interface.OnEditFormValuesChanged -= vertexEditForm_OnValuesChanged;
+
+						allowautosave = true;
 
 						// Update entire display
 						UpdateSelectionInfo(); //mxd
@@ -657,6 +668,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						General.Editing.ChangeMode(new DragVerticesMode(mousedownmappos, dragvertices));
 				}
 			}
+		}
+
+		public override bool OnAutoSaveBegin()
+		{
+			return allowautosave;
 		}
 
 		//mxd. Check if any selected vertex is outside of map boundary

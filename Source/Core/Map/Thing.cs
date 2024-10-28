@@ -62,6 +62,7 @@ namespace CodeImp.DoomBuilder.Map
 		private int angledoom;		// Angle as entered / stored in file
 		private double anglerad;		// Angle in radians
 		private Dictionary<string, bool> flags;
+		private ushort rawflags; // The actual flags bitmap that also might include unknown flags
 		private int tag;
 		private int action;
 		private int[] args;
@@ -110,6 +111,7 @@ namespace CodeImp.DoomBuilder.Map
 		public double Angle { get { return anglerad; } }
 		public int AngleDoom { get { return angledoom; } }
 		internal Dictionary<string, bool> Flags { get { return flags; } }
+		public ushort RawFlags { get { return rawflags; } }
 		public int Action { get { return action; } set { BeforePropsChange(); action = value; } }
 		public int[] Args { get { return args; } }
 		public float Size { get { return size; } }
@@ -248,6 +250,7 @@ namespace CodeImp.DoomBuilder.Map
 			t.spritescale = spritescale; //mxd
 			t.pos = pos;
 			t.flags = new Dictionary<string,bool>(flags);
+			t.rawflags = rawflags;
 			t.tag = tag;
 			t.action = action;
 			t.args = (int[])args.Clone();
@@ -261,6 +264,39 @@ namespace CodeImp.DoomBuilder.Map
 			t.rollsprite = rollsprite; //mxd
 
 			base.CopyPropertiesTo(t);
+		}
+
+		/// <summary>
+		/// Updates the raw flag bit map from the flags dictionary. Has to be called before the flags in the game config changed. Has to be called in conjunction with UpdateFlagsFromRawFlags.
+		/// </summary>
+		internal void UpdateRawFlagsFromFlags()
+		{
+			foreach (KeyValuePair<string, bool> f in flags)
+			{
+				if (ushort.TryParse(f.Key, out ushort fnum))
+				{
+					// Set bit to 0
+					rawflags &= (ushort)~fnum;
+
+					// Set bit if necessary
+					if (f.Value)
+						rawflags |= fnum;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Updates the flags dictionary from the raw flags. Has to be called after the flags in the game config changed. Has to be called in conjunction with UpdateRawFlagsFromFlags.
+		/// </summary>
+		internal void UpdateFlagsFromRawFlags()
+		{
+			foreach (string fname in General.Map.Config.ThingFlags.Keys)
+			{
+				if (ushort.TryParse(fname, out ushort fnum))
+				{
+					flags[fname] = (rawflags & fnum) == fnum;
+				}
+			}
 		}
 
 		// This determines which sector the thing is in and links it
@@ -544,7 +580,7 @@ namespace CodeImp.DoomBuilder.Map
 		// This updates all properties
 		// NOTE: This does not update sector! (call DetermineSector)
 		public void Update(int type, double x, double y, double zoffset, int angle, int pitch, int roll, double scaleX, double scaleY,
-						   Dictionary<string, bool> flags, int tag, int action, int[] args)
+						   Dictionary<string, bool> flags, ushort rawflags, int tag, int action, int[] args)
 		{
 			// Apply changes
 			this.type = type;
@@ -555,6 +591,7 @@ namespace CodeImp.DoomBuilder.Map
 			this.scaleX = (scaleX == 0 ? 1.0f : scaleX); //mxd
 			this.scaleY = (scaleY == 0 ? 1.0f : scaleY); //mxd
 			this.flags = new Dictionary<string, bool>(flags);
+			this.rawflags = rawflags;
 			this.tag = tag;
 			this.action = action;
 			this.args = new int[NUM_ARGS];

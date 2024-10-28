@@ -530,10 +530,10 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 		/// <param name="fields">UniFields of the map element</param>
 		internal override void AddManagedFields(IDictionary<string, object> fields)
 		{
-			if (thing.ScaleX != 1.0)
+			if (!fields.ContainsKey("scalex") && thing.ScaleX != 1.0)
 				fields.Add("scalex", thing.ScaleX);
 
-			if (thing.ScaleY != 1.0)
+			if (!fields.ContainsKey("scaley") && thing.ScaleY != 1.0)
 				fields.Add("scaley", thing.ScaleY);
 		}
 
@@ -549,12 +549,28 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 			switch(pname)
 			{
 				case "scalex":
-					if (newvalue == null) thing.SetScale(1.0, thing.ScaleY);
-					else thing.SetScale((double)newvalue, thing.ScaleY);
+					if (newvalue == null)
+					{
+						thing.SetScale(1.0, thing.ScaleY);
+						UniFields.RemoveField(fields, "scalex");
+					}
+					else
+					{
+						thing.SetScale((double)newvalue, thing.ScaleY);
+						UniFields.SetFloat(fields, "scalex", (double)newvalue);
+					}
 					return true;
 				case "scaley":
-					if(newvalue == null) thing.SetScale(thing.ScaleX, 1.0);
-					else thing.SetScale(thing.ScaleX, (double)newvalue);
+					if (newvalue == null)
+					{
+						thing.SetScale(thing.ScaleX, 1.0);
+						UniFields.RemoveField(fields, "scaley");
+					}
+					else
+					{
+						thing.SetScale(thing.ScaleX, (double)newvalue);
+						UniFields.SetFloat(fields, "scaley", (double)newvalue);
+					}
 					return true;
 			}
 

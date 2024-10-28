@@ -143,7 +143,7 @@ namespace CodeImp.DoomBuilder.IO
 				int z = reader.ReadInt16();
 				int angle = reader.ReadInt16();
 				int type = reader.ReadUInt16();
-				int flags = reader.ReadUInt16();
+				ushort flags = reader.ReadUInt16();
 				int action = reader.ReadByte();
 				args[0] = reader.ReadByte();
 				args[1] = reader.ReadByte();
@@ -155,13 +155,12 @@ namespace CodeImp.DoomBuilder.IO
 				Dictionary<string, bool> stringflags = new Dictionary<string, bool>(StringComparer.Ordinal);
 				foreach(KeyValuePair<string, string> f in manager.Config.ThingFlags)
 				{
-					int fnum;
-					if(int.TryParse(f.Key, out fnum)) stringflags[f.Key] = ((flags & fnum) == fnum);
+					if (int.TryParse(f.Key, out int fnum)) stringflags[f.Key] = ((flags & fnum) == fnum);
 				}
 				
 				// Create new item
 				Thing t = map.CreateThing();
-				t.Update(type, x, y, z, angle, 0, 0, 1.0f, 1.0f, stringflags, tag, action, args);
+				t.Update(type, x, y, z, angle, 0, 0, 1.0f, 1.0f, stringflags, flags, tag, action, args);
 			}
 
 			// Done
@@ -309,7 +308,7 @@ namespace CodeImp.DoomBuilder.IO
 				// Read properties from stream
 				int v1 = readline.ReadUInt16();
 				int v2 = readline.ReadUInt16();
-				int flags = readline.ReadUInt16();
+				ushort flags = readline.ReadUInt16();
 				int action = readline.ReadByte();
 				args[0] = readline.ReadByte();
 				args[1] = readline.ReadByte();
@@ -334,7 +333,7 @@ namespace CodeImp.DoomBuilder.IO
 					if(Vector2D.ManhattanDistance(vertexlink[v1].Position, vertexlink[v2].Position) > 0.0001f)
 					{
 						Linedef l = map.CreateLinedef(vertexlink[v1], vertexlink[v2]);
-						l.Update(stringflags, (flags & manager.Config.LinedefActivationsFilter), new List<int> { 0 }, action, args);
+						l.Update(stringflags, flags, (flags & manager.Config.LinedefActivationsFilter), new List<int> { 0 }, action, args);
 						l.UpdateCache();
 
 						Sidedef s;
@@ -454,15 +453,8 @@ namespace CodeImp.DoomBuilder.IO
 			// Go for all things
 			foreach(Thing t in map.Things)
 			{
-				// Convert flags
-				int flags = 0;
-				foreach(KeyValuePair<string, bool> f in t.Flags)
-				{
-					int fnum;
-					if(f.Value && int.TryParse(f.Key, out fnum)) flags |= fnum;
-				}
+				t.UpdateRawFlagsFromFlags();
 
-				// Write properties to stream
 				// Write properties to stream
 				writer.Write((UInt16)t.Tag);
 				writer.Write((Int16)t.Position.x);
@@ -470,7 +462,7 @@ namespace CodeImp.DoomBuilder.IO
 				writer.Write((Int16)t.Position.z);
 				writer.Write((Int16)t.AngleDoom);
 				writer.Write((UInt16)t.Type);
-				writer.Write((UInt16)flags);
+				writer.Write(t.RawFlags);
 				writer.Write((Byte)t.Action);
 				writer.Write((Byte)t.Args[0]);
 				writer.Write((Byte)t.Args[1]);
@@ -526,16 +518,11 @@ namespace CodeImp.DoomBuilder.IO
 			// Go for all lines
 			foreach(Linedef l in map.Linedefs)
 			{
-				// Convert flags
-				int flags = 0;
-				foreach(KeyValuePair<string, bool> f in l.Flags)
-				{
-					int fnum;
-					if(f.Value && int.TryParse(f.Key, out fnum)) flags |= fnum;
-				}
+				l.UpdateRawFlagsFromFlags();
+				ushort flags = l.RawFlags;
 
 				// Add activates to flags
-				flags |= (l.Activate & manager.Config.LinedefActivationsFilter);
+				flags |= (ushort)(l.Activate & manager.Config.LinedefActivationsFilter);
 				
 				// Write properties to stream
 				writer.Write((UInt16)vertexids[l.Start]);

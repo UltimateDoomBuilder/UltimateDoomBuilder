@@ -358,9 +358,28 @@ namespace CodeImp.DoomBuilder.Data
 			try
 			{
 				// Find in voxels directory
-				string path = Path.Combine(VOXELS_DIR, Path.GetDirectoryName(name));
-				string filename = FindFirstFile(path, Path.GetFileName(name), true);
-				if((filename != null) && FileExists(filename))
+				string filename = null;
+
+				// There are different places we have to look for the file, depending on how it was defined. Right now
+				// there's no way to know if the definition comes from VOXELDEF or spreite replacement, so we're assuming
+				// it's from VOXELDEF if there's an extension given.
+				// - Auto-detect for sprite name: must be in the "voxels" directory
+				// - Just given as file name without path in VOXELDEF: must be in the root directory
+				// - Given as full path and file name in VOXELDEF: must be in exactly that spot
+				string path = Path.GetDirectoryName(name);
+				if (string.IsNullOrWhiteSpace(path))
+				{
+					if (string.IsNullOrWhiteSpace(Path.GetExtension(name)))
+						filename = FindFirstFile(VOXELS_DIR, Path.GetFileName(name), true);
+					else
+						filename = FindFirstFileWithExt("", Path.GetFileName(name), true);
+				}
+				else
+				{
+					filename = FindFirstFileWithExt(path, Path.GetFileName(name), false);
+				}
+
+				if ((filename != null) && FileExists(filename))
 				{
 					voxellocation = location.GetDisplayName();
 					return LoadFile(filename);

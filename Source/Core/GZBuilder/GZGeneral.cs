@@ -120,17 +120,17 @@ namespace CodeImp.DoomBuilder.GZBuilder
             [LightDefClass("vavoomlightcolor")]
             VAVOOM_COLORED,
 
-            [LightDefRenderStyle(LightRenderStyle.STATIC)]
-            [LightDefNum(9876)]
-            [LightDefClass("staticpointlight")]
-            [LightDefModifier(LightModifier.NORMAL)]
-            POINT_STATIC,
+            [LightDefRenderStyle(LightRenderStyle.LIGHTMAP)]
+            [LightDefNum(9876, 9877, 9878, 9879)]
+            [LightDefClass("pointlighttraceattenuated", "pointlightpulsetraceattenuated", "pointlightflickertraceattenuated", "pointlightflickerrandomtraceattenuated")]
+            [LightDefModifier(LightModifier.NORMAL, LightModifier.PULSE, LightModifier.FLICKER, LightModifier.FLICKERRANDOM)]
+            POINT_LIGHTMAP,
 
-            [LightDefRenderStyle(LightRenderStyle.STATIC)]
-            [LightDefNum(9881)]
-            [LightDefClass("staticspotlight")]
-            [LightDefModifier(LightModifier.NORMAL)]
-            SPOT_STATIC,
+            [LightDefRenderStyle(LightRenderStyle.LIGHTMAP)]
+            [LightDefNum(9881, 9882, 9883, 9884)]
+            [LightDefClass("spotlighttraceattenuated", "spotlightpulsetraceattenuated", "spotlightflickertraceattenuated", "spotlightflickerrandomtraceattenuated")]
+            [LightDefModifier(LightModifier.NORMAL, LightModifier.PULSE, LightModifier.FLICKER, LightModifier.FLICKERRANDOM)]
+            SPOT_LIGHTMAP,
 
             [LightDefRenderStyle(LightRenderStyle.NONE)]
             [LightDefNum(9890)]
@@ -150,7 +150,7 @@ namespace CodeImp.DoomBuilder.GZBuilder
             ATTENUATED = 98,
             VAVOOM = 50,
             ADDITIVE = 25,
-            STATIC = 98, // Same as attenuated
+            LIGHTMAP = 98, // Same as attenuated
             NONE = 0,
         }
 
@@ -232,14 +232,14 @@ namespace CodeImp.DoomBuilder.GZBuilder
                     case LightDef.POINT_ADDITIVE:
                     case LightDef.POINT_SUBTRACTIVE:
                     case LightDef.POINT_ATTENUATED:
-                    case LightDef.POINT_STATIC:
+                    case LightDef.POINT_LIGHTMAP:
                         LightType = LightType.POINT;
                         break;
                     case LightDef.SPOT_NORMAL:
                     case LightDef.SPOT_ADDITIVE:
                     case LightDef.SPOT_SUBTRACTIVE:
                     case LightDef.SPOT_ATTENUATED:
-                    case LightDef.SPOT_STATIC:
+                    case LightDef.SPOT_LIGHTMAP:
                         LightType = LightType.SPOT;
                         break;
                     case LightDef.VAVOOM_GENERIC:

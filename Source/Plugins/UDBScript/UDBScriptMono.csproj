@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3088C327-5FFB-49A0-8D40-58E92D89DF07}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CodeImp.DoomBuilder.UDBScript</RootNamespace>
+    <AssemblyName>UDBScript</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\..\Build\Plugins\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>
+    </DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>..\..\..\Build\Plugins\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\..\Build\Plugins\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>..\..\..\Build\Plugins\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Builder">
+      <HintPath>..\..\..\Build\Builder.exe</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Esprima">
+      <HintPath>.\Esprima.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Jint">
+      <HintPath>.\Jint.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Memory">
+      <HintPath>..\..\..\Build\System.Memory.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="API\Angle2DWrapper.cs" />
+    <Compile Include="API\BlockEntryWrapper.cs" />
+    <Compile Include="API\BlockMapContentBase.cs" />
+    <Compile Include="API\BlockMapQueryResult.cs" />
+    <Compile Include="API\BlockMapWrapper.cs" />
+    <Compile Include="API\DataWrapper.cs" />
+    <Compile Include="API\GameConfigurationWrapper.cs" />
+    <Compile Include="API\ImageInfo.cs" />
+    <Compile Include="API\PlaneWrapper.cs" />
+    <Compile Include="API\UDBWrapper.cs" />
+    <Compile Include="API\Vector3DWrapper.cs" />
+    <Compile Include="API\VisualCameraWrapper.cs" />
+    <Compile Include="UDBScriptSettingsAttribute.cs" />
+    <Compile Include="BuilderPlug.cs" />
+    <Compile Include="Controls\ScriptDockerControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ScriptDockerControl.Designer.cs">
+      <DependentUpon>ScriptDockerControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ScriptOptionsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ScriptOptionsControl.Designer.cs">
+      <DependentUpon>ScriptOptionsControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProgressInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="QueryOptions.cs" />
+    <Compile Include="RuntimeConstraint.cs" />
+    <Compile Include="ScriptInfo.cs" />
+    <Compile Include="ScriptOption.cs" />
+    <Compile Include="ScriptRunner.cs" />
+    <Compile Include="Exceptions.cs" />
+    <Compile Include="Windows\MessageForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\MessageForm.Designer.cs">
+      <DependentUpon>MessageForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\PreferencesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\PreferencesForm.Designer.cs">
+      <DependentUpon>PreferencesForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\QueryOptionsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\QueryOptionsForm.Designer.cs">
+      <DependentUpon>QueryOptionsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\ScriptRunnerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\ScriptRunnerForm.Designer.cs">
+      <DependentUpon>ScriptRunnerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\UDBScriptErrorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\UDBScriptErrorForm.Designer.cs">
+      <DependentUpon>UDBScriptErrorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="API\IMoreTags.cs" />
+    <Compile Include="API\Line2DWrapper.cs" />
+    <Compile Include="API\LinedefWrapper.cs" />
+    <Compile Include="API\MapElementArgumentsWrapper.cs" />
+    <Compile Include="API\MapElementWrapper.cs" />
+    <Compile Include="API\MapWrapper.cs" />
+    <Compile Include="API\SectorWrapper.cs" />
+    <Compile Include="API\SidedefWrapper.cs" />
+    <Compile Include="API\ThingWrapper.cs" />
+    <Compile Include="API\Vector2DWrapper.cs" />
+    <Compile Include="API\VertexWrapper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Controls\ScriptDockerControl.resx">
+      <DependentUpon>ScriptDockerControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ScriptOptionsControl.resx">
+      <DependentUpon>ScriptOptionsControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Actions.cfg" />
+    <EmbeddedResource Include="Windows\MessageForm.resx">
+      <DependentUpon>MessageForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\PreferencesForm.resx">
+      <DependentUpon>PreferencesForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\QueryOptionsForm.resx">
+      <DependentUpon>QueryOptionsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\ScriptRunnerForm.resx">
+      <DependentUpon>ScriptRunnerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\UDBScriptErrorForm.resx">
+      <DependentUpon>UDBScriptErrorForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Folder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Script.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BuilderModes\BuilderModesMono.csproj">
+      <Project>{B42D5AA0-F9A6-4234-9C4B-A05B11A64851}</Project>
+      <Name>BuilderModes</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\SearchClear.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>cp $(ProjectDir)Jint.dll $(TargetDir)Dependencies\
+cp $(ProjectDir)Esprima.dll $(TargetDir)Dependencies\</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

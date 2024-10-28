@@ -617,7 +617,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		{
 			if(!resourcesunloaded)
 			{
-				ShaderName pass = Renderer.FullBrightness ? ShaderName.display2d_fullbright : ShaderName.display2d_normal; //mxd
+				ShaderName pass = (Renderer.FullBrightness && General.Map.Renderer2D.ViewMode != ViewMode.Brightness) ? ShaderName.display2d_fullbright : ShaderName.display2d_normal; //mxd
 				foreach(KeyValuePair<ImageData, List<SurfaceEntry>> imgsurfaces in surfaces)
 				{
                     graphics.SetShader(pass);

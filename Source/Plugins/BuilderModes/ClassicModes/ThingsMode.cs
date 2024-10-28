@@ -79,6 +79,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// Things that will be edited
 		private ICollection<Thing> editthings;
 
+		// Autosave
+		private bool allowautosave;
+
 		#endregion
 
 		#region ================== Properties
@@ -177,6 +180,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			UpdateSelectionInfo(); //mxd
 			UpdateHelperObjects(); //mxd
 			SetupSectorLabels(); //mxd
+
+			// By default we allow autosave
+			allowautosave = true;
 		}
 
 		// Mode disengages
@@ -552,10 +558,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						// Edit only when preferred
 						if(!thinginserted || BuilderPlug.Me.EditNewThing)
 						{
+							// Prevent autosave while the editing dialog is shown
+							allowautosave = false;
+
 							//mxd. Show realtime thing edit dialog
 							General.Interface.OnEditFormValuesChanged += thingEditForm_OnValuesChanged;
 							DialogResult result = General.Interface.ShowEditThings(editthings);
 							General.Interface.OnEditFormValuesChanged -= thingEditForm_OnValuesChanged;
+
+							allowautosave = true;
 
 							//mxd. Update helper lines
 							UpdateHelperObjects();
@@ -828,6 +839,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 		}
 
+		public override bool OnAutoSaveBegin()
+		{
+			return allowautosave;
+		}
+
+
 		//mxd. Check if any selected thing is outside of map boundary
 		private static bool CanDrag(ICollection<Thing> dragthings) 
 		{
@@ -994,7 +1011,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				double closest2 = Vector2D.DistanceSq(t2.Position, targetpoint);
 
 				// Return closer one
-				return (int)(closest1 - closest2);
+				// biwa: the difference between closest1 and closest2 can exceed the capacity of int, and that
+				// sometimes seem to cause problems, resulting in the sorting to throw an ArgumentException
+				// because of inconsistent results. Making sure to only return -1, 0, or 1 seems to fix the issue
+				// See https://github.com/UltimateDoomBuilder/UltimateDoomBuilder/issues/1053
+				return (closest1 - closest2) < 0 ? -1 : ((closest1 - closest2) > 0 ? 1 : 0);
 			});
 
 			return result;

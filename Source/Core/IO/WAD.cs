@@ -56,6 +56,7 @@ namespace CodeImp.DoomBuilder.IO
 			"9b07b02ab3c275a6a7570c3f73cc20d63a0e3833",  // Doom Ud
 			"37de4510216eb3ce9a835dd939109443375d10c5",  // Doom Xbla
 			"1d1d4f69fe14fa255228d8243470678b1b4efdc5",  // Doom Xbox
+			"997bae5e5a190c5bb3b1fb9e7e3e75b2da88cb27",  // Doom 2024 Re-Re-Release
 
 			// Doom 2
 			"a4ce5128d57cb129fdd1441c12b58245be55c8ce",  // Doom2 1.666g
@@ -75,6 +76,7 @@ namespace CodeImp.DoomBuilder.IO
 			"1c91d86cd8a2f3817227986503a6672a5e1613f0",  // Doom2 Xbox
 			"b7ba1c68631023ea1aab1d7b9f7f6e9afc508f39",  // Doom2 Xbox360bfg
 			"2cda310805397ae44059bbcaed3cd602f4864a82",  // Doom2 Zodiac
+			"c745f04a6abc2e6d2a2d52382f45500dd2a260be",  // Doom 2 2024 Re-Re-Release
 
 			// Plutonia
 			"90361e2a538d2388506657252ae41aceeb1ba360",  // Plutonia 1.9
@@ -83,6 +85,7 @@ namespace CodeImp.DoomBuilder.IO
 			"327f8c41ebd4138354e9fca63cebbbd1b9489749",  // Plutonia Psn Usa
 			"54e27b5791fbc5677bf7e83c1de3a92ea3ef935b",  // Plutonia Unity 1.0
 			"20fd23ee410c466b263a741bbd53bbef573ab47d",  // Plutonia Unity 1.3
+			"816c7c6b0098f66c299c9253f62bd908456efb63",  // Plutonia 2024 Re-Re-Release
 
 			// TNT
 			"9fbc66aedef7fe3bae0986cdb9323d2b8db4c9d3",  // Tnt 1.9
@@ -91,6 +94,7 @@ namespace CodeImp.DoomBuilder.IO
 			"139e26d801a64b404b8d898defca10227a61867b",  // Tnt Psn Usa
 			"503271390606ebded04a2cfaa1a4e249c0313a9d",  // Tnt Unity 1.0
 			"ca0f0495a6c2813b49620202774c56560d6d7621",  // Tnt Unity 1.3
+			"9820e2a3035f0cdd87f69a7d57c59a7a267c9409",  // Tnt 2024 Re-Re-Release
 
 			// Heretic
 			"b5a6cc79cde48d97905b44282e82c4c966a23a87",  // Heretic 1.0

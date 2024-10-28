@@ -130,8 +130,10 @@ namespace CodeImp.DoomBuilder.Controls
 			// Add all fields
 			foreach(UniversalFieldInfo uf in list) 
 			{
-				if(uifields.ContainsKey(uf.Name)) continue; //mxd
-				fieldslist.Rows.Add(new FieldsEditorRow(fieldslist, uf));
+				//if(uifields.ContainsKey(uf.Name)) continue; //mxd
+				// Only add fields that are not managed by the UI
+				if(!uf.Managed)
+					fieldslist.Rows.Add(new FieldsEditorRow(fieldslist, uf));
 			}
 
 			// Sort fields

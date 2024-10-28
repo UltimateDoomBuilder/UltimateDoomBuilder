@@ -608,7 +608,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					case GZGeneral.LightRenderStyle.VAVOOM: lightOffsets[0]++; break;
 					case GZGeneral.LightRenderStyle.ADDITIVE: lightOffsets[2]++; break;
                     case GZGeneral.LightRenderStyle.SUBTRACTIVE: lightOffsets[3]++; break;
-					case GZGeneral.LightRenderStyle.STATIC: // Static lights look the same as attenuated lights
+					case GZGeneral.LightRenderStyle.LIGHTMAP: // Static lights look the same as attenuated lights
 					default: lightOffsets[1]++; break; // attenuated
 				}
 			}
@@ -832,9 +832,12 @@ namespace CodeImp.DoomBuilder.Rendering
             Vector4f[] lightPosAndRadius = new Vector4f[MAX_DYNLIGHTS_PER_SURFACE];
             Vector4f[] lightOrientation = new Vector4f[MAX_DYNLIGHTS_PER_SURFACE];
             Vector2f[] light2Radius = new Vector2f[MAX_DYNLIGHTS_PER_SURFACE];
+            Vector2f[] lightStrengthAndLinearity = new Vector2f[MAX_DYNLIGHTS_PER_SURFACE];
 
             graphics.SetUniform(UniformName.lightsEnabled, lights.Count > 0);
             graphics.SetUniform(UniformName.ignoreNormals, false);
+			
+            graphics.SetUniform(UniformName.useLightStrength, General.Map.Data.MapInfo.LightAttenuationMode == "InverseSquare");
 
             bool hadlights = false;
 
@@ -887,6 +890,10 @@ namespace CodeImp.DoomBuilder.Rendering
                             }
                             else lightOrientation[lightIndex].W = 0f;
 
+							float diameter = light.LightRadius * 2;
+
+							lightStrengthAndLinearity[lightIndex] = new Vector2f(Math.Min(1500.0f, (diameter * diameter) / 10), light.LightLinearity);
+
                             lightIndex++;
 
                             if (lightIndex >= lightColor.Length)
@@ -908,6 +915,7 @@ namespace CodeImp.DoomBuilder.Rendering
                             graphics.SetUniform(UniformName.lightPosAndRadius, lightPosAndRadius);
                             graphics.SetUniform(UniformName.lightOrientation, lightOrientation);
                             graphics.SetUniform(UniformName.light2Radius, light2Radius);
+                            graphics.SetUniform(UniformName.lightStrengthAndLinearity, lightStrengthAndLinearity);
                         }
                     }
 
@@ -1160,9 +1168,12 @@ namespace CodeImp.DoomBuilder.Rendering
             Vector4f[] lightPosAndRadius = new Vector4f[MAX_DYNLIGHTS_PER_SURFACE];
             Vector4f[] lightOrientation = new Vector4f[MAX_DYNLIGHTS_PER_SURFACE];
             Vector2f[] light2Radius = new Vector2f[MAX_DYNLIGHTS_PER_SURFACE];
+            Vector2f[] lightStrengthAndLinearity = new Vector2f[MAX_DYNLIGHTS_PER_SURFACE];
 
             graphics.SetUniform(UniformName.lightsEnabled, lights.Count > 0);
             graphics.SetUniform(UniformName.ignoreNormals, false);
+			
+            graphics.SetUniform(UniformName.useLightStrength, General.Map.Data.MapInfo.LightAttenuationMode == "InverseSquare");
 
             bool hadlights = false;
 
@@ -1191,6 +1202,10 @@ namespace CodeImp.DoomBuilder.Rendering
                         }
                         else lightOrientation[lightIndex].W = 0f;
 
+						float diameter = light.LightRadius * 2;
+
+						lightStrengthAndLinearity[lightIndex] = new Vector2f(Math.Min(1500.0f, (diameter * diameter) / 10), light.LightLinearity);
+
                         lightIndex++;
 
                         if (lightIndex >= lightColor.Length)
@@ -1212,6 +1227,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         graphics.SetUniform(UniformName.lightPosAndRadius, lightPosAndRadius);
                         graphics.SetUniform(UniformName.lightOrientation, lightOrientation);
                         graphics.SetUniform(UniformName.light2Radius, light2Radius);
+                        graphics.SetUniform(UniformName.lightStrengthAndLinearity, lightStrengthAndLinearity);
                     }
                 }
 
@@ -1529,9 +1545,12 @@ namespace CodeImp.DoomBuilder.Rendering
             Vector4f[] lightPosAndRadius = new Vector4f[MAX_DYNLIGHTS_PER_SURFACE];
             Vector4f[] lightOrientation = new Vector4f[MAX_DYNLIGHTS_PER_SURFACE];
             Vector2f[] light2Radius = new Vector2f[MAX_DYNLIGHTS_PER_SURFACE];
+            Vector2f[] lightStrengthAndLinearity = new Vector2f[MAX_DYNLIGHTS_PER_SURFACE];
 
             graphics.SetUniform(UniformName.lightsEnabled, lights.Count > 0);
             graphics.SetUniform(UniformName.ignoreNormals, true);
+			
+            graphics.SetUniform(UniformName.useLightStrength, General.Map.Data.MapInfo.LightAttenuationMode == "InverseSquare");
 
             bool hadlights = false;
 
@@ -1655,6 +1674,10 @@ namespace CodeImp.DoomBuilder.Rendering
                         }
                         else lightOrientation[lightIndex].W = 0f;
 
+						float diameter = light.LightRadius * 2;
+
+						lightStrengthAndLinearity[lightIndex] = new Vector2f(Math.Min(1500.0f, (diameter * diameter) / 10), light.LightLinearity);
+
                         lightIndex++;
 
                         if (lightIndex >= lightColor.Length)
@@ -1676,6 +1699,7 @@ namespace CodeImp.DoomBuilder.Rendering
                         graphics.SetUniform(UniformName.lightPosAndRadius, lightPosAndRadius);
                         graphics.SetUniform(UniformName.lightOrientation, lightOrientation);
                         graphics.SetUniform(UniformName.light2Radius, light2Radius);
+                        graphics.SetUniform(UniformName.lightStrengthAndLinearity, lightStrengthAndLinearity);
                     }
                 }
 
@@ -1744,6 +1768,23 @@ namespace CodeImp.DoomBuilder.Rendering
             return (float)(t * t * (3.0 - 2.0 * t));
         }
 
+		private float clamp(float v, float mn, float mx)
+		{
+			return Math.Min(Math.Max(v, mn), mx);
+		}
+
+		private float mix(float a, float b, float v)
+		{
+			return a * (1 - v) + b * v;
+		}
+
+		float inverseSquareDistanceAttenuation(float dist, float radius, float strength, float linearity)
+		{
+			float a = dist / radius;
+			float b = clamp(1.0f - a * a * a * a, 0.0f, 1.0f);
+			return mix((b * b) / (dist * dist + 1.0f) * strength, clamp((radius - dist) / radius, 0.0f, 1.0f), linearity);
+		}
+
 		//mxd. This gets color from dynamic lights based on distance to thing. 
 		//thing position must be in absolute cordinates 
 		//(thing.Position.Z value is relative to floor of the sector the thing is in)
@@ -1763,7 +1804,19 @@ namespace CodeImp.DoomBuilder.Rendering
                     int sign = (lt.LightType.LightRenderStyle == GZGeneral.LightRenderStyle.SUBTRACTIVE ? -1 : 1);
                     Vector3f L = (t.Center - lt.Center);
                     float dist = L.Length();
-                    float scaler = 1 - dist / lt.LightRadius * lt.LightColor.Alpha;
+					float attn;
+					
+					if(General.Map.Data.MapInfo.LightAttenuationMode == "InverseSquare")
+					{
+						float diameter = lt.LightRadius * 2;
+						attn = inverseSquareDistanceAttenuation(Math.Max(dist, (float)Math.Sqrt(lt.LightRadius) * 2), diameter, Math.Min(1500.0f, (diameter * diameter) / 10), lt.LightLinearity);
+					}
+					else
+					{
+						attn = 1 - dist / lt.LightRadius;
+					}
+
+                    float scaler = attn * lt.LightColor.Alpha;
 
                     if (lt.LightType.LightType == GZGeneral.LightType.SPOT)
                     {

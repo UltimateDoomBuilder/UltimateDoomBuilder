@@ -1564,7 +1564,7 @@ namespace CodeImp.DoomBuilder.Data
 			foreach(string spritefile in files)
 			{
 				ImageData img = new FileImage(Path.GetFileNameWithoutExtension(spritefile).ToLowerInvariant(), spritefile);
-				img.LoadImageNow();
+				img.LoadImageNow(false);
 				img.AllowUnload = false;
 				name = INTERNAL_PREFIX + img.Name;
 				long hash = Lump.MakeLongName(name, true); //mxd

@@ -431,77 +431,108 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if (!General.Map.Config.SidedefTextureSkewing)
 				return;
 
-			string skewtype = Sidedef.Fields.GetValue("skew_middle_type", "none");
-
-			if ((skewtype == "front_floor" || skewtype == "front_ceiling" || skewtype == "back_floor" || skewtype == "back_ceiling") && Texture != null)
+			if (General.Map.Config.SkewStyle == Config.SkewStyle.GZDoom)
 			{
-				double leftz, rightz;
+				int skewtype = Sidedef.Fields.GetValue("skew_middle", 0);
 
-				if(skewtype == "front_floor")
+				if (skewtype > 0 && skewtype <= 4 && Texture != null)
 				{
-					if (Sidedef.IsFront)
-					{
-						Plane plane = Sector.GetSectorData().Floor.plane;
-						leftz = plane.GetZ(Sidedef.Line.Start.Position);
-						rightz = plane.GetZ(Sidedef.Line.End.Position);
-					}
-					else
-					{
-						Plane plane = mode.GetSectorData(Sidedef.Other.Sector).Floor.plane;
-						leftz = plane.GetZ(Sidedef.Line.End.Position);
-						rightz = plane.GetZ(Sidedef.Line.Start.Position);
-					}
-				}
-				else if(skewtype == "front_ceiling")
-				{
-					if (Sidedef.IsFront)
-					{
-						Plane plane = Sector.GetSectorData().Ceiling.plane;
-						leftz = plane.GetZ(Sidedef.Line.Start.Position);
-						rightz = plane.GetZ(Sidedef.Line.End.Position);
-					}
-					else
-					{
-						Plane plane = mode.GetSectorData(Sidedef.Other.Sector).Ceiling.plane;
-						leftz = plane.GetZ(Sidedef.Line.End.Position);
-						rightz = plane.GetZ(Sidedef.Line.Start.Position);
-					}
-				}
-				else if (skewtype == "back_floor")
-				{
-					if (Sidedef.IsFront)
-					{
-						Plane plane = mode.GetSectorData(Sidedef.Other.Sector).Floor.plane;
-						leftz = plane.GetZ(Sidedef.Line.Start.Position);
-						rightz = plane.GetZ(Sidedef.Line.End.Position);
-					}
-					else
-					{
-						Plane plane = Sector.GetSectorData().Floor.plane;
-						leftz = plane.GetZ(Sidedef.Line.End.Position);
-						rightz = plane.GetZ(Sidedef.Line.Start.Position);
-					}
-				}
-				else // Back ceiling
-				{
-					if (Sidedef.IsFront)
-					{
-						Plane plane = mode.GetSectorData(Sidedef.Other.Sector).Ceiling.plane;
-						leftz = plane.GetZ(Sidedef.Line.Start.Position);
-						rightz = plane.GetZ(Sidedef.Line.End.Position);
-					}
-					else
-					{
-						Plane plane = Sector.GetSectorData().Ceiling.plane;
-						leftz = plane.GetZ(Sidedef.Line.End.Position);
-						rightz = plane.GetZ(Sidedef.Line.Start.Position);
-					}
-				}
+					Plane plane;
+					Vector2D start = Sidedef.IsFront ? Sidedef.Line.Start.Position : Sidedef.Line.End.Position;
+					Vector2D end = Sidedef.IsFront ? Sidedef.Line.End.Position : Sidedef.Line.Start.Position;
 
-				skew = new Vector2f(
-					Vertices.Min(v => v.u), // Get the lowest horizontal texture offset
-					(float)((rightz - leftz) / Sidedef.Line.Length * ((double)Texture.Width / Texture.Height))
-					);
+					if (skewtype == 1)
+						plane = Sector.GetSectorData().Floor.plane;
+					else if (skewtype == 2)
+						plane = Sector.GetSectorData().Ceiling.plane;
+					else if (skewtype == 3)
+						plane = mode.GetSectorData(Sidedef.Other.Sector).Floor.plane;
+					else // skewtype 4
+						plane = mode.GetSectorData(Sidedef.Other.Sector).Ceiling.plane;
+
+					double leftz = plane.GetZ(start);
+					double rightz = plane.GetZ(end);
+
+					skew = new Vector2f(
+						Vertices.Min(v => v.u), // Get the lowest horizontal texture offset
+						(float)((rightz - leftz) / Sidedef.Line.Length * ((double)Texture.Width / Texture.Height) * Sidedef.Fields.GetValue("scaley_mid", 1.0) / Sidedef.Fields.GetValue("scalex_mid", 1.0))
+						);
+				}
+			}
+			else if (General.Map.Config.SkewStyle == Config.SkewStyle.EternityEngine)
+			{
+				string skewtype = Sidedef.Fields.GetValue("skew_middle_type", "none");
+
+				if ((skewtype == "front_floor" || skewtype == "front_ceiling" || skewtype == "back_floor" || skewtype == "back_ceiling") && Texture != null)
+				{
+					double leftz, rightz;
+
+					if (skewtype == "front_floor")
+					{
+						if (Sidedef.IsFront)
+						{
+							Plane plane = Sector.GetSectorData().Floor.plane;
+							leftz = plane.GetZ(Sidedef.Line.Start.Position);
+							rightz = plane.GetZ(Sidedef.Line.End.Position);
+						}
+						else
+						{
+							Plane plane = mode.GetSectorData(Sidedef.Other.Sector).Floor.plane;
+							leftz = plane.GetZ(Sidedef.Line.End.Position);
+							rightz = plane.GetZ(Sidedef.Line.Start.Position);
+						}
+					}
+					else if (skewtype == "front_ceiling")
+					{
+						if (Sidedef.IsFront)
+						{
+							Plane plane = Sector.GetSectorData().Ceiling.plane;
+							leftz = plane.GetZ(Sidedef.Line.Start.Position);
+							rightz = plane.GetZ(Sidedef.Line.End.Position);
+						}
+						else
+						{
+							Plane plane = mode.GetSectorData(Sidedef.Other.Sector).Ceiling.plane;
+							leftz = plane.GetZ(Sidedef.Line.End.Position);
+							rightz = plane.GetZ(Sidedef.Line.Start.Position);
+						}
+					}
+					else if (skewtype == "back_floor")
+					{
+						if (Sidedef.IsFront)
+						{
+							Plane plane = mode.GetSectorData(Sidedef.Other.Sector).Floor.plane;
+							leftz = plane.GetZ(Sidedef.Line.Start.Position);
+							rightz = plane.GetZ(Sidedef.Line.End.Position);
+						}
+						else
+						{
+							Plane plane = Sector.GetSectorData().Floor.plane;
+							leftz = plane.GetZ(Sidedef.Line.End.Position);
+							rightz = plane.GetZ(Sidedef.Line.Start.Position);
+						}
+					}
+					else // Back ceiling
+					{
+						if (Sidedef.IsFront)
+						{
+							Plane plane = mode.GetSectorData(Sidedef.Other.Sector).Ceiling.plane;
+							leftz = plane.GetZ(Sidedef.Line.Start.Position);
+							rightz = plane.GetZ(Sidedef.Line.End.Position);
+						}
+						else
+						{
+							Plane plane = Sector.GetSectorData().Ceiling.plane;
+							leftz = plane.GetZ(Sidedef.Line.End.Position);
+							rightz = plane.GetZ(Sidedef.Line.Start.Position);
+						}
+					}
+
+					skew = new Vector2f(
+						Vertices.Min(v => v.u), // Get the lowest horizontal texture offset
+						(float)((rightz - leftz) / Sidedef.Line.Length * ((double)Texture.Width / Texture.Height))
+						);
+				}
 			}
 		}
 
@@ -515,39 +546,91 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		/// <returns>The top and bottom clipping planes</returns>
 		private (Plane, Plane) CreateSkewClipPlanes(double textop, double texbottom, SectorData sd, SectorData osd)
 		{
-			string skewtype = Sidedef.Fields.GetValue("skew_middle_type", "none");
-			if ((skewtype == "front_floor" || skewtype == "front_ceiling" || skewtype == "back_floor" || skewtype == "back_ceiling") && Texture != null)
+			if (General.Map.Config.SkewStyle == Config.SkewStyle.GZDoom)
 			{
-				double diff;
-				Line2D line;
+				int skewtype = Sidedef.Fields.GetValue("skew_middle", 0);
 
-				if (skewtype == "front_ceiling")
-					(diff, line) = GetZDiff(false, true);
-				else if(skewtype == "back_ceiling")
-					(diff, line) = GetZDiff(false, false);
-				else if(skewtype == "front_floor")
-					(diff, line) = GetZDiff(true, true);
-				else // back_floor
-					(diff, line) = GetZDiff(true, false);
+				if(skewtype > 0 && skewtype <= 4)
+				{
+					double diff;
+					Line2D line;
 
-				Vector2D v3 = line.GetPerpendicular() * 10 + line.v1;
+					if (skewtype == 1)
+						(diff, line) = GetZDiff(true, Sidedef.IsFront);
+					else if(skewtype == 2)
+						(diff, line) = GetZDiff(false, Sidedef.IsFront);
+					else if(skewtype == 3)
+						(diff, line) = GetZDiff(true, !Sidedef.IsFront);
+					else // skewtype 4
+						(diff, line) = GetZDiff(false, !Sidedef.IsFront);
 
-				Plane topplane = new Plane(
-					new Vector3D(line.v1, textop),
-					new Vector3D(line.v2, textop + diff),
-					new Vector3D(v3, textop),
-					false);
+					Vector2D v3 = line.GetPerpendicular() * 10 + line.v1;
 
-				Plane bottomplane = new Plane(
-					new Vector3D(line.v1, texbottom),
-					new Vector3D(line.v2, texbottom + diff),
-					new Vector3D(v3, textop),
-					true);
+					Plane topplane = new Plane(
+						new Vector3D(line.v1, textop),
+						new Vector3D(line.v2, textop + diff),
+						new Vector3D(v3, textop),
+						false);
 
-				return (topplane, bottomplane);
+					Plane bottomplane = new Plane(
+						new Vector3D(line.v1, texbottom),
+						new Vector3D(line.v2, texbottom + diff),
+						new Vector3D(v3, textop),
+						true);
 
+					return (topplane, bottomplane);
+				}
+				else // Invalid skew type
+				{
+					return (
+						new Plane(new Vector3D(0, 0, -1), textop),
+						new Plane(new Vector3D(0, 0, 1), -texbottom)
+					);
+				}
 			}
-			else // Invalid skew type
+			else if (General.Map.Config.SkewStyle == Config.SkewStyle.EternityEngine)
+			{
+				string skewtype = Sidedef.Fields.GetValue("skew_middle_type", "none");
+				if ((skewtype == "front_floor" || skewtype == "front_ceiling" || skewtype == "back_floor" || skewtype == "back_ceiling") && Texture != null)
+				{
+					double diff;
+					Line2D line;
+
+					if (skewtype == "front_ceiling")
+						(diff, line) = GetZDiff(false, true);
+					else if (skewtype == "back_ceiling")
+						(diff, line) = GetZDiff(false, false);
+					else if (skewtype == "front_floor")
+						(diff, line) = GetZDiff(true, true);
+					else // back_floor
+						(diff, line) = GetZDiff(true, false);
+
+					Vector2D v3 = line.GetPerpendicular() * 10 + line.v1;
+
+					Plane topplane = new Plane(
+						new Vector3D(line.v1, textop),
+						new Vector3D(line.v2, textop + diff),
+						new Vector3D(v3, textop),
+						false);
+
+					Plane bottomplane = new Plane(
+						new Vector3D(line.v1, texbottom),
+						new Vector3D(line.v2, texbottom + diff),
+						new Vector3D(v3, textop),
+						true);
+
+					return (topplane, bottomplane);
+
+				}
+				else // Invalid skew type
+				{
+					return (
+						new Plane(new Vector3D(0, 0, -1), textop),
+						new Plane(new Vector3D(0, 0, 1), -texbottom)
+					);
+				}
+			}
+			else // No matching skew style
 			{
 				return (
 					new Plane(new Vector3D(0, 0, -1), textop),

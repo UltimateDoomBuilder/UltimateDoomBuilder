@@ -24,6 +24,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -565,7 +566,7 @@ namespace CodeImp.DoomBuilder.Windows
 						configfile = General.AutoLoadConfig;
 
 					if (string.IsNullOrEmpty(configfile)) configfile = mapsettings.ReadSetting("gameconfig", "");
-					if(configfile.Trim().Length == 0)
+					if(configfile.Trim().Length == 0 || !General.ConfigurationInfoExist(configfile))
 					{
 						showdialog = true;
 					}
@@ -1263,24 +1264,6 @@ namespace CodeImp.DoomBuilder.Windows
 				Cursor.Position = display.PointToScreen(new Point(display.ClientSize.Width / 2, display.ClientSize.Height / 2)); //mxd
 				Cursor.Clip = display.RectangleToScreen(display.ClientRectangle);
 				Cursor.Hide();
-				
-				#if MONO_WINFORMS
-				// A beautiful transparent cursor, just for you mono!
-				string emptycursor =
-					"AAACAAEAICACAAAAAAAwAQAAFgAAACgAAAAgAAAAQAAAAAEAAQAAAAAAgAAAAAAAAAAAAAAAAgAA" +
-					"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-					"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-					"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////////////////////////////" +
-					"////////////////////////////////////////////////////////////////////////////" +
-					"//////////////////////////////////////////////////////8=";
-				using (var stream = new MemoryStream(System.Convert.FromBase64String(emptycursor)))
-				{
-					var cursor = new Cursor(stream);
-					Cursor.Current = cursor;
-					display.Cursor = cursor;
-				}
-				Application.DoEvents();
-				#endif
 			}
 		}
 
@@ -1297,11 +1280,6 @@ namespace CodeImp.DoomBuilder.Windows
 				// Release and show the mouse
 				Cursor.Clip = Rectangle.Empty;
 				Cursor.Position = display.PointToScreen(new Point(display.ClientSize.Width / 2, display.ClientSize.Height / 2));
-				#if MONO_WINFORMS
-				Cursor.Current = Cursors.Default;
-				display.Cursor = Cursors.Default;
-				Application.DoEvents();
-				#endif
 				Cursor.Show();
 			}
 		}
@@ -1575,7 +1553,15 @@ namespace CodeImp.DoomBuilder.Windows
 		// This updates the skills list
 		private void UpdateSkills()
 		{
-			// Clear list
+			// Clear list. Mono Winforms apparently tries to redraw the PlaceholderToolStripTextBox
+			// after it got removed, so let us manually dispose it, which seems to fix the probelm.
+			for (int i=0; i < buttontest.DropDownItems.Count; i++)
+			{
+				if (buttontest.DropDownItems[i] is PlaceholderToolStripTextBox item)
+				{
+					item.Dispose();
+				}
+			}
 			buttontest.DropDownItems.Clear();
 
 			// Map loaded?
@@ -3616,6 +3602,9 @@ namespace CodeImp.DoomBuilder.Windows
 		[BeginAction("preferences")]
 		internal void ShowPreferences()
 		{
+			// Remember the old autostave state, so that we can enable/disable it
+			bool oldautosavestate = General.Settings.Autosave;
+
 			// Show preferences dialog
 			PreferencesForm prefform = new PreferencesForm();
 			if(prefform.ShowDialog(this) == DialogResult.OK)
@@ -3638,6 +3627,15 @@ namespace CodeImp.DoomBuilder.Windows
 					General.Map.Graphics.SetupSettings();
 					General.Map.UpdateConfiguration();
 					if(prefform.ReloadResources) General.Actions.InvokeAction("builder_reloadresources");
+
+					// Autosave stats was changed, so we have to enable or disable it
+					if(oldautosavestate != General.Settings.Autosave)
+					{
+						if (General.Settings.Autosave)
+							General.AutoSaver.InitializeTimer();
+						else
+							General.AutoSaver.StopTimer();
+					}
 				}
 				
 				// Redraw display
@@ -4160,14 +4158,41 @@ namespace CodeImp.DoomBuilder.Windows
 		// Returns the new texture name or the same texture name when cancelled
 		public string BrowseTexture(IWin32Window owner, string initialvalue)
 		{
-			return TextureBrowserForm.Browse(owner, initialvalue, false);//mxd
+
+			DisableProcessing();
+			#if MONO_WINFORMS
+			//Mono's Winforms treat dialogs a little differently
+			//  they don't implicitly take focus from the parent window
+			//  and keyboard input from focus window isn't reset when the dialog takes focus
+			BreakExclusiveMouseInput();
+			ReleaseAllKeys();
+			#endif
+			string tex = TextureBrowserForm.Browse(owner, initialvalue, false);//mxd
+			#if MONO_WINFORMS
+			ResumeExclusiveMouseInput();
+			#endif
+			EnableProcessing();
+			return tex;
 		}
 
 		// This browses for a flat
 		// Returns the new flat name or the same flat name when cancelled
 		public string BrowseFlat(IWin32Window owner, string initialvalue)
 		{
-			return TextureBrowserForm.Browse(owner, initialvalue, true); //mxd. was FlatBrowserForm
+			DisableProcessing();
+			#if MONO_WINFORMS
+			//Mono's Winforms treat dialogs a little differently
+			//  they don't implicitly take focus from the parent window
+			//  and keyboard input from focus window isn't reset when the dialog takes focus
+			BreakExclusiveMouseInput();
+			ReleaseAllKeys();
+			#endif
+			string tex = TextureBrowserForm.Browse(owner, initialvalue, true); //mxd. was FlatBrowserForm
+			#if MONO_WINFORMS
+			ResumeExclusiveMouseInput();
+			#endif
+			EnableProcessing();
+			return tex;
 		}
 		
 		// This browses the lindef types
@@ -4646,6 +4671,9 @@ namespace CodeImp.DoomBuilder.Windows
 		//mxd
 		internal void ResetClock()
 		{
+			// Let the autosaver know that the clock is about to be reset
+			General.AutoSaver.BeforeClockReset();
+
 			Clock.Reset();
 			lastupdatetime = 0;
 			

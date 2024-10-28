@@ -24,9 +24,11 @@ namespace CodeImp.DoomBuilder.ZDoom
 			public bool IsMixin { get; internal set; }
 			public bool IsExtension { get; internal set; }
 			public List<ZScriptClassStructure> Extensions { get; internal set; }
+			public bool IsFinal { get; internal set; }
+			public List<string> PermittedInheritedClassNames { get; internal set; }
 
-            // these are used for parsing and error reporting
-            public ZScriptParser Parser { get; internal set; }
+			// these are used for parsing and error reporting
+			public ZScriptParser Parser { get; internal set; }
             public Stream Stream { get; internal set; }
             public long Position { get; internal set; }
             public BinaryReader DataReader { get; internal set; }
@@ -36,7 +38,7 @@ namespace CodeImp.DoomBuilder.ZDoom
             // textresourcepath
             public string TextResourcePath { get; internal set; }
 
-            internal ZScriptClassStructure(ZScriptParser parser, string classname, string replacesname, string parentname, bool ismixin, bool isextension, DecorateCategoryInfo region)
+            internal ZScriptClassStructure(ZScriptParser parser, string classname, DecorateCategoryInfo region, string replacesname=null, string parentname=null, bool ismixin=false, bool isextension=false, bool isfinal=false, List<string> permittedinheritedclassnames=null)
             {
                 Parser = parser;
 
@@ -56,6 +58,8 @@ namespace CodeImp.DoomBuilder.ZDoom
 				IsMixin = ismixin;
 				IsExtension = isextension;
 				Extensions = new List<ZScriptClassStructure>();
+				IsFinal = isfinal;
+				PermittedInheritedClassNames = permittedinheritedclassnames == null ? new List<string>() : new List<string>(permittedinheritedclassnames); // for the "sealed" class modifier
             }
 
             internal void RestoreStreamData()
@@ -100,6 +104,20 @@ namespace CodeImp.DoomBuilder.ZDoom
                             Parser.ReportError("Fatal: Class \"" + _cname + "\" is trying to inherit from \"" + _pname + "\" which does not exist.");
                             return false;
                         }
+
+						// Make sure that the parent class isn't "final"
+						if(_pstruct.IsFinal)
+						{
+							Parser.ReportError($"Fatal: Class \"{_cname}\" is trying to inherit from \"{_pname}\" which is final");
+							return false;
+						}
+
+						// Make sure we're allowed to inherit from parent class
+						if(_pstruct.PermittedInheritedClassNames.Count > 0 && !_pstruct.PermittedInheritedClassNames.Contains(_cname.ToLowerInvariant()))
+						{
+							Parser.ReportError($"Fatal: Class \"{_cname}\" is not allowed to inherit from \"{_pname}\"");
+							return false;
+						}
                     }
                     else _pstruct = null;
                 }
@@ -730,8 +748,10 @@ namespace CodeImp.DoomBuilder.ZDoom
             ZScriptToken tok_native = null;
             ZScriptToken tok_scope = null;
             ZScriptToken tok_version = null;
+			ZScriptToken tok_final = null;
             string[] class_scope_modifiers = new string[] { "clearscope", "ui", "play" };
             string[] other_modifiers = new string[] { "abstract" };
+			List<string> permitted_inherited_class_names = new List<string>();
             while (true)
             {
                 tokenizer.SkipWhitespace();
@@ -777,6 +797,20 @@ namespace CodeImp.DoomBuilder.ZDoom
 
                         tok_native = token;
                     }
+					else if(token.Value.ToLowerInvariant() == "final")
+					{
+						if(tok_final != null)
+						{
+							ReportError("Cannot have two final keywords");
+							return false;
+						}
+
+						tok_final = token;
+					}
+					else if(token.Value.ToLowerInvariant() == "sealed")
+					{
+						permitted_inherited_class_names = ParseSealed();
+					}
                     else if (Array.IndexOf(class_scope_modifiers, token.Value.ToLowerInvariant()) >= 0)
                     {
                         if (tok_scope != null)
@@ -874,7 +908,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 			// now if we are a class, and we inherit actor, parse this entry as an actor. don't process extensions.
 			if (!isstruct && !extend && !mixin)
 			{
-				ZScriptClassStructure cls = new ZScriptClassStructure(this, tok_classname.Value, (tok_replacename != null) ? tok_replacename.Value : null, (tok_parentname != null) ? tok_parentname.Value : null, false, false, region);
+				ZScriptClassStructure cls = new ZScriptClassStructure(this, tok_classname.Value, region, (tok_replacename != null) ? tok_replacename.Value : null, (tok_parentname != null) ? tok_parentname.Value : null, false, false, tok_final != null, permitted_inherited_class_names);
 				cls.Position = cpos;
 				string clskey = cls.ClassName.ToLowerInvariant();
 				if (allclasses.ContainsKey(clskey))
@@ -904,7 +938,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 					return false;
 				}
 
-				ZScriptClassStructure cls = new ZScriptClassStructure(this, tok_classname.Value, null, null, false, true, region);
+				ZScriptClassStructure cls = new ZScriptClassStructure(this, tok_classname.Value, region, isextension: true);
 				cls.Position = cpos;
 				allclasses[clskey].Extensions.Add(cls);
 			}
@@ -912,7 +946,8 @@ namespace CodeImp.DoomBuilder.ZDoom
 			{
 				// This is a bit ugly. We're treating mixin classes as actors, even though they aren't. But otherwise the parser
 				// doesn't parse all the actor info we need
-				ZScriptClassStructure cls = new ZScriptClassStructure(this, tok_classname.Value, null, null, true, false, region);
+				// ZScriptClassStructure cls = new ZScriptClassStructure(this, tok_classname.Value, null, null, true, false, false, null, region);
+				ZScriptClassStructure cls = new ZScriptClassStructure(this, tok_classname.Value, region, ismixin: true);
 				cls.Position = cpos;
 				string clskey = cls.ClassName.ToLowerInvariant();
 				if(mixinclasses.ContainsKey(clskey))
@@ -930,9 +965,9 @@ namespace CodeImp.DoomBuilder.ZDoom
             return true;
         }
 
-        // This parses the given decorate stream
-        // Returns false on errors
-        public override bool Parse(TextResourceData data, bool clearerrors)
+		// This parses the given decorate stream
+		// Returns false on errors
+		public override bool Parse(TextResourceData data, bool clearerrors)
         {
             if (clearerrors) LastClasses = new HashSet<string>();
 
@@ -1136,7 +1171,51 @@ namespace CodeImp.DoomBuilder.ZDoom
             return true;
         }
 
-        public bool Finalize()
+		/// <summary>
+		/// Parses the class names after the "sealed" class modifier.
+		/// </summary>
+		/// <returns>A list of strings with the class names that can inherit this class</returns>
+		private List<string> ParseSealed()
+		{
+			ZScriptToken token;
+			List<string> permittedinheritedclassnames = new List<string>();
+
+			tokenizer.SkipWhitespace();
+			token = tokenizer.ExpectToken(ZScriptTokenType.OpenParen);
+			if(token == null || !token.IsValid)
+			{
+				ReportError("Expected (, got " + ((Object)token ?? "<null>").ToString());
+				return null;
+			}
+
+			while(true)
+			{
+				tokenizer.SkipWhitespace();
+				token = tokenizer.ExpectToken(ZScriptTokenType.Identifier);
+				if(token == null || !token.IsValid)
+				{
+					ReportError("Expected class name, got " + ((Object)token ?? "<null>").ToString());
+					return null;
+				}
+
+				permittedinheritedclassnames.Add(token.Value.ToLowerInvariant());
+
+				tokenizer.SkipWhitespace();
+				token = tokenizer.ExpectToken(ZScriptTokenType.Comma, ZScriptTokenType.CloseParen);
+				if(token == null || !token.IsValid)
+				{
+					ReportError("Expected , or ), got " + ((Object)token ?? "<null>").ToString());
+					return null;
+				}
+
+				if (token.Type == ZScriptTokenType.CloseParen)
+					break;
+			}
+
+			return permittedinheritedclassnames;
+		}
+
+		public bool Finalize()
         {
             ClearError();
 

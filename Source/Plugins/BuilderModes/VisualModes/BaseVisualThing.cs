@@ -124,7 +124,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						renderstyle = Thing.Fields.GetValue("renderstyle", renderstyle).ToLowerInvariant();
 					}
 
-					if((renderstyle == "add" || renderstyle == "translucent" || renderstyle == "subtract" || renderstyle == "translucentstencil") 
+					if((renderstyle == "add" || renderstyle == "translucent" || renderstyle == "subtract" || renderstyle == "translucentstencil" || renderstyle == "addshaded") 
 						&& Thing.Fields.ContainsKey("alpha"))
 					{
 						alpha = (byte)(General.Clamp(Thing.Fields.GetValue("alpha", info.Alpha), 0.0, 1.0) * 255.0);
@@ -175,6 +175,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 					case "add":
                     case "addstencil":
+					case "addshaded":
 						RenderPass = RenderPass.Additive;
 						break;
 
@@ -657,7 +658,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public void OnSelectBegin() { }
 		public void OnEditBegin() { }
 		public void OnChangeTargetBrightness(bool up) { }
-		public void OnChangeTextureOffset(int horizontal, int vertical, bool doSurfaceAngleCorrection) { }
+		public bool OnChangeTextureOffset(int horizontal, int vertical, bool doSurfaceAngleCorrection) { return true; }
 		public void OnSelectTexture() { }
 		public void OnCopyTexture() { }
 		public void OnPasteTexture() { }
@@ -673,7 +674,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public void ApplyTexture(string texture) { }
 		public void ApplyUpperUnpegged(bool set) { }
 		public void ApplyLowerUnpegged(bool set) { }
-		public void SelectNeighbours(bool select, bool withSameTexture, bool withSameHeight) { } //mxd
+		public void SelectNeighbours(bool select, bool withSameTexture, bool withSameHeight, bool stopatselected) { } //mxd
 		public virtual void OnPaintSelectEnd() { } // biwa
 
 		// Return texture name

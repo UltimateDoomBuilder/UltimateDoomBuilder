@@ -62,8 +62,17 @@ namespace CodeImp.DoomBuilder.Types
 			list = arginfo.Enum;
 		}
 
+		// When set up for an UDMF field
+		public override void SetupField(TypeHandlerAttribute attr, UniversalFieldInfo fieldinfo)
+		{
+			defaultvalue = (int)fieldinfo.Default;
+			base.SetupField(attr, fieldinfo);
+
+			// Keep enum list reference
+			list = fieldinfo.Enum;
+		}
 		#endregion
-		
+
 		#region ================== Methods
 
 		public override void Browse(IWin32Window parent)
