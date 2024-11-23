@@ -83,50 +83,18 @@ namespace CodeImp.DoomBuilder.Geometry
 		}
 
 		//mxd. Slade 3 MathStuff::angle2DRad ripoff...
-		//Returns the angle between the 2d points [p1], [p2] and [p3]
+		//Returns the angle between the 2d points [p1], [p2] and [p3] in range [0 - 2PI]
 		public static double GetAngle(Vector2D p1, Vector2D p2, Vector2D p3)
 		{
-			// From: http://stackoverflow.com/questions/3486172/angle-between-3-points
-			// modified not to bother converting to degrees
-			Vector2D ab = new Vector2D(p2.x - p1.x, p2.y - p1.y);
-			Vector2D cb = new Vector2D(p2.x - p3.x, p2.y - p3.y);
+			Vector2D ab = new Vector2D(p1.x - p2.x, p1.y - p2.y);
+			Vector2D cb = new Vector2D(p3.x - p2.x, p3.y - p2.y);
 
-			// dot product
 			double dot = (ab.x * cb.x + ab.y * cb.y);
+			double cross = (ab.x * cb.y - ab.y * cb.x);
+			double result = Math.Atan2(cross,dot);
 
-			// length square of both vectors
-			double abSqr = ab.x * ab.x + ab.y * ab.y;
-			double cbSqr = cb.x * cb.x + cb.y * cb.y;
-
-			// square of cosine of the needed angle
-			double cosSqr = dot * dot / abSqr / cbSqr;
-
-			// this is a known trigonometric equality:
-			// cos(alpha * 2) = [ cos(alpha) ]^2 * 2 - 1
-			double cos2 = 2.0f * cosSqr - 1.0f;
-
-			// Here's the only invocation of the heavy function.
-			// It's a good idea to check explicitly if cos2 is within [-1 .. 1] range
-			double alpha2 =
-				(cos2 <= -1) ? PI :
-				(cos2 >= 1) ? 0.0 :
-				Math.Acos(cos2);
-
-			double rs = alpha2 * 0.5;
-
-			// Now revolve the ambiguities.
-			// 1. If dot product of two vectors is negative - the angle is definitely
-			// above 90 degrees. Still we have no information regarding the sign of the angle.
-
-			// NOTE: This ambiguity is the consequence of our method: calculating the cosine
-			// of the double angle. This allows us to get rid of calling sqrt.
-			if(dot < 0) rs = PI - rs;
-
-			// 2. Determine the sign. For this we'll use the Determinant of two vectors.
-			double det = (ab.x * cb.y - ab.y * cb.x);
-			if(det < 0) rs = (2.0 * PI) - rs;
-
-			return rs;
+			/* if angle can be in range [-PI : PI] then returning atan 2 is enough */
+			return result < 0 ? result + PI2 : result;
 		}
 		
 		#endregion
