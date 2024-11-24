@@ -30,15 +30,19 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 		{
 			this.doortexture = new CodeImp.DoomBuilder.Controls.TextureSelectorControl();
 			this.label1 = new System.Windows.Forms.Label();
+			this.label1.AutoSize = true;
 			this.label2 = new System.Windows.Forms.Label();
+			this.label2.AutoSize = true;
 			this.ceilingtexture = new CodeImp.DoomBuilder.Controls.FlatSelectorControl();
 			this.floortexture = new CodeImp.DoomBuilder.Controls.FlatSelectorControl();
 			this.label3 = new System.Windows.Forms.Label();
+			this.label3.AutoSize = true;
 			this.cancel = new System.Windows.Forms.Button();
 			this.apply = new System.Windows.Forms.Button();
 			this.resetoffsets = new System.Windows.Forms.CheckBox();
 			this.tracktexture = new CodeImp.DoomBuilder.Controls.TextureSelectorControl();
 			this.label4 = new System.Windows.Forms.Label();
+			this.label4.AutoSize = true;
 			this.applyactionspecials = new System.Windows.Forms.CheckBox();
 			this.applytag = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();

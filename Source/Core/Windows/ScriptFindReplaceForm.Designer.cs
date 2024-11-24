@@ -31,6 +31,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ScriptFindReplaceForm));
 			this.label1 = new System.Windows.Forms.Label();
+			this.label1.AutoSize = true;
 			this.findmatchcase = new System.Windows.Forms.CheckBox();
 			this.findwholeword = new System.Windows.Forms.CheckBox();
 			this.findnextbutton = new System.Windows.Forms.Button();
@@ -42,14 +43,18 @@ namespace CodeImp.DoomBuilder.Windows
 			this.bookmarkallbutton = new System.Windows.Forms.Button();
 			this.findinbox = new System.Windows.Forms.ComboBox();
 			this.label2 = new System.Windows.Forms.Label();
+			this.label2.AutoSize = true;
 			this.findbox = new System.Windows.Forms.ComboBox();
 			this.tabreplace = new System.Windows.Forms.TabPage();
 			this.replacebox = new System.Windows.Forms.ComboBox();
 			this.label5 = new System.Windows.Forms.Label();
+			this.label5.AutoSize = true;
 			this.replaceinbox = new System.Windows.Forms.ComboBox();
 			this.label3 = new System.Windows.Forms.Label();
+			this.label3.AutoSize = true;
 			this.replacefindbox = new System.Windows.Forms.ComboBox();
 			this.label4 = new System.Windows.Forms.Label();
+			this.label4.AutoSize = true;
 			this.replacematchcase = new System.Windows.Forms.CheckBox();
 			this.replacewholeword = new System.Windows.Forms.CheckBox();
 			this.imagelist = new System.Windows.Forms.ImageList(this.components);

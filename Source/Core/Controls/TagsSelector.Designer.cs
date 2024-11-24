@@ -27,6 +27,7 @@
 		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
 			this.curtaglabel = new System.Windows.Forms.Label();
+			this.curtaglabel.AutoSize = true;
 			this.tagpicker = new System.Windows.Forms.ComboBox();
 			this.newtag = new System.Windows.Forms.Button();
 			this.unusedtag = new System.Windows.Forms.Button();
@@ -37,6 +38,7 @@
 			this.clearalltags = new System.Windows.Forms.Button();
 			this.tagslist = new System.Windows.Forms.LinkLabel();
 			this.label1 = new System.Windows.Forms.Label();
+			this.label1.AutoSize = true;
 			this.buttons = new System.Windows.Forms.VScrollBar();
 			this.SuspendLayout();
 			// 

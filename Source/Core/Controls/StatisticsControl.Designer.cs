@@ -29,15 +29,25 @@
 		private void InitializeComponent() 
 		{
 			this.thingscount = new System.Windows.Forms.Label();
+			this.thingscount.AutoSize = true;
 			this.sectorscount = new System.Windows.Forms.Label();
+			this.sectorscount.AutoSize = true;
 			this.sidedefscount = new System.Windows.Forms.Label();
+			this.sidedefscount.AutoSize = true;
 			this.linedefscount = new System.Windows.Forms.Label();
+			this.linedefscount.AutoSize = true;
 			this.verticescount = new System.Windows.Forms.Label();
+			this.verticescount.AutoSize = true;
 			this.thingslabel = new System.Windows.Forms.Label();
+			this.thingslabel.AutoSize = true;
 			this.sectorslabel = new System.Windows.Forms.Label();
+			this.sectorslabel.AutoSize = true;
 			this.sidedefslabel = new System.Windows.Forms.Label();
+			this.sidedefslabel.AutoSize = true;
 			this.linedefslabel = new System.Windows.Forms.Label();
+			this.linedefslabel.AutoSize = true;
 			this.verticeslabel = new System.Windows.Forms.Label();
+			this.verticeslabel.AutoSize = true;
 			this.SuspendLayout();
 			// 
 			// thingscount

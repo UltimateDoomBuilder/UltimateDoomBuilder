@@ -32,10 +32,15 @@ namespace CodeImp.DoomBuilder.Controls
 			this.vertexinfo = new System.Windows.Forms.GroupBox();
 			this.panelOffsets = new System.Windows.Forms.Panel();
 			this.zfloor = new System.Windows.Forms.Label();
+			this.zfloor.AutoSize = true;
 			this.labelzceiling = new System.Windows.Forms.Label();
+			this.labelzceiling.AutoSize = true;
 			this.zceiling = new System.Windows.Forms.Label();
+			this.zceiling.AutoSize = true;
 			this.labelzfloor = new System.Windows.Forms.Label();
+			this.labelzfloor.AutoSize = true;
 			this.position = new System.Windows.Forms.Label();
+			this.position.AutoSize = true;
 			label1 = new System.Windows.Forms.Label();
 			this.vertexinfo.SuspendLayout();
 			this.panelOffsets.SuspendLayout();

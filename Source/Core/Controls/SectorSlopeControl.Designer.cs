@@ -29,11 +29,15 @@
 		private void InitializeComponent() 
 		{
 			this.label23 = new System.Windows.Forms.Label();
+			this.label23.AutoSize = true;
 			this.label24 = new System.Windows.Forms.Label();
+			this.label24.AutoSize = true;
 			this.reset = new System.Windows.Forms.Button();
 			this.label18 = new System.Windows.Forms.Label();
+			this.label18.AutoSize = true;
 			this.angletrackbar = new CodeImp.DoomBuilder.Controls.TransparentTrackBar();
 			this.label1 = new System.Windows.Forms.Label();
+			this.label1.AutoSize = true;
 			this.pivotmodeselector = new System.Windows.Forms.ComboBox();
 			this.cbuselineangles = new System.Windows.Forms.CheckBox();
 			this.rotationcontrol = new CodeImp.DoomBuilder.Controls.AngleControlEx();

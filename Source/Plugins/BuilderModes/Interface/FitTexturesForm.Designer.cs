@@ -26,6 +26,7 @@
 		/// </summary>
 		private void InitializeComponent() {
 			this.labelhorizrepeat = new System.Windows.Forms.Label();
+			this.labelhorizrepeat.AutoSize = true;
 			this.repeatgroup = new System.Windows.Forms.GroupBox();
 			this.vertrepeat = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.horizrepeat = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
@@ -34,6 +35,7 @@
 			this.resetvert = new System.Windows.Forms.Button();
 			this.resethoriz = new System.Windows.Forms.Button();
 			this.labelvertrepeat = new System.Windows.Forms.Label();
+			this.labelvertrepeat.AutoSize = true;
 			this.cbfitwidth = new System.Windows.Forms.CheckBox();
 			this.accept = new System.Windows.Forms.Button();
 			this.cancel = new System.Windows.Forms.Button();
@@ -43,7 +45,9 @@
 			this.patternheight = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.patternwidth = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.labelpatternheight = new System.Windows.Forms.Label();
+			this.labelpatternheight.AutoSize = true;
 			this.labelpatternwidth = new System.Windows.Forms.Label();
+			this.labelpatternwidth.AutoSize = true;
 			this.repeatgroup.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.SuspendLayout();

@@ -51,13 +51,17 @@
 			this.cbRelativeScale = new System.Windows.Forms.CheckBox();
 			this.bUpdateScaleY = new System.Windows.Forms.Button();
 			this.maxScaleYLabel = new System.Windows.Forms.Label();
+			this.maxScaleYLabel.AutoSize = true;
 			this.maxScaleY = new System.Windows.Forms.NumericUpDown();
 			this.minScaleYLabel = new System.Windows.Forms.Label();
+			this.minScaleYLabel.AutoSize = true;
 			this.minScaleY = new System.Windows.Forms.NumericUpDown();
 			this.bUpdateScaleX = new System.Windows.Forms.Button();
 			this.label3 = new System.Windows.Forms.Label();
+			this.label3.AutoSize = true;
 			this.maxScaleX = new System.Windows.Forms.NumericUpDown();
 			this.label2 = new System.Windows.Forms.Label();
+			this.label2.AutoSize = true;
 			this.minScaleX = new System.Windows.Forms.NumericUpDown();
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.groupBox1.SuspendLayout();

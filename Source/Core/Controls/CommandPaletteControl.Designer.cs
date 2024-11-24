@@ -34,6 +34,7 @@ namespace CodeImp.DoomBuilder.Controls
 			System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Not usable in this context", System.Windows.Forms.HorizontalAlignment.Left);
 			this.commandsearch = new System.Windows.Forms.TextBox();
 			this.noresults = new System.Windows.Forms.Label();
+			this.noresults.AutoSize = true;
 			this.commandlist = new CodeImp.DoomBuilder.Controls.OptimizedListView();
 			this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));

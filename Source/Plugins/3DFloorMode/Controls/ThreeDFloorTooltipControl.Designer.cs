@@ -29,11 +29,17 @@
 		private void InitializeComponent()
 		{
 			this.label3 = new System.Windows.Forms.Label();
+			this.label3.AutoSize = true;
 			this.label2 = new System.Windows.Forms.Label();
+			this.label2.AutoSize = true;
 			this.label1 = new System.Windows.Forms.Label();
+			this.label1.AutoSize = true;
 			this.bottomHeight = new System.Windows.Forms.Label();
+			this.bottomHeight.AutoSize = true;
 			this.topHeight = new System.Windows.Forms.Label();
+			this.topHeight.AutoSize = true;
 			this.borderHeight = new System.Windows.Forms.Label();
+			this.borderHeight.AutoSize = true;
 			this.sectorTopFlat = new CodeImp.DoomBuilder.Controls.ConfigurablePictureBox();
 			this.sectorBorderTexture = new CodeImp.DoomBuilder.Controls.ConfigurablePictureBox();
 			this.sectorBottomFlat = new CodeImp.DoomBuilder.Controls.ConfigurablePictureBox();

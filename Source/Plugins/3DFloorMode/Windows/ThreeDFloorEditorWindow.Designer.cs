@@ -38,6 +38,7 @@
 			this.no3dfloorspanel = new System.Windows.Forms.Panel();
 			this.add3dfloorbutton2 = new System.Windows.Forms.Button();
 			this.label1 = new System.Windows.Forms.Label();
+			this.label1.AutoSize = true;
 			this.detachAllButton = new System.Windows.Forms.Button();
 			this.splitAllButton = new System.Windows.Forms.Button();
 			this.checkAllButton = new System.Windows.Forms.Button();

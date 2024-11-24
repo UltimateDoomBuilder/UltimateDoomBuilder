@@ -28,13 +28,16 @@ namespace CodeImp.DoomBuilder.ColorPicker.Controls {
 			this.btnCancel = new System.Windows.Forms.Button();
 			this.btnOK = new System.Windows.Forms.Button();
 			this.Label3 = new System.Windows.Forms.Label();
+			this.Label3.AutoSize = true;
 			this.nudRed = new System.Windows.Forms.NumericUpDown();
 			this.pnlColor = new System.Windows.Forms.Panel();
 			this.Label1 = new System.Windows.Forms.Label();
+			this.Label1.AutoSize = true;
 			this.pnlBrightness = new System.Windows.Forms.Panel();
 			this.nudBlue = new System.Windows.Forms.NumericUpDown();
 			this.nudGreen = new System.Windows.Forms.NumericUpDown();
 			this.Label2 = new System.Windows.Forms.Label();
+			this.Label2.AutoSize = true;
 			this.tbFloatVals = new CodeImp.DoomBuilder.Controls.AutoSelectTextbox();
 			this.pRGB = new System.Windows.Forms.Panel();
 			this.cbColorInfo = new System.Windows.Forms.ComboBox();

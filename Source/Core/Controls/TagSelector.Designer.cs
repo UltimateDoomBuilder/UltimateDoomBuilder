@@ -30,6 +30,7 @@
 		{
 			this.components = new System.ComponentModel.Container();
 			this.label1 = new System.Windows.Forms.Label();
+			this.label1.AutoSize = true;
 			this.cbTagPicker = new System.Windows.Forms.ComboBox();
 			this.newTag = new System.Windows.Forms.Button();
 			this.unusedTag = new System.Windows.Forms.Button();

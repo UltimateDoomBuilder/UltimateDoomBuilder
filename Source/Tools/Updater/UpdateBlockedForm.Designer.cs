@@ -30,6 +30,7 @@
 		{
 			this.accept = new System.Windows.Forms.Button();
 			this.label1 = new System.Windows.Forms.Label();
+			this.label1.AutoSize = true;
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.proceed = new System.Windows.Forms.RadioButton();

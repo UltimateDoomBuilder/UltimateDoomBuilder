@@ -30,8 +30,10 @@ namespace CodeImp.DoomBuilder.Controls
 		private void InitializeComponent()
 		{
 			this.lbText = new System.Windows.Forms.Label();
+			this.lbText.AutoSize = true;
 			this.icon = new System.Windows.Forms.Panel();
 			this.lbTitle = new System.Windows.Forms.Label();
+			this.lbTitle.AutoSize = true;
 			this.btnClose = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 

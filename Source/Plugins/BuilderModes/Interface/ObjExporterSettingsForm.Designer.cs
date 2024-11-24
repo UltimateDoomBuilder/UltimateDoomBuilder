@@ -28,6 +28,7 @@
 			this.tbExportPath = new System.Windows.Forms.TextBox();
 			this.browse = new System.Windows.Forms.Button();
 			this.label1 = new System.Windows.Forms.Label();
+			this.label1.AutoSize = true;
 			this.cbFixScale = new System.Windows.Forms.CheckBox();
 			this.export = new System.Windows.Forms.Button();
 			this.cancel = new System.Windows.Forms.Button();
