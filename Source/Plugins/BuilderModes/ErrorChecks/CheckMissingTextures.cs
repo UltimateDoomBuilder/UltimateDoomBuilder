@@ -60,7 +60,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// positive if the sector on the other side has the ceiling
 				// set to be sky
 				if (sd.LongHighTexture == MapSet.EmptyLongName) {
-					if (sd.HighRequired())
+					if (sd.HighRequired() || sd.Line.HasSkyTransfer())
 					{
 						if (sd.Line.HasActionPlaneAlign() && sd.Line.Args[1] > 0) continue; //mxd. Ceiling slopes doesn't require upper texture
 

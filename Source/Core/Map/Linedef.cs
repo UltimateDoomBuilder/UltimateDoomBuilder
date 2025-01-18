@@ -806,6 +806,21 @@ namespace CodeImp.DoomBuilder.Map
 		public bool HasActionPlaneAlign()
 		{
 			return Action > 0 && General.Map.Config.GetLinedefActionInfo(Action).Id.ToLowerInvariant() == "plane_align";
+    }
+
+		// Determine if this line defines the sky upper texture transferred to a sector.
+		public bool HasSkyTransfer()
+		{
+			return HasSkyTransferStaticInit() ||
+				General.Map.Config.GetLinedefActionInfo(Action).ErrorCheckerExemptions.RequiresUpperTexture;
+		}
+
+		// Determine if this line uses Static_Init that mimics MBF's sky transfer linedef specials.
+		// This also enables an optional lower texture to be shown during a lightning weather effect.
+		public bool HasSkyTransferStaticInit()
+		{
+			return General.Map.Config.GetLinedefActionInfo(Action).Id.ToLowerInvariant() == "static_init" &&
+				Args[1] == 255;
 		}
 
 		// Determine if this line and another line are associated by action and tag.

@@ -39,7 +39,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			foreach(Sidedef sd in General.Map.Map.Sidedefs)
 			{
 				// Check upper texture
-				if(!sd.HighRequired() && sd.LongHighTexture != MapSet.EmptyLongName)
+				if(!(sd.HighRequired() || sd.Line.HasSkyTransfer()) && sd.LongHighTexture != MapSet.EmptyLongName)
 				{
 					if (sd.Other == null)
 						SubmitResult(new ResultUnusedTexture(sd, SidedefPart.Upper));
@@ -78,7 +78,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				}
 
 				// Check lower texture
-				if(!sd.LowRequired() && sd.LongLowTexture != MapSet.EmptyLongName)
+				if(!(sd.LowRequired() || sd.Line.HasSkyTransferStaticInit()) && sd.LongLowTexture != MapSet.EmptyLongName)
 				{
 					if (sd.Other == null)
 						SubmitResult(new ResultUnusedTexture(sd, SidedefPart.Lower));
