@@ -47,7 +47,9 @@ namespace CodeImp.DoomBuilder.Windows
             this.brightness = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
             this.ceilingheight = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
             this.sectorheightlabel = new System.Windows.Forms.Label();
+            this.sectorheightlabel.AutoSize = true;
             this.sectorheight = new System.Windows.Forms.Label();
+            this.sectorheight.AutoSize = true;
             this.floortex = new CodeImp.DoomBuilder.Controls.FlatSelectorControl();
             this.floorheight = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
             this.ceilingtex = new CodeImp.DoomBuilder.Controls.FlatSelectorControl();

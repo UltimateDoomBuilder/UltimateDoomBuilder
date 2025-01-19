@@ -30,7 +30,9 @@
 		{
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.label2 = new System.Windows.Forms.Label();
+			this.label2.AutoSize = true;
 			this.label1 = new System.Windows.Forms.Label();
+			this.label1.AutoSize = true;
 			this.lastTag = new CodeImp.DoomBuilder.Controls.NumericTextbox();
 			this.firstTag = new CodeImp.DoomBuilder.Controls.NumericTextbox();
 			this.useTagRange = new System.Windows.Forms.CheckBox();

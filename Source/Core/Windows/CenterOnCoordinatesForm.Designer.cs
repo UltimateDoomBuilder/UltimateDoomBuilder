@@ -29,7 +29,9 @@
 		private void InitializeComponent() 
 		{
 			this.label1 = new System.Windows.Forms.Label();
+			this.label1.AutoSize = true;
 			this.label2 = new System.Windows.Forms.Label();
+			this.label2.AutoSize = true;
 			this.accept = new System.Windows.Forms.Button();
 			this.cancel = new System.Windows.Forms.Button();
 			this.gotoy = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();

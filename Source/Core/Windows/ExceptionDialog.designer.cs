@@ -36,6 +36,7 @@
             this.newissue = new System.Windows.Forms.LinkLabel();
             this.bToClipboard = new System.Windows.Forms.Button();
             this.errorDescription = new System.Windows.Forms.Label();
+            this.errorDescription.AutoSize = true;
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 

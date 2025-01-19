@@ -30,6 +30,7 @@
 		{
 			this.progressbar = new System.Windows.Forms.ProgressBar();
 			this.lbStatus = new System.Windows.Forms.Label();
+			this.lbStatus.AutoSize = true;
 			this.btnAction = new System.Windows.Forms.Button();
 			this.tbLog = new System.Windows.Forms.TextBox();
 			this.SuspendLayout();

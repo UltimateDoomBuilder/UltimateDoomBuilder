@@ -36,8 +36,10 @@ namespace CodeImp.DoomBuilder.Windows
             System.Windows.Forms.Label label4;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MapOptionsForm));
             this.examplelabel = new System.Windows.Forms.Label();
+            this.examplelabel.AutoSize = true;
             this.scriptcompiler = new System.Windows.Forms.ComboBox();
             this.scriptcompilerlabel = new System.Windows.Forms.Label();
+            this.scriptcompilerlabel.AutoSize = true;
             this.levelname = new System.Windows.Forms.TextBox();
             this.config = new System.Windows.Forms.ComboBox();
             this.apply = new System.Windows.Forms.Button();
@@ -48,6 +50,7 @@ namespace CodeImp.DoomBuilder.Windows
             this.datalocations = new CodeImp.DoomBuilder.Controls.ResourceListEditor();
             this.tooltip = new System.Windows.Forms.ToolTip(this.components);
             this.label5 = new System.Windows.Forms.Label();
+            this.label5.AutoSize = true;
             this.prepostcommands = new System.Windows.Forms.Button();
             label3 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();

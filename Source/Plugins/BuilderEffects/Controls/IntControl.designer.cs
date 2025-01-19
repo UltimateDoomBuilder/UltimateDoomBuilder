@@ -29,6 +29,7 @@
 		{
 			this.trackBar1 = new System.Windows.Forms.TrackBar();
 			this.label1 = new System.Windows.Forms.Label();
+			this.label1.AutoSize = true;
 			#if !MONO_WINFORMS
 			this.numericUpDown1 = new CodeImp.DoomBuilder.BuilderEffects.NumericUpDownEx();
 			#else
@@ -39,6 +40,7 @@
 			};
 			#endif
 			this.labelMaximum = new System.Windows.Forms.Label();
+			this.labelMaximum.AutoSize = true;
 			((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
 			this.SuspendLayout();

@@ -268,7 +268,9 @@ namespace CodeImp.DoomBuilder.Windows
 			this.statistics = new CodeImp.DoomBuilder.Controls.StatisticsControl();
 			this.heightpanel1 = new System.Windows.Forms.Panel();
 			this.labelcollapsedinfo = new System.Windows.Forms.Label();
+			this.labelcollapsedinfo.AutoSize = true;
 			this.modename = new System.Windows.Forms.Label();
+			this.modename.AutoSize = true;
 			this.buttontoggleinfo = new System.Windows.Forms.Button();
 			this.console = new CodeImp.DoomBuilder.DebugConsole();
 			this.vertexinfo = new CodeImp.DoomBuilder.Controls.VertexInfoPanel();

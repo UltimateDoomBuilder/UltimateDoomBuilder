@@ -26,12 +26,15 @@
 		/// </summary>
 		private void InitializeComponent() {
 			this.label2 = new System.Windows.Forms.Label();
+			this.label2.AutoSize = true;
 			this.nudScale = new System.Windows.Forms.NumericUpDown();
 			this.cancel = new System.Windows.Forms.Button();
 			this.import = new System.Windows.Forms.Button();
 			this.label1 = new System.Windows.Forms.Label();
+			this.label1.AutoSize = true;
 			this.tbImportPath = new System.Windows.Forms.TextBox();
 			this.label3 = new System.Windows.Forms.Label();
+			this.label3.AutoSize = true;
 			this.axisx = new System.Windows.Forms.RadioButton();
 			this.axisy = new System.Windows.Forms.RadioButton();
 			this.axisz = new System.Windows.Forms.RadioButton();

@@ -37,9 +37,11 @@ namespace CodeImp.DoomBuilder.Windows
 			this.backoffsety = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.backoffsetx = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.backscale = new System.Windows.Forms.Label();
+			this.backscale.AutoSize = true;
 			this.selectfile = new System.Windows.Forms.Button();
 			this.showbackground = new System.Windows.Forms.CheckBox();
 			this.backoffset = new System.Windows.Forms.Label();
+			this.backoffset.AutoSize = true;
 			this.selectflat = new System.Windows.Forms.Button();
 			this.selecttexture = new System.Windows.Forms.Button();
 			this.backgroundimage = new CodeImp.DoomBuilder.Controls.ConfigurablePictureBox();

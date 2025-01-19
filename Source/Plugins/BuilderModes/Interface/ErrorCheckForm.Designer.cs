@@ -45,6 +45,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			this.fix3 = new System.Windows.Forms.Button();
 			this.fix2 = new System.Windows.Forms.Button();
 			this.resultinfo = new System.Windows.Forms.Label();
+			this.resultinfo.AutoSize = true;
 			this.fix1 = new System.Windows.Forms.Button();
 			this.progress = new System.Windows.Forms.ProgressBar();
 			this.closebutton = new System.Windows.Forms.Button();

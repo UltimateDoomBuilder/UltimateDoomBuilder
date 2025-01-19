@@ -29,6 +29,7 @@
 		private void InitializeComponent()
 		{
 			this.label = new System.Windows.Forms.Label();
+			this.label.AutoSize = true;
 			this.linenumber = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.cancel = new System.Windows.Forms.Button();

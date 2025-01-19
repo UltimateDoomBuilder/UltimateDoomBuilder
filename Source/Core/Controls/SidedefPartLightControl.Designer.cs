@@ -29,6 +29,7 @@
 		private void InitializeComponent()
 		{
 			this.lbLight = new System.Windows.Forms.Label();
+			this.lbLight.AutoSize = true;
 			this.cbAbsolute = new System.Windows.Forms.CheckBox();
 			this.reset = new System.Windows.Forms.Button();
 			this.light = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();

@@ -42,6 +42,7 @@ namespace CodeImp.DoomBuilder.Windows
             System.Windows.Forms.Label label10;
             this.linuxpaths = new System.Windows.Forms.CheckBox();
             this.labelparameters = new System.Windows.Forms.Label();
+            this.labelparameters.AutoSize = true;
             this.cancel = new System.Windows.Forms.Button();
             this.apply = new System.Windows.Forms.Button();
             this.tabs = new System.Windows.Forms.TabControl();
@@ -55,13 +56,16 @@ namespace CodeImp.DoomBuilder.Windows
             this.btnNewEngine = new System.Windows.Forms.Button();
             this.cbEngineSelector = new System.Windows.Forms.ComboBox();
             this.label13 = new System.Windows.Forms.Label();
+            this.label13.AutoSize = true;
             this.shortpaths = new System.Windows.Forms.CheckBox();
             this.customparameters = new System.Windows.Forms.CheckBox();
             this.skill = new CodeImp.DoomBuilder.Controls.ActionSelectorControl();
             this.browsetestprogram = new System.Windows.Forms.Button();
             this.noresultlabel = new System.Windows.Forms.Label();
+            this.noresultlabel.AutoSize = true;
             this.testresult = new System.Windows.Forms.TextBox();
             this.labelresult = new System.Windows.Forms.Label();
+            this.labelresult.AutoSize = true;
             this.testparameters = new System.Windows.Forms.TextBox();
             this.testapplication = new System.Windows.Forms.TextBox();
             this.tabtextures = new System.Windows.Forms.TabPage();
@@ -78,6 +82,7 @@ namespace CodeImp.DoomBuilder.Windows
             this.tabmodes = new System.Windows.Forms.TabPage();
             this.startmode = new System.Windows.Forms.ComboBox();
             this.label11 = new System.Windows.Forms.Label();
+            this.label11.AutoSize = true;
             this.listmodes = new System.Windows.Forms.ListView();
             this.colmodename = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colmodeplugin = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -92,6 +97,7 @@ namespace CodeImp.DoomBuilder.Windows
             this.pastecolorpresets = new System.Windows.Forms.ToolStripMenuItem();
             this.testprogramdialog = new System.Windows.Forms.OpenFileDialog();
             this.hintlabel = new System.Windows.Forms.Label();
+            this.hintlabel.AutoSize = true;
             this.hint = new System.Windows.Forms.PictureBox();
             this.tooltip = new System.Windows.Forms.ToolTip(this.components);
             this.importtexturesetdialog = new System.Windows.Forms.OpenFileDialog();

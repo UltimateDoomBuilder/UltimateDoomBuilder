@@ -44,6 +44,7 @@ namespace CodeImp.DoomBuilder.Windows
             this.mapslist = new System.Windows.Forms.ListView();
             this.scriptcompiler = new System.Windows.Forms.ComboBox();
             this.scriptcompilerlabel = new System.Windows.Forms.Label();
+            this.scriptcompilerlabel.AutoSize = true;
             this.tooltip = new System.Windows.Forms.ToolTip(this.components);
             columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             label1 = new System.Windows.Forms.Label();
@@ -59,6 +60,7 @@ namespace CodeImp.DoomBuilder.Windows
             // 
             // label1
             // 
+            label1.AutoSize = true;
             label1.Location = new System.Drawing.Point(15, 24);
             label1.Name = "label1";
             label1.Size = new System.Drawing.Size(120, 14);

@@ -31,6 +31,7 @@ namespace mxd.GZDBUpdater
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			this.progressbar = new System.Windows.Forms.ProgressBar();
 			this.label1 = new System.Windows.Forms.Label();
+			this.label1.AutoSize = true;
 			this.cancel = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 

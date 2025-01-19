@@ -31,11 +31,16 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 		{
 			this.components = new System.ComponentModel.Container();
 			this.label1 = new System.Windows.Forms.Label();
+			this.label1.AutoSize = true;
 			this.label2 = new System.Windows.Forms.Label();
+			this.label2.AutoSize = true;
 			this.label3 = new System.Windows.Forms.Label();
+			this.label3.AutoSize = true;
 			this.bntNewIndex = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.lbCurrentIndex = new System.Windows.Forms.Label();
+			this.lbCurrentIndex.AutoSize = true;
 			this.lbMaximumIndex = new System.Windows.Forms.Label();
+			this.lbMaximumIndex.AutoSize = true;
 			this.btnOk = new System.Windows.Forms.Button();
 			this.btnCancel = new System.Windows.Forms.Button();
 			this.pbWarning = new System.Windows.Forms.PictureBox();

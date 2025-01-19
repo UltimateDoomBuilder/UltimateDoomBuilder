@@ -48,6 +48,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.frontside = new System.Windows.Forms.CheckBox();
 			this.frontgroup = new System.Windows.Forms.GroupBox();
 			this.labelFrontTextureOffset = new System.Windows.Forms.Label();
+			this.labelFrontTextureOffset.AutoSize = true;
 			this.frontsector = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.frontlow = new CodeImp.DoomBuilder.Controls.TextureSelectorControl();
 			this.frontmid = new CodeImp.DoomBuilder.Controls.TextureSelectorControl();
@@ -55,6 +56,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.frontTextureOffset = new CodeImp.DoomBuilder.Controls.PairedIntControl();
 			this.backgroup = new System.Windows.Forms.GroupBox();
 			this.labelBackTextureOffset = new System.Windows.Forms.Label();
+			this.labelBackTextureOffset.AutoSize = true;
 			this.backsector = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.backlow = new CodeImp.DoomBuilder.Controls.TextureSelectorControl();
 			this.backmid = new CodeImp.DoomBuilder.Controls.TextureSelectorControl();

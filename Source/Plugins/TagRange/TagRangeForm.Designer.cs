@@ -30,17 +30,24 @@ namespace CodeImp.DoomBuilder.TagRange
 		{
 			this.rangestart = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.label1 = new System.Windows.Forms.Label();
+			this.label1.AutoSize = true;
 			this.doubletagwarning = new System.Windows.Forms.Label();
+			this.doubletagwarning.AutoSize = true;
 			this.skipdoubletags = new System.Windows.Forms.CheckBox();
 			this.okbutton = new System.Windows.Forms.Button();
 			this.cancelbutton = new System.Windows.Forms.Button();
 			this.outoftagswarning = new System.Windows.Forms.Label();
+			this.outoftagswarning.AutoSize = true;
 			this.endtaglabel = new System.Windows.Forms.Label();
+			this.endtaglabel.AutoSize = true;
 			this.label4 = new System.Windows.Forms.Label();
+			this.label4.AutoSize = true;
 			this.label2 = new System.Windows.Forms.Label();
+			this.label2.AutoSize = true;
 			this.rangestep = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.relativemode = new System.Windows.Forms.CheckBox();
 			this.bglabel = new System.Windows.Forms.Label();
+			this.bglabel.AutoSize = true;
 			this.SuspendLayout();
 			// 
 			// rangestart

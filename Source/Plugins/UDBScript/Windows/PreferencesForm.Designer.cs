@@ -32,6 +32,7 @@
 			this.btnSelectExe = new System.Windows.Forms.Button();
 			this.exepath = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
+			this.label1.AutoSize = true;
 			this.tabs = new System.Windows.Forms.TabControl();
 			this.filedialog = new System.Windows.Forms.OpenFileDialog();
 			this.tabPage1.SuspendLayout();
