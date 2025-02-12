@@ -2,7 +2,7 @@
 
 ## System requirements
 - 2.4 GHz CPU or faster (multi-core recommended)
-- Windows 7, 8 or 10
+- Windows 7, 8, 10, or 11
 - Graphics card with OpenGL 3.2 support
 
 ### Required software on Windows
