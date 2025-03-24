@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Controls;
@@ -46,6 +47,12 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 
 		public bool ExportTextures { get { return gui_ExportTextures.Checked; } }
 
+		public bool ExportAllTextures { get { return gui_ExpAllTextures.Checked; } }
+
+		public HashSet<string> MapTextures = new HashSet<string>();
+
+		public HashSet<string> MapFlats = new HashSet<string>();
+
 		public idStudioExporterForm()
 		{
 			InitializeComponent();
@@ -57,9 +64,45 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 			gui_yShift.Value = 0;
 			gui_zShift.Value = 0;
 
+			foreach(Map.Linedef line in General.Map.Map.Linedefs)
+			{
+				if (line.Front == null)
+					continue;
+
+				if (!line.Front.LowTexture.Equals("-"))
+					MapTextures.Add(line.Front.LowTexture);
+				if (!line.Front.MiddleTexture.Equals("-"))
+					MapTextures.Add(line.Front.MiddleTexture);
+				if (!line.Front.HighTexture.Equals("-"))
+					MapTextures.Add(line.Front.HighTexture);
+
+				if (line.Back == null)
+					continue;
+
+				if (!line.Back.LowTexture.Equals("-"))
+					MapTextures.Add(line.Back.LowTexture);
+				if (!line.Back.MiddleTexture.Equals("-"))
+					MapTextures.Add(line.Back.MiddleTexture);
+				if (!line.Back.HighTexture.Equals("-"))
+					MapTextures.Add(line.Back.HighTexture);
+			}
+
+			foreach(Map.Sector sector in General.Map.Map.Sectors)
+			{
+				if (!sector.FloorTexture.Equals("-"))
+					MapFlats.Add(sector.FloorTexture);
+
+				if (!sector.CeilTexture.Equals("-"))
+					MapFlats.Add(sector.CeilTexture);
+			}
+
+			gui_TextCountMap.Text = String.Format("{0} TGA images and {0} material2 decls will be created.", 
+				MapTextures.Count + MapFlats.Count);
+
 			int imageCount = General.Map.Data.Textures.Count + General.Map.Data.Flats.Count;
-			gui_ShowTextCount.Text = String.Format("{0} TGA images and {1} material2 decls will be created.",
-				imageCount + 1, imageCount);
+			gui_TextCountAll.Text = String.Format("{0} TGA images and {0} material2 decls will be created.",
+				imageCount);
+
 		}
 
 		private void evt_FolderButton(object sender, EventArgs e)

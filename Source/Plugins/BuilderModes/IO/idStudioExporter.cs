@@ -46,7 +46,6 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 		public float xShift;
 		public float yShift;
 		public float zShift;
-		public bool exportTextures;
 
 		public idStudioExportSettings(idStudioExporterForm form)
 		{
@@ -56,7 +55,6 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			xShift = form.xShift;
 			yShift = form.yShift;
 			zShift = form.zShift;
-			exportTextures = form.ExportTextures;
 		}
 	}
 
@@ -70,8 +68,8 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			form = p_form;
 			cfg = new idStudioExportSettings(form);
 		
-			if (cfg.exportTextures)
-				idStudioTextureExporter.ExportTextures(cfg.modPath);
+			if (form.ExportTextures)
+				idStudioTextureExporter.ExportTextures(form);
 
 			string mapPath = Path.Combine(cfg.modPath, "base/maps/");
 			Directory.CreateDirectory(mapPath);
@@ -702,10 +700,10 @@ entity {{
 			item[0] = {{
 				parms = {{
 					smoothness = {{
-						filePath = ""art/wadtobrush/black.tga"";
+						filePath = ""textures/system/constant_color/black.tga"";
 					}}
 					specular = {{
-						filePath = ""art/wadtobrush/black.tga"";
+						filePath = ""textures/system/constant_color/black.tga"";
 					}}
 					albedo = {{
 						filePath = ""art/wadtobrush/{0}{1}.tga"";
@@ -727,10 +725,10 @@ entity {{
 						filePath = ""art/wadtobrush/{0}{1}.tga"";
 					}}
 					smoothness = {{
-						filePath = ""art/wadtobrush/black.tga"";
+						filePath = ""textures/system/constant_color/black.tga"";
 					}}
 					specular = {{
-						filePath = ""art/wadtobrush/black.tga"";
+						filePath = ""textures/system/constant_color/black.tga"";
 					}}
 					albedo = {{
 						filePath = ""art/wadtobrush/{0}{1}.tga"";
@@ -745,9 +743,7 @@ entity {{
 		private const string dir_flats_mat = "base/declTree/material2/art/wadtobrush/flats/";
 		private const string dir_walls_art = "base/art/wadtobrush/walls/";
 		private const string dir_walls_mat = "base/declTree/material2/art/wadtobrush/walls/";
-
-		private const string path_black = "base/art/wadtobrush/black.tga";
-		
+	
 		// Unable to export patches at this time
 		//private const string dir_patches = "base/art/wadtobrush/patches/";
 		//private const string dir_patches_mat = "base/declTree/material2/art/wadtobrush/patches/";
@@ -804,35 +800,42 @@ entity {{
 			File.WriteAllText(matPath, format);
 		}
 
-		public static void ExportTextures(string modPath)
+		public static void ExportTextures(idStudioExporterForm form)
 		{
-			Directory.CreateDirectory(Path.Combine(modPath, dir_flats_art));
-			Directory.CreateDirectory(Path.Combine(modPath, dir_flats_mat));
-			Directory.CreateDirectory(Path.Combine(modPath, dir_walls_art));
-			Directory.CreateDirectory(Path.Combine(modPath, dir_walls_mat));
+			string modpath = form.ModPath;
+			Directory.CreateDirectory(Path.Combine(modpath, dir_flats_art));
+			Directory.CreateDirectory(Path.Combine(modpath, dir_flats_mat));
+			Directory.CreateDirectory(Path.Combine(modpath, dir_walls_art));
+			Directory.CreateDirectory(Path.Combine(modpath, dir_walls_mat));
 
-			// Generate black texture
+			string artDir = Path.Combine(modpath, "base/art/wadtobrush/");
+			string matDir = Path.Combine(modpath, "base/declTree/material2/art/wadtobrush/");
+
+			if(form.ExportAllTextures)
 			{
-				Color pixel = Color.FromArgb(255, 0, 0, 0);
-				int blackWidth = 64, blackHeight = 64;
-				Bitmap black = new Bitmap(blackWidth, blackHeight);
-				
+				//General.ErrorLogger.Add(ErrorType.Warning, "All Textures");
+				foreach (ImageData img in General.Map.Data.Textures)
+					WriteArtAsset(artDir, matDir, "walls/", img);
 
-				for(int w = 0; w < blackWidth; w++)
-					for(int h = 0; h < blackHeight; h++)
-						black.SetPixel(w, h, pixel);
+				foreach (ImageData img in General.Map.Data.Flats)
+					WriteArtAsset(artDir, matDir, "flats/", img);
+			}
+			else
+			{
+				//General.ErrorLogger.Add(ErrorType.Warning, "Map Textures");
+				foreach (string name in form.MapTextures)
+				{
+					ImageData img = General.Map.Data.GetTextureImage(name);
+					WriteArtAsset(artDir, matDir, "walls/", img);
+				}
 
-				WriteTGA(Path.Combine(modPath, path_black), black);
+				foreach(string name in form.MapFlats)
+				{
+					ImageData img = General.Map.Data.GetFlatImage(name);
+					WriteArtAsset(artDir, matDir, "flats/", img);
+				}
 			}
 
-			string artDir = Path.Combine(modPath, "base/art/wadtobrush/");
-			string matDir = Path.Combine(modPath, "base/declTree/material2/art/wadtobrush/");
-
-			foreach (ImageData img in General.Map.Data.Textures)
-				WriteArtAsset(artDir, matDir, "walls/", img);
-
-			foreach (ImageData img in General.Map.Data.Flats)
-				WriteArtAsset(artDir, matDir, "flats/", img);
 		}
 	}
 
