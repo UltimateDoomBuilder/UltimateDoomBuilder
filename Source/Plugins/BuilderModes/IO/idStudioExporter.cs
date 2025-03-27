@@ -74,9 +74,11 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			string mapPath = Path.Combine(cfg.modPath, "base/maps/");
 			Directory.CreateDirectory(mapPath);
 
+			// Concat the map name to ensure unique entity names when merging different levels into a single idStudio map
+			// FIX ME improve this so the map names aren't horrible
 			idStudioMapWriter rootWriter = new idStudioMapWriter(cfg);
-			idStudioMapWriter wadToBrushRef = rootWriter.AddRefmap("wadtobrush");
-			idStudioMapWriter geoWriter = wadToBrushRef.AddRefmap("wadgeo");
+			idStudioMapWriter wadToBrushRef = rootWriter.AddRefmap(cfg.mapName + "wadtobrush"); 
+			idStudioMapWriter geoWriter = wadToBrushRef.AddRefmap(cfg.mapName + "wadgeo");
 
 			ExportGeometry(geoWriter);
 			rootWriter.SaveFile();
@@ -88,6 +90,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			//General.ErrorLogger.Add(ErrorType.Warning, "We have " + General.Map.Map.Sectors.Count + " sectors");
 			foreach(Sector s in General.Map.Map.Sectors)
 			{
+				geoWriter.BeginFuncStatic(s.Index);
 				List<idVertex> verts = new List<idVertex>();
 				verts.Capacity = s.Triangles.Vertices.Count;
 				foreach(Vector2D dv in s.Triangles.Vertices)
@@ -111,6 +114,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 					if(!s.CeilTexture.Equals("F_SKY1"))
 						geoWriter.WriteFloorBrush(a, b, c, ceilingHeight, true, s.CeilTexture, s.Index);
 				}
+				geoWriter.EndFuncStatic();
 			}
 
 			/*
@@ -155,11 +159,13 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				int frontSectIndex = front.Sector.Index;
 
 				// If true, this is a one-sided linedef
-				if(front.MiddleRequired())
+				if (front.MiddleRequired())
 				{
 					// level.minHeight, level.maxHeight
 					float drawHeight = frontOffsetY + (lowerUnpegged ? frontFloor : frontCeil);
+					geoWriter.BeginFuncStatic(frontSectIndex);
 					geoWriter.WriteWallBrush(v0, v1, frontFloor, frontCeil, drawHeight, front.MiddleTexture, frontOffsetX, frontSectIndex);
+					geoWriter.EndFuncStatic();
 					continue;
 				}
 
@@ -190,6 +196,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 					higherFloor = frontFloor;
 				}
 
+				geoWriter.BeginFuncStatic(backSectIndex);
 				// Brush the front sidedefs in relation to the back sector heights
 				if (front.LowRequired()) // This function checks a LOT more than whether the texture exists
 				{
@@ -203,9 +210,17 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				}
 				if (!front.MiddleTexture.Equals("-"))
 				{
-					//float a = front.GetMiddleHeight();
+					// Since middle textures do not repeat vertically, we have to account for the texture height
+					float midTextureHeight = General.Map.Data.GetTextureImage(front.MiddleTexture).Height / cfg.downscale;
+
+					float midMinHeight = lowerUnpegged ? (backFloor + frontOffsetY) : (backCeil - midTextureHeight + frontOffsetY);
+					float midMaxHeight = lowerUnpegged ? (backFloor + midTextureHeight + frontOffsetY) : (backCeil + frontOffsetY);
+
+					if (midMinHeight < backFloor) midMinHeight = backFloor;
+					if (midMaxHeight > backCeil) midMaxHeight = backCeil;
+
 					float drawHeight = frontOffsetY + (lowerUnpegged ? higherFloor : higherCeiling);
-					geoWriter.WriteWallBrush(v0, v1, backFloor, backCeil, drawHeight, front.MiddleTexture, frontOffsetX, backSectIndex);
+					geoWriter.WriteWallBrush(v0, v1, midMinHeight, midMaxHeight, drawHeight, front.MiddleTexture, frontOffsetX, backSectIndex);
 				}
 				if (front.HighRequired())
 				{
@@ -213,11 +228,13 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 					float drawHeight = frontOffsetY + (upperUnpegged ? higherCeiling : lowerCeiling);
 					geoWriter.WriteWallBrush(v0, v1, backCeil, frontCeil, drawHeight, front.HighTexture, frontOffsetX, backSectIndex);
 				}
+				geoWriter.EndFuncStatic();
 
 				// Brush the back sidedefs in relation to the front sector heights
 				// This approach results in two overlapping brushes if both sides have a middle texture
 				// BUG FIXED: Must swap start/end vertices to ensure texture is drawn on correct face
 				// and begins at correct position
+				geoWriter.BeginFuncStatic(frontSectIndex);
 				if (back.LowRequired())
 				{
 					// level.minHeight, frontSector.floorHeight
@@ -230,8 +247,16 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				}
 				if (!back.MiddleTexture.Equals("-"))
 				{
+					float midTextureHeight = General.Map.Data.GetTextureImage(back.MiddleTexture).Height / cfg.downscale;
+
+					float midMinHeight = lowerUnpegged ? (frontFloor + backOffsetY) : (frontCeil - midTextureHeight + backOffsetY);
+					float midMaxHeight = lowerUnpegged ? (frontFloor + midTextureHeight + backOffsetY) : (frontCeil + backOffsetY);
+
+					if (midMinHeight < frontFloor) midMinHeight = frontFloor;
+					if (midMaxHeight > frontCeil) midMaxHeight = frontCeil;
+
 					float drawHeight = backOffsetY + (lowerUnpegged ? higherFloor : higherCeiling);
-					geoWriter.WriteWallBrush(v1, v0, frontFloor, frontCeil, drawHeight, back.MiddleTexture, backOffsetX, frontSectIndex);
+					geoWriter.WriteWallBrush(v1, v0, midMinHeight, midMaxHeight, drawHeight, back.MiddleTexture, backOffsetX, frontSectIndex);
 				}
 				if (back.HighRequired())
 				{
@@ -239,6 +264,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 					// frontSector.ceilHeight, level.maxHeight
 					geoWriter.WriteWallBrush(v1, v0, frontCeil, backCeil, drawHeight, back.HighTexture, backOffsetX, frontSectIndex);
 				}
+				geoWriter.EndFuncStatic();
 			}
 		}
 	}
@@ -324,18 +350,9 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 	internal class idStudioMapWriter
 	{
 		#region entities
-		private const string rootMap =
-@"Version 7
-HierarchyVersion 1
-entity {
-	entityDef world {
-		inherit = ""worldspawn"";
-		edit = {
-		}
-	}
-";
 
-		private const string rootRefmap =
+		// .map files have a default entityPrefix of nothing
+		private const string rootMap =
 @"Version 7
 HierarchyVersion 1
 entity {{
@@ -345,7 +362,8 @@ entity {{
 			entityPrefix = ""{0}"";
 		}}
 	}}
-";
+}}
+"; // World entity is now closed off to bind all brushes to static models
 
 		private const string entity_func_reference =
 @"entity {{
@@ -363,19 +381,40 @@ entity {{
 }}
 }}
 ";
+		// Parm 0 = [prefix]func_static_[staticNumber]
+		// Parm 1 = Map name
+		// Parm 2 = Sector Number
+		// Must close entity manually after adding brushes
+		private const string entity_func_static =
+@"entity {{
+	groups {{
+		""nav""
+		""sectors/{2}""
+	}}
+	entityDef {0} {{
+		inherit = ""func/static"";
+		edit = {{
+			renderModelInfo = {{
+				model = ""maps/{1}/{0}"";
+			}}
+			clipModelInfo = {{
+				clipModelName = ""maps/{1}/{0}"";
+			}}
+		}}
+	}}
+";
 
 		#endregion
-
-		// Must increment with every written brush
-		private static int brushHandle = 100000000; 
 
 
 		private StringBuilder writer = new StringBuilder();
 		private List<idStudioMapWriter> childMaps = new List<idStudioMapWriter>();
 		private idStudioExportSettings cfg;
 
-		private string fileName; // File name - EXCLUDING extension and any folder structure
-		private string prefix;   // Refmap's prefix for entity names
+		private string fileName;      // File name - EXCLUDING extension and any folder structure
+		private string fileExtension; // File extension - INCLUDING the period
+		private string prefix;        // Refmap's prefix for entity names - INCLUDING the underscore
+		private int staticModels = 0; // Number of static model entities
 
 
 		// Constructor for a root map file
@@ -383,48 +422,47 @@ entity {{
 		{
 			cfg = p_cfg;
 			fileName = cfg.mapName;
+			fileExtension = ".map";
+			
+			writer.Append(String.Format(rootMap, ""));
 			prefix = "";
-
-			writer.Append(rootMap);
 		}
 
+		// Parameter p_prefix should NOT include the underscore
 		private idStudioMapWriter(in idStudioMapWriter parent, string p_prefix)
 		{
 			cfg = parent.cfg;
-			prefix = p_prefix;
-			fileName = parent.fileName + "_" + prefix;
+			fileName = parent.fileName + "_" + p_prefix;
+			fileExtension = ".refmap";
 
-			writer.Append(String.Format(rootRefmap, prefix));
+			writer.Append(String.Format(rootMap, p_prefix));
+			prefix = p_prefix + "_";
 		}
 
+		// Parameter refmapPrefix should NOT include the underscore
 		public idStudioMapWriter AddRefmap(string refmapPrefix)
 		{
 			idStudioMapWriter newMap = new idStudioMapWriter(this, refmapPrefix);
 			childMaps.Add(newMap);
-			return newMap;
-		}
 
-		public bool IsRoot()
-		{
-			return prefix.Length == 0;
+			writer.AppendFormat(entity_func_reference, prefix, childMaps.Count, newMap.fileName);
+			return newMap;
 		}
 
 		public void SaveFile()
 		{
-			// Close Entity
-			writer.Append("\n}");
+			// Close World Entity
+			//writer.Append("\n}");
 
-			// Write all refmaps
-			for(int i = 0; i < childMaps.Count; i++)
-			{
-				string refmapEntity = String.Format(entity_func_reference,
-					IsRoot() ? "" : prefix + "_",
-					i + 1,
-					childMaps[i].fileName);
-				writer.Append(refmapEntity);
-			}
+			// Write all refmaps entities
+			//for(int i = 0; i < childMaps.Count; i++)
+			//{
+			//	writer.AppendFormat(entity_func_reference,
+			//		prefix,
+			//		i + 1,
+			//		childMaps[i].fileName);
+			//}
 
-			string fullPath = Path.Combine(cfg.modPath, "base/maps/", fileName + (IsRoot() ? ".map" : ".refmap"));
 			/*
 			 * A very stupid problem:
 			 * - idStudio's map parser will not accept uppercase scientific notation
@@ -444,6 +482,7 @@ entity {{
 					fileChars[i] = 'e';
 			}
 
+			string fullPath = Path.Combine(cfg.modPath, "base/maps/", fileName + fileExtension);
 			using (StreamWriter file = new StreamWriter(fullPath, false))
 				file.Write(fileChars);
 
@@ -451,40 +490,65 @@ entity {{
 				m.SaveFile();
 		}
 
+		public void BeginFuncStatic(int sectorNum)
+		{
+			string entityName = prefix + "func_static_" + ++staticModels;
+			writer.AppendFormat(entity_func_static, entityName, cfg.mapName, sectorNum);
+		}
+
+		public void EndFuncStatic()
+		{
+			writer.Append("}\n");
+		}
+
 		private void BeginBrushDef(BrushType type, int sectorNum)
 		{
-			void AddGroup(in string g)
-			{
-				writer.Append("\t\t\"" + g + "\"\n");
-			}
-			writer.Append("{\n\thandle = " + brushHandle++ + "\n\tgroups {\n");
+			const string brushStart =
+@"{{
+	groups {{
+		""nav""
+		""sectors/{0}""
+	}}
+	brushDef3 {{
+";
 
-			switch(type)
-			{
-				case BrushType.FLOOR:
-				AddGroup("sectors/" + sectorNum + "/floor");
-				AddGroup("floors/" + sectorNum);
-				AddGroup("nav");
-				break;
+			writer.AppendFormat(brushStart, sectorNum);
 
-				case BrushType.CEIL:
-				AddGroup("sectors/" + sectorNum + "/ceiling");
-				AddGroup("ceilings/" + sectorNum);
-				break;
+			//void AddGroup(in string g)
+			//{
+			//	writer.Append("\t\t\"" + g + "\"\n");
+			//}
 
-				case BrushType.WALL:
-				AddGroup("sectors/" + sectorNum + "/walls");
-				AddGroup("walls/" + sectorNum);
-				break;
+			// Removed brush handles - idStudio seems to auto-generate them just fine if they're missing
+			//writer.Append("{\n\tgroups {\n");
 
-				case BrushType.STEPCLIP:
-				AddGroup("sectors/" + sectorNum + "/stepclip");
-				AddGroup("stepclip/" + sectorNum);
-				AddGroup("nav");
-				break;
-			}
+			//switch(type)
+			//{
+			//	case BrushType.FLOOR:
+			//	AddGroup("sectors/" + sectorNum + "/floor");
+			//	AddGroup("floors/" + sectorNum);
+			//	AddGroup("nav");
+			//	break;
 
-			writer.Append("\t}\n\tbrushDef3 {\n");
+			//	case BrushType.CEIL:
+			//	AddGroup("sectors/" + sectorNum + "/ceiling");
+			//	AddGroup("ceilings/" + sectorNum);
+			//	break;
+
+			//	case BrushType.WALL:
+			//	AddGroup("sectors/" + sectorNum + "/walls");
+			//	AddGroup("walls/" + sectorNum);
+			//	break;
+
+			//	case BrushType.STEPCLIP:
+			//	AddGroup("sectors/" + sectorNum + "/stepclip");
+			//	AddGroup("stepclip/" + sectorNum);
+			//	AddGroup("nav");
+			//	break;
+			//}
+
+			//writer.Append("{\n\tbrushDef3 {\n"); old
+			//writer.Append("\t}\n\tbrushDef3 {\n"); older old
 		}
 
 		private static string TEXTURE_SHADOWCASTER = "art/tile/common/shadow_caster";
