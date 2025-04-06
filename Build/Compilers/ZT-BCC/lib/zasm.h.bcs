@@ -1,0 +1,6 @@
+#ifndef LIB_ZASM_H_BCS
+#define LIB_ZASM_H_BCS
+
+#import "zasm.bcs"
+
+#endif
