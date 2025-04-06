@@ -139,6 +139,7 @@
   <ItemGroup>
     <Compile Include="Compilers\AccCompiler.cs" />
 	<Compile Include="Compilers\BccCompiler.cs" />
+    <Compile Include="Compilers\ZtBccCompiler.cs" />
     <Compile Include="Compilers\NodesCompiler.cs" />
     <Compile Include="Config\ArgumentInfo.cs" />
     <Compile Include="Config\ExternalCommandSettings.cs" />
