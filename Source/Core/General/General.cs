@@ -227,6 +227,7 @@ namespace CodeImp.DoomBuilder
 		private static string autoloadfile;
 		private static string autoloadmap;
 		private static string autoloadconfig;
+		private static string autoloadscriptconfig;
 		private static bool autoloadstrictpatches;
 		private static DataLocationList autoloadresources;
 		private static bool delaymainwindow;
@@ -279,6 +280,7 @@ namespace CodeImp.DoomBuilder
 		public static string AutoLoadFile { get { return autoloadfile; } }
 		public static string AutoLoadMap { get { return autoloadmap; } }
 		public static string AutoLoadConfig { get { return autoloadconfig; } }
+		public static string AutoLoadScriptConfig { get { return autoloadscriptconfig; } }
 		public static bool AutoLoadStrictPatches { get { return autoloadstrictpatches; } }
 		public static DataLocationList AutoLoadResources { get { return new DataLocationList(autoloadresources); } }
 		public static bool DelayMainWindow { get { return delaymainwindow; } }
@@ -880,6 +882,12 @@ namespace CodeImp.DoomBuilder
 				{
 					// Store next arg as config filename information
 					autoloadconfig = argslist.Dequeue();
+				}
+				// Script config? (picks the compiler configuration to use)
+				else if (string.Compare(curarg, "-SCRIPTCONFIG", true) == 0)
+				{
+					// Store next arg as the script configuration name, being the configuration's file name.
+					autoloadscriptconfig = argslist.Dequeue().ToLowerInvariant();
 				}
 				// Strict patches rules?
 				else if(string.Compare(curarg, "-STRICTPATCHES", true) == 0)

@@ -560,6 +560,16 @@ namespace CodeImp.DoomBuilder.Windows
 					//mxd. Get proper configuration file
 					bool longtexturenamessupported = false;
 					string configfile = null;
+					string compiler = null;
+
+					// Set the script type of the map if provided.
+					if (General.AutoLoadScriptConfig != null)
+					{
+						if(General.CompiledScriptConfigs.ContainsKey(General.AutoLoadScriptConfig))
+						{
+							compiler = General.AutoLoadScriptConfig;
+						}
+					}
 
 					// Make sure the config file exists
 					if(General.GetConfigurationInfo(General.AutoLoadConfig) != null)
@@ -588,6 +598,11 @@ namespace CodeImp.DoomBuilder.Windows
 					
 					// Set configuration file (constructor already does this, but we want this info from the cmd args if possible)
 					options.ConfigFile = configfile;
+
+					if (compiler != null)
+					{
+						options.ScriptCompiler = compiler;
+					}
 				}
 				else
 				{
