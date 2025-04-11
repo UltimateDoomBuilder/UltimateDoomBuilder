@@ -159,7 +159,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				int frontSectIndex = front.Sector.Index;
 
 				// If true, this is a one-sided linedef
-				if (front.MiddleRequired())
+				if (line.Back == null)
 				{
 					// level.minHeight, level.maxHeight
 					float drawHeight = frontOffsetY + (lowerUnpegged ? frontFloor : frontCeil);
@@ -269,14 +269,6 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 		}
 	}
 
-	enum BrushType
-	{
-		FLOOR,
-		CEIL,
-		WALL,
-		STEPCLIP
-	}
-
 	#region 3D Math
 
 	internal struct idVertex
@@ -345,6 +337,65 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 
 	#endregion
 
+	#region Entity Writer
+
+	internal class idEntityBuilder
+	{
+		public StringBuilder builder = new StringBuilder();
+
+		public void WriteTo(StreamWriter file)
+		{
+			/*
+			 * A very stupid problem:
+			 * - idStudio's map parser will not accept uppercase scientific notation
+			 * - .Net's default ToString behavior always produces uppercase scientific notation
+			 * - No format specifier exists to simply lowercase the E without other side effects
+			 *		( "e" forcibly inserts scientific notation into all numbers)
+			 * - Thus, we have no choice but to iterate through the finished string and manually
+			 *		lowercase any scientific notation
+			 */
+			char[] fileChars = new char[builder.Length];
+			builder.CopyTo(0, fileChars, 0, builder.Length);
+
+			for (int i = 0; i < fileChars.Length; i++)
+			{
+				if (fileChars[i] != 'E') continue;
+
+				if (fileChars[i + 1] == '+' || fileChars[i + 1] == '-')
+					fileChars[i] = 'e';
+			}
+			file.Write(fileChars);
+		}
+
+		public void BeginBrushDef(string group, int sectorNum)
+		{
+			const string brushStart =
+@"{{
+	groups {{
+		""nav""
+		""{0}/{1}""
+	}}
+	brushDef3 {{
+";
+			builder.AppendFormat(brushStart, group, sectorNum);
+		}
+
+		public void WritePlane(idPlane p, string texture)
+		{
+			builder.AppendFormat("\t\t( {0} {1} {2} {3}", p.n.x, p.n.y, p.n.z, -p.d);
+			builder.Append(" ) ( ( 1 0 0 ) ( 0 1 0 ) ) \"");
+			builder.Append(texture);
+			builder.Append("\" 0 0 0\n");
+		}
+
+		public void EndBrushDef()
+		{
+			builder.Append("\t}\n}\n");
+		}
+	}
+
+	#endregion
+
 
 	#region Map Writer
 	internal class idStudioMapWriter
@@ -362,8 +413,7 @@ entity {{
 			entityPrefix = ""{0}"";
 		}}
 	}}
-}}
-"; // World entity is now closed off to bind all brushes to static models
+"; 
 
 		private const string entity_func_reference =
 @"entity {{
@@ -406,8 +456,10 @@ entity {{
 
 		#endregion
 
-
-		private StringBuilder writer = new StringBuilder();
+		//private StringBuilder worldEntity = new StringBuilder();
+		//private StringBuilder writer = new StringBuilder();
+		public idEntityBuilder world = new idEntityBuilder();
+		public idEntityBuilder ents = new idEntityBuilder();
 		private List<idStudioMapWriter> childMaps = new List<idStudioMapWriter>();
 		private idStudioExportSettings cfg;
 
@@ -424,7 +476,7 @@ entity {{
 			fileName = cfg.mapName;
 			fileExtension = ".map";
 			
-			writer.Append(String.Format(rootMap, ""));
+			world.builder.AppendFormat(rootMap, "");
 			prefix = "";
 		}
 
@@ -434,8 +486,8 @@ entity {{
 			cfg = parent.cfg;
 			fileName = parent.fileName + "_" + p_prefix;
 			fileExtension = ".refmap";
-
-			writer.Append(String.Format(rootMap, p_prefix));
+			
+			world.builder.AppendFormat(rootMap, p_prefix);
 			prefix = p_prefix + "_";
 		}
 
@@ -445,46 +497,21 @@ entity {{
 			idStudioMapWriter newMap = new idStudioMapWriter(this, refmapPrefix);
 			childMaps.Add(newMap);
 
-			writer.AppendFormat(entity_func_reference, prefix, childMaps.Count, newMap.fileName);
+			ents.builder.AppendFormat(entity_func_reference, prefix, childMaps.Count, newMap.fileName);
 			return newMap;
 		}
 
 		public void SaveFile()
 		{
 			// Close World Entity
-			//writer.Append("\n}");
-
-			// Write all refmaps entities
-			//for(int i = 0; i < childMaps.Count; i++)
-			//{
-			//	writer.AppendFormat(entity_func_reference,
-			//		prefix,
-			//		i + 1,
-			//		childMaps[i].fileName);
-			//}
-
-			/*
-			 * A very stupid problem:
-			 * - idStudio's map parser will not accept uppercase scientific notation
-			 * - .Net's default ToString behavior always produces uppercase scientific notation
-			 * - No format specifier exists to simply lowercase the E without other side effects
-			 *		( "e" forcibly inserts scientific notation into all numbers)
-			 * - Thus, we have no choice but to iterate through the finished string and manually
-			 *		lowercase any scientific notation
-			 */
-			char[] fileChars = new char[writer.Length];
-			writer.CopyTo(0, fileChars, 0, writer.Length);
-			for(int i = 0; i < fileChars.Length; i++)
-			{
-				if (fileChars[i] != 'E') continue;
-
-				if (fileChars[i + 1] == '+' || fileChars[i + 1] == '-')
-					fileChars[i] = 'e';
-			}
+			world.builder.Append("}\n");
 
 			string fullPath = Path.Combine(cfg.modPath, "base/maps/", fileName + fileExtension);
-			using (StreamWriter file = new StreamWriter(fullPath, false))
-				file.Write(fileChars);
+			using (StreamWriter file = new StreamWriter(fullPath, false)) {
+				world.WriteTo(file);
+				ents.WriteTo(file);
+			}
+				
 
 			foreach (idStudioMapWriter m in childMaps)
 				m.SaveFile();
@@ -493,79 +520,16 @@ entity {{
 		public void BeginFuncStatic(int sectorNum)
 		{
 			string entityName = prefix + "func_static_" + ++staticModels;
-			writer.AppendFormat(entity_func_static, entityName, cfg.mapName, sectorNum);
+			ents.builder.AppendFormat(entity_func_static, entityName, cfg.mapName, sectorNum);
 		}
 
 		public void EndFuncStatic()
 		{
-			writer.Append("}\n");
-		}
-
-		private void BeginBrushDef(BrushType type, int sectorNum)
-		{
-			const string brushStart =
-@"{{
-	groups {{
-		""nav""
-		""sectors/{0}""
-	}}
-	brushDef3 {{
-";
-
-			writer.AppendFormat(brushStart, sectorNum);
-
-			//void AddGroup(in string g)
-			//{
-			//	writer.Append("\t\t\"" + g + "\"\n");
-			//}
-
-			// Removed brush handles - idStudio seems to auto-generate them just fine if they're missing
-			//writer.Append("{\n\tgroups {\n");
-
-			//switch(type)
-			//{
-			//	case BrushType.FLOOR:
-			//	AddGroup("sectors/" + sectorNum + "/floor");
-			//	AddGroup("floors/" + sectorNum);
-			//	AddGroup("nav");
-			//	break;
-
-			//	case BrushType.CEIL:
-			//	AddGroup("sectors/" + sectorNum + "/ceiling");
-			//	AddGroup("ceilings/" + sectorNum);
-			//	break;
-
-			//	case BrushType.WALL:
-			//	AddGroup("sectors/" + sectorNum + "/walls");
-			//	AddGroup("walls/" + sectorNum);
-			//	break;
-
-			//	case BrushType.STEPCLIP:
-			//	AddGroup("sectors/" + sectorNum + "/stepclip");
-			//	AddGroup("stepclip/" + sectorNum);
-			//	AddGroup("nav");
-			//	break;
-			//}
-
-			//writer.Append("{\n\tbrushDef3 {\n"); old
-			//writer.Append("\t}\n\tbrushDef3 {\n"); older old
+			ents.builder.Append("}\n");
 		}
 
 		private static string TEXTURE_SHADOWCASTER = "art/tile/common/shadow_caster";
 		private static string TEXTURE_CLIP = "art/tile/common/clip/clip";
-
-		private void WritePlane(idPlane p, string texture)
-		{
-			writer.AppendFormat("\t\t( {0} {1} {2} {3}", p.n.x, p.n.y, p.n.z, -p.d);
-			writer.Append(" ) ( ( 1 0 0 ) ( 0 1 0 ) ) \"");
-			writer.Append(texture);
-			writer.Append("\" 0 0 0\n");
-		}
-
-		private void EndBrushDef()
-		{
-			writer.Append("\t}\n}\n");
-		}
 
 		public void WriteStepBrush(idVertex v0, idVertex v1, float minHeight, float maxHeight, int sectorNum)
 		{
@@ -617,10 +581,10 @@ entity {{
 			//bounds[4].SetFrom(axb, v0);
 
 			// Draw the Brush
-			BeginBrushDef(BrushType.STEPCLIP, sectorNum);
+			world.BeginBrushDef("stepclip", sectorNum);
 			for (int i = 0; i < bounds.Length; i++)
-				WritePlane(bounds[i], TEXTURE_CLIP);
-			EndBrushDef();
+				world.WritePlane(bounds[i], TEXTURE_CLIP);
+			world.EndBrushDef();
 		}
 
 		public void WriteWallBrush(idVertex v0, idVertex v1, float minHeight, float maxHeight, float drawHeight, string texture, float offsetX, int sectorNum)
@@ -662,11 +626,13 @@ entity {{
 
 
 			// PART 2: DRAW THE SURFACE
-			BeginBrushDef(BrushType.WALL, sectorNum);
+			// Note: If we want to change the group name, we must also change
+			// the func static group
+			ents.BeginBrushDef("sectors", sectorNum);
 
 			// Write untextured bounds
 			for (int i = 0; i < bounds.Length; i++)
-				WritePlane(bounds[i], TEXTURE_SHADOWCASTER);
+				ents.WritePlane(bounds[i], TEXTURE_SHADOWCASTER);
 
 			// Write Textured surface
 			// POSSIBLE TODO: TEST IF TEXTURE DOES NOT EXIST, draw as regular plane if it doesn't
@@ -685,12 +651,12 @@ entity {{
 			*/
 			float projection = ((horizontal.x * v0.x + horizontal.y * v0.y) / horizontal.Magnitude() - offsetX) * xScale * -1;
 
-			writer.AppendFormat(
+			ents.builder.AppendFormat(
 				"\t\t( {0} {1} {2} {3} ) ( ( {4} 0 {5} ) ( 0 {6} {7} ) ) \"art/wadtobrush/walls/{8}\" 0 0 0\n", 
 				surface.n.x, surface.n.y, surface.n.z, -surface.d,
-				xScale, projection, yScale, drawHeight * yScale, texture
+				xScale, projection, yScale, drawHeight * yScale, texture.ToLowerInvariant()
 			);
-			EndBrushDef();
+			ents.EndBrushDef();
 		}
 
 		public void WriteFloorBrush(idVertex a, idVertex b, idVertex c, float height, bool isCeiling, string texture, int sectorNum)
@@ -728,9 +694,9 @@ entity {{
 			}
 
 			// PART 2: DRAW THE SURFACE
-			BeginBrushDef(isCeiling ? BrushType.CEIL : BrushType.FLOOR, sectorNum);
+			ents.BeginBrushDef("sectors", sectorNum);
 			for(int i = 0; i < bounds.Length; i++)
-				WritePlane(bounds[i], TEXTURE_SHADOWCASTER);
+				ents.WritePlane(bounds[i], TEXTURE_SHADOWCASTER);
 
 			ImageData dimensions = General.Map.Data.GetFlatImage(texture);
 			float xRatio = 1.0f / dimensions.Width;
@@ -741,13 +707,13 @@ entity {{
 			float yShift = yRatio * cfg.yShift;
 
 			// horizontal: (0, -1) Vertical (1, 0) - Ensures proper rotation of textures (for floors)
-			writer.AppendFormat(
+			ents.builder.AppendFormat(
 				"\t\t( {0} {1} {2} {3} ) ( ( 0 {4} {5} ) ( {6} 0 {7} ) ) \"art/wadtobrush/flats/{8}\" 0 0 0\n",
 				surface.n.x, surface.n.y, surface.n.z, -surface.d,
-				isCeiling ? -xScale : xScale, xShift, -yScale, yShift, texture
+				isCeiling ? -xScale : xScale, xShift, -yScale, yShift, texture.ToLowerInvariant()
 			);
 
-			EndBrushDef();
+			ents.EndBrushDef();
 		}
 	}
 	#endregion
@@ -843,23 +809,26 @@ entity {{
 
 		private static void WriteArtAsset(string artDir, string matDir, string subFolder, ImageData img)
 		{
+			// idStudio requires all files be all-lowercase
+			string imgName = img.Name.ToLowerInvariant();
+
 			// PART ONE - Write the art file
 			// The way we get the bitmap ensures a "correct" bitmap independent
 			// of UDB's brightness preference is produced
-			string artPath = Path.Combine(artDir, subFolder, img.Name + ".tga");
+			string artPath = Path.Combine(artDir, subFolder, imgName + ".tga");
 			WriteTGA(artPath, new Bitmap(img.LocalGetBitmap(false)));
 
 
 			// PART 2 - Write the material2 decl
 			bool useAlpha = img.IsTranslucent || img.IsMasked;
 
-			string matPath = Path.Combine(matDir, subFolder, img.Name + ".decl");
+			string matPath = Path.Combine(matDir, subFolder, imgName + ".decl");
 
 			string format;
 
 			if (useAlpha)
-				format = String.Format(mat2_staticAlpha, subFolder, img.Name);
-			else format = String.Format(mat2_static, subFolder, img.Name);
+				format = String.Format(mat2_staticAlpha, subFolder, imgName);
+			else format = String.Format(mat2_static, subFolder, imgName);
 
 			File.WriteAllText(matPath, format);
 		}
