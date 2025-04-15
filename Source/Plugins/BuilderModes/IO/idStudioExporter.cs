@@ -74,11 +74,9 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			string mapPath = Path.Combine(cfg.modPath, "base/maps/");
 			Directory.CreateDirectory(mapPath);
 
-			// Concat the map name to ensure unique entity names when merging different levels into a single idStudio map
-			// FIX ME improve this so the map names aren't horrible
 			idStudioMapWriter rootWriter = new idStudioMapWriter(cfg);
-			idStudioMapWriter wadToBrushRef = rootWriter.AddRefmap(cfg.mapName + "wadtobrush"); 
-			idStudioMapWriter geoWriter = wadToBrushRef.AddRefmap(cfg.mapName + "wadgeo");
+			idStudioMapWriter wadToBrushRef = rootWriter.AddRefmap("wadtobrush"); 
+			idStudioMapWriter geoWriter = wadToBrushRef.AddRefmap("wadgeo");
 
 			ExportGeometry(geoWriter);
 			rootWriter.SaveFile();
@@ -90,7 +88,9 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			//General.ErrorLogger.Add(ErrorType.Warning, "We have " + General.Map.Map.Sectors.Count + " sectors");
 			foreach(Sector s in General.Map.Map.Sectors)
 			{
-				geoWriter.BeginFuncStatic(s.Index);
+				if (s.Triangles.Vertices.Count == 0)
+					continue;
+
 				List<idVertex> verts = new List<idVertex>();
 				verts.Capacity = s.Triangles.Vertices.Count;
 				foreach(Vector2D dv in s.Triangles.Vertices)
@@ -104,17 +104,33 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				float ceilingHeight = (s.CeilHeight + cfg.zShift) / cfg.downscale;
 
 				// Given in clockwise winding order
+				// Do the floors and ceilings separately to ensure their brushes are grouped to different statics
 				//General.ErrorLogger.Add(ErrorType.Warning, "HAs " + verts.Count + " verts");
-				for (int i = 0; i < verts.Count;)
+				if(!s.HasSkyFloor)
 				{
-					idVertex c = verts[i++];
-					idVertex b = verts[i++];
-					idVertex a = verts[i++];
-					geoWriter.WriteFloorBrush(a, b, c, floorHeight, false, s.FloorTexture, s.Index);
-					if(!s.CeilTexture.Equals("F_SKY1"))
-						geoWriter.WriteFloorBrush(a, b, c, ceilingHeight, true, s.CeilTexture, s.Index);
+					geoWriter.BeginFuncStatic("floor", s.Index);
+					for (int i = 0; i < verts.Count;)
+					{
+						idVertex c = verts[i++];
+						idVertex b = verts[i++];
+						idVertex a = verts[i++];
+						geoWriter.WriteFloorBrush(a, b, c, floorHeight, false, s.FloorTexture, s.Index);
+					}
+					geoWriter.EndFuncStatic();
 				}
-				geoWriter.EndFuncStatic();
+
+				if (!s.HasSkyCeiling)
+				{
+					geoWriter.BeginFuncStatic("ceil", s.Index);
+					for (int i = 0; i < verts.Count;)
+					{
+						idVertex c = verts[i++];
+						idVertex b = verts[i++];
+						idVertex a = verts[i++];
+						geoWriter.WriteFloorBrush(a, b, c, ceilingHeight, true, s.CeilTexture, s.Index);
+					}
+					geoWriter.EndFuncStatic();
+				}
 			}
 
 			/*
@@ -128,7 +144,6 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			* Upper Textures: Lowest Ceiling (Default) / Highest Ceiling (Upper Unpegged)
 			* Middle Textures:
 			*	- Do not repeat vertically - we must modify the brush bounds to account for this
-			*		- TODO: THIS QUIRK IS NOT YET IMPLEMENTED
 			*	- Highest Ceiling (Default) / Highest Floor (Lower Unpegged)
 			*
 			* No need for any crazy vector projection when calculating drawheight, so we can simply add in the
@@ -161,9 +176,12 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				// If true, this is a one-sided linedef
 				if (line.Back == null)
 				{
+					if (front.MiddleTexture.Equals("-") || front.MiddleTexture.Length == 0)
+						continue;
+
 					// level.minHeight, level.maxHeight
 					float drawHeight = frontOffsetY + (lowerUnpegged ? frontFloor : frontCeil);
-					geoWriter.BeginFuncStatic(frontSectIndex);
+					geoWriter.BeginFuncStatic("wall", frontSectIndex);
 					geoWriter.WriteWallBrush(v0, v1, frontFloor, frontCeil, drawHeight, front.MiddleTexture, frontOffsetX, frontSectIndex);
 					geoWriter.EndFuncStatic();
 					continue;
@@ -196,9 +214,17 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 					higherFloor = frontFloor;
 				}
 
-				geoWriter.BeginFuncStatic(backSectIndex);
+				// Ensures we don't create a static model entity with no brushes in it
+				bool drawLow = front.LowRequired();
+				bool drawMid = !front.MiddleTexture.Equals("-") && front.MiddleTexture.Length != 0;
+				bool drawHigh = front.HighRequired();
+				if (!drawLow && !drawMid && !drawHigh)
+					goto LABEL_SKIP_FRONT;
+
+
+				geoWriter.BeginFuncStatic("wall", backSectIndex);
 				// Brush the front sidedefs in relation to the back sector heights
-				if (front.LowRequired()) // This function checks a LOT more than whether the texture exists
+				if (drawLow) // This function checks a LOT more than whether the texture exists
 				{
 					// level.minHeight, backSector.floorHeight
 					float drawHeight = frontOffsetY + (lowerUnpegged ? frontCeil : higherFloor);
@@ -208,7 +234,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 					if (stepHeightCheck <= 24) // TODO: Consider adding a check for linedef's "impassable" flag
 						geoWriter.WriteStepBrush(v0, v1, lowerFloor, higherFloor, backSectIndex);
 				}
-				if (!front.MiddleTexture.Equals("-"))
+				if (drawMid)
 				{
 					// Since middle textures do not repeat vertically, we have to account for the texture height
 					float midTextureHeight = General.Map.Data.GetTextureImage(front.MiddleTexture).Height / cfg.downscale;
@@ -222,7 +248,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 					float drawHeight = frontOffsetY + (lowerUnpegged ? higherFloor : higherCeiling);
 					geoWriter.WriteWallBrush(v0, v1, midMinHeight, midMaxHeight, drawHeight, front.MiddleTexture, frontOffsetX, backSectIndex);
 				}
-				if (front.HighRequired())
+				if (drawHigh)
 				{
 					// backSector.ceilHeight, level.maxHeight
 					float drawHeight = frontOffsetY + (upperUnpegged ? higherCeiling : lowerCeiling);
@@ -230,12 +256,20 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				}
 				geoWriter.EndFuncStatic();
 
+
+				LABEL_SKIP_FRONT:
+				drawLow = back.LowRequired();
+				drawMid = !back.MiddleTexture.Equals("-") && back.MiddleTexture.Length != 0;
+				drawHigh = back.HighRequired();
+				if (!drawLow && !drawMid && !drawHigh)
+					continue;
+
 				// Brush the back sidedefs in relation to the front sector heights
 				// This approach results in two overlapping brushes if both sides have a middle texture
 				// BUG FIXED: Must swap start/end vertices to ensure texture is drawn on correct face
 				// and begins at correct position
-				geoWriter.BeginFuncStatic(frontSectIndex);
-				if (back.LowRequired())
+				geoWriter.BeginFuncStatic("wall", frontSectIndex);
+				if (drawLow)
 				{
 					// level.minHeight, frontSector.floorHeight
 					float drawHeight = backOffsetY + (lowerUnpegged ? backCeil : higherFloor);
@@ -245,7 +279,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 					if (stepHeightCheck <= 24)
 						geoWriter.WriteStepBrush(v1, v0, lowerFloor, higherFloor, frontSectIndex);
 				}
-				if (!back.MiddleTexture.Equals("-"))
+				if (drawMid)
 				{
 					float midTextureHeight = General.Map.Data.GetTextureImage(back.MiddleTexture).Height / cfg.downscale;
 
@@ -258,7 +292,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 					float drawHeight = backOffsetY + (lowerUnpegged ? higherFloor : higherCeiling);
 					geoWriter.WriteWallBrush(v1, v0, midMinHeight, midMaxHeight, drawHeight, back.MiddleTexture, backOffsetX, frontSectIndex);
 				}
-				if (back.HighRequired())
+				if (drawHigh)
 				{
 					float drawHeight = backOffsetY + (upperUnpegged ? higherCeiling : lowerCeiling);
 					// frontSector.ceilHeight, level.maxHeight
@@ -380,12 +414,27 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			builder.AppendFormat(brushStart, group, sectorNum);
 		}
 
-		public void WritePlane(idPlane p, string texture)
+		// When grouped to entities the grouping of brushes is irrelevant
+		public void BeginBrushDef()
+		{
+			const string brushStart =
+@"{
+	brushDef3 {
+";
+
+			builder.Append(brushStart);
+		}
+
+		public void WriteClipPlane(idPlane p)
 		{
 			builder.AppendFormat("\t\t( {0} {1} {2} {3}", p.n.x, p.n.y, p.n.z, -p.d);
-			builder.Append(" ) ( ( 1 0 0 ) ( 0 1 0 ) ) \"");
-			builder.Append(texture);
-			builder.Append("\" 0 0 0\n");
+			builder.Append(" ) ( ( 1 0 0 ) ( 0 1 0 ) ) \"art/tile/common/clip/clip\" 0 0 0\n");
+		}
+
+		public void WriteCasterPlane(idPlane p)
+		{
+			builder.AppendFormat("\t\t( {0} {1} {2} {3}", p.n.x, p.n.y, p.n.z, -p.d);
+			builder.Append(" ) ( ( 1 0 0 ) ( 0 1 0 ) ) \"art/tile/common/shadow_caster\" 0 0 0\n");
 		}
 
 		public void EndBrushDef()
@@ -431,15 +480,16 @@ entity {{
 }}
 }}
 ";
-		// Parm 0 = [prefix]func_static_[staticNumber]
+		// Parm 0 = entity name
 		// Parm 1 = Map name
-		// Parm 2 = Sector Number
+		// Parm 2 = Group
+		// Parm 3 = Subgroup
 		// Must close entity manually after adding brushes
 		private const string entity_func_static =
 @"entity {{
 	groups {{
 		""nav""
-		""sectors/{2}""
+		""{2}/{3}""
 	}}
 	entityDef {0} {{
 		inherit = ""func/static"";
@@ -456,8 +506,6 @@ entity {{
 
 		#endregion
 
-		//private StringBuilder worldEntity = new StringBuilder();
-		//private StringBuilder writer = new StringBuilder();
 		public idEntityBuilder world = new idEntityBuilder();
 		public idEntityBuilder ents = new idEntityBuilder();
 		private List<idStudioMapWriter> childMaps = new List<idStudioMapWriter>();
@@ -517,19 +565,17 @@ entity {{
 				m.SaveFile();
 		}
 
-		public void BeginFuncStatic(int sectorNum)
+		public void BeginFuncStatic(string group, int subGroup)
 		{
-			string entityName = prefix + "func_static_" + ++staticModels;
-			ents.builder.AppendFormat(entity_func_static, entityName, cfg.mapName, sectorNum);
+			// We include the map name to ensure uniqueness when merging multiple level refmaps
+			string entityName = prefix + cfg.mapName + "_func_static_" + ++staticModels;
+			ents.builder.AppendFormat(entity_func_static, entityName, cfg.mapName, group, subGroup);
 		}
 
 		public void EndFuncStatic()
 		{
 			ents.builder.Append("}\n");
 		}
-
-		private static string TEXTURE_SHADOWCASTER = "art/tile/common/shadow_caster";
-		private static string TEXTURE_CLIP = "art/tile/common/clip/clip";
 
 		public void WriteStepBrush(idVertex v0, idVertex v1, float minHeight, float maxHeight, int sectorNum)
 		{
@@ -583,12 +629,22 @@ entity {{
 			// Draw the Brush
 			world.BeginBrushDef("stepclip", sectorNum);
 			for (int i = 0; i < bounds.Length; i++)
-				world.WritePlane(bounds[i], TEXTURE_CLIP);
+				world.WriteClipPlane(bounds[i]);
 			world.EndBrushDef();
 		}
 
 		public void WriteWallBrush(idVertex v0, idVertex v1, float minHeight, float maxHeight, float drawHeight, string texture, float offsetX, int sectorNum)
 		{
+			// A just-incase to prevent broken brushes. 
+			// idStudio won't manually delete impossible brushes so we must
+			// ensure they're all tall enough to be selectable. 
+			if (maxHeight - minHeight < 0.0075f)
+			{
+				minHeight -= 100.0f / cfg.downscale;
+				maxHeight += 100.0f / cfg.downscale;
+				// return;
+			}
+
 			idPlane[] bounds = new idPlane[5]; // Untextured surfaces
 			idPlane surface = new idPlane();   // Texture surface
 			idVector horizontal = new idVector(v0, v1);
@@ -626,13 +682,11 @@ entity {{
 
 
 			// PART 2: DRAW THE SURFACE
-			// Note: If we want to change the group name, we must also change
-			// the func static group
-			ents.BeginBrushDef("sectors", sectorNum);
+			ents.BeginBrushDef();
 
 			// Write untextured bounds
 			for (int i = 0; i < bounds.Length; i++)
-				ents.WritePlane(bounds[i], TEXTURE_SHADOWCASTER);
+				ents.WriteCasterPlane(bounds[i]);
 
 			// Write Textured surface
 			// POSSIBLE TODO: TEST IF TEXTURE DOES NOT EXIST, draw as regular plane if it doesn't
@@ -694,9 +748,9 @@ entity {{
 			}
 
 			// PART 2: DRAW THE SURFACE
-			ents.BeginBrushDef("sectors", sectorNum);
+			ents.BeginBrushDef();
 			for(int i = 0; i < bounds.Length; i++)
-				ents.WritePlane(bounds[i], TEXTURE_SHADOWCASTER);
+				ents.WriteCasterPlane(bounds[i]);
 
 			ImageData dimensions = General.Map.Data.GetFlatImage(texture);
 			float xRatio = 1.0f / dimensions.Width;

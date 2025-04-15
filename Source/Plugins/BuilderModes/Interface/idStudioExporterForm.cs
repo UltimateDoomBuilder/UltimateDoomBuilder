@@ -69,32 +69,28 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 				if (line.Front == null)
 					continue;
 
-				if (!line.Front.LowTexture.Equals("-"))
-					MapTextures.Add(line.Front.LowTexture);
-				if (!line.Front.MiddleTexture.Equals("-"))
-					MapTextures.Add(line.Front.MiddleTexture);
-				if (!line.Front.HighTexture.Equals("-"))
-					MapTextures.Add(line.Front.HighTexture);
+				MapTextures.Add(line.Front.LowTexture);
+				MapTextures.Add(line.Front.MiddleTexture);
+				MapTextures.Add(line.Front.HighTexture);
 
 				if (line.Back == null)
 					continue;
 
-				if (!line.Back.LowTexture.Equals("-"))
-					MapTextures.Add(line.Back.LowTexture);
-				if (!line.Back.MiddleTexture.Equals("-"))
-					MapTextures.Add(line.Back.MiddleTexture);
-				if (!line.Back.HighTexture.Equals("-"))
-					MapTextures.Add(line.Back.HighTexture);
+				MapTextures.Add(line.Back.LowTexture);
+				MapTextures.Add(line.Back.MiddleTexture);
+				MapTextures.Add(line.Back.HighTexture);
 			}
 
 			foreach(Map.Sector sector in General.Map.Map.Sectors)
 			{
-				if (!sector.FloorTexture.Equals("-"))
-					MapFlats.Add(sector.FloorTexture);
-
-				if (!sector.CeilTexture.Equals("-"))
-					MapFlats.Add(sector.CeilTexture);
+				MapFlats.Add(sector.FloorTexture);
+				MapFlats.Add(sector.CeilTexture);
 			}
+
+			MapFlats.Remove("-");
+			MapFlats.Remove(""); // For some reason the empty string is a texture when exporting Hordemax maps
+			MapTextures.Remove("-");
+			MapTextures.Remove("");
 
 			gui_TextCountMap.Text = String.Format("{0} TGA images and {0} material2 decls will be created.", 
 				MapTextures.Count + MapFlats.Count);
