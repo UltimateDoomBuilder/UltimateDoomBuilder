@@ -94,6 +94,7 @@ special
 #define PLAYERINFO_MORPHTICS       121
 #define PLAYERINFO_MORPHED         122
 #define PLAYERINFO_READYWEAPON     123
+#define PLAYERINFO_SSDCLIENT       200
 
 // Return values for PLAYERINFO_MORPHED -------------------------------------
 
@@ -113,3 +114,10 @@ special
 #define ZD_GAMEINFO_IN_OVERTIME    1
 #define ZD_GAMEINFO_IN_WARMUP      2
 #define ZD_GAMEINFO_IN_LOBBY       3
+
+// More Properties you can use with GetLevelInfo ----------------------------
+
+#define LEVELINFO_VERTEX_MINX      100
+#define LEVELINFO_VERTEX_MAXX      101
+#define LEVELINFO_VERTEX_MINY      102
+#define LEVELINFO_VERTEX_MAXY      103
