@@ -42,7 +42,6 @@
             this.gui_Downscale = new System.Windows.Forms.NumericUpDown();
             this.gbTextureControls = new System.Windows.Forms.GroupBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.gui_ShowTextCount = new System.Windows.Forms.Label();
             this.gui_ExportTextures = new System.Windows.Forms.CheckBox();
             this.gui_CancelBtn = new System.Windows.Forms.Button();
             this.gui_ExportBtn = new System.Windows.Forms.Button();
@@ -51,6 +50,10 @@
             this.gui_MapName = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
+            this.gui_ExpMapTextures = new System.Windows.Forms.RadioButton();
+            this.gui_ExpAllTextures = new System.Windows.Forms.RadioButton();
+            this.gui_TextCountMap = new System.Windows.Forms.Label();
+            this.gui_TextCountAll = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gui_zShift)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gui_yShift)).BeginInit();
@@ -245,8 +248,11 @@
             // 
             // gbTextureControls
             // 
+            this.gbTextureControls.Controls.Add(this.gui_TextCountAll);
+            this.gbTextureControls.Controls.Add(this.gui_TextCountMap);
+            this.gbTextureControls.Controls.Add(this.gui_ExpAllTextures);
+            this.gbTextureControls.Controls.Add(this.gui_ExpMapTextures);
             this.gbTextureControls.Controls.Add(this.label3);
-            this.gbTextureControls.Controls.Add(this.gui_ShowTextCount);
             this.gbTextureControls.Controls.Add(this.gui_ExportTextures);
             this.gbTextureControls.Location = new System.Drawing.Point(12, 162);
             this.gbTextureControls.Name = "gbTextureControls";
@@ -257,29 +263,20 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(19, 42);
+            this.label3.Location = new System.Drawing.Point(3, 75);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(190, 13);
             this.label3.TabIndex = 14;
             this.label3.Text = "Exporting textures may take some time.";
-            // 
-            // gui_ShowTextCount
-            // 
-            this.gui_ShowTextCount.AutoSize = true;
-            this.gui_ShowTextCount.Location = new System.Drawing.Point(19, 20);
-            this.gui_ShowTextCount.Name = "gui_ShowTextCount";
-            this.gui_ShowTextCount.Size = new System.Drawing.Size(109, 13);
-            this.gui_ShowTextCount.TabIndex = 1;
-            this.gui_ShowTextCount.Text = "[FILE COUNT HERE]";
             // 
             // gui_ExportTextures
             // 
             this.gui_ExportTextures.AutoSize = true;
             this.gui_ExportTextures.Location = new System.Drawing.Point(6, 0);
             this.gui_ExportTextures.Name = "gui_ExportTextures";
-            this.gui_ExportTextures.Size = new System.Drawing.Size(129, 17);
+            this.gui_ExportTextures.Size = new System.Drawing.Size(100, 17);
             this.gui_ExportTextures.TabIndex = 0;
-            this.gui_ExportTextures.Text = "Export WAD Textures";
+            this.gui_ExportTextures.Text = "Export Textures";
             this.gui_ExportTextures.UseVisualStyleBackColor = true;
             // 
             // gui_CancelBtn
@@ -346,6 +343,46 @@
             this.label9.TabIndex = 15;
             this.label9.Text = "Not all map features may convert correctly.";
             // 
+            // gui_ExpMapTextures
+            // 
+            this.gui_ExpMapTextures.AutoSize = true;
+            this.gui_ExpMapTextures.Checked = true;
+            this.gui_ExpMapTextures.Location = new System.Drawing.Point(9, 21);
+            this.gui_ExpMapTextures.Name = "gui_ExpMapTextures";
+            this.gui_ExpMapTextures.Size = new System.Drawing.Size(114, 17);
+            this.gui_ExpMapTextures.TabIndex = 15;
+            this.gui_ExpMapTextures.TabStop = true;
+            this.gui_ExpMapTextures.Text = "Map Textures Only";
+            this.gui_ExpMapTextures.UseVisualStyleBackColor = true;
+            // 
+            // gui_ExpAllTextures
+            // 
+            this.gui_ExpAllTextures.AutoSize = true;
+            this.gui_ExpAllTextures.Location = new System.Drawing.Point(9, 41);
+            this.gui_ExpAllTextures.Name = "gui_ExpAllTextures";
+            this.gui_ExpAllTextures.Size = new System.Drawing.Size(80, 17);
+            this.gui_ExpAllTextures.TabIndex = 16;
+            this.gui_ExpAllTextures.Text = "All Textures";
+            this.gui_ExpAllTextures.UseVisualStyleBackColor = true;
+            // 
+            // gui_TextCountMap
+            // 
+            this.gui_TextCountMap.AutoSize = true;
+            this.gui_TextCountMap.Location = new System.Drawing.Point(129, 25);
+            this.gui_TextCountMap.Name = "gui_TextCountMap";
+            this.gui_TextCountMap.Size = new System.Drawing.Size(98, 13);
+            this.gui_TextCountMap.TabIndex = 17;
+            this.gui_TextCountMap.Text = "[Map Export Count]";
+            // 
+            // gui_TextCountAll
+            // 
+            this.gui_TextCountAll.AutoSize = true;
+            this.gui_TextCountAll.Location = new System.Drawing.Point(129, 43);
+            this.gui_TextCountAll.Name = "gui_TextCountAll";
+            this.gui_TextCountAll.Size = new System.Drawing.Size(88, 13);
+            this.gui_TextCountAll.TabIndex = 18;
+            this.gui_TextCountAll.Text = "[All Export Count]";
+            // 
             // idStudioExporterForm
             // 
             this.AcceptButton = this.gui_ExportBtn;
@@ -407,9 +444,12 @@
 		private System.Windows.Forms.TextBox gui_MapName;
 		private System.Windows.Forms.NumericUpDown gui_zShift;
 		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.Label gui_ShowTextCount;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.Label label9;
+		private System.Windows.Forms.RadioButton gui_ExpAllTextures;
+		private System.Windows.Forms.RadioButton gui_ExpMapTextures;
+		private System.Windows.Forms.Label gui_TextCountAll;
+		private System.Windows.Forms.Label gui_TextCountMap;
 	}
 }
