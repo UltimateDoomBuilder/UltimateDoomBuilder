@@ -176,7 +176,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				// If true, this is a one-sided linedef
 				if (line.Back == null)
 				{
-					if (front.MiddleTexture.Equals("-") || front.MiddleTexture.Length == 0)
+					if (front.MiddleTexture == "-")
 						continue;
 
 					// level.minHeight, level.maxHeight
@@ -216,89 +216,87 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 
 				// Ensures we don't create a static model entity with no brushes in it
 				bool drawLow = front.LowRequired();
-				bool drawMid = !front.MiddleTexture.Equals("-") && front.MiddleTexture.Length != 0;
+				bool drawMid = front.MiddleTexture != "-";
 				bool drawHigh = front.HighRequired();
-				if (!drawLow && !drawMid && !drawHigh)
-					goto LABEL_SKIP_FRONT;
 
-
-				geoWriter.BeginFuncStatic("wall", backSectIndex);
-				// Brush the front sidedefs in relation to the back sector heights
-				if (drawLow) // This function checks a LOT more than whether the texture exists
+				if(drawLow || drawMid || drawHigh)
 				{
-					// level.minHeight, backSector.floorHeight
-					float drawHeight = frontOffsetY + (lowerUnpegged ? frontCeil : higherFloor);
-					geoWriter.WriteWallBrush(v0, v1, frontFloor, backFloor, drawHeight, front.LowTexture, frontOffsetX, backSectIndex);
+					geoWriter.BeginFuncStatic("wall", backSectIndex);
+					// Brush the front sidedefs in relation to the back sector heights
+					if (drawLow) // This function checks a LOT more than whether the texture exists
+					{
+						// level.minHeight, backSector.floorHeight
+						float drawHeight = frontOffsetY + (lowerUnpegged ? frontCeil : higherFloor);
+						geoWriter.WriteWallBrush(v0, v1, frontFloor, backFloor, drawHeight, front.LowTexture, frontOffsetX, backSectIndex);
 
-					int stepHeightCheck = back.Sector.FloorHeight - front.Sector.FloorHeight;
-					if (stepHeightCheck <= 24) // TODO: Consider adding a check for linedef's "impassable" flag
-						geoWriter.WriteStepBrush(v0, v1, lowerFloor, higherFloor, backSectIndex);
+						int stepHeightCheck = back.Sector.FloorHeight - front.Sector.FloorHeight;
+						if (stepHeightCheck <= 24) // TODO: Consider adding a check for linedef's "impassable" flag
+							geoWriter.WriteStepBrush(v0, v1, lowerFloor, higherFloor, backSectIndex);
+					}
+					if (drawMid)
+					{
+						// Since middle textures do not repeat vertically, we have to account for the texture height
+						float midTextureHeight = General.Map.Data.GetTextureImage(front.MiddleTexture).Height / cfg.downscale;
+
+						float midMinHeight = lowerUnpegged ? (backFloor + frontOffsetY) : (backCeil - midTextureHeight + frontOffsetY);
+						float midMaxHeight = lowerUnpegged ? (backFloor + midTextureHeight + frontOffsetY) : (backCeil + frontOffsetY);
+
+						if (midMinHeight < backFloor) midMinHeight = backFloor;
+						if (midMaxHeight > backCeil) midMaxHeight = backCeil;
+
+						float drawHeight = frontOffsetY + (lowerUnpegged ? higherFloor : higherCeiling);
+						geoWriter.WriteWallBrush(v0, v1, midMinHeight, midMaxHeight, drawHeight, front.MiddleTexture, frontOffsetX, backSectIndex);
+					}
+					if (drawHigh)
+					{
+						// backSector.ceilHeight, level.maxHeight
+						float drawHeight = frontOffsetY + (upperUnpegged ? higherCeiling : lowerCeiling);
+						geoWriter.WriteWallBrush(v0, v1, backCeil, frontCeil, drawHeight, front.HighTexture, frontOffsetX, backSectIndex);
+					}
+					geoWriter.EndFuncStatic();
 				}
-				if (drawMid)
-				{
-					// Since middle textures do not repeat vertically, we have to account for the texture height
-					float midTextureHeight = General.Map.Data.GetTextureImage(front.MiddleTexture).Height / cfg.downscale;
 
-					float midMinHeight = lowerUnpegged ? (backFloor + frontOffsetY) : (backCeil - midTextureHeight + frontOffsetY);
-					float midMaxHeight = lowerUnpegged ? (backFloor + midTextureHeight + frontOffsetY) : (backCeil + frontOffsetY);
-
-					if (midMinHeight < backFloor) midMinHeight = backFloor;
-					if (midMaxHeight > backCeil) midMaxHeight = backCeil;
-
-					float drawHeight = frontOffsetY + (lowerUnpegged ? higherFloor : higherCeiling);
-					geoWriter.WriteWallBrush(v0, v1, midMinHeight, midMaxHeight, drawHeight, front.MiddleTexture, frontOffsetX, backSectIndex);
-				}
-				if (drawHigh)
-				{
-					// backSector.ceilHeight, level.maxHeight
-					float drawHeight = frontOffsetY + (upperUnpegged ? higherCeiling : lowerCeiling);
-					geoWriter.WriteWallBrush(v0, v1, backCeil, frontCeil, drawHeight, front.HighTexture, frontOffsetX, backSectIndex);
-				}
-				geoWriter.EndFuncStatic();
-
-
-				LABEL_SKIP_FRONT:
 				drawLow = back.LowRequired();
-				drawMid = !back.MiddleTexture.Equals("-") && back.MiddleTexture.Length != 0;
+				drawMid = back.MiddleTexture != "-";
 				drawHigh = back.HighRequired();
-				if (!drawLow && !drawMid && !drawHigh)
-					continue;
-
-				// Brush the back sidedefs in relation to the front sector heights
-				// This approach results in two overlapping brushes if both sides have a middle texture
-				// BUG FIXED: Must swap start/end vertices to ensure texture is drawn on correct face
-				// and begins at correct position
-				geoWriter.BeginFuncStatic("wall", frontSectIndex);
-				if (drawLow)
+				if(drawLow || drawMid || drawHigh)
 				{
-					// level.minHeight, frontSector.floorHeight
-					float drawHeight = backOffsetY + (lowerUnpegged ? backCeil : higherFloor);
-					geoWriter.WriteWallBrush(v1, v0, backFloor, frontFloor, drawHeight, back.LowTexture, backOffsetX, frontSectIndex);
+					// Brush the back sidedefs in relation to the front sector heights
+					// This approach results in two overlapping brushes if both sides have a middle texture
+					// BUG FIXED: Must swap start/end vertices to ensure texture is drawn on correct face
+					// and begins at correct position
+					geoWriter.BeginFuncStatic("wall", frontSectIndex);
+					if (drawLow)
+					{
+						// level.minHeight, frontSector.floorHeight
+						float drawHeight = backOffsetY + (lowerUnpegged ? backCeil : higherFloor);
+						geoWriter.WriteWallBrush(v1, v0, backFloor, frontFloor, drawHeight, back.LowTexture, backOffsetX, frontSectIndex);
 
-					int stepHeightCheck = front.Sector.FloorHeight - back.Sector.FloorHeight;
-					if (stepHeightCheck <= 24)
-						geoWriter.WriteStepBrush(v1, v0, lowerFloor, higherFloor, frontSectIndex);
+						int stepHeightCheck = front.Sector.FloorHeight - back.Sector.FloorHeight;
+						if (stepHeightCheck <= 24)
+							geoWriter.WriteStepBrush(v1, v0, lowerFloor, higherFloor, frontSectIndex);
+					}
+					if (drawMid)
+					{
+						float midTextureHeight = General.Map.Data.GetTextureImage(back.MiddleTexture).Height / cfg.downscale;
+
+						float midMinHeight = lowerUnpegged ? (frontFloor + backOffsetY) : (frontCeil - midTextureHeight + backOffsetY);
+						float midMaxHeight = lowerUnpegged ? (frontFloor + midTextureHeight + backOffsetY) : (frontCeil + backOffsetY);
+
+						if (midMinHeight < frontFloor) midMinHeight = frontFloor;
+						if (midMaxHeight > frontCeil) midMaxHeight = frontCeil;
+
+						float drawHeight = backOffsetY + (lowerUnpegged ? higherFloor : higherCeiling);
+						geoWriter.WriteWallBrush(v1, v0, midMinHeight, midMaxHeight, drawHeight, back.MiddleTexture, backOffsetX, frontSectIndex);
+					}
+					if (drawHigh)
+					{
+						float drawHeight = backOffsetY + (upperUnpegged ? higherCeiling : lowerCeiling);
+						// frontSector.ceilHeight, level.maxHeight
+						geoWriter.WriteWallBrush(v1, v0, frontCeil, backCeil, drawHeight, back.HighTexture, backOffsetX, frontSectIndex);
+					}
+					geoWriter.EndFuncStatic();
 				}
-				if (drawMid)
-				{
-					float midTextureHeight = General.Map.Data.GetTextureImage(back.MiddleTexture).Height / cfg.downscale;
-
-					float midMinHeight = lowerUnpegged ? (frontFloor + backOffsetY) : (frontCeil - midTextureHeight + backOffsetY);
-					float midMaxHeight = lowerUnpegged ? (frontFloor + midTextureHeight + backOffsetY) : (frontCeil + backOffsetY);
-
-					if (midMinHeight < frontFloor) midMinHeight = frontFloor;
-					if (midMaxHeight > frontCeil) midMaxHeight = frontCeil;
-
-					float drawHeight = backOffsetY + (lowerUnpegged ? higherFloor : higherCeiling);
-					geoWriter.WriteWallBrush(v1, v0, midMinHeight, midMaxHeight, drawHeight, back.MiddleTexture, backOffsetX, frontSectIndex);
-				}
-				if (drawHigh)
-				{
-					float drawHeight = backOffsetY + (upperUnpegged ? higherCeiling : lowerCeiling);
-					// frontSector.ceilHeight, level.maxHeight
-					geoWriter.WriteWallBrush(v1, v0, frontCeil, backCeil, drawHeight, back.HighTexture, backOffsetX, frontSectIndex);
-				}
-				geoWriter.EndFuncStatic();
 			}
 		}
 	}

@@ -28,6 +28,7 @@ using System.IO;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Controls;
 using CodeImp.DoomBuilder.Windows;
+using CodeImp.DoomBuilder.Map;
 
 namespace CodeImp.DoomBuilder.BuilderModes.Interface
 {
@@ -64,7 +65,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 			gui_yShift.Value = 0;
 			gui_zShift.Value = 0;
 
-			foreach(Map.Linedef line in General.Map.Map.Linedefs)
+			foreach(Linedef line in General.Map.Map.Linedefs)
 			{
 				if (line.Front == null)
 					continue;
@@ -81,7 +82,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 				MapTextures.Add(line.Back.HighTexture);
 			}
 
-			foreach(Map.Sector sector in General.Map.Map.Sectors)
+			foreach(Sector sector in General.Map.Map.Sectors)
 			{
 				MapFlats.Add(sector.FloorTexture);
 				MapFlats.Add(sector.CeilTexture);
