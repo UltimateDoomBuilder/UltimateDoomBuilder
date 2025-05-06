@@ -164,7 +164,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 
 			// The class can be an identifier or string literal
 			token = ReadToken();
-			if(!token.All(c => char.IsLetterOrDigit(c) || c == '"'))
+			if(!token.All(c => char.IsLetterOrDigit(c) || c == '"' || c == '_'))
 			{
 				ReportError($"Expected an alphanumeric string, got {token}");
 				return false;
