@@ -239,49 +239,18 @@ namespace CodeImp.DoomBuilder.ZDoom
 
             string outs = token.Value;
 
-            long cpos = stream.Position;
-            tokenizer.SkipWhitespace();
-            token = tokenizer.ReadToken();
-            if (token != null && token.Type == ZScriptTokenType.OpLessThan) // <
-            {
-                tokenizer.SkipWhitespace();
-                string internal_type = ParseTypeName();
-                if (internal_type == null)
-                    return null;
-                tokenizer.SkipWhitespace();
-                token = tokenizer.ReadToken();
-                if (token == null || (token.Type != ZScriptTokenType.OpGreaterThan && token.Type != ZScriptTokenType.Comma))
-                {
-                    parser.ReportError("Expected > or ,, got " + ((Object)token ?? "<null>").ToString());
-                    return null;
-                }
-                else if (token.Type == ZScriptTokenType.OpGreaterThan)
-                {
-                    return outs + "<" + internal_type + ">";
-                }
-                else
-                {
-                    tokenizer.SkipWhitespace();
-                    string second_internal_type = ParseTypeName();
-                    if (second_internal_type == null)
-                        return null;
+			switch (outs.ToLowerInvariant())
+			{
+				case "function":
+					return ParseFunctionPointer();
 
-                    tokenizer.SkipWhitespace();
-                    token = tokenizer.ExpectToken(ZScriptTokenType.OpGreaterThan);
-                    if (token == null || !token.IsValid)
-                    {
-                        parser.ReportError("Expected >, got " + ((Object)token ?? "<null>").ToString());
-                        return null;
-                    }
+				case "array":
+				case "map":
+				case "mapiterator":
+					return ParseGenericTemplate();
+			}
 
-                    return outs + "<" + internal_type + "," + second_internal_type + ">";
-                }
-            }
-            else
-            {
-                stream.Position = cpos;
-                return outs;
-            }
+			return outs;
         }
 
         private List<int> ParseArrayDimensions()
@@ -427,7 +396,161 @@ namespace CodeImp.DoomBuilder.ZDoom
 			return true;
 		}
 
-        private bool ParseProperty()
+		private string ParseFunctionPointer()
+		{
+			// Begin parsing from <
+			tokenizer.SkipWhitespace();
+			ZScriptToken token = tokenizer.ExpectToken(ZScriptTokenType.OpLessThan);
+			if (token == null || !token.IsValid)
+			{
+				parser.ReportError("Expected '<' after 'Function', got " + ((object)token ?? "<null>").ToString());
+				return null;
+			}
+
+			// Parse scope and Function<void> case
+			tokenizer.SkipWhitespace();
+			token = tokenizer.ExpectToken(ZScriptTokenType.Identifier);
+			string scope = null;
+			if (token != null && token.IsValid)
+			{
+				string tokenString = token.Value.ToLowerInvariant();
+				if (tokenString == "void") // Void without a scope means it's a void pointer, expect '>'
+				{
+					tokenizer.SkipWhitespace();
+					token = tokenizer.ExpectToken(ZScriptTokenType.OpGreaterThan);
+					if (token == null || !token.IsValid)
+					{
+						parser.ReportError("Expected '>' after void, got " + ((object)token ?? "<null>").ToString());
+						return null;
+					}
+					return "Function<void>";
+				}
+				else if (tokenString == "play" || tokenString == "ui" || tokenString == "clearscope")
+				{
+					scope = tokenString;
+				}
+				else
+				{
+					parser.ReportError("Expected function scope or 'void', got " + ((object)token ?? "<null>").ToString());
+					return null;
+				}
+			}
+
+			// Parse return types
+			List<string> returnTypes = new List<string>();
+			while (true)
+			{
+				tokenizer.SkipWhitespace();
+				string returnType = ParseTypeName();
+				if (returnType == null)
+				{
+					parser.ReportError("Expected return type, got " + ((object)token ?? "<null>").ToString());
+					return null;
+				}
+				returnTypes.Add(returnType);
+
+				tokenizer.SkipWhitespace();
+				token = tokenizer.ExpectToken(ZScriptTokenType.Comma, ZScriptTokenType.OpenParen);
+				if (token == null || !token.IsValid)
+				{
+					parser.ReportError("Expected ',' or '(', got " + ((object)token ?? "<null>").ToString());
+					return null;
+				}
+
+				if (token.Type == ZScriptTokenType.OpenParen)
+					break;
+			}
+
+			// Parse argument types
+			List<string> argumentTypes = new List<string>();
+			tokenizer.SkipWhitespace();
+			token = tokenizer.ExpectToken(ZScriptTokenType.CloseParen); // Handle empty argument list
+			if (token == null || !token.IsValid)
+			{
+				while (true)
+				{
+					tokenizer.SkipWhitespace();
+					string argType = ParseTypeName();
+					if (argType == null)
+					{
+						parser.ReportError("Expected argument type, got " + ((object)token ?? "<null>").ToString());
+						return null;
+					}
+					argumentTypes.Add(argType);
+
+					tokenizer.SkipWhitespace();
+					token = tokenizer.ExpectToken(ZScriptTokenType.Comma, ZScriptTokenType.CloseParen);
+					if (token == null || !token.IsValid)
+					{
+						parser.ReportError("Expected ',' or ')', got " + ((object)token ?? "<null>").ToString());
+						return null;
+					}
+
+					if (token.Type == ZScriptTokenType.CloseParen)
+						break;
+				}
+			}
+
+			// Template parsing done, expect '>'
+			tokenizer.SkipWhitespace();
+			token = tokenizer.ExpectToken(ZScriptTokenType.OpGreaterThan);
+			if (token == null || !token.IsValid)
+			{
+				parser.ReportError("Expected '>' after argument list, got " + ((object)token ?? "<null>").ToString());
+				return null;
+			}
+
+			return $"Function<{scope} {string.Join(", ", returnTypes)}({string.Join(", ", argumentTypes)})>";
+		}
+
+		private string ParseGenericTemplate()
+		{
+			tokenizer.SkipWhitespace();
+
+			// Expect the '<' token
+			ZScriptToken token = tokenizer.ExpectToken(ZScriptTokenType.OpLessThan);
+			if (token == null || !token.IsValid)
+			{
+				parser.ReportError("Expected '<' after 'Function', got " + ((object)token ?? "<null>").ToString());
+				return null;
+			}
+
+			tokenizer.SkipWhitespace();
+			string internal_type = ParseTypeName();
+			if (internal_type == null)
+				return null;
+
+			tokenizer.SkipWhitespace();
+			token = tokenizer.ReadToken();
+			if (token == null || (token.Type != ZScriptTokenType.OpGreaterThan && token.Type != ZScriptTokenType.Comma))
+			{
+				parser.ReportError("Expected > or ,, got " + ((Object)token ?? "<null>").ToString());
+				return null;
+			}
+			else if (token.Type == ZScriptTokenType.OpGreaterThan)
+			{
+				return "Array" + "<" + internal_type + ">";
+			}
+			else
+			{
+				tokenizer.SkipWhitespace();
+				string second_internal_type = ParseTypeName();
+				if (second_internal_type == null)
+					return null;
+
+				tokenizer.SkipWhitespace();
+				token = tokenizer.ExpectToken(ZScriptTokenType.OpGreaterThan);
+				if (token == null || !token.IsValid)
+				{
+					parser.ReportError("Expected >, got " + ((Object)token ?? "<null>").ToString());
+					return null;
+				}
+
+				return "Array" + "<" + internal_type + "," + second_internal_type + ">";
+			}
+		}
+
+		private bool ParseProperty()
         {
             // property identifier: identifier, identifier, identifier, ...;
             tokenizer.SkipWhitespace();
@@ -744,7 +867,7 @@ namespace CodeImp.DoomBuilder.ZDoom
                     if (typename == null)
                         return;
 
-                    types.Add(typename.ToLowerInvariant());
+					types.Add(typename.ToLowerInvariant());
                     typearraylens.Add(null);
                     long cpos = stream.Position;
                     tokenizer.SkipWhitespace();
