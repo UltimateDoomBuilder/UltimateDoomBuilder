@@ -237,23 +237,23 @@ namespace CodeImp.DoomBuilder.ZDoom
                 return null;
             }
 
-            string outs = token.Value;
+            string outs = token.Value.ToLowerInvariant();
+			if (outs == "function")
+				return ParseFunctionPointer();
 
-			switch (outs.ToLowerInvariant())
+			long cpos = stream.Position;
+			tokenizer.SkipWhitespace();
+			token = tokenizer.ReadToken();
+			if (token != null && token.Type == ZScriptTokenType.OpLessThan) // <
 			{
-				case "function":
-					return ParseFunctionPointer();
-
-				case "class":
-				case "readonly":
-				case "array":
-				case "map":
-				case "mapiterator":
-					return ParseGenericTemplate();
+				return ParseGenericTemplate(outs);
 			}
-
-			return outs;
-        }
+			else
+			{
+				stream.Position = cpos;
+				return outs;
+			}
+		}
 
         private List<int> ParseArrayDimensions()
         {
@@ -505,25 +505,15 @@ namespace CodeImp.DoomBuilder.ZDoom
 			return $"Function<{scope} {string.Join(", ", returnTypes)}({string.Join(", ", argumentTypes)})>";
 		}
 
-		private string ParseGenericTemplate()
+		private string ParseGenericTemplate(string genericType)
 		{
-			tokenizer.SkipWhitespace();
-
-			// Expect the '<' token
-			ZScriptToken token = tokenizer.ExpectToken(ZScriptTokenType.OpLessThan);
-			if (token == null || !token.IsValid)
-			{
-				parser.ReportError("Expected '<' after 'Function', got " + ((object)token ?? "<null>").ToString());
-				return null;
-			}
-
 			tokenizer.SkipWhitespace();
 			string internal_type = ParseTypeName();
 			if (internal_type == null)
 				return null;
 
 			tokenizer.SkipWhitespace();
-			token = tokenizer.ReadToken();
+			ZScriptToken token = tokenizer.ReadToken();
 			if (token == null || (token.Type != ZScriptTokenType.OpGreaterThan && token.Type != ZScriptTokenType.Comma))
 			{
 				parser.ReportError("Expected > or ,, got " + ((Object)token ?? "<null>").ToString());
@@ -531,7 +521,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 			}
 			else if (token.Type == ZScriptTokenType.OpGreaterThan)
 			{
-				return "Array" + "<" + internal_type + ">";
+				return genericType + "<" + internal_type + ">";
 			}
 			else
 			{
@@ -548,7 +538,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 					return null;
 				}
 
-				return "Array" + "<" + internal_type + "," + second_internal_type + ">";
+				return genericType + "<" + internal_type + "," + second_internal_type + ">";
 			}
 		}
 
