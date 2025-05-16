@@ -244,6 +244,8 @@ namespace CodeImp.DoomBuilder.ZDoom
 				case "function":
 					return ParseFunctionPointer();
 
+				case "class":
+				case "readonly":
 				case "array":
 				case "map":
 				case "mapiterator":
@@ -811,18 +813,31 @@ namespace CodeImp.DoomBuilder.ZDoom
 				bool isarray = false;
 
 				while (true)
-                {
+				{
                     tokenizer.SkipWhitespace();
-                    long cpos = stream.Position;
-                    token = tokenizer.ExpectToken(ZScriptTokenType.Identifier);
+					long cpos = stream.Position;
+					token = tokenizer.ExpectToken(ZScriptTokenType.Identifier);
                     if (token == null || !token.IsValid)
                     {
                         parser.ReportError("Expected modifier or name, got " + ((Object)cls_open ?? "<null>").ToString());
                         return;
                     }
 
-                    b_lower = token.Value.ToLowerInvariant();
-                    if (availablemodifiers.Contains(b_lower))
+					b_lower = token.Value.ToLowerInvariant();
+
+					// readonly is a special case, it can be used as a modifier like 'readonly int x' or as a type like 'readonly<int> x'
+					if (b_lower == "readonly")
+					{
+						// Peek ahead and parse it as a type if we see a '<'
+						token = tokenizer.ExpectToken(ZScriptTokenType.OpLessThan);
+						if (token != null && token.IsValid)
+						{
+							stream.Position = cpos;
+							break;
+						}
+					}
+
+					if (availablemodifiers.Contains(b_lower))
                     {
                         if (modifiers.Contains(b_lower))
                         {
