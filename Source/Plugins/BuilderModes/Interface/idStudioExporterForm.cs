@@ -23,10 +23,12 @@ SOFTWARE.
 */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Controls;
 using CodeImp.DoomBuilder.Windows;
+using CodeImp.DoomBuilder.Map;
 
 namespace CodeImp.DoomBuilder.BuilderModes.Interface
 {
@@ -46,6 +48,12 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 
 		public bool ExportTextures { get { return gui_ExportTextures.Checked; } }
 
+		public bool ExportAllTextures { get { return gui_ExpAllTextures.Checked; } }
+
+		public HashSet<string> MapTextures = new HashSet<string>();
+
+		public HashSet<string> MapFlats = new HashSet<string>();
+
 		public idStudioExporterForm()
 		{
 			InitializeComponent();
@@ -57,9 +65,41 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 			gui_yShift.Value = 0;
 			gui_zShift.Value = 0;
 
+			foreach(Linedef line in General.Map.Map.Linedefs)
+			{
+				if (line.Front == null)
+					continue;
+
+				MapTextures.Add(line.Front.LowTexture);
+				MapTextures.Add(line.Front.MiddleTexture);
+				MapTextures.Add(line.Front.HighTexture);
+
+				if (line.Back == null)
+					continue;
+
+				MapTextures.Add(line.Back.LowTexture);
+				MapTextures.Add(line.Back.MiddleTexture);
+				MapTextures.Add(line.Back.HighTexture);
+			}
+
+			foreach(Sector sector in General.Map.Map.Sectors)
+			{
+				MapFlats.Add(sector.FloorTexture);
+				MapFlats.Add(sector.CeilTexture);
+			}
+
+			MapFlats.Remove("-");
+			MapFlats.Remove(""); // For some reason the empty string is a texture when exporting Hordemax maps
+			MapTextures.Remove("-");
+			MapTextures.Remove("");
+
+			gui_TextCountMap.Text = String.Format("{0} TGA images and {0} material2 decls will be created.", 
+				MapTextures.Count + MapFlats.Count);
+
 			int imageCount = General.Map.Data.Textures.Count + General.Map.Data.Flats.Count;
-			gui_ShowTextCount.Text = String.Format("{0} TGA images and {1} material2 decls will be created.",
-				imageCount + 1, imageCount);
+			gui_TextCountAll.Text = String.Format("{0} TGA images and {0} material2 decls will be created.",
+				imageCount);
+
 		}
 
 		private void evt_FolderButton(object sender, EventArgs e)

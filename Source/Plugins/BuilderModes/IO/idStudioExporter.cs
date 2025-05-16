@@ -46,7 +46,6 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 		public float xShift;
 		public float yShift;
 		public float zShift;
-		public bool exportTextures;
 
 		public idStudioExportSettings(idStudioExporterForm form)
 		{
@@ -56,7 +55,6 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			xShift = form.xShift;
 			yShift = form.yShift;
 			zShift = form.zShift;
-			exportTextures = form.ExportTextures;
 		}
 	}
 
@@ -70,14 +68,14 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			form = p_form;
 			cfg = new idStudioExportSettings(form);
 		
-			if (cfg.exportTextures)
-				idStudioTextureExporter.ExportTextures(cfg.modPath);
+			if (form.ExportTextures)
+				idStudioTextureExporter.ExportTextures(form);
 
 			string mapPath = Path.Combine(cfg.modPath, "base/maps/");
 			Directory.CreateDirectory(mapPath);
 
 			idStudioMapWriter rootWriter = new idStudioMapWriter(cfg);
-			idStudioMapWriter wadToBrushRef = rootWriter.AddRefmap("wadtobrush");
+			idStudioMapWriter wadToBrushRef = rootWriter.AddRefmap("wadtobrush"); 
 			idStudioMapWriter geoWriter = wadToBrushRef.AddRefmap("wadgeo");
 
 			ExportGeometry(geoWriter);
@@ -90,6 +88,9 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			//General.ErrorLogger.Add(ErrorType.Warning, "We have " + General.Map.Map.Sectors.Count + " sectors");
 			foreach(Sector s in General.Map.Map.Sectors)
 			{
+				if (s.Triangles.Vertices.Count == 0)
+					continue;
+
 				List<idVertex> verts = new List<idVertex>();
 				verts.Capacity = s.Triangles.Vertices.Count;
 				foreach(Vector2D dv in s.Triangles.Vertices)
@@ -103,15 +104,32 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				float ceilingHeight = (s.CeilHeight + cfg.zShift) / cfg.downscale;
 
 				// Given in clockwise winding order
+				// Do the floors and ceilings separately to ensure their brushes are grouped to different statics
 				//General.ErrorLogger.Add(ErrorType.Warning, "HAs " + verts.Count + " verts");
-				for (int i = 0; i < verts.Count;)
+				if(!s.HasSkyFloor)
 				{
-					idVertex c = verts[i++];
-					idVertex b = verts[i++];
-					idVertex a = verts[i++];
-					geoWriter.WriteFloorBrush(a, b, c, floorHeight, false, s.FloorTexture, s.Index);
-					if(!s.CeilTexture.Equals("F_SKY1"))
+					geoWriter.BeginFuncStatic("floor", s.Index);
+					for (int i = 0; i < verts.Count;)
+					{
+						idVertex c = verts[i++];
+						idVertex b = verts[i++];
+						idVertex a = verts[i++];
+						geoWriter.WriteFloorBrush(a, b, c, floorHeight, false, s.FloorTexture, s.Index);
+					}
+					geoWriter.EndFuncStatic();
+				}
+
+				if (!s.HasSkyCeiling)
+				{
+					geoWriter.BeginFuncStatic("ceil", s.Index);
+					for (int i = 0; i < verts.Count;)
+					{
+						idVertex c = verts[i++];
+						idVertex b = verts[i++];
+						idVertex a = verts[i++];
 						geoWriter.WriteFloorBrush(a, b, c, ceilingHeight, true, s.CeilTexture, s.Index);
+					}
+					geoWriter.EndFuncStatic();
 				}
 			}
 
@@ -126,7 +144,6 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 			* Upper Textures: Lowest Ceiling (Default) / Highest Ceiling (Upper Unpegged)
 			* Middle Textures:
 			*	- Do not repeat vertically - we must modify the brush bounds to account for this
-			*		- TODO: THIS QUIRK IS NOT YET IMPLEMENTED
 			*	- Highest Ceiling (Default) / Highest Floor (Lower Unpegged)
 			*
 			* No need for any crazy vector projection when calculating drawheight, so we can simply add in the
@@ -157,11 +174,16 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 				int frontSectIndex = front.Sector.Index;
 
 				// If true, this is a one-sided linedef
-				if(front.MiddleRequired())
+				if (line.Back == null)
 				{
+					if (front.MiddleTexture == "-")
+						continue;
+
 					// level.minHeight, level.maxHeight
 					float drawHeight = frontOffsetY + (lowerUnpegged ? frontFloor : frontCeil);
+					geoWriter.BeginFuncStatic("wall", frontSectIndex);
 					geoWriter.WriteWallBrush(v0, v1, frontFloor, frontCeil, drawHeight, front.MiddleTexture, frontOffsetX, frontSectIndex);
+					geoWriter.EndFuncStatic();
 					continue;
 				}
 
@@ -192,65 +214,91 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 					higherFloor = frontFloor;
 				}
 
-				// Brush the front sidedefs in relation to the back sector heights
-				if (front.LowRequired()) // This function checks a LOT more than whether the texture exists
-				{
-					// level.minHeight, backSector.floorHeight
-					float drawHeight = frontOffsetY + (lowerUnpegged ? frontCeil : higherFloor);
-					geoWriter.WriteWallBrush(v0, v1, frontFloor, backFloor, drawHeight, front.LowTexture, frontOffsetX, backSectIndex);
+				// Ensures we don't create a static model entity with no brushes in it
+				bool drawLow = front.LowRequired();
+				bool drawMid = front.MiddleTexture != "-";
+				bool drawHigh = front.HighRequired();
 
-					int stepHeightCheck = back.Sector.FloorHeight - front.Sector.FloorHeight;
-					if (stepHeightCheck <= 24) // TODO: Consider adding a check for linedef's "impassable" flag
-						geoWriter.WriteStepBrush(v0, v1, lowerFloor, higherFloor, backSectIndex);
-				}
-				if (!front.MiddleTexture.Equals("-"))
+				if(drawLow || drawMid || drawHigh)
 				{
-					//float a = front.GetMiddleHeight();
-					float drawHeight = frontOffsetY + (lowerUnpegged ? higherFloor : higherCeiling);
-					geoWriter.WriteWallBrush(v0, v1, backFloor, backCeil, drawHeight, front.MiddleTexture, frontOffsetX, backSectIndex);
-				}
-				if (front.HighRequired())
-				{
-					// backSector.ceilHeight, level.maxHeight
-					float drawHeight = frontOffsetY + (upperUnpegged ? higherCeiling : lowerCeiling);
-					geoWriter.WriteWallBrush(v0, v1, backCeil, frontCeil, drawHeight, front.HighTexture, frontOffsetX, backSectIndex);
+					geoWriter.BeginFuncStatic("wall", backSectIndex);
+					// Brush the front sidedefs in relation to the back sector heights
+					if (drawLow) // This function checks a LOT more than whether the texture exists
+					{
+						// level.minHeight, backSector.floorHeight
+						float drawHeight = frontOffsetY + (lowerUnpegged ? frontCeil : higherFloor);
+						geoWriter.WriteWallBrush(v0, v1, frontFloor, backFloor, drawHeight, front.LowTexture, frontOffsetX, backSectIndex);
+
+						int stepHeightCheck = back.Sector.FloorHeight - front.Sector.FloorHeight;
+						if (stepHeightCheck <= 24) // TODO: Consider adding a check for linedef's "impassable" flag
+							geoWriter.WriteStepBrush(v0, v1, lowerFloor, higherFloor, backSectIndex);
+					}
+					if (drawMid)
+					{
+						// Since middle textures do not repeat vertically, we have to account for the texture height
+						float midTextureHeight = General.Map.Data.GetTextureImage(front.MiddleTexture).Height / cfg.downscale;
+
+						float midMinHeight = lowerUnpegged ? (backFloor + frontOffsetY) : (backCeil - midTextureHeight + frontOffsetY);
+						float midMaxHeight = lowerUnpegged ? (backFloor + midTextureHeight + frontOffsetY) : (backCeil + frontOffsetY);
+
+						if (midMinHeight < backFloor) midMinHeight = backFloor;
+						if (midMaxHeight > backCeil) midMaxHeight = backCeil;
+
+						float drawHeight = frontOffsetY + (lowerUnpegged ? higherFloor : higherCeiling);
+						geoWriter.WriteWallBrush(v0, v1, midMinHeight, midMaxHeight, drawHeight, front.MiddleTexture, frontOffsetX, backSectIndex);
+					}
+					if (drawHigh)
+					{
+						// backSector.ceilHeight, level.maxHeight
+						float drawHeight = frontOffsetY + (upperUnpegged ? higherCeiling : lowerCeiling);
+						geoWriter.WriteWallBrush(v0, v1, backCeil, frontCeil, drawHeight, front.HighTexture, frontOffsetX, backSectIndex);
+					}
+					geoWriter.EndFuncStatic();
 				}
 
-				// Brush the back sidedefs in relation to the front sector heights
-				// This approach results in two overlapping brushes if both sides have a middle texture
-				// BUG FIXED: Must swap start/end vertices to ensure texture is drawn on correct face
-				// and begins at correct position
-				if (back.LowRequired())
+				drawLow = back.LowRequired();
+				drawMid = back.MiddleTexture != "-";
+				drawHigh = back.HighRequired();
+				if(drawLow || drawMid || drawHigh)
 				{
-					// level.minHeight, frontSector.floorHeight
-					float drawHeight = backOffsetY + (lowerUnpegged ? backCeil : higherFloor);
-					geoWriter.WriteWallBrush(v1, v0, backFloor, frontFloor, drawHeight, back.LowTexture, backOffsetX, frontSectIndex);
+					// Brush the back sidedefs in relation to the front sector heights
+					// This approach results in two overlapping brushes if both sides have a middle texture
+					// BUG FIXED: Must swap start/end vertices to ensure texture is drawn on correct face
+					// and begins at correct position
+					geoWriter.BeginFuncStatic("wall", frontSectIndex);
+					if (drawLow)
+					{
+						// level.minHeight, frontSector.floorHeight
+						float drawHeight = backOffsetY + (lowerUnpegged ? backCeil : higherFloor);
+						geoWriter.WriteWallBrush(v1, v0, backFloor, frontFloor, drawHeight, back.LowTexture, backOffsetX, frontSectIndex);
 
-					int stepHeightCheck = front.Sector.FloorHeight - back.Sector.FloorHeight;
-					if (stepHeightCheck <= 24)
-						geoWriter.WriteStepBrush(v1, v0, lowerFloor, higherFloor, frontSectIndex);
-				}
-				if (!back.MiddleTexture.Equals("-"))
-				{
-					float drawHeight = backOffsetY + (lowerUnpegged ? higherFloor : higherCeiling);
-					geoWriter.WriteWallBrush(v1, v0, frontFloor, frontCeil, drawHeight, back.MiddleTexture, backOffsetX, frontSectIndex);
-				}
-				if (back.HighRequired())
-				{
-					float drawHeight = backOffsetY + (upperUnpegged ? higherCeiling : lowerCeiling);
-					// frontSector.ceilHeight, level.maxHeight
-					geoWriter.WriteWallBrush(v1, v0, frontCeil, backCeil, drawHeight, back.HighTexture, backOffsetX, frontSectIndex);
+						int stepHeightCheck = front.Sector.FloorHeight - back.Sector.FloorHeight;
+						if (stepHeightCheck <= 24)
+							geoWriter.WriteStepBrush(v1, v0, lowerFloor, higherFloor, frontSectIndex);
+					}
+					if (drawMid)
+					{
+						float midTextureHeight = General.Map.Data.GetTextureImage(back.MiddleTexture).Height / cfg.downscale;
+
+						float midMinHeight = lowerUnpegged ? (frontFloor + backOffsetY) : (frontCeil - midTextureHeight + backOffsetY);
+						float midMaxHeight = lowerUnpegged ? (frontFloor + midTextureHeight + backOffsetY) : (frontCeil + backOffsetY);
+
+						if (midMinHeight < frontFloor) midMinHeight = frontFloor;
+						if (midMaxHeight > frontCeil) midMaxHeight = frontCeil;
+
+						float drawHeight = backOffsetY + (lowerUnpegged ? higherFloor : higherCeiling);
+						geoWriter.WriteWallBrush(v1, v0, midMinHeight, midMaxHeight, drawHeight, back.MiddleTexture, backOffsetX, frontSectIndex);
+					}
+					if (drawHigh)
+					{
+						float drawHeight = backOffsetY + (upperUnpegged ? higherCeiling : lowerCeiling);
+						// frontSector.ceilHeight, level.maxHeight
+						geoWriter.WriteWallBrush(v1, v0, frontCeil, backCeil, drawHeight, back.HighTexture, backOffsetX, frontSectIndex);
+					}
+					geoWriter.EndFuncStatic();
 				}
 			}
 		}
-	}
-
-	enum BrushType
-	{
-		FLOOR,
-		CEIL,
-		WALL,
-		STEPCLIP
 	}
 
 	#region 3D Math
@@ -321,23 +369,88 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 
 	#endregion
 
+	#region Entity Writer
+
+	internal class idEntityBuilder
+	{
+		public StringBuilder builder = new StringBuilder();
+
+		public void WriteTo(StreamWriter file)
+		{
+			/*
+			 * A very stupid problem:
+			 * - idStudio's map parser will not accept uppercase scientific notation
+			 * - .Net's default ToString behavior always produces uppercase scientific notation
+			 * - No format specifier exists to simply lowercase the E without other side effects
+			 *		( "e" forcibly inserts scientific notation into all numbers)
+			 * - Thus, we have no choice but to iterate through the finished string and manually
+			 *		lowercase any scientific notation
+			 */
+			char[] fileChars = new char[builder.Length];
+			builder.CopyTo(0, fileChars, 0, builder.Length);
+
+			for (int i = 0; i < fileChars.Length; i++)
+			{
+				if (fileChars[i] != 'E') continue;
+
+				if (fileChars[i + 1] == '+' || fileChars[i + 1] == '-')
+					fileChars[i] = 'e';
+			}
+			file.Write(fileChars);
+		}
+
+		public void BeginBrushDef(string group, int sectorNum)
+		{
+			const string brushStart =
+@"{{
+	groups {{
+		""nav""
+		""{0}/{1}""
+	}}
+	brushDef3 {{
+";
+			builder.AppendFormat(brushStart, group, sectorNum);
+		}
+
+		// When grouped to entities the grouping of brushes is irrelevant
+		public void BeginBrushDef()
+		{
+			const string brushStart =
+@"{
+	brushDef3 {
+";
+
+			builder.Append(brushStart);
+		}
+
+		public void WriteClipPlane(idPlane p)
+		{
+			builder.AppendFormat("\t\t( {0} {1} {2} {3}", p.n.x, p.n.y, p.n.z, -p.d);
+			builder.Append(" ) ( ( 1 0 0 ) ( 0 1 0 ) ) \"art/tile/common/clip/clip\" 0 0 0\n");
+		}
+
+		public void WriteCasterPlane(idPlane p)
+		{
+			builder.AppendFormat("\t\t( {0} {1} {2} {3}", p.n.x, p.n.y, p.n.z, -p.d);
+			builder.Append(" ) ( ( 1 0 0 ) ( 0 1 0 ) ) \"art/tile/common/shadow_caster\" 0 0 0\n");
+		}
+
+		public void EndBrushDef()
+		{
+			builder.Append("\t}\n}\n");
+		}
+	}
+
+	#endregion
+
 
 	#region Map Writer
 	internal class idStudioMapWriter
 	{
 		#region entities
-		private const string rootMap =
-@"Version 7
-HierarchyVersion 1
-entity {
-	entityDef world {
-		inherit = ""worldspawn"";
-		edit = {
-		}
-	}
-";
 
-		private const string rootRefmap =
+		// .map files have a default entityPrefix of nothing
+		private const string rootMap =
 @"Version 7
 HierarchyVersion 1
 entity {{
@@ -347,7 +460,7 @@ entity {{
 			entityPrefix = ""{0}"";
 		}}
 	}}
-";
+"; 
 
 		private const string entity_func_reference =
 @"entity {{
@@ -365,19 +478,41 @@ entity {{
 }}
 }}
 ";
+		// Parm 0 = entity name
+		// Parm 1 = Map name
+		// Parm 2 = Group
+		// Parm 3 = Subgroup
+		// Must close entity manually after adding brushes
+		private const string entity_func_static =
+@"entity {{
+	groups {{
+		""nav""
+		""{2}/{3}""
+	}}
+	entityDef {0} {{
+		inherit = ""func/static"";
+		edit = {{
+			renderModelInfo = {{
+				model = ""maps/{1}/{0}"";
+			}}
+			clipModelInfo = {{
+				clipModelName = ""maps/{1}/{0}"";
+			}}
+		}}
+	}}
+";
 
 		#endregion
 
-		// Must increment with every written brush
-		private static int brushHandle = 100000000; 
-
-
-		private StringBuilder writer = new StringBuilder();
+		public idEntityBuilder world = new idEntityBuilder();
+		public idEntityBuilder ents = new idEntityBuilder();
 		private List<idStudioMapWriter> childMaps = new List<idStudioMapWriter>();
 		private idStudioExportSettings cfg;
 
-		private string fileName; // File name - EXCLUDING extension and any folder structure
-		private string prefix;   // Refmap's prefix for entity names
+		private string fileName;      // File name - EXCLUDING extension and any folder structure
+		private string fileExtension; // File extension - INCLUDING the period
+		private string prefix;        // Refmap's prefix for entity names - INCLUDING the underscore
+		private int staticModels = 0; // Number of static model entities
 
 
 		// Constructor for a root map file
@@ -385,124 +520,59 @@ entity {{
 		{
 			cfg = p_cfg;
 			fileName = cfg.mapName;
+			fileExtension = ".map";
+			
+			world.builder.AppendFormat(rootMap, "");
 			prefix = "";
-
-			writer.Append(rootMap);
 		}
 
+		// Parameter p_prefix should NOT include the underscore
 		private idStudioMapWriter(in idStudioMapWriter parent, string p_prefix)
 		{
 			cfg = parent.cfg;
-			prefix = p_prefix;
-			fileName = parent.fileName + "_" + prefix;
-
-			writer.Append(String.Format(rootRefmap, prefix));
+			fileName = parent.fileName + "_" + p_prefix;
+			fileExtension = ".refmap";
+			
+			world.builder.AppendFormat(rootMap, p_prefix);
+			prefix = p_prefix + "_";
 		}
 
+		// Parameter refmapPrefix should NOT include the underscore
 		public idStudioMapWriter AddRefmap(string refmapPrefix)
 		{
 			idStudioMapWriter newMap = new idStudioMapWriter(this, refmapPrefix);
 			childMaps.Add(newMap);
-			return newMap;
-		}
 
-		public bool IsRoot()
-		{
-			return prefix.Length == 0;
+			ents.builder.AppendFormat(entity_func_reference, prefix, childMaps.Count, newMap.fileName);
+			return newMap;
 		}
 
 		public void SaveFile()
 		{
-			// Close Entity
-			writer.Append("\n}");
+			// Close World Entity
+			world.builder.Append("}\n");
 
-			// Write all refmaps
-			for(int i = 0; i < childMaps.Count; i++)
-			{
-				string refmapEntity = String.Format(entity_func_reference,
-					IsRoot() ? "" : prefix + "_",
-					i + 1,
-					childMaps[i].fileName);
-				writer.Append(refmapEntity);
+			string fullPath = Path.Combine(cfg.modPath, "base/maps/", fileName + fileExtension);
+			using (StreamWriter file = new StreamWriter(fullPath, false)) {
+				world.WriteTo(file);
+				ents.WriteTo(file);
 			}
-
-			string fullPath = Path.Combine(cfg.modPath, "base/maps/", fileName + (IsRoot() ? ".map" : ".refmap"));
-			/*
-			 * A very stupid problem:
-			 * - idStudio's map parser will not accept uppercase scientific notation
-			 * - .Net's default ToString behavior always produces uppercase scientific notation
-			 * - No format specifier exists to simply lowercase the E without other side effects
-			 *		( "e" forcibly inserts scientific notation into all numbers)
-			 * - Thus, we have no choice but to iterate through the finished string and manually
-			 *		lowercase any scientific notation
-			 */
-			char[] fileChars = new char[writer.Length];
-			writer.CopyTo(0, fileChars, 0, writer.Length);
-			for(int i = 0; i < fileChars.Length; i++)
-			{
-				if (fileChars[i] != 'E') continue;
-
-				if (fileChars[i + 1] == '+' || fileChars[i + 1] == '-')
-					fileChars[i] = 'e';
-			}
-
-			using (StreamWriter file = new StreamWriter(fullPath, false))
-				file.Write(fileChars);
+				
 
 			foreach (idStudioMapWriter m in childMaps)
 				m.SaveFile();
 		}
 
-		private void BeginBrushDef(BrushType type, int sectorNum)
+		public void BeginFuncStatic(string group, int subGroup)
 		{
-			void AddGroup(in string g)
-			{
-				writer.Append("\t\t\"" + g + "\"\n");
-			}
-			writer.Append("{\n\thandle = " + brushHandle++ + "\n\tgroups {\n");
-
-			switch(type)
-			{
-				case BrushType.FLOOR:
-				AddGroup("sectors/" + sectorNum + "/floor");
-				AddGroup("floors/" + sectorNum);
-				AddGroup("nav");
-				break;
-
-				case BrushType.CEIL:
-				AddGroup("sectors/" + sectorNum + "/ceiling");
-				AddGroup("ceilings/" + sectorNum);
-				break;
-
-				case BrushType.WALL:
-				AddGroup("sectors/" + sectorNum + "/walls");
-				AddGroup("walls/" + sectorNum);
-				break;
-
-				case BrushType.STEPCLIP:
-				AddGroup("sectors/" + sectorNum + "/stepclip");
-				AddGroup("stepclip/" + sectorNum);
-				AddGroup("nav");
-				break;
-			}
-
-			writer.Append("\t}\n\tbrushDef3 {\n");
+			// We include the map name to ensure uniqueness when merging multiple level refmaps
+			string entityName = prefix + cfg.mapName + "_func_static_" + ++staticModels;
+			ents.builder.AppendFormat(entity_func_static, entityName, cfg.mapName, group, subGroup);
 		}
 
-		private static string TEXTURE_SHADOWCASTER = "art/tile/common/shadow_caster";
-		private static string TEXTURE_CLIP = "art/tile/common/clip/clip";
-
-		private void WritePlane(idPlane p, string texture)
+		public void EndFuncStatic()
 		{
-			writer.AppendFormat("\t\t( {0} {1} {2} {3}", p.n.x, p.n.y, p.n.z, -p.d);
-			writer.Append(" ) ( ( 1 0 0 ) ( 0 1 0 ) ) \"");
-			writer.Append(texture);
-			writer.Append("\" 0 0 0\n");
-		}
-
-		private void EndBrushDef()
-		{
-			writer.Append("\t}\n}\n");
+			ents.builder.Append("}\n");
 		}
 
 		public void WriteStepBrush(idVertex v0, idVertex v1, float minHeight, float maxHeight, int sectorNum)
@@ -555,14 +625,24 @@ entity {{
 			//bounds[4].SetFrom(axb, v0);
 
 			// Draw the Brush
-			BeginBrushDef(BrushType.STEPCLIP, sectorNum);
+			world.BeginBrushDef("stepclip", sectorNum);
 			for (int i = 0; i < bounds.Length; i++)
-				WritePlane(bounds[i], TEXTURE_CLIP);
-			EndBrushDef();
+				world.WriteClipPlane(bounds[i]);
+			world.EndBrushDef();
 		}
 
 		public void WriteWallBrush(idVertex v0, idVertex v1, float minHeight, float maxHeight, float drawHeight, string texture, float offsetX, int sectorNum)
 		{
+			// A just-incase to prevent broken brushes. 
+			// idStudio won't manually delete impossible brushes so we must
+			// ensure they're all tall enough to be selectable. 
+			if (maxHeight - minHeight < 0.0075f)
+			{
+				minHeight -= 100.0f / cfg.downscale;
+				maxHeight += 100.0f / cfg.downscale;
+				// return;
+			}
+
 			idPlane[] bounds = new idPlane[5]; // Untextured surfaces
 			idPlane surface = new idPlane();   // Texture surface
 			idVector horizontal = new idVector(v0, v1);
@@ -600,11 +680,11 @@ entity {{
 
 
 			// PART 2: DRAW THE SURFACE
-			BeginBrushDef(BrushType.WALL, sectorNum);
+			ents.BeginBrushDef();
 
 			// Write untextured bounds
 			for (int i = 0; i < bounds.Length; i++)
-				WritePlane(bounds[i], TEXTURE_SHADOWCASTER);
+				ents.WriteCasterPlane(bounds[i]);
 
 			// Write Textured surface
 			// POSSIBLE TODO: TEST IF TEXTURE DOES NOT EXIST, draw as regular plane if it doesn't
@@ -623,12 +703,12 @@ entity {{
 			*/
 			float projection = ((horizontal.x * v0.x + horizontal.y * v0.y) / horizontal.Magnitude() - offsetX) * xScale * -1;
 
-			writer.AppendFormat(
+			ents.builder.AppendFormat(
 				"\t\t( {0} {1} {2} {3} ) ( ( {4} 0 {5} ) ( 0 {6} {7} ) ) \"art/wadtobrush/walls/{8}\" 0 0 0\n", 
 				surface.n.x, surface.n.y, surface.n.z, -surface.d,
-				xScale, projection, yScale, drawHeight * yScale, texture
+				xScale, projection, yScale, drawHeight * yScale, texture.ToLowerInvariant()
 			);
-			EndBrushDef();
+			ents.EndBrushDef();
 		}
 
 		public void WriteFloorBrush(idVertex a, idVertex b, idVertex c, float height, bool isCeiling, string texture, int sectorNum)
@@ -666,9 +746,9 @@ entity {{
 			}
 
 			// PART 2: DRAW THE SURFACE
-			BeginBrushDef(isCeiling ? BrushType.CEIL : BrushType.FLOOR, sectorNum);
+			ents.BeginBrushDef();
 			for(int i = 0; i < bounds.Length; i++)
-				WritePlane(bounds[i], TEXTURE_SHADOWCASTER);
+				ents.WriteCasterPlane(bounds[i]);
 
 			ImageData dimensions = General.Map.Data.GetFlatImage(texture);
 			float xRatio = 1.0f / dimensions.Width;
@@ -679,13 +759,13 @@ entity {{
 			float yShift = yRatio * cfg.yShift;
 
 			// horizontal: (0, -1) Vertical (1, 0) - Ensures proper rotation of textures (for floors)
-			writer.AppendFormat(
+			ents.builder.AppendFormat(
 				"\t\t( {0} {1} {2} {3} ) ( ( 0 {4} {5} ) ( {6} 0 {7} ) ) \"art/wadtobrush/flats/{8}\" 0 0 0\n",
 				surface.n.x, surface.n.y, surface.n.z, -surface.d,
-				isCeiling ? -xScale : xScale, xShift, -yScale, yShift, texture
+				isCeiling ? -xScale : xScale, xShift, -yScale, yShift, texture.ToLowerInvariant()
 			);
 
-			EndBrushDef();
+			ents.EndBrushDef();
 		}
 	}
 	#endregion
@@ -702,10 +782,10 @@ entity {{
 			item[0] = {{
 				parms = {{
 					smoothness = {{
-						filePath = ""art/wadtobrush/black.tga"";
+						filePath = ""textures/system/constant_color/black.tga"";
 					}}
 					specular = {{
-						filePath = ""art/wadtobrush/black.tga"";
+						filePath = ""textures/system/constant_color/black.tga"";
 					}}
 					albedo = {{
 						filePath = ""art/wadtobrush/{0}{1}.tga"";
@@ -727,10 +807,10 @@ entity {{
 						filePath = ""art/wadtobrush/{0}{1}.tga"";
 					}}
 					smoothness = {{
-						filePath = ""art/wadtobrush/black.tga"";
+						filePath = ""textures/system/constant_color/black.tga"";
 					}}
 					specular = {{
-						filePath = ""art/wadtobrush/black.tga"";
+						filePath = ""textures/system/constant_color/black.tga"";
 					}}
 					albedo = {{
 						filePath = ""art/wadtobrush/{0}{1}.tga"";
@@ -745,9 +825,7 @@ entity {{
 		private const string dir_flats_mat = "base/declTree/material2/art/wadtobrush/flats/";
 		private const string dir_walls_art = "base/art/wadtobrush/walls/";
 		private const string dir_walls_mat = "base/declTree/material2/art/wadtobrush/walls/";
-
-		private const string path_black = "base/art/wadtobrush/black.tga";
-		
+	
 		// Unable to export patches at this time
 		//private const string dir_patches = "base/art/wadtobrush/patches/";
 		//private const string dir_patches_mat = "base/declTree/material2/art/wadtobrush/patches/";
@@ -783,56 +861,66 @@ entity {{
 
 		private static void WriteArtAsset(string artDir, string matDir, string subFolder, ImageData img)
 		{
+			// idStudio requires all files be all-lowercase
+			string imgName = img.Name.ToLowerInvariant();
+
 			// PART ONE - Write the art file
 			// The way we get the bitmap ensures a "correct" bitmap independent
 			// of UDB's brightness preference is produced
-			string artPath = Path.Combine(artDir, subFolder, img.Name + ".tga");
+			string artPath = Path.Combine(artDir, subFolder, imgName + ".tga");
 			WriteTGA(artPath, new Bitmap(img.LocalGetBitmap(false)));
 
 
 			// PART 2 - Write the material2 decl
 			bool useAlpha = img.IsTranslucent || img.IsMasked;
 
-			string matPath = Path.Combine(matDir, subFolder, img.Name + ".decl");
+			string matPath = Path.Combine(matDir, subFolder, imgName + ".decl");
 
 			string format;
 
 			if (useAlpha)
-				format = String.Format(mat2_staticAlpha, subFolder, img.Name);
-			else format = String.Format(mat2_static, subFolder, img.Name);
+				format = String.Format(mat2_staticAlpha, subFolder, imgName);
+			else format = String.Format(mat2_static, subFolder, imgName);
 
 			File.WriteAllText(matPath, format);
 		}
 
-		public static void ExportTextures(string modPath)
+		public static void ExportTextures(idStudioExporterForm form)
 		{
-			Directory.CreateDirectory(Path.Combine(modPath, dir_flats_art));
-			Directory.CreateDirectory(Path.Combine(modPath, dir_flats_mat));
-			Directory.CreateDirectory(Path.Combine(modPath, dir_walls_art));
-			Directory.CreateDirectory(Path.Combine(modPath, dir_walls_mat));
+			string modpath = form.ModPath;
+			Directory.CreateDirectory(Path.Combine(modpath, dir_flats_art));
+			Directory.CreateDirectory(Path.Combine(modpath, dir_flats_mat));
+			Directory.CreateDirectory(Path.Combine(modpath, dir_walls_art));
+			Directory.CreateDirectory(Path.Combine(modpath, dir_walls_mat));
 
-			// Generate black texture
+			string artDir = Path.Combine(modpath, "base/art/wadtobrush/");
+			string matDir = Path.Combine(modpath, "base/declTree/material2/art/wadtobrush/");
+
+			if(form.ExportAllTextures)
 			{
-				Color pixel = Color.FromArgb(255, 0, 0, 0);
-				int blackWidth = 64, blackHeight = 64;
-				Bitmap black = new Bitmap(blackWidth, blackHeight);
-				
+				//General.ErrorLogger.Add(ErrorType.Warning, "All Textures");
+				foreach (ImageData img in General.Map.Data.Textures)
+					WriteArtAsset(artDir, matDir, "walls/", img);
 
-				for(int w = 0; w < blackWidth; w++)
-					for(int h = 0; h < blackHeight; h++)
-						black.SetPixel(w, h, pixel);
+				foreach (ImageData img in General.Map.Data.Flats)
+					WriteArtAsset(artDir, matDir, "flats/", img);
+			}
+			else
+			{
+				//General.ErrorLogger.Add(ErrorType.Warning, "Map Textures");
+				foreach (string name in form.MapTextures)
+				{
+					ImageData img = General.Map.Data.GetTextureImage(name);
+					WriteArtAsset(artDir, matDir, "walls/", img);
+				}
 
-				WriteTGA(Path.Combine(modPath, path_black), black);
+				foreach(string name in form.MapFlats)
+				{
+					ImageData img = General.Map.Data.GetFlatImage(name);
+					WriteArtAsset(artDir, matDir, "flats/", img);
+				}
 			}
 
-			string artDir = Path.Combine(modPath, "base/art/wadtobrush/");
-			string matDir = Path.Combine(modPath, "base/declTree/material2/art/wadtobrush/");
-
-			foreach (ImageData img in General.Map.Data.Textures)
-				WriteArtAsset(artDir, matDir, "walls/", img);
-
-			foreach (ImageData img in General.Map.Data.Flats)
-				WriteArtAsset(artDir, matDir, "flats/", img);
 		}
 	}
 
