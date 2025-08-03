@@ -58,7 +58,11 @@ namespace CodeImp.DoomBuilder.VisualModes
 		// Options
 		private bool processgeometry;
 		private bool processthings;
-		
+
+		// Mouse status
+		protected Vector2D mousepos;
+		protected Vector3D mouseworldpos;
+
 		// Input
 		private bool keyforward;
 		private bool keybackward;
@@ -140,6 +144,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 			this.usedslopehandles = new HashSet<VisualSlope>();
 			this.processgeometry = true;
 			this.processthings = true;
+			this.mousepos = new Vector2D(float.NaN, float.NaN);
+			this.mouseworldpos = new Vector3D(float.NaN, float.NaN, float.NaN);
 			this.vertices = new Dictionary<Vertex, VisualVertexPair>(); //mxd
 			this.pickingmode = PickingMode.Default;
 
@@ -241,7 +247,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 			
 			// Start special input mode
 			General.Interface.EnableProcessing();
-			General.Interface.StartExclusiveMouseInput();
+			//General.Interface.StartExclusiveMouseInput();
 		}
 
 		// Mode is disengaged
@@ -395,10 +401,32 @@ namespace CodeImp.DoomBuilder.VisualModes
 				playerStart = null;
 			}
 		}
-		
+
 		#endregion
-		
+
 		#region ================== Input
+
+		// Mouse leaves the display
+		public override void OnMouseLeave(EventArgs e)
+		{
+			// Mouse is outside the display
+			mousepos = new Vector2D(float.NaN, float.NaN);
+			mouseworldpos = new Vector3D(float.NaN, float.NaN, float.NaN);
+
+			// Let the base class know
+			base.OnMouseLeave(e);
+		}
+
+		// Mouse moved inside the display
+		public override void OnMouseMove(MouseEventArgs e)
+		{
+			// Record last position
+			mousepos = new Vector2D(e.X, e.Y);
+			mouseworldpos = renderer.DisplayToWorld(mousepos, 100.0);
+
+			// Let the base class know
+			base.OnMouseMove(e);
+		}
 
 		// Mouse input
 		public override void OnMouseInput(Vector2D delta)

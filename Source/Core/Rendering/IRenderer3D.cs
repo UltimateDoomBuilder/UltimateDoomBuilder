@@ -33,7 +33,10 @@ namespace CodeImp.DoomBuilder.Rendering
 		bool DrawThingCages { get; set; }
 		bool ShowSelection { get; set; }
 		bool ShowHighlight { get; set; }
-		
+
+		// View methods
+		Vector3D DisplayToWorld(Vector2D mousepos, double distance);
+
 		// General methods
 		void PositionAndLookAt(Vector3D pos, Vector3D lookat);
 		

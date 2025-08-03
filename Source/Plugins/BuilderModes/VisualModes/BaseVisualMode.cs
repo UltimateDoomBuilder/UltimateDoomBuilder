@@ -514,7 +514,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			// Find the object we are aiming at
 			Vector3D start = General.Map.VisualCamera.Position;
-			Vector3D delta = General.Map.VisualCamera.Target - General.Map.VisualCamera.Position;
+			Vector3D delta = mouseworldpos - General.Map.VisualCamera.Position;
 			delta = delta.GetFixedLength(General.Settings.ViewDistance * PICK_RANGE);
 			VisualPickResult newtarget = PickObject(start, start + delta);
 			VisualSlope pickedhandle = null;
@@ -1656,8 +1656,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 			
 			// The mouse is always in motion
-			MouseEventArgs args = new MouseEventArgs(General.Interface.MouseButtons, 0, 0, 0, 0);
-			OnMouseMove(args);
+			//MouseEventArgs args = new MouseEventArgs(General.Interface.MouseButtons, 0, 0, 0, 0);
+			//OnMouseMove(args);
 		}
 
 		//mxd

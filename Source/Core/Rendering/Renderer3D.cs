@@ -28,6 +28,7 @@ using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.VisualModes;
 using CodeImp.DoomBuilder.GZBuilder;
 using ColorMap = System.Drawing.Imaging.ColorMap;
+using CodeImp.DoomBuilder.Windows;
 
 #endregion
 
@@ -47,7 +48,9 @@ namespace CodeImp.DoomBuilder.Rendering
 
 		// Matrices
 		private Matrix projection;
+		private Matrix inverseprojection;
 		private Matrix view3d;
+		private Matrix inverseview3d;
 		private Matrix billboard;
 		private Matrix view2d;
 		private Matrix world;
@@ -234,7 +237,45 @@ namespace CodeImp.DoomBuilder.Rendering
 			crosshairverts[3].u = 1.0f;
 			crosshairverts[3].v = 1.0f;
 		}
-		
+
+		#endregion
+
+		#region ================== View
+
+		private void MultiplyMatrixByXYZW(Matrix matrix, double x, double y, double z, double w, out double resultx, out double resulty, out double resultz, out double resultw)
+		{
+			resultx = matrix.M11 * x + matrix.M12 * y + matrix.M13 * z + matrix.M14 * w;
+			resulty = matrix.M21 * x + matrix.M22 * y + matrix.M23 * z + matrix.M24 * w;
+			resultz = matrix.M31 * x + matrix.M32 * y + matrix.M33 * z + matrix.M34 * w;
+			resultw = matrix.M41 * x + matrix.M42 * y + matrix.M43 * z + matrix.M44 * w;
+		}
+
+		// Attempt using inverse matrices
+		public Vector3D DisplayToWorld(Vector2D mousepos, double distance)
+		{
+			// Normalize to [-2, 2]
+			double mousex = 2.0 - (4.0 * mousepos.x / General.Map.Graphics.RenderTarget.ClientSize.Width);
+			double mousey = 2.0 - (4.0 * mousepos.y / General.Map.Graphics.RenderTarget.ClientSize.Height);
+
+			double vx, vy, vz, vw;
+			MultiplyMatrixByXYZW(inverseprojection, mousex, mousey, 1.0, 1.0, out vx, out vy, out vz, out vw);
+
+			double view_x = vx / vw;
+			double view_y = vy / vw;
+			double view_z = vz / vw;
+
+			Vector3D dir_view = new Vector3D(view_x, view_y, view_z).GetNormal();
+
+			double wx, wy, wz, ww;
+			MultiplyMatrixByXYZW(inverseview3d, dir_view.x, dir_view.y, dir_view.z, 0.0, out wx, out wy, out wz, out ww);
+
+			Vector3D dir = new Vector3D(wx, wy, wz).GetNormal() * -1;
+
+			General.Interface.DisplayStatus(StatusType.Info, $"{dir.x}, {dir.y}, {dir.z}, {vw}, {mousex}, {mousey}");
+
+			return General.Map.VisualCamera.Position + dir * distance;
+		}
+
 		#endregion
 
 		#region ================== Resources
@@ -281,8 +322,9 @@ namespace CodeImp.DoomBuilder.Rendering
 			
 			// Make the projection matrix
 			projection = Matrix.PerspectiveFov(fovy, aspect, PROJ_NEAR_PLANE, General.Settings.ViewDistance);
+			inverseprojection = projection.GetInvertedMatrix();
 
-			// We also need to re-create the 2D matrices, otherwise the corsshair will be distorted after the viewport is resized. See
+			// We also need to re-create the 2D matrices, otherwise the crosshair will be distorted after the viewport is resized. See
 			// https://github.com/jewalky/UltimateDoomBuilder/issues/321
 			// and
 			// https://github.com/jewalky/UltimateDoomBuilder/issues/777
@@ -306,6 +348,7 @@ namespace CodeImp.DoomBuilder.Rendering
 
             // Make the view matrix
             view3d = Matrix.LookAt(RenderDevice.V3(pos), RenderDevice.V3(lookat), new Vector3f(0f, 0f, 1f));
+			inverseview3d = view3d.GetInvertedMatrix();
 			
 			// Make the billboard matrix
 			billboard = Matrix.RotationZ((float)(anglexy + Angle2D.PI));

@@ -309,8 +309,59 @@ namespace CodeImp.DoomBuilder.Rendering
             return result;
         }
 
-        public override bool Equals(object o)
-        {
+		public float Determinant()
+		{
+			float minor11 = Det3(M22, M23, M24, M32, M33, M34, M42, M43, M44);
+			float minor12 = Det3(M21, M23, M24, M31, M33, M34, M41, M43, M44);
+			float minor13 = Det3(M21, M22, M24, M31, M32, M34, M41, M42, M44);
+			float minor14 = Det3(M21, M22, M23, M31, M32, M33, M41, M42, M43);
+
+			return M11 * minor11 - M12 * minor12 + M13 * minor13 - M14 * minor14;
+		}
+
+		private static float Det3(float a, float b, float c,
+							 float d, float e, float f,
+							 float g, float h, float i)
+		{
+			return a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g);
+		}
+
+		public Matrix GetInvertedMatrix()
+		{
+			float det = Determinant();
+			if (Math.Abs(det) < 1e-6f)
+			{
+				throw new InvalidOperationException("Determinant is 0");
+			}
+			float invDet = 1.0f / det;
+
+			Matrix result = new Matrix();
+
+			result.M11 = invDet * Det3(M22, M23, M24, M32, M33, M34, M42, M43, M44);
+			result.M12 = -invDet * Det3(M12, M13, M14, M32, M33, M34, M42, M43, M44);
+			result.M13 = invDet * Det3(M12, M13, M14, M22, M23, M24, M42, M43, M44);
+			result.M14 = -invDet * Det3(M12, M13, M14, M22, M23, M24, M32, M33, M34);
+
+			result.M21 = -invDet * Det3(M21, M23, M24, M31, M33, M34, M41, M43, M44);
+			result.M22 = invDet * Det3(M11, M13, M14, M31, M33, M34, M41, M43, M44);
+			result.M23 = -invDet * Det3(M11, M13, M14, M21, M23, M24, M41, M43, M44);
+			result.M24 = invDet * Det3(M11, M13, M14, M21, M23, M24, M31, M33, M34);
+
+			result.M31 = invDet * Det3(M21, M22, M24, M31, M32, M34, M41, M42, M44);
+			result.M32 = -invDet * Det3(M11, M12, M14, M31, M32, M34, M41, M42, M44);
+			result.M33 = invDet * Det3(M11, M12, M14, M21, M22, M24, M41, M42, M44);
+			result.M34 = -invDet * Det3(M11, M12, M14, M21, M22, M24, M31, M32, M34);
+
+			result.M41 = -invDet * Det3(M21, M22, M23, M31, M32, M33, M41, M42, M43);
+			result.M42 = invDet * Det3(M11, M12, M13, M31, M32, M33, M41, M42, M43);
+			result.M43 = -invDet * Det3(M11, M12, M13, M21, M22, M23, M41, M42, M43);
+			result.M44 = invDet * Det3(M11, M12, M13, M21, M22, M23, M31, M32, M33);
+
+			return result;
+		}
+
+		public override bool Equals(object o)
+		{
             if (o is Matrix)
             {
                 Matrix v = (Matrix)o;
