@@ -4816,6 +4816,35 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 		}
 
+		[BeginAction("selectoppositeside")]
+		public void SelectOppositeSide()
+		{
+			foreach (var o in selectedobjects.ToList())
+			{
+				IVisualEventReceiver otherObject = null;
+
+				if (o is VisualFloor floor && floor.ExtraFloor == null)
+					otherObject = floor.Sector.Ceiling;
+				else if (o is VisualCeiling ceiling && ceiling.ExtraFloor == null)
+					otherObject = ceiling.Sector.Floor;
+				else if (o is VisualFloor extraFloor)
+					otherObject = extraFloor.Sector.ExtraCeilings.Find(ec => ec.ExtraFloor == extraFloor.ExtraFloor);
+				else if (o is VisualCeiling extraCeiling)
+					otherObject = extraCeiling.Sector.ExtraFloors.Find(ef => ef.ExtraFloor == extraCeiling.ExtraFloor);
+				else if (o is VisualMiddleDouble side)
+				{
+					BaseVisualSector otherSector = (BaseVisualSector)GetVisualSector(side.Sidedef.Other.Sector);
+					otherObject = otherSector.GetSidedefParts(side.Sidedef.Other).middledouble;
+				}
+
+				if (otherObject != null && !otherObject.Selected)
+				{
+					otherObject.OnSelectBegin();
+					otherObject.OnSelectEnd();
+				}
+			}
+		}
+
 		#endregion
 
 		#region ================== Texture Alignment
