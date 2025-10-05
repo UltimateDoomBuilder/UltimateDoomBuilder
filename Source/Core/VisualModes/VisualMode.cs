@@ -59,6 +59,10 @@ namespace CodeImp.DoomBuilder.VisualModes
 		private bool processgeometry;
 		private bool processthings;
 		
+		// Mouse status
+		protected Vector2D mousepos;
+		protected Vector3D mouseworlddir;
+
 		// Input
 		private bool keyforward;
 		private bool keybackward;
@@ -67,6 +71,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		private bool keyup;
 		private bool keydown;
 		private bool orbit;
+		protected bool cursorunlocked;
 
 		//mxd
 		private List<VisualThing> selectedVisualThings;
@@ -113,6 +118,11 @@ namespace CodeImp.DoomBuilder.VisualModes
 		public Dictionary<Sector, List<VisualSlope>> VertexSlopeHandles { get { return vertexslopehandles; } }
 		public HashSet<VisualSlope> UsedSlopeHandles { get { return usedslopehandles; } }
 
+		public Vector3D PickingDir =>
+			cursorunlocked && mouseworlddir.IsFinite() ?
+				mouseworlddir :
+				General.Map.VisualCamera.Target - General.Map.VisualCamera.Position;
+
 		// Rendering
 		public IRenderer3D Renderer { get { return renderer; } }
 		
@@ -140,6 +150,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 			this.usedslopehandles = new HashSet<VisualSlope>();
 			this.processgeometry = true;
 			this.processthings = true;
+			this.mousepos = new Vector2D(float.NaN, float.NaN);
+			this.mouseworlddir = new Vector3D(float.NaN, float.NaN, float.NaN);
 			this.vertices = new Dictionary<Vertex, VisualVertexPair>(); //mxd
 			this.pickingmode = PickingMode.Default;
 
@@ -241,7 +253,8 @@ namespace CodeImp.DoomBuilder.VisualModes
 			
 			// Start special input mode
 			General.Interface.EnableProcessing();
-			General.Interface.StartExclusiveMouseInput();
+			if(!cursorunlocked)
+				General.Interface.StartExclusiveMouseInput();
 		}
 
 		// Mode is disengaged
@@ -400,6 +413,28 @@ namespace CodeImp.DoomBuilder.VisualModes
 		
 		#region ================== Input
 
+		// Mouse leaves the display
+		public override void OnMouseLeave(EventArgs e)
+		{
+			// Mouse is outside the display
+			mousepos = new Vector2D(float.NaN, float.NaN);
+			mouseworlddir = new Vector3D(float.NaN, float.NaN, float.NaN);
+
+			// Let the base class know
+			base.OnMouseLeave(e);
+		}
+
+		// Mouse moved inside the display
+		public override void OnMouseMove(MouseEventArgs e)
+		{
+			// Record last position
+			mousepos = new Vector2D(e.X, e.Y);
+			mouseworlddir = renderer.DisplayToWorld(mousepos);
+
+			// Let the base class know
+			base.OnMouseMove(e);
+		}
+
 		// Mouse input
 		public override void OnMouseInput(Vector2D delta)
 		{
@@ -525,6 +560,21 @@ namespace CodeImp.DoomBuilder.VisualModes
 			orbitPointPicked = false;
 		}
 
+		[BeginAction("unlockcursor", BaseAction = true)]
+		public virtual void BeginUnlockCursor()
+		{
+			cursorunlocked = !cursorunlocked;
+
+			if(cursorunlocked)
+			{
+				General.Interface.StopExclusiveMouseInput();
+			}
+			else
+			{
+				General.Interface.StartExclusiveMouseInput();
+			}
+		}
+
 		[BeginAction("moveup", BaseAction = true)]
 		public virtual void BeginMoveUp()
 		{
@@ -614,7 +664,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		public Vector3D GetHitPosition() 
 		{
 			Vector3D start = General.Map.VisualCamera.Position;
-			Vector3D delta = General.Map.VisualCamera.Target - General.Map.VisualCamera.Position;
+			Vector3D delta = PickingDir;
 			delta = delta.GetFixedLength(General.Settings.ViewDistance * 0.98f);
 			VisualPickResult target = PickObject(start, start + delta);
 
@@ -1188,11 +1238,11 @@ namespace CodeImp.DoomBuilder.VisualModes
 						selectedVisualThings.Add(group.Value);
 				}
 
-				//if nothing is selected - try to get thing from hilighted object
+				//if nothing is selected - try to get thing from highlighted object
 				if(selectedVisualThings.Count == 0) 
 				{
 					Vector3D start = General.Map.VisualCamera.Position;
-					Vector3D delta = General.Map.VisualCamera.Target - General.Map.VisualCamera.Position;
+					Vector3D delta = PickingDir;
 					delta = delta.GetFixedLength(General.Settings.ViewDistance * 0.98f);
 					VisualPickResult target = PickObject(start, start + delta);
 
@@ -1262,7 +1312,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		private VisualGeometry GetHilightedSurface() 
 		{
 			Vector3D start = General.Map.VisualCamera.Position;
-			Vector3D delta = General.Map.VisualCamera.Target - General.Map.VisualCamera.Position;
+			Vector3D delta = PickingDir;
 			delta = delta.GetFixedLength(General.Settings.ViewDistance * 0.98f);
 			VisualPickResult target = PickObject(start, start + delta);
 
