@@ -2853,8 +2853,25 @@ namespace CodeImp.DoomBuilder.Windows
 			// Get the item that was clicked
 			ToolStripItem item = (sender as ToolStripItem);
 
+			// The case of the filename might be different when the file was renamed, due to case sensitivity, so we need to find the exact file
+			string filename = item.Tag.ToString();
+			string[] possiblefiles = Directory.GetFiles(Path.GetDirectoryName(filename), Path.GetFileName(filename));
+
+			if (!possiblefiles.Contains(filename))
+			{
+				// This should never happen
+				if (possiblefiles.Length == 0)
+				{
+					General.Interface.DisplayStatus(StatusType.Warning, $"The file '{filename}  could not be found.");
+					return;
+				}
+
+				// Just pick the first matching file
+				filename = possiblefiles[0];
+			}
+
 			// Open this file
-			General.OpenMapFile(item.Tag.ToString(), null);
+			General.OpenMapFile(filename, null);
 		}
 
 		//mxd
