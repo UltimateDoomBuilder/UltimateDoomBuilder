@@ -129,8 +129,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				setuponloadedtexture = 0;
 			}
 
-			// Get texture scaled size. Round up, because that's apparently what GZDoom does
-			Vector2D tsz = new Vector2D(Math.Ceiling(base.Texture.ScaledWidth / tscale.x), Math.Ceiling(base.Texture.ScaledHeight / tscale.y));
+			// Get texture scaled size
+			Vector2D tsz = new Vector2D(base.Texture.ScaledWidth / tscale.x, base.Texture.ScaledHeight / tscale.y);
 			
 			// Get texture offsets
 			Vector2D tof = new Vector2D(Sidedef.OffsetX, Sidedef.OffsetY);
@@ -146,9 +146,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				// If the texture gets replaced with a "hires" texture it adds more fuckery
 				if (base.Texture is HiResImage)
 					tof *= tscaleAbs;
-
-				// Round up, since that's apparently what GZDoom does. Not sure if this is the right place or if it also has to be done earlier
-				tof = new Vector2D(Math.Ceiling(tof.x), Math.Ceiling(tof.y));
 			}
 
 			// Determine texture coordinates plane as they would be in normal circumstances.
