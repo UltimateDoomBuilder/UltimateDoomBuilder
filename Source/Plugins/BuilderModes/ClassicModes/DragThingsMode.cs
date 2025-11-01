@@ -397,7 +397,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				}
 
 				//mxd. Snap selected things to map format accuracy
-				foreach(Thing thing in dragthings) thing.SnapToAccuracy(false);
+				foreach(Thing thing in dragthings) thing.SnapToAccuracy(true);
 
 				// Map is changed
 				General.Map.IsChanged = true;
