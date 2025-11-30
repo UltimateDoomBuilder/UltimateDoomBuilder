@@ -363,7 +363,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			graphics.SetUniform(UniformName.fogcolor, General.Colors.Background.ToColorValue());
 			graphics.SetUniform(UniformName.doomlightlevels, General.Map.Config.DoomLightLevels);
             graphics.SetUniform(UniformName.highlightcolor, new Color4()); //mxd
-            TextureFilter texFilter = (!General.Settings.ClassicRendering && General.Settings.VisualBilinear) ? TextureFilter.Linear : TextureFilter.Nearest;
+			graphics.SetUniform(UniformName.modelnormal, Matrix.Identity);
+			TextureFilter texFilter = (!General.Settings.ClassicRendering && General.Settings.VisualBilinear) ? TextureFilter.Linear : TextureFilter.Nearest;
             MipmapFilter mipFilter = General.Settings.ClassicRendering ? MipmapFilter.None : MipmapFilter.Linear;
             float aniso = General.Settings.ClassicRendering ? 0 : General.Settings.FilterAnisotropy;
             graphics.SetSamplerFilter(texFilter, texFilter, mipFilter, aniso);
