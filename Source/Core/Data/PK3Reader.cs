@@ -124,7 +124,7 @@ namespace CodeImp.DoomBuilder.Data
                     MemoryStream s = new MemoryStream();
                     reader.WriteEntryTo(s);
                     sevenzipentries.Add(reader.Entry.Key.ToLowerInvariant(), s.ToArray());
-                    fileentries.Add(new DirectoryFileEntry(reader.Entry.Key));
+                    fileentries.Add(new DirectoryFileEntry(reader.Entry.Key, config.FileTitleStyle));
                 }
 			}
             else
@@ -132,7 +132,7 @@ namespace CodeImp.DoomBuilder.Data
                 foreach (IArchiveEntry entry in archive.Entries)
                 {
                     if (!entry.IsDirectory && CheckInvalidPathChars(entry.Key))
-                        fileentries.Add(new DirectoryFileEntry(entry.Key));
+                        fileentries.Add(new DirectoryFileEntry(entry.Key, config.FileTitleStyle));
                 }
             }
 

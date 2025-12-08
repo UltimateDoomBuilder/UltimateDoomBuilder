@@ -209,5 +209,16 @@ defaultskytextures
     When set to false, sidedefs, which belong to a line with an action or non-zero tag(s), will be skipped when compressing sidedefs.<br />
     Default value is <b>false</b>.<br />
 	</p>
+    <b class="fat">filetitlestyle</b> (string)<br />
+    Defines how long file names in loaded directory or PK3/PK7/PKE resources are turned into lump names.<br />
+    Possible values are:<br />
+	<ul>
+	<li><b>"default"</b> - Removes the extension, then keeps the remaining name<br /></li>
+	<li><b>"zdoom"</b> - Removes the extension, then keeps the first 8 characters of the remaining name<br /></li>
+	<li><b>"eternityengine"</b> - Removes everything after the first dot (including the dot), then keeps the first 8 characters of the remaining name<br /></li>
+	</ul>
+
+    Default value is <b>"default"</b>.<br />
+	</p>	
 </div>
 </body>

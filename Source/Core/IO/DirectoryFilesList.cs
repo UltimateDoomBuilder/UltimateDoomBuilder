@@ -69,7 +69,7 @@ namespace CodeImp.DoomBuilder.IO
 		#region ================== Constructor / Disposer
 
 		// Constructor to fill list from directory and optionally subdirectories
-		public DirectoryFilesList(string path, GameConfiguration config, bool subdirectories)
+		public DirectoryFilesList(string path, GameConfiguration config, bool subdirectories, FileTitleStyle filetitlestyle)
 		{
 			path = Path.GetFullPath(path);
 			string[] files = Directory.GetFiles(path, "*", subdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
@@ -79,7 +79,7 @@ namespace CodeImp.DoomBuilder.IO
 			
 			foreach(string file in files) //mxd
 			{
-				var e = new DirectoryFileEntry(file, path);
+				var e = new DirectoryFileEntry(file, path, filetitlestyle);
 				if(string.Compare(e.extension, "wad", true) == 0 && e.path.Length == 0)
 				{
 					wadentries.Add(file);
