@@ -35,7 +35,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 			cvars = new CvarsCollection();
 
 			// Required for the "handlertoken" format
-			specialtokens += "()";
+			specialtokens += "()=";
 		}
 
 		#endregion
@@ -56,7 +56,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 
 			// Continue until at the end of the stream
 			HashSet<string> knowntypes = new HashSet<string> { "int", "float", "color", "bool", "string" };
-			HashSet<string> flags = new HashSet<string> { "user", "server", "nosave", "noarchive", "cheat", "latch", "local" };
+			HashSet<string> flags = new HashSet<string> { "user", "server", "nosave", "noarchive", "cheat", "latch", "local", "handlerclass" };
 			while(SkipWhitespace(true))
 			{
 				string token = ReadToken().ToLowerInvariant();
@@ -74,12 +74,9 @@ namespace CodeImp.DoomBuilder.ZDoom
 				if (flags.Contains(token))
 				{
 					// read (skip) flags and handlerclass
-					while (true)
+					do
 					{
-						SkipWhitespace(true);
-						token = ReadToken().ToLowerInvariant();
-
-						if(token == "handlerclass")
+						if (token == "handlerclass")
 						{
 							if (!ParseHandlerClass())
 								return false;
@@ -89,7 +86,10 @@ namespace CodeImp.DoomBuilder.ZDoom
 							DataStream.Seek(-token.Length - 1, SeekOrigin.Current);
 							break;
 						}
-					}
+
+						SkipWhitespace(true);
+						token = ReadToken().ToLowerInvariant();
+					} while (true);
 
 					// Next should be the type
 					SkipWhitespace(true);
@@ -155,6 +155,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 		/// <returns>true if the correct fromat was detected, false if not</returns>
 		private bool ParseHandlerClass()
 		{
+			SkipWhitespace(true);
 			string token = ReadToken();
 			if (string.IsNullOrEmpty(token) || token != "(")
 			{
@@ -163,6 +164,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 			}
 
 			// The class can be an identifier or string literal
+			SkipWhitespace(true);
 			token = ReadToken();
 			if(!token.All(c => char.IsLetterOrDigit(c) || c == '"' || c == '_'))
 			{
@@ -170,6 +172,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 				return false;
 			}
 
+			SkipWhitespace(true);
 			token = ReadToken();
 			if (string.IsNullOrEmpty(token) || token != ")")
 			{
