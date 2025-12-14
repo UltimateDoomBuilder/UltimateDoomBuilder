@@ -2785,7 +2785,7 @@ namespace CodeImp.DoomBuilder.Data
 						thingtypes[i].AmbientSound = parser.AmbientSounds[ambsoundindex];
 
 					// Update title
-					if(configenums.ContainsKey(ambsoundindex) && thingtypes.ContainsKey(i) && string.IsNullOrEmpty(thingtypes[i].ClassName))
+					if(configenums.ContainsKey(ambsoundindex) && thingtypes.ContainsKey(i) && !string.IsNullOrEmpty(thingtypes[i].ClassName) && thingtypes[i].ClassName.StartsWith("$AmbientSound"))
 						thingtypes[i].Title += " (" + configenums[ambsoundindex] + ")";
 				}
 			}
