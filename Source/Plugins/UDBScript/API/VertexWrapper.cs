@@ -112,6 +112,9 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 					Vector2D v = BuilderPlug.Me.GetVector3DFromObject(value);
 
 					vertex.Move(v);
+
+					foreach (Linedef ld in vertex.Linedefs)
+						ld.UpdateCache();
 				}
 				catch (CantConvertToVectorException e)
 				{
