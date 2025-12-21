@@ -409,7 +409,7 @@ namespace CodeImp.DoomBuilder.Controls
 		private void UpdateArgument(ArgumentBox arg, Label label, ArgumentInfo info)
 		{
 			// Update labels
-			label.Text = info.Title + ":";
+			label.SetLeftExpandText(info.Title + ":");
 			label.Enabled = info.Used;
 			arg.ForeColor = (label.Enabled ? SystemColors.WindowText : SystemColors.GrayText);
 			arg.Setup(info);

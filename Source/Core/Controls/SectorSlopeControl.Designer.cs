@@ -45,18 +45,20 @@
 			// 
 			// label23
 			// 
-			this.label23.Location = new System.Drawing.Point(31, 75);
+			this.label23.AutoSize = true;
+			this.label23.Location = new System.Drawing.Point(35, 75);
 			this.label23.Name = "label23";
-			this.label23.Size = new System.Drawing.Size(72, 14);
+			this.label23.Size = new System.Drawing.Size(66, 13);
 			this.label23.TabIndex = 28;
 			this.label23.Text = "Slope angle:";
 			this.label23.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label24
 			// 
-			this.label24.Location = new System.Drawing.Point(47, 44);
+			this.label24.AutoSize = true;
+			this.label24.Location = new System.Drawing.Point(51, 45);
 			this.label24.Name = "label24";
-			this.label24.Size = new System.Drawing.Size(56, 14);
+			this.label24.Size = new System.Drawing.Size(50, 13);
 			this.label24.TabIndex = 26;
 			this.label24.Text = "Rotation:";
 			this.label24.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -65,7 +67,7 @@
 			// 
 			this.reset.Location = new System.Drawing.Point(107, 130);
 			this.reset.Name = "reset";
-			this.reset.Size = new System.Drawing.Size(82, 23);
+			this.reset.Size = new System.Drawing.Size(82, 25);
 			this.reset.TabIndex = 25;
 			this.reset.Text = "Reset";
 			this.reset.UseVisualStyleBackColor = true;
@@ -73,16 +75,17 @@
 			// 
 			// label18
 			// 
+			this.label18.AutoSize = true;
 			this.label18.Location = new System.Drawing.Point(31, 105);
 			this.label18.Name = "label18";
-			this.label18.Size = new System.Drawing.Size(72, 14);
+			this.label18.Size = new System.Drawing.Size(70, 13);
 			this.label18.TabIndex = 23;
 			this.label18.Text = "Height offset:";
 			this.label18.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// angletrackbar
 			// 
-			this.angletrackbar.BackColor = System.Drawing.SystemColors.ControlLightLight;
+			this.angletrackbar.BackColor = System.Drawing.SystemColors.Control;
 			this.angletrackbar.Location = new System.Drawing.Point(175, 72);
 			this.angletrackbar.Maximum = 85;
 			this.angletrackbar.Minimum = -85;
@@ -94,9 +97,10 @@
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(34, 6);
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(67, 6);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(72, 14);
+			this.label1.Size = new System.Drawing.Size(34, 13);
 			this.label1.TabIndex = 58;
 			this.label1.Text = "Pivot:";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -141,6 +145,7 @@
 			// slopeangle
 			// 
 			this.slopeangle.AllowDecimal = true;
+			this.slopeangle.AllowExpressions = false;
 			this.slopeangle.AllowNegative = true;
 			this.slopeangle.AllowRelative = true;
 			this.slopeangle.ButtonStep = 1;
@@ -159,6 +164,7 @@
 			// sloperotation
 			// 
 			this.sloperotation.AllowDecimal = true;
+			this.sloperotation.AllowExpressions = false;
 			this.sloperotation.AllowNegative = true;
 			this.sloperotation.AllowRelative = true;
 			this.sloperotation.ButtonStep = 1;
@@ -177,9 +183,9 @@
 			// slopeoffset
 			// 
 			this.slopeoffset.AllowDecimal = true;
+			this.slopeoffset.AllowExpressions = true;
 			this.slopeoffset.AllowNegative = true;
 			this.slopeoffset.AllowRelative = true;
-			this.slopeoffset.AllowExpressions = true;
 			this.slopeoffset.ButtonStep = 1;
 			this.slopeoffset.ButtonStepBig = 16F;
 			this.slopeoffset.ButtonStepFloat = 8F;

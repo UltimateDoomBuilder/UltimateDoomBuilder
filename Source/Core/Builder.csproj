@@ -189,6 +189,7 @@
     <Compile Include="Controls\CommandPaletteControl.Designer.cs">
       <DependentUpon>CommandPaletteControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ControlExtensionMethods.cs" />
     <Compile Include="Controls\ExternalCommandControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

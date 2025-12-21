@@ -36,9 +36,10 @@
 			// 
 			// lbLight
 			// 
-			this.lbLight.Location = new System.Drawing.Point(3, 6);
+			this.lbLight.AutoSize = true;
+			this.lbLight.Location = new System.Drawing.Point(37, 7);
 			this.lbLight.Name = "lbLight";
-			this.lbLight.Size = new System.Drawing.Size(92, 14);
+			this.lbLight.Size = new System.Drawing.Size(59, 13);
 			this.lbLight.TabIndex = 29;
 			this.lbLight.Tag = "";
 			this.lbLight.Text = "Brightness:";
