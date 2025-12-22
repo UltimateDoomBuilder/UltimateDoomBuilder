@@ -32,16 +32,16 @@
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.arg0str = new System.Windows.Forms.TextBox();
 			this.cbuseargstr = new System.Windows.Forms.CheckBox();
-			this.arg0named = new CodeImp.DoomBuilder.Controls.ColoredComboBox();
-			this.arg0int = new CodeImp.DoomBuilder.Controls.ColoredComboBox();
 			this.arg0label = new System.Windows.Forms.Label();
 			this.arg1label = new System.Windows.Forms.Label();
 			this.arg2label = new System.Windows.Forms.Label();
+			this.arg3label = new System.Windows.Forms.Label();
+			this.arg4label = new System.Windows.Forms.Label();
+			this.arg0named = new CodeImp.DoomBuilder.Controls.ColoredComboBox();
+			this.arg0int = new CodeImp.DoomBuilder.Controls.ColoredComboBox();
 			this.arg0 = new CodeImp.DoomBuilder.Controls.ArgumentBox();
 			this.arg1 = new CodeImp.DoomBuilder.Controls.ArgumentBox();
 			this.arg2 = new CodeImp.DoomBuilder.Controls.ArgumentBox();
-			this.arg3label = new System.Windows.Forms.Label();
-			this.arg4label = new System.Windows.Forms.Label();
 			this.arg3 = new CodeImp.DoomBuilder.Controls.ArgumentBox();
 			this.arg4 = new CodeImp.DoomBuilder.Controls.ArgumentBox();
 			((System.ComponentModel.ISupportInitialize)(this.splitcontainer)).BeginInit();
@@ -119,32 +119,7 @@
 			this.cbuseargstr.TabIndex = 54;
 			this.cbuseargstr.Text = "String";
 			this.cbuseargstr.UseVisualStyleBackColor = true;
-			// 
-			// arg0named
-			// 
-			this.arg0named.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.arg0named.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
-			this.arg0named.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
-			this.arg0named.BackColor = System.Drawing.Color.Honeydew;
-			this.arg0named.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
-			this.arg0named.FormattingEnabled = true;
-			this.arg0named.Location = new System.Drawing.Point(237, 104);
-			this.arg0named.Name = "arg0named";
-			this.arg0named.Size = new System.Drawing.Size(110, 21);
-			this.arg0named.TabIndex = 51;
-			// 
-			// arg0int
-			// 
-			this.arg0int.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.arg0int.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
-			this.arg0int.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
-			this.arg0int.BackColor = System.Drawing.Color.LemonChiffon;
-			this.arg0int.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
-			this.arg0int.FormattingEnabled = true;
-			this.arg0int.Location = new System.Drawing.Point(237, 80);
-			this.arg0int.Name = "arg0int";
-			this.arg0int.Size = new System.Drawing.Size(110, 21);
-			this.arg0int.TabIndex = 50;
+			this.cbuseargstr.CheckedChanged += new System.EventHandler(this.cbuseargstr_CheckedChanged);
 			// 
 			// arg0label
 			// 
@@ -182,30 +157,6 @@
 			this.arg2label.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			this.arg2label.UseMnemonic = false;
 			// 
-			// arg0
-			// 
-			this.arg0.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.arg0.Location = new System.Drawing.Point(237, 3);
-			this.arg0.Name = "arg0";
-			this.arg0.Size = new System.Drawing.Size(110, 24);
-			this.arg0.TabIndex = 46;
-			// 
-			// arg1
-			// 
-			this.arg1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.arg1.Location = new System.Drawing.Point(237, 28);
-			this.arg1.Name = "arg1";
-			this.arg1.Size = new System.Drawing.Size(110, 24);
-			this.arg1.TabIndex = 48;
-			// 
-			// arg2
-			// 
-			this.arg2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.arg2.Location = new System.Drawing.Point(237, 53);
-			this.arg2.Name = "arg2";
-			this.arg2.Size = new System.Drawing.Size(110, 24);
-			this.arg2.TabIndex = 49;
-			// 
 			// arg3label
 			// 
 			this.arg3label.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -229,6 +180,58 @@
 			this.arg4label.Text = "Argument 5:";
 			this.arg4label.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			this.arg4label.UseMnemonic = false;
+			// 
+			// arg0named
+			// 
+			this.arg0named.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.arg0named.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+			this.arg0named.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+			this.arg0named.BackColor = System.Drawing.Color.Honeydew;
+			this.arg0named.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+			this.arg0named.FormattingEnabled = true;
+			this.arg0named.Location = new System.Drawing.Point(237, 104);
+			this.arg0named.Name = "arg0named";
+			this.arg0named.Size = new System.Drawing.Size(110, 21);
+			this.arg0named.TabIndex = 51;
+			this.arg0named.TextChanged += new System.EventHandler(this.arg0str_TextChanged);
+			// 
+			// arg0int
+			// 
+			this.arg0int.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.arg0int.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+			this.arg0int.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+			this.arg0int.BackColor = System.Drawing.Color.LemonChiffon;
+			this.arg0int.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+			this.arg0int.FormattingEnabled = true;
+			this.arg0int.Location = new System.Drawing.Point(237, 80);
+			this.arg0int.Name = "arg0int";
+			this.arg0int.Size = new System.Drawing.Size(110, 21);
+			this.arg0int.TabIndex = 50;
+			this.arg0int.TextChanged += new System.EventHandler(this.arg0int_TextChanged);
+			// 
+			// arg0
+			// 
+			this.arg0.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.arg0.Location = new System.Drawing.Point(237, 3);
+			this.arg0.Name = "arg0";
+			this.arg0.Size = new System.Drawing.Size(110, 24);
+			this.arg0.TabIndex = 46;
+			// 
+			// arg1
+			// 
+			this.arg1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.arg1.Location = new System.Drawing.Point(237, 28);
+			this.arg1.Name = "arg1";
+			this.arg1.Size = new System.Drawing.Size(110, 24);
+			this.arg1.TabIndex = 48;
+			// 
+			// arg2
+			// 
+			this.arg2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.arg2.Location = new System.Drawing.Point(237, 53);
+			this.arg2.Name = "arg2";
+			this.arg2.Size = new System.Drawing.Size(110, 24);
+			this.arg2.TabIndex = 49;
 			// 
 			// arg3
 			// 

@@ -50,7 +50,7 @@ namespace CodeImp.DoomBuilder.Controls
             get { return argzeromode; }
             set
             {
-                arg0label.Text = (value == ArgZeroMode.STRING ? arginfo[0].TitleStr : arginfo[0].Title) + ":";
+                arg0label.SetLeftExpandText((value == ArgZeroMode.STRING ? arginfo[0].TitleStr : arginfo[0].Title) + ":");
                 argzeromode = value;
             }
         }
