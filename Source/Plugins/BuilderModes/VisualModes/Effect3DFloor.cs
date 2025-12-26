@@ -168,8 +168,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							 (Angle2D.RadToDeg(ceiling.plane.Normal.GetAngleZ()) != 270 ||
 							  Angle2D.RadToDeg(floor.plane.Normal.GetAngleZ()) != 90));
 
-			// As GZDoom doesn't support translucent 3D floors make is fully opaque
-			if (sloped3dfloor)
+			// As GZDoom doesn't support translucent 3D floors make is fully opaque, except when the alpha is 0 (invisible)
+			if (sloped3dfloor && alpha > 0)
 				alpha = 255;
 
 			// Apply alpha
