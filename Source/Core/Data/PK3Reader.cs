@@ -605,8 +605,12 @@ namespace CodeImp.DoomBuilder.Data
 					{
 						if (entry.IsDirectory) continue;
 
+						// As per ZIP specification, forward slashes are used as directory separators, but programs may create them with backslashes
+						// See https://github.com/UltimateDoomBuilder/UltimateDoomBuilder/issues/1281
+						string entryname = entry.Key.Replace('\\', '/');
+
 						// Is this the entry we are looking for?
-						if (string.Compare(entry.Key, fn, true) == 0)
+						if (string.Compare(entryname, fn, true) == 0)
 						{
 							filedata = new MemoryStream();
 
