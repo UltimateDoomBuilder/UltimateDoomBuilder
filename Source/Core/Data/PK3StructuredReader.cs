@@ -609,7 +609,7 @@ namespace CodeImp.DoomBuilder.Data
         #region ================== ZSCRIPT
 
         // This finds and returns ZSCRIPT streams
-        public override IEnumerable<TextResourceData> GetZScriptData(string pname)
+        public override IEnumerable<TextResourceData> GetZScriptData(string pname, bool exactmatch)
         {
             // Error when suspended
             if (issuspended) throw new Exception("Data reader is suspended");
@@ -621,7 +621,7 @@ namespace CodeImp.DoomBuilder.Data
             string filename = Path.GetFileName(pname);
             string pathname = Path.GetDirectoryName(pname);
 
-            if (filename.IndexOf('.') > -1)
+            if (exactmatch)
             {
                 allfilenames = GetFileAtPath(filename, pathname, "ZSCRIPT");
             }
@@ -633,7 +633,7 @@ namespace CodeImp.DoomBuilder.Data
 
             // Find in any of the wad files
             for (int i = wads.Count - 1; i >= 0; i--)
-                result.AddRange(wads[i].GetZScriptData(pname));
+                result.AddRange(wads[i].GetZScriptData(pname, false));
 
             return result;
         }

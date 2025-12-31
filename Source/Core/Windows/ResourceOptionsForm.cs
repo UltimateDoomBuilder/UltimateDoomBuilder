@@ -190,7 +190,7 @@ namespace CodeImp.DoomBuilder.Windows
 								var zscript = new ZScriptParser {
 									NoWarnings = true,
 									OnInclude = (parser, location) => {
-										IEnumerable<TextResourceData> includeStreams = dr.GetZScriptData(location);
+										IEnumerable<TextResourceData> includeStreams = dr.GetZScriptData(location, true);
 										foreach (TextResourceData data in includeStreams)
 										{
 											// Parse this data
@@ -203,7 +203,7 @@ namespace CodeImp.DoomBuilder.Windows
 									}
 								};
 
-								foreach (TextResourceData data in dr.GetZScriptData("ZSCRIPT"))
+								foreach (TextResourceData data in dr.GetZScriptData("ZSCRIPT", false))
 								{
 									// Parse the data
 									data.Stream.Seek(0, SeekOrigin.Begin);

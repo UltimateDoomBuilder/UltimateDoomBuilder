@@ -237,7 +237,7 @@ namespace CodeImp.DoomBuilder.Data
 		public abstract IEnumerable<TextResourceData> GetDecorateData(string pname);
 
         // [ZZ] When implemented, this returns ZSCRIPT lumps
-        public abstract IEnumerable<TextResourceData> GetZScriptData(string pname);
+        public abstract IEnumerable<TextResourceData> GetZScriptData(string pname, bool exactmatch);
 
         // [ZZ] When implemented, this returns MODELDEF lumps
         public abstract IEnumerable<TextResourceData> GetModeldefData(string pname);
