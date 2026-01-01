@@ -87,7 +87,17 @@ namespace CodeImp.DoomBuilder.Controls
 
 			// The shotcut key can change at runtime, so we need to remember the original tooltip without the shotcut key
 			if (string.IsNullOrWhiteSpace(baseToolTipText))
+			{
+#if !MONO_WINFORMS
 				baseToolTipText = ToolTipText;
+#else
+				// Mono fix. ToolTipText is empty when AutoToolTip is set to true.
+				if (string.IsNullOrWhiteSpace(ToolTipText))
+					baseToolTipText = Text;
+				else
+					baseToolTipText = ToolTipText;
+#endif
+			}
 
 			// Try to figure out what's the real action name is. The action name can either be directly stored in the Tag, or
 			// (in case it's a button for edit modes) can be extracted from the EditModeInfo, which is also stored in the Tag.
@@ -129,6 +139,6 @@ namespace CodeImp.DoomBuilder.Controls
 				ToolTipText = baseToolTipText;
 		}
 
-		#endregion
+#endregion
 	}
 }
