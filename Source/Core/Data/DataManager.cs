@@ -3144,7 +3144,7 @@ namespace CodeImp.DoomBuilder.Data
 					return null;
 				}
 			}
-			catch (ArgumentException e)
+			catch (ArgumentException)
 			{
 				// File and/or path contained illegal characters
 				return null;

@@ -138,7 +138,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		public bool ShowSelection { get { return showselection; } set { showselection = value; } }
 		public bool ShowHighlight { get { return showhighlight; } set { showhighlight = value; } }
 		
-		protected bool UseIndexedTexture
+		public  bool UseIndexedTexture
 		{
 			get { return General.Settings.ClassicRendering && !fullbrightness; }
 		}

@@ -79,7 +79,6 @@ namespace CodeImp.DoomBuilder.Data
 			FileShare share;
 
 			isreadonly = asreadonly;
-			config = config;
 
 			// Determine if opening for read only
 			if (isreadonly)

@@ -16,8 +16,6 @@ namespace CodeImp.DoomBuilder.Data
 	{
 		#region ================== Variables
 
-		private int offsetx;
-		private int offsety;
 		private readonly string voxelname;
 		private bool overridepalette;
 		private int angleoffset;
@@ -26,8 +24,6 @@ namespace CodeImp.DoomBuilder.Data
 
 		#region ================== Properties
 
-		public int OffsetX { get { return offsetx; } }
-		public int OffsetY { get { return offsety; } }
 		public string VoxelName { get { return voxelname; } }
 		public bool OverridePalette { get { return overridepalette; } internal set { overridepalette = value; } }
 		public int AngleOffset { get { return angleoffset; } internal set { angleoffset = value; } }

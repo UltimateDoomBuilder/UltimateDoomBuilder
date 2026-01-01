@@ -886,6 +886,8 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 				General.Editing.CancelMode();
 				return;
 
+				// The following code is commented out until the issue above is resolved.
+				/*
 				General.Interface.DisplayStatus(StatusType.Busy, "Reading map nodes...");
 				if(!LoadZNodes()) 
 				{
@@ -893,7 +895,8 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 					General.Editing.CancelMode();
 					return;
 				}
-			} 
+				*/
+			}
 			else 
 			{
 				if(!haveNodes) 
