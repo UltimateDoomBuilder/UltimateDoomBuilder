@@ -39,7 +39,7 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 		private Node[] nodes;
 		private Vector2D[] verts;
 		private Subsector[] ssectors;
-		private List<PixelColor> distinctcolors;
+		private readonly List<PixelColor> distinctcolors;
 		private NodesForm form;
 		private int mouseinssector = -1;
 		private string nodesformat = "Classic nodes";
@@ -501,11 +501,13 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 		private void BuildSubsectorPoly(int ss, IEnumerable<Split> nodesplits)
 		{
 			// Begin with a giant square polygon that covers the entire map
-			List<Vector2D> poly = new List<Vector2D>(16);
-			poly.Add(new Vector2D(-General.Map.FormatInterface.MaxCoordinate, General.Map.FormatInterface.MaxCoordinate));
-			poly.Add(new Vector2D(General.Map.FormatInterface.MaxCoordinate, General.Map.FormatInterface.MaxCoordinate));
-			poly.Add(new Vector2D(General.Map.FormatInterface.MaxCoordinate, -General.Map.FormatInterface.MaxCoordinate));
-			poly.Add(new Vector2D(-General.Map.FormatInterface.MaxCoordinate, -General.Map.FormatInterface.MaxCoordinate));
+			List<Vector2D> poly = new List<Vector2D>(16)
+			{
+				new Vector2D(-General.Map.FormatInterface.MaxCoordinate, General.Map.FormatInterface.MaxCoordinate),
+				new Vector2D(General.Map.FormatInterface.MaxCoordinate, General.Map.FormatInterface.MaxCoordinate),
+				new Vector2D(General.Map.FormatInterface.MaxCoordinate, -General.Map.FormatInterface.MaxCoordinate),
+				new Vector2D(-General.Map.FormatInterface.MaxCoordinate, -General.Map.FormatInterface.MaxCoordinate)
+			};
 
 			// Crop the polygon by the node tree splits
 			foreach(Split s in nodesplits) CropPolygon(poly, s);
@@ -584,8 +586,7 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 					if(side1 > EPSILON)
 					{
 						// Split line with plane and insert the vertex
-						double u;
-						Line2D.GetIntersection(split.pos, split.pos + split.delta, prev.x, prev.y, cur.x, cur.y, out u, false);
+						Line2D.GetIntersection(split.pos, split.pos + split.delta, prev.x, prev.y, cur.x, cur.y, out double u, false);
 						Vector2D newv = prev + (cur - prev) * u;
 						newp.Add(newv);
 					}
@@ -598,8 +599,7 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 					if(side1 < -EPSILON)
 					{
 						// Split line with plane and insert the vertex
-						double u;
-						Line2D.GetIntersection(split.pos, split.pos + split.delta, prev.x, prev.y, cur.x, cur.y, out u, false);
+						Line2D.GetIntersection(split.pos, split.pos + split.delta, prev.x, prev.y, cur.x, cur.y, out double u, false);
 						Vector2D newv = prev + (cur - prev) * u;
 						newp.Add(newv);
 					}
@@ -782,11 +782,13 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 			Node node = nodes[nodeindex];
 
 			// Begin with a square bounding box polygon
-			List<Vector2D> poly = new List<Vector2D>(16);
-			poly.Add(new Vector2D(bbox.Left, bbox.Top));
-			poly.Add(new Vector2D(bbox.Right, bbox.Top));
-			poly.Add(new Vector2D(bbox.Right, bbox.Bottom));
-			poly.Add(new Vector2D(bbox.Left, bbox.Bottom));
+			List<Vector2D> poly = new List<Vector2D>(16)
+			{
+				new Vector2D(bbox.Left, bbox.Top),
+				new Vector2D(bbox.Right, bbox.Top),
+				new Vector2D(bbox.Right, bbox.Bottom),
+				new Vector2D(bbox.Left, bbox.Bottom)
+			};
 
 			// Remove everything behind the split from the area
 			if(left)

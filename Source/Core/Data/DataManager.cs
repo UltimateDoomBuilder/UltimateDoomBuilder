@@ -103,7 +103,7 @@ namespace CodeImp.DoomBuilder.Data
 		private Dictionary<ScriptType, HashSet<ScriptResource>> scriptresources;
 
         // Background loading
-        private object syncobject = new object();
+        private readonly object syncobject = new object();
 		private Queue<ImageData> imageque;
 		private Thread[] backgroundloader;
 		
@@ -445,8 +445,7 @@ namespace CodeImp.DoomBuilder.Data
 			cachedparsers = null; //mxd
 
 			//mxd. Load MAPINFO and CVARINFO. Should happen before parisng DECORATE
-			Dictionary<int, string> spawnnums, doomednums;
-			LoadMapInfo(out spawnnums, out doomednums);
+			LoadMapInfo(out Dictionary<int, string> spawnnums, out Dictionary<int, string> doomednums);
 			LoadCvarInfo();
 			LoadLockDefs();
 
@@ -739,9 +738,11 @@ namespace CodeImp.DoomBuilder.Data
             backgroundloader = new Thread[numThreads];
             for (int i = 0; i < numThreads; i++)
             {
-                backgroundloader[i] = new Thread(BackgroundLoad);
-                backgroundloader[i].Name = "Background Loader";
-                backgroundloader[i].Start();
+				backgroundloader[i] = new Thread(BackgroundLoad)
+				{
+					Name = "Background Loader"
+				};
+				backgroundloader[i].Start();
             }
 		}
 		
@@ -1043,7 +1044,7 @@ namespace CodeImp.DoomBuilder.Data
 		}
 
 		//mxd. This tries to find and load any image with given name
-		internal Bitmap GetTextureBitmap(string name) { Vector2D unused = new Vector2D(); return GetTextureBitmap(name, out unused); }
+		internal Bitmap GetTextureBitmap(string name) { return GetTextureBitmap(name, out _); }
 		internal Bitmap GetTextureBitmap(string name, out Vector2D scale)
 		{
 			// Check the textures first...
@@ -1071,9 +1072,9 @@ namespace CodeImp.DoomBuilder.Data
 			for(int i = containers.Count - 1; i >= 0; i--)
 			{
 				// This container has a lump with given name?
-				if(containers[i] is PK3StructuredReader)
+				if (containers[i] is PK3StructuredReader reader)
 				{
-					string foundname = ((PK3StructuredReader)containers[i]).FindFirstFile(name, true);
+					string foundname = reader.FindFirstFile(name, true);
 					if(string.IsNullOrEmpty(foundname)) continue;
 					name = foundname;
 				}
@@ -1587,8 +1588,10 @@ namespace CodeImp.DoomBuilder.Data
 			UNKNOWN_THING = Lump.MakeLongName(name, true);
 			if(!internalspriteslookup.ContainsKey(name))
 			{
-				ImageData img = new ResourceImage("CodeImp.DoomBuilder.Resources.UnknownThing.png");
-				img.AllowUnload = false;
+				ImageData img = new ResourceImage("CodeImp.DoomBuilder.Resources.UnknownThing.png")
+				{
+					AllowUnload = false
+				};
 				sprites[UNKNOWN_THING] = img; //mxd
 				internalspriteslookup[name] = UNKNOWN_THING; //mxd
 			}
@@ -1598,8 +1601,10 @@ namespace CodeImp.DoomBuilder.Data
 			MISSING_THING = Lump.MakeLongName(name, true);
 			if(!internalspriteslookup.ContainsKey(name)) 
 			{
-				ImageData img = new ResourceImage("CodeImp.DoomBuilder.Resources.MissingThing.png");
-				img.AllowUnload = false;
+				ImageData img = new ResourceImage("CodeImp.DoomBuilder.Resources.MissingThing.png")
+				{
+					AllowUnload = false
+				};
 				sprites[MISSING_THING] = img; //mxd
 				internalspriteslookup[name] = MISSING_THING; //mxd
 			}
@@ -1847,10 +1852,9 @@ namespace CodeImp.DoomBuilder.Data
         public ActorStructure GetZDoomActor(string classname)
         {
             classname = classname.ToLowerInvariant();
-            ActorStructure outv;
-            if (!zdoomclasses.TryGetValue(classname, out outv))
-                return null;
-            return outv;
+			if (!zdoomclasses.TryGetValue(classname, out ActorStructure outv))
+				return null;
+			return outv;
         }
 
         // [ZZ] this merges in the parsed actor lists from zscript+decorate using the original DECORATE merging code
@@ -2513,8 +2517,7 @@ namespace CodeImp.DoomBuilder.Data
                                     }
 
 									// Apply VOXELDEF settings to the preview image...
-									VoxelImage vi = sprite as VoxelImage;
-									if(vi != null)
+									if (sprite is VoxelImage vi)
 									{
 										vi.AngleOffset = (int)Math.Round(entry.Value.AngleOffset);
 										vi.OverridePalette = entry.Value.OverridePalette;
@@ -2537,15 +2540,14 @@ namespace CodeImp.DoomBuilder.Data
 			foreach(KeyValuePair<string, List<int>> sc in allsprites)
 			{
 				if(processed.Contains(sc.Key)) continue;
-				
-				VoxelImage vi = GetSpriteImage(sc.Key) as VoxelImage;
-				if(vi != null)
+
+				if (GetSpriteImage(sc.Key) is VoxelImage vi)
 				{
 					// It's a model without a definition, and it corresponds to a sprite we can display, so let's add it
 					ModelData data = new ModelData { IsVoxel = true };
 					data.ModelNames.Add(vi.VoxelName);
 
-					foreach(int id in sc.Value) modeldefentries[id] = data;
+					foreach (int id in sc.Value) modeldefentries[id] = data;
 				}
 			}
 		}
@@ -2626,8 +2628,7 @@ namespace CodeImp.DoomBuilder.Data
 		//mxd. This updates mapinfo class only
 		internal void ReloadMapInfoPartial()
 		{
-			Dictionary<int, string> spawnnums, doomednums;
-			LoadMapInfo(out spawnnums, out doomednums);
+			LoadMapInfo(out _, out _);
 		}
 
 		//mxd. This loads (Z)MAPINFO
@@ -3350,7 +3351,7 @@ namespace CodeImp.DoomBuilder.Data
         internal void SetupSkybox()
 		{
 			// Get rid of old texture
-			if(skybox != null) skybox.Dispose(); skybox = null;
+			skybox?.Dispose(); skybox = null;
 
 			// Determine which texture name to use
 			string skytex = string.Empty;
@@ -3378,9 +3379,8 @@ namespace CodeImp.DoomBuilder.Data
 				else
 				{
 					// Create classic texture
-					Vector2D scale;
-					Bitmap sky1 = GetTextureBitmap(skytex, out scale);
-					if(sky1 != null)
+					Bitmap sky1 = GetTextureBitmap(skytex, out Vector2D scale);
+					if (sky1 != null)
 					{
 						// Special handling for wide skies. They are drawn from the east, but normal skyboxes are not,
 						// to we have to rearrange the texture a bit (paste the right half to the left and vice versa)

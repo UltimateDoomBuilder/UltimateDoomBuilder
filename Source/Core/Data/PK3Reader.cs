@@ -831,15 +831,14 @@ namespace CodeImp.DoomBuilder.Data
 
 					//mxd. Move and rename the result file
 					string targetfilename;
-					if(compiler is AccCompiler)
+					if (compiler is AccCompiler acccompiler)
 					{
-						AccCompiler acccompiler = (AccCompiler)compiler;
 						targetfilename = Path.Combine(Path.GetDirectoryName(filename), acccompiler.Parser.LibraryName + ".o");
 					}
 					else
 					{
 						//mxd. No can't do...
-						if(String.IsNullOrEmpty(scriptconfig.ResultLump))
+						if (String.IsNullOrEmpty(scriptconfig.ResultLump))
 						{
 							// Fail
 							compiler.Dispose();
