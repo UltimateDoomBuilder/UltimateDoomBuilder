@@ -72,9 +72,9 @@
 			// bApply
 			// 
 			this.bApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.bApply.Location = new System.Drawing.Point(115, 399);
+			this.bApply.Location = new System.Drawing.Point(115, 398);
 			this.bApply.Name = "bApply";
-			this.bApply.Size = new System.Drawing.Size(95, 23);
+			this.bApply.Size = new System.Drawing.Size(95, 25);
 			this.bApply.TabIndex = 0;
 			this.bApply.Text = "Apply";
 			this.bApply.UseVisualStyleBackColor = true;
@@ -83,9 +83,9 @@
 			// bCancel
 			// 
 			this.bCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.bCancel.Location = new System.Drawing.Point(216, 399);
+			this.bCancel.Location = new System.Drawing.Point(216, 398);
 			this.bCancel.Name = "bCancel";
-			this.bCancel.Size = new System.Drawing.Size(75, 23);
+			this.bCancel.Size = new System.Drawing.Size(75, 25);
 			this.bCancel.TabIndex = 1;
 			this.bCancel.Text = "Cancel";
 			this.bCancel.UseVisualStyleBackColor = true;
@@ -223,8 +223,8 @@
 			// 
 			// groupBox1
 			// 
-			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox1.Controls.Add(this.positionJitterAmmount);
 			this.groupBox1.Controls.Add(this.bUpdateTranslation);
 			this.groupBox1.Controls.Add(this.bUpdateHeight);
@@ -238,8 +238,8 @@
 			// 
 			// groupBox2
 			// 
-			this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox2.Controls.Add(this.cbNegativeRoll);
 			this.groupBox2.Controls.Add(this.cbNegativePitch);
 			this.groupBox2.Controls.Add(this.cbRelativeRoll);
@@ -301,8 +301,8 @@
 			// 
 			// scalegroup
 			// 
-			this.scalegroup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.scalegroup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.scalegroup.Controls.Add(this.cbNegativeScaleY);
 			this.scalegroup.Controls.Add(this.cbNegativeScaleX);
 			this.scalegroup.Controls.Add(this.cbUniformScale);
@@ -333,7 +333,7 @@
 			this.cbNegativeScaleY.TabIndex = 25;
 			this.cbNegativeScaleY.Text = "Use negative height";
 			this.toolTip.SetToolTip(this.cbNegativeScaleY, "When checked, height scale will be picked from\r\n[-max .. -min] - [min .. max] ran" +
-					"ge");
+        "ge");
 			this.cbNegativeScaleY.UseVisualStyleBackColor = true;
 			// 
 			// cbNegativeScaleX
@@ -345,7 +345,7 @@
 			this.cbNegativeScaleX.TabIndex = 24;
 			this.cbNegativeScaleX.Text = "Use negative width";
 			this.toolTip.SetToolTip(this.cbNegativeScaleX, "When checked, width scale will be picked from\r\n[-max .. -min] - [min .. max] rang" +
-					"e");
+        "e");
 			this.cbNegativeScaleX.UseVisualStyleBackColor = true;
 			// 
 			// cbUniformScale
@@ -544,7 +544,7 @@
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "JitterThingsForm";
-			this.Opacity = 0;
+			this.Opacity = 0D;
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;

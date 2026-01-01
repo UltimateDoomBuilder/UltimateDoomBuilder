@@ -35,9 +35,9 @@
 			// 
 			this.bCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.bCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.bCancel.Location = new System.Drawing.Point(222, 45);
+			this.bCancel.Location = new System.Drawing.Point(222, 44);
 			this.bCancel.Name = "bCancel";
-			this.bCancel.Size = new System.Drawing.Size(75, 23);
+			this.bCancel.Size = new System.Drawing.Size(75, 25);
 			this.bCancel.TabIndex = 7;
 			this.bCancel.Text = "Cancel";
 			this.bCancel.UseVisualStyleBackColor = true;
@@ -46,9 +46,9 @@
 			// bApply
 			// 
 			this.bApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.bApply.Location = new System.Drawing.Point(121, 45);
+			this.bApply.Location = new System.Drawing.Point(121, 44);
 			this.bApply.Name = "bApply";
-			this.bApply.Size = new System.Drawing.Size(95, 23);
+			this.bApply.Size = new System.Drawing.Size(95, 25);
 			this.bApply.TabIndex = 6;
 			this.bApply.Text = "Apply";
 			this.bApply.UseVisualStyleBackColor = true;
@@ -95,7 +95,7 @@
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "JitterVerticesForm";
-			this.Opacity = 0;
+			this.Opacity = 0D;
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;

@@ -22,14 +22,22 @@ namespace CodeImp.DoomBuilder.BuilderEffects
 		{
 			// Add the menus to the core
 			General.Interface.BeginToolbarUpdate();
+
+#if MONO_WINFORMS
+			// Mono fix
+			menuStrip.Items.Clear();
+			toolStrip.Items.Clear();
+			stripimport.DropDownItems.Clear();
+			stripmodes.DropDownItems.Clear();
+#endif
+
 			General.Interface.AddModesMenu(menujitter, "002_modify");
 			General.Interface.AddModesButton(buttonjitter, "002_modify");
 			General.Interface.AddModesMenu(menusectorflatshading, "002_modify");
 			General.Interface.AddModesButton(buttonsectorflatshading, "002_modify");
-			General.Interface.EndToolbarUpdate();
+			General.Interface.AddMenu(toolStripMenuItem1, MenuSection.FileImport);
 
-			for(int i = 0; i < stripimport.DropDownItems.Count; i++)
-				General.Interface.AddMenu(stripimport.DropDownItems[i] as ToolStripMenuItem, MenuSection.FileImport);
+			General.Interface.EndToolbarUpdate();
 		}
 
 		// This unregisters from the core
@@ -37,14 +45,14 @@ namespace CodeImp.DoomBuilder.BuilderEffects
 		{
 			// Remove the menus from the core
 			General.Interface.BeginToolbarUpdate();
+
 			General.Interface.RemoveMenu(menujitter);
 			General.Interface.RemoveButton(buttonjitter);
 			General.Interface.RemoveMenu(menusectorflatshading);
 			General.Interface.RemoveButton(buttonsectorflatshading);
-			General.Interface.EndToolbarUpdate();
+			General.Interface.RemoveMenu(toolStripMenuItem1);
 
-			for(int i = 0; i < stripimport.DropDownItems.Count; i++)
-				General.Interface.RemoveMenu(stripimport.DropDownItems[i] as ToolStripMenuItem);
+			General.Interface.EndToolbarUpdate();
 		}
 	}
 }

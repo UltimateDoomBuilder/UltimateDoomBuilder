@@ -21,6 +21,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public void Register()
 		{
 			General.Interface.BeginToolbarUpdate();
+
+#if MONO_WINFORMS
+			// Mono fix
+			toolStrip1.Items.Clear();
+#endif
+
 			General.Interface.AddButton(continuousdrawing);
 			General.Interface.AddButton(autoclosedrawing);
 			General.Interface.AddButton(showguidelines);

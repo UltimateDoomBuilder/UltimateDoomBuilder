@@ -37,6 +37,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			angle.ValueChanged += ValueChanged;
 
 			General.Interface.BeginToolbarUpdate();
+
+#if MONO_WINFORMS
+			// Mono fix
+			toolStrip1.Items.Clear();
+#endif
+
 			General.Interface.AddButton(continuousdrawing);
 			General.Interface.AddButton(showguidelines);
 			General.Interface.AddButton(radialdrawing);

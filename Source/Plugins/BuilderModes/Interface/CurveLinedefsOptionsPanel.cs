@@ -58,6 +58,12 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 		public void Register()
 		{
 			General.Interface.BeginToolbarUpdate();
+
+#if MONO_WINFORMS
+			// Mono fix
+			toolstrip.Items.Clear();
+#endif
+
 			General.Interface.AddButton(vertslabel);
 			General.Interface.AddButton(verts);
 			General.Interface.AddButton(distancelabel);
@@ -94,7 +100,7 @@ namespace CodeImp.DoomBuilder.BuilderModes.Interface
 			General.Interface.EndToolbarUpdate();
 		}
 
-		#endregion
+#endregion
 
 		#region ================== Events
 

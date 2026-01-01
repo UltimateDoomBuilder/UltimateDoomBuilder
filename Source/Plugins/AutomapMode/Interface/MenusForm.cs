@@ -25,6 +25,12 @@ namespace CodeImp.DoomBuilder.AutomapMode
 		public void Register()
 		{
 			General.Interface.BeginToolbarUpdate(); //mxd
+
+#if MONO_WINFORMS
+			// Mono is bugged, buttons only work correctly when the are removed from their parent toolstrip first
+			toolStrip1.Items.Clear();
+#endif
+
 			General.Interface.AddButton(showhiddenlines);
 			General.Interface.AddButton(showsecretsectors);
 			if(!General.Map.DOOM) General.Interface.AddButton(showlocks);

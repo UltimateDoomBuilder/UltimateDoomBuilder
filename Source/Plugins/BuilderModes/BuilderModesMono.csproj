@@ -37,7 +37,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\..\..\Build\Plugins\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;MONO_WINFORMS</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -53,12 +53,12 @@
     <ErrorReport>prompt</ErrorReport>
     <DebugSymbols>true</DebugSymbols>
     <Prefer32Bit>false</Prefer32Bit>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;MONO_WINFORMS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug + Profiler|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\..\..\Build\Plugins\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;PROFILE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;PROFILE;MONO_WINFORMS</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -79,7 +79,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>..\..\..\Build\Plugins\</OutputPath>
     <Prefer32Bit>false</Prefer32Bit>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;MONO_WINFORMS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
@@ -87,13 +87,13 @@
     <Prefer32Bit>false</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>false</Optimize>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;MONO_WINFORMS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug + Profiler|x64'">
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>..\..\..\Build\Plugins\</OutputPath>
     <Prefer32Bit>false</Prefer32Bit>
-    <DefineConstants>TRACE;DEBUG;PROFILE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;PROFILE;MONO_WINFORMS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release + Profiler|x64'">
     <PlatformTarget>x64</PlatformTarget>

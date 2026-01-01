@@ -133,8 +133,18 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// List all buttons
 			buttons = new ToolStripItem[globalstrip.Items.Count];
 			for(int i = 0; i < globalstrip.Items.Count; i++) buttons[i] = globalstrip.Items[i];
+
+
+#if MONO_WINFORMS
+			// Mono fix
+			menustrip.Items.Clear();
+			exportStripMenuItem.DropDownItems.Clear();
+			globalstrip.Items.Clear();
+			manualstrip.Items.Clear();
+			editmenuitem.DropDownItems.Clear();
+#endif
 		}
-		
+
 		#endregion
 
 		#region ================== Methods
