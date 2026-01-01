@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.IO;
 using CodeImp.DoomBuilder.Compilers;
 using CodeImp.DoomBuilder.Config;
-using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.ZDoom;
 
 #endregion

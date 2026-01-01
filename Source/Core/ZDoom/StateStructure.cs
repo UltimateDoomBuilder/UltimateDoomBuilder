@@ -16,9 +16,7 @@
 
 #region ================== Namespaces
 
-using CodeImp.DoomBuilder.Data;
 using System.Collections.Generic;
-using System.IO;
 
 #endregion
 

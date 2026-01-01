@@ -30,7 +30,6 @@ using CodeImp.DoomBuilder.Windows;
 using CodeImp.DoomBuilder.Config;
 using CodeImp.DoomBuilder.IO;
 using System.Collections.Specialized;
-using System.Runtime.CompilerServices;
 
 #endregion
 

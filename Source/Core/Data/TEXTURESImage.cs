@@ -22,8 +22,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using CodeImp.DoomBuilder.Controls;
-using CodeImp.DoomBuilder.IO;
 using CodeImp.DoomBuilder.Rendering;
 
 #endregion

@@ -18,10 +18,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using CodeImp.DoomBuilder.Map;
-using System.Collections;
 using CodeImp.DoomBuilder.Types;
 using CodeImp.DoomBuilder.Config;
 using System.Linq;

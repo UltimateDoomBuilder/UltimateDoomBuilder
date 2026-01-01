@@ -9,7 +9,6 @@ using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Windows;
 using CodeImp.DoomBuilder.Config;
-using System.Runtime.CompilerServices;
 
 #endregion
 

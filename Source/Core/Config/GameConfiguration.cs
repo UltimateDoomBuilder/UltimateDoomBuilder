@@ -19,7 +19,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -28,7 +27,6 @@ using CodeImp.DoomBuilder.Dehacked;
 using CodeImp.DoomBuilder.IO;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Editing;
-using CodeImp.DoomBuilder.GZBuilder.Data;
 using CodeImp.DoomBuilder.Data;
 
 #endregion

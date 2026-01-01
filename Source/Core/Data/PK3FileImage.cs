@@ -19,7 +19,6 @@
 using System;
 using System.Drawing;
 using System.IO;
-using CodeImp.DoomBuilder.Controls;
 using CodeImp.DoomBuilder.IO;
 
 #endregion

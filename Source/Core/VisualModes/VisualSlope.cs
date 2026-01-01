@@ -1,6 +1,4 @@
-﻿using System;
-using CodeImp.DoomBuilder.Geometry;
-using CodeImp.DoomBuilder.Map;
+﻿using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.Rendering;
 
 namespace CodeImp.DoomBuilder.VisualModes

@@ -20,9 +20,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Drawing;
-using CodeImp.DoomBuilder.Rendering;
 using System.Drawing.Imaging;
-using CodeImp.DoomBuilder.Data;
 
 #endregion
 

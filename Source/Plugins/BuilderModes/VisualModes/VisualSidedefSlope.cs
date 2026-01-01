@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Windows.Forms;
 using CodeImp.DoomBuilder.BuilderModes;
 using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.Map;
-using CodeImp.DoomBuilder.Rendering;
 
 namespace CodeImp.DoomBuilder.VisualModes
 {

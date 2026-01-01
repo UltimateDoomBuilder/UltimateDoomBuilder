@@ -16,7 +16,6 @@
 
 #region ================== Namespaces
 
-using System;
 using System.Drawing;
 using CodeImp.DoomBuilder.Windows;
 using CodeImp.DoomBuilder.Data;

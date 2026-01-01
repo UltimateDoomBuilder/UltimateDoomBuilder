@@ -23,7 +23,6 @@ using System.Linq;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Actions;
 using System.Globalization;
-using CodeImp.DoomBuilder.Data;
 using System.IO;
 using CodeImp.DoomBuilder.Rendering;
 using Action = CodeImp.DoomBuilder.Actions.Action;

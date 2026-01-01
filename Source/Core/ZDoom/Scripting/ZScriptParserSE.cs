@@ -1,10 +1,7 @@
 ﻿using CodeImp.DoomBuilder.Config;
 using CodeImp.DoomBuilder.Data;
 using CodeImp.DoomBuilder.GZBuilder.Data;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace CodeImp.DoomBuilder.ZDoom.Scripting
 {

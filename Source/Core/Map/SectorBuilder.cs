@@ -1,8 +1,6 @@
 ﻿#region ================== Namespaces
 
-using System;
 using System.Collections.Generic;
-using System.Drawing;
 using CodeImp.DoomBuilder.Geometry;
 
 #endregion
