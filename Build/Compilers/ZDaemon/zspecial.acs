@@ -21,7 +21,7 @@ special
 	 14:Door_Animated(3,4),
 	 15:Autosave(0),
 //	 16:Transfer_WallLight
-	 17:Thing_Raise(1),
+	 17:Thing_Raise(1,2),
 	 18:StartConversation(1,2),
 	 19:Thing_Stop(1),
 	 20:Floor_LowerByValue(3,4),
@@ -44,7 +44,7 @@ special
 	 37:Floor_MoveToValue(3,5),
 	 38:Ceiling_Waggle(5),
 	 39:Teleport_ZombieChanger(2),
-	 40:Ceiling_LowerByValue(3,4),
+	 40:Ceiling_LowerByValue(3,5),
 	 41:Ceiling_RaiseByValue(3,4),
 	 42:Ceiling_CrushAndRaise(3,4),
 	 43:Ceiling_LowerAndCrush(3,4),
@@ -53,7 +53,7 @@ special
 	 46:Floor_CrushStop(1),
 	 47:Ceiling_MoveToValue(3,5),
 //	 48:Sector_Attach3dMidtex
-	 49:GlassBreak(0,1),
+	 49:GlassBreak(0,2),
 //	 50:ExtraFloor_LightOnly
 	 51:Sector_SetLink(4),
 	 52:Scroll_Wall(5),
@@ -147,6 +147,8 @@ special
 	143:Player_RemoveItem(2),			// Skulltag Functions
 	144:Player_GiveItem(2),				// Skulltag Functions
 	145:Player_SetTeam(1),				// Skulltag Functions
+	150:Line_SetHealth(2),
+	151:Sector_SetHealth(3),
 	152:Team_Score(2),					// Skulltag Functions
 	153:Team_GivePoints(3),				// Skulltag Functions
 	154:Teleport_NoStop(2, 3),
@@ -187,7 +189,7 @@ special
 	196:Ceiling_CrushAndRaiseA(4,5),
 	197:Ceiling_CrushAndRaiseSilentA(4,5),
 	198:Ceiling_RaiseByValueTimes8(3,4),
-	199:Ceiling_LowerByValueTimes8(3,4),
+	199:Ceiling_LowerByValueTimes8(3,5),
 	200:Generic_Floor(5),
 	201:Generic_Ceiling(5),
 	202:Generic_Door(5),
@@ -203,7 +205,7 @@ special
 	212:Sector_SetColor(4,5),
 	213:Sector_SetFade(4),
 	214:Sector_SetDamage(3,5),
-	215:Teleport_Line(2),
+	215:Teleport_Line(2,3),
 	216:Sector_SetGravity(3),
 	217:Stairs_BuildUpDoom(5),
 	218:Sector_SetWind(4),
@@ -264,6 +266,22 @@ special
 	271:Stairs_BuildUpDoomSync(4),
 	272:Stairs_BuildDownDoomSync(4),
 	
+	// New additions can go above 255 now.
+	273:Stairs_BuildUpDoomCrush(5),
+	274:Door_AnimatedClose(2),
+	275:Floor_Stop(1),
+	276:Ceiling_Stop(1),
+	277:Sector_SetFloorGlow(5),
+	278:Sector_SetCeilingGlow(5),
+	279:Floor_MoveToValueAndCrush(4, 5),
+	280:Ceiling_MoveToValueAndCrush(4, 5),
+	281:Line_SetAutomapFlags(3),
+	282:Line_SetAutomapStyle(2),
+	283:Polyobj_StopSound(1),
+	
+	// new to Eternity
+//	300:Portal_Define(5),
+//	301:Line_QuickPortal(1),
 	
 	
 	// internal functions have negative values
@@ -343,7 +361,7 @@ special
 	-73:CheckFont(1),
 	-74:DropItem(2,4),
 	-75:CheckFlag(2),
-	-76:SetLineActivation(2),
+	-76:SetLineActivation(2, 3),
 	-77:GetLineActivation(1),
 	-78:GetActorPowerupTics(2),
 	-79:ChangeActorAngle(2,3),
@@ -401,13 +419,26 @@ special
 	-201:DamageActor(6), // [arookas]
 	-202:SetActorFlag(3),
 	-203:SetTranslation(2),
+	-204:GetActorFloorTexture(1),
+	-205:GetActorFloorTerrain(1),
+	-206:StrArg(1),
+	-207:Floor(1),
+	-208:Round(1),
+	-209:Ceil(1),
+	-210:ScriptCall(2, 100),	// ACS does not know varargs so use something large as maximum.
+	-211:StartSlideshow(1),
+	-212:GetSectorHealth(2),
+	-213:GetLineHealth(1),
+	-214:SetSubtitleNumber(2),
+	
 	
 	// Eternity's
 	-300:GetLineX(3),
 	-301:GetLineY(3),
+	-302:SetAirFriction(1),
 	
 	// GZDoom OpenGL
-	-400:SetSectorGlow(5),
+	-400:SetSectorGlow(6),
 	-401:SetFogDensity(2),
 	
 	// ZDaemon's
@@ -415,4 +446,3 @@ special
 	-19621:SetTeamScore(2),
 	
 	-100000:__EndOfList__(10);
-	
