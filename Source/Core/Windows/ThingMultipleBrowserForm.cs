@@ -66,7 +66,7 @@ namespace CodeImp.DoomBuilder.Windows
 		}
 
 		//mxd
-		private void ThingBrowserForm_Shown(object sender, EventArgs e)
+		private void ThingMultipleBrowserForm_Shown(object sender, EventArgs e)
 		{
 			thingslist.FocusTextbox();
 		}

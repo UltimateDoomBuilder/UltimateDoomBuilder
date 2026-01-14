@@ -68,7 +68,7 @@ namespace CodeImp.DoomBuilder.Windows
 			this.apply.UseVisualStyleBackColor = true;
 			this.apply.Click += new System.EventHandler(this.apply_Click);
 			// 
-			// ThingBrowserForm
+			// ThingMultipleBrowserForm
 			// 
 			this.AcceptButton = this.apply;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -81,13 +81,13 @@ namespace CodeImp.DoomBuilder.Windows
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.MinimumSize = new System.Drawing.Size(264, 300);
-			this.Name = "ThingBrowserForm";
+			this.Name = "ThingMultipleBrowserForm";
 			this.Opacity = 0;
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Choose Thing Type";
-			this.Shown += new System.EventHandler(this.ThingBrowserForm_Shown);
+			this.Shown += new System.EventHandler(this.ThingMultipleBrowserForm_Shown);
 			this.ResumeLayout(false);
 
 		}
