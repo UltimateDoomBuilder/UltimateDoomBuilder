@@ -56,18 +56,19 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Esprima">
-      <HintPath>.\Esprima.dll</HintPath>
+      <HintPath>..\..\..\Assets\Common\Plugins\Dependencies\Esprima.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Jint">
-      <HintPath>.\Jint.dll</HintPath>
+      <HintPath>..\..\..\Assets\Common\Plugins\Dependencies\Jint.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Memory">
-      <HintPath>..\..\..\Build\System.Memory.dll</HintPath>
+    <Reference Include="System.Memory, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Assets\Common\System.Memory.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Numerics" />
@@ -76,7 +77,6 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>

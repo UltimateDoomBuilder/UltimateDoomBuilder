@@ -138,7 +138,7 @@
   -->
   <ItemGroup>
     <Compile Include="Compilers\AccCompiler.cs" />
-	<Compile Include="Compilers\BccCompiler.cs" />
+    <Compile Include="Compilers\BccCompiler.cs" />
     <Compile Include="Compilers\ZtBccCompiler.cs" />
     <Compile Include="Compilers\NodesCompiler.cs" />
     <Compile Include="Config\ArgumentInfo.cs" />
@@ -671,11 +671,13 @@
     </Reference>
     <Reference Include="ScintillaNET, Version=3.6.3.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Build\ScintillaNET.dll</HintPath>
+      <HintPath>..\..\Assets\Common\ScintillaNET.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SharpCompress, Version=0.20.0.0, Culture=neutral, PublicKeyToken=afb0a02973931d96, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Build\SharpCompress.dll</HintPath>
+      <HintPath>..\..\Assets\Common\SharpCompress.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -688,6 +690,8 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="TabControlEX, Version=0.0.3271.41578, Culture=neutral, PublicKeyToken=1db242dc828e4b4e">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assets\Common\TabControlEX.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -1601,6 +1605,34 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <PropertyGroup>
+    <IsWindows Condition="'$(OS)' == 'Windows_NT'">true</IsWindows>
+    <IsLinux Condition="'$(OS)' != 'Windows_NT'">true</IsLinux>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="..\..\Assets\Common\**\*">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Assets\Windows\**\*" Condition="'$(IsWindows)' == 'true'">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Assets\Windows.$(Platform)\**\*" Condition="'$(IsWindows)' == 'true'">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>    
+    <Content Include="..\..\Assets\Linux\**\*" Condition="'$(IsLinux)' == 'true'">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Assets\Linux.$(Platform)\**\*" Condition="'$(IsLinux)' == 'true'">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>      
   </ItemGroup>
   <PropertyGroup>
     <PreBuildEvent>

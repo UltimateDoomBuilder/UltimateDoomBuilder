@@ -679,14 +679,20 @@
     </Reference>
     <Reference Include="ScintillaNET, Version=3.6.3.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Build\ScintillaNET.dll</HintPath>
+      <HintPath>..\..\Assets\Common\ScintillaNET.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SharpCompress, Version=0.20.0.0, Culture=neutral, PublicKeyToken=afb0a02973931d96, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Build\SharpCompress.dll</HintPath>
+      <HintPath>..\..\Assets\Common\SharpCompress.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assets\Common\System.Buffers.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -694,21 +700,26 @@
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
-    <Reference Include="System.Memory, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Build\System.Memory.dll</HintPath>
+      <HintPath>..\..\Assets\Common\System.Memory.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="System.Numerics.Vectors, Version=4.1.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Build\System.Numerics.Vectors.dll</HintPath>
+      <HintPath>..\..\Assets\Common\System.Numerics.Vectors.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Build\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <HintPath>..\..\Assets\Common\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="TabControlEX, Version=0.0.3271.41578, Culture=neutral, PublicKeyToken=1db242dc828e4b4e">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assets\Common\TabControlEX.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="WindowsBase" />
@@ -1624,8 +1635,68 @@
   </ItemGroup>
   <ItemGroup />
   <PropertyGroup>
-    <PreBuildEvent>echo Current Output Directory: %25cd%25
-echo Copying platform-appropriate Updater.ini.
-copy /Y ..\UpdaterConfig\Updater-$(PlatformName).ini Updater.ini</PreBuildEvent>
+    <IsWindows Condition="'$(OS)' == 'Windows_NT'">true</IsWindows>
+    <IsLinux Condition="'$(OS)' != 'Windows_NT'">true</IsLinux>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\Assets\README.md">
+      <Link>Assets\README.md</Link>
+      <Visible>true</Visible>
+    </None>
+    <None Include="..\..\Assets\**\*" Exclude="..\..\Assets\README.md">
+      <Link>Assets\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <Visible>true</Visible>
+    </None>
+    <Content Include="..\..\Assets\Common\**\*">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="..\..\Assets\Windows\**\*" Condition="'$(IsWindows)' == 'true'">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="..\..\Assets\Windows.$(Platform)\**\*" Condition="'$(IsWindows)' == 'true'">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="..\..\Assets\Linux\**\*" Condition="'$(IsLinux)' == 'true'">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="..\..\Assets\Linux.$(Platform)\**\*" Condition="'$(IsLinux)' == 'true'">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>    
+  </ItemGroup>
+<Target Name="CleanPlatformAssets" BeforeTargets="BeforeBuild">
+  <ItemGroup>
+    <OldAssets Include="$(OutputPath)**\*" Condition="'$(IsWindows)' == 'true'" 
+               KeepDuplicates="false" 
+               SourceFiles="..\..\Assets\Linux\**\*" />
+    <OldAssets Include="$(OutputPath)**\*" Condition="'$(IsWindows)' == 'true'" 
+               KeepDuplicates="false" 
+               SourceFiles="..\..\Assets\Linux.x64\**\*" />
+    <OldAssets Include="$(OutputPath)**\*" Condition="'$(IsWindows)' == 'true'" 
+               KeepDuplicates="false" 
+               SourceFiles="..\..\Assets\Linux.x86\**\*" />
+
+    <OldAssets Include="$(OutputPath)**\*" Condition="'$(IsLinux)' == 'true'" 
+               KeepDuplicates="false" 
+               SourceFiles="..\..\Assets\Windows\**\*" />
+    <OldAssets Include="$(OutputPath)**\*" Condition="'$(IsLinux)' == 'true'" 
+               KeepDuplicates="false" 
+               SourceFiles="..\..\Assets\Windows.x64\**\*" />
+    <OldAssets Include="$(OutputPath)**\*" Condition="'$(IsLinux)' == 'true'" 
+               KeepDuplicates="false" 
+               SourceFiles="..\..\Assets\Windows.x86\**\*" />
+  </ItemGroup>
+  <Message Text="Cleaning old platform-specific assets from $(OutputPath)..." Importance="high" />
+  <Delete Files="$(OutputPath)%(OldAssets.RecursiveDir)%(OldAssets.Filename)%(OldAssets.Extension)" 
+          Condition="Exists('$(OutputPath)%(OldAssets.Filename)%(OldAssets.Extension)')" />
+</Target>  
 </Project>
