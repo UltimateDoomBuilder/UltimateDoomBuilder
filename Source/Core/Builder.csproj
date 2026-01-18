@@ -1639,64 +1639,50 @@
     <IsLinux Condition="'$(OS)' != 'Windows_NT'">true</IsLinux>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="..\..\Assets\README.md">
-      <Link>Assets\README.md</Link>
-      <Visible>true</Visible>
-    </None>
-    <None Include="..\..\Assets\**\*" Exclude="..\..\Assets\README.md">
+    <None Include="..\..\Assets\**\*">
       <Link>Assets\%(RecursiveDir)%(Filename)%(Extension)</Link>
       <Visible>true</Visible>
     </None>
-    <Content Include="..\..\Assets\Common\**\*">
+    <None Include="..\..\Assets\Common\**\*">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>false</Visible>
-    </Content>
-    <Content Include="..\..\Assets\Windows\**\*" Condition="'$(IsWindows)' == 'true'">
+      <IsAsset>true</IsAsset>
+    </None>
+    <None Include="..\..\Assets\Windows\**\*" Condition="'$(IsWindows)' == 'true'">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>false</Visible>
-    </Content>
-    <Content Include="..\..\Assets\Windows.$(Platform)\**\*" Condition="'$(IsWindows)' == 'true'">
+      <IsAsset>true</IsAsset>
+    </None>
+    <None Include="..\..\Assets\Windows.$(Platform)\**\*" Condition="'$(IsWindows)' == 'true'">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>false</Visible>
-    </Content>
-    <Content Include="..\..\Assets\Linux\**\*" Condition="'$(IsLinux)' == 'true'">
+      <IsAsset>true</IsAsset>
+    </None>
+    <None Include="..\..\Assets\Linux\**\*" Condition="'$(IsLinux)' == 'true'">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>false</Visible>
-    </Content>
-    <Content Include="..\..\Assets\Linux.$(Platform)\**\*" Condition="'$(IsLinux)' == 'true'">
+      <IsAsset>true</IsAsset>
+    </None>
+    <None Include="..\..\Assets\Linux.$(Platform)\**\*" Condition="'$(IsLinux)' == 'true'">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>false</Visible>
-    </Content>    
+      <IsAsset>true</IsAsset>
+    </None>
   </ItemGroup>
-<Target Name="CleanPlatformAssets" BeforeTargets="BeforeBuild">
+  <Target Name="CleanOutputDirectory" BeforeTargets="BeforeBuild">
+    <Message Text="Cleaning output directory: $(OutputPath)" Importance="high" />
+    <RemoveDir Directories="$(OutputPath)" Condition="Exists('$(OutputPath)')" />
+  </Target>
+<Target Name="CopyAssetsToBuildFolder" AfterTargets="AfterBuild">
   <ItemGroup>
-    <OldAssets Include="$(OutputPath)**\*" Condition="'$(IsWindows)' == 'true'" 
-               KeepDuplicates="false" 
-               SourceFiles="..\..\Assets\Linux\**\*" />
-    <OldAssets Include="$(OutputPath)**\*" Condition="'$(IsWindows)' == 'true'" 
-               KeepDuplicates="false" 
-               SourceFiles="..\..\Assets\Linux.x64\**\*" />
-    <OldAssets Include="$(OutputPath)**\*" Condition="'$(IsWindows)' == 'true'" 
-               KeepDuplicates="false" 
-               SourceFiles="..\..\Assets\Linux.x86\**\*" />
-
-    <OldAssets Include="$(OutputPath)**\*" Condition="'$(IsLinux)' == 'true'" 
-               KeepDuplicates="false" 
-               SourceFiles="..\..\Assets\Windows\**\*" />
-    <OldAssets Include="$(OutputPath)**\*" Condition="'$(IsLinux)' == 'true'" 
-               KeepDuplicates="false" 
-               SourceFiles="..\..\Assets\Windows.x64\**\*" />
-    <OldAssets Include="$(OutputPath)**\*" Condition="'$(IsLinux)' == 'true'" 
-               KeepDuplicates="false" 
-               SourceFiles="..\..\Assets\Windows.x86\**\*" />
+    <_AssetsToCopy Include="@(None)" Condition="'%(None.IsAsset)' == 'true'" />
   </ItemGroup>
-  <Message Text="Cleaning old platform-specific assets from $(OutputPath)..." Importance="high" />
-  <Delete Files="$(OutputPath)%(OldAssets.RecursiveDir)%(OldAssets.Filename)%(OldAssets.Extension)" 
-          Condition="Exists('$(OutputPath)%(OldAssets.Filename)%(OldAssets.Extension)')" />
+
+  <Message Importance="High" Text="Copying Assets to: $(OutputPath)" />
+
+  <Copy SourceFiles="@(_AssetsToCopy)" 
+        DestinationFiles="$(OutputPath)%(Link)" 
+        SkipUnchangedFiles="true" 
+        OverwriteReadOnlyFiles="true" />
 </Target>  
 </Project>

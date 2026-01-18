@@ -200,6 +200,7 @@
     <ProjectReference Include="..\BuilderModes\BuilderModes.csproj">
       <Project>{B42D5AA0-F9A6-4234-9C4B-A05B11A64851}</Project>
       <Name>BuilderModes</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -207,8 +208,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy $(ProjectDir)Jint.dll $(TargetDir)Dependencies\ /y
-xcopy $(ProjectDir)Esprima.dll $(TargetDir)Dependencies\ /y</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

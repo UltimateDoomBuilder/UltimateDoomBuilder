@@ -48,13 +48,14 @@ echo [OB]/log[CB]
 IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
 IF NOT EXIST "%DB_OUTDIR%\Changelog.xml" GOTO FILEFAIL
 
-ECHO.
-ECHO Compiling HTML Help file...
-ECHO.
-IF EXIST "Build\Refmanual.chm" DEL /F /Q "Build\Refmanual.chm" > NUL
-"%HHWDIR%\hhc" Help\Refmanual.hhp
-IF %ERRORLEVEL% NEQ 1 GOTO ERRORFAIL
-IF NOT EXIST "Build\Refmanual.chm" GOTO FILEFAIL
+rem ECHO.
+rem ECHO Compiling HTML Help file...
+rem ECHO.
+rem IF NOT EXIST "Build" MKDIR "Build"
+rem IF EXIST "Build\Refmanual.chm" DEL /F /Q "Build\Refmanual.chm" > NUL
+rem "%HHWDIR%\hhc" Help\Refmanual.hhp
+rem IF %ERRORLEVEL% NEQ 1 GOTO ERRORFAIL
+rem IF NOT EXIST "Build\Refmanual.chm" GOTO FILEFAIL
 
 ECHO.
 ECHO Looking up current repository revision numbers...
@@ -75,23 +76,22 @@ ECHO.
 ECHO Cleaning solutions...
 ECHO.
 msbuild.exe Builder.sln /t:Clean
-msbuild.exe Source/Tools/Updater/Updater.csproj /t:Clean
+rem msbuild.exe Source/Tools/Updater/Updater.csproj /t:Clean
 
-ECHO.
-ECHO Compiling Updater...
-ECHO.
-IF EXIST "Build\Updater.exe" DEL /F /Q "Build\Updater.exe" > NUL
-IF EXIST "Source\Tools\Updater\obj" RD /S /Q "Source\Tools\Updater\obj"
-msbuild "Source\Tools\Updater\Updater.csproj" /t:Rebuild /p:Configuration=Release /p:Platform=%PLATFORM% /v:minimal
-IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
-IF NOT EXIST "Build\Updater.exe" GOTO FILEFAIL
+rem ECHO.
+rem ECHO Compiling Updater...
+rem ECHO.
+rem IF EXIST "Build\Updater.exe" DEL /F /Q "Build\Updater.exe" > NUL
+rem IF EXIST "Source\Tools\Updater\obj" RD /S /Q "Source\Tools\Updater\obj"
+rem msbuild "Source\Tools\Updater\Updater.csproj" /t:Rebuild /p:Configuration=Release /p:Platform=%PLATFORM% /v:minimal
+rem IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
+rem IF NOT EXIST "Build\Updater.exe" GOTO FILEFAIL
 
-VersionFromEXE.exe "Build\Updater.exe" "setenv.bat"
-IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
-IF NOT EXIST "setenv.bat" GOTO FILEFAIL
-
-CALL "setenv.bat"
-DEL /F /Q "setenv.bat"
+rem VersionFromEXE.exe "Build\Updater.exe" "setenv.bat"
+rem IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
+rem IF NOT EXIST "setenv.bat" GOTO FILEFAIL
+rem CALL "setenv.bat"
+rem DEL /F /Q "setenv.bat"
 
 ECHO.
 ECHO Compiling Doom Builder...
@@ -117,12 +117,19 @@ IF NOT EXIST "Build\Plugins\TagExplorer.dll" GOTO FILEFAIL
 IF NOT EXIST "Build\Plugins\TagRange.dll" GOTO FILEFAIL
 IF NOT EXIST "Build\Plugins\ThreeDFloorMode.dll" GOTO FILEFAIL
 IF NOT EXIST "Build\Plugins\VisplaneExplorer.dll" GOTO FILEFAIL
+IF NOT EXIST "Build\Updater.exe" GOTO FILEFAIL
 
 ECHO.
 ECHO Creating changelog...
 ECHO.
 ChangelogMaker.exe "%DB_OUTDIR%\Changelog.xml" "Build" "m-x-d>MaxED" %REVISIONNUMBER%
 IF %ERRORLEVEL% NEQ 0 GOTO LOGFAIL
+
+VersionFromEXE.exe "Build\Updater.exe" "setenv.bat"
+IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
+IF NOT EXIST "setenv.bat" GOTO FILEFAIL
+CALL "setenv.bat"
+DEL /F /Q "setenv.bat"
 
 ECHO.
 ECHO Packing release...
