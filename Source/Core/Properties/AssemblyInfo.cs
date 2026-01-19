@@ -31,8 +31,9 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("3.0.0.3274")]
+// Assembly versioning is now handled at compile time using Git information.
+// See the GenerateGitVersion target in the project file for details.
+
 [assembly: NeutralResourcesLanguageAttribute("en")]
-[assembly: AssemblyHash("cbe8abb")]
 
 [assembly: InternalsVisibleTo("Builder.Tests")]

@@ -257,6 +257,7 @@
     <Compile Include="GZBuilder\Models\MD3ModelLoader.cs" />
     <Compile Include="GZBuilder\Models\OBJModelLoader.cs" />
     <Compile Include="GZBuilder\Models\ModelLoadResult.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -638,7 +639,6 @@
     <Compile Include="Plugins\Plug.cs" />
     <Compile Include="Plugins\Plugin.cs" />
     <Compile Include="Plugins\PluginManager.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\Presentation.cs" />
     <Compile Include="Rendering\ColorCollection.cs" />
     <Compile Include="Rendering\ColorSetting.cs" />
@@ -1639,10 +1639,12 @@
     <IsLinux Condition="'$(OS)' != 'Windows_NT'">true</IsLinux>
   </PropertyGroup>
   <ItemGroup>
+    <!-- Get all files in the assets directory to show them in the solution explorer -->
     <None Include="..\..\Assets\**\*">
       <Link>Assets\%(RecursiveDir)%(Filename)%(Extension)</Link>
       <Visible>true</Visible>
     </None>
+    <!-- Get all files in the assets directory to copy them to output. Everything with IsAsset set to true will be copied -->
     <None Include="..\..\Assets\Common\**\*">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <Visible>false</Visible>
@@ -1670,19 +1672,49 @@
     </None>
   </ItemGroup>
   <Target Name="CleanOutputDirectory" BeforeTargets="BeforeBuild">
+    <!-- Clean the output directory before building -->
     <Message Text="Cleaning output directory: $(OutputPath)" Importance="high" />
     <RemoveDir Directories="$(OutputPath)" Condition="Exists('$(OutputPath)')" />
   </Target>
-<Target Name="CopyAssetsToBuildFolder" AfterTargets="AfterBuild">
-  <ItemGroup>
-    <_AssetsToCopy Include="@(None)" Condition="'%(None.IsAsset)' == 'true'" />
-  </ItemGroup>
+  <Target Name="CopyAssetsToBuildFolder" AfterTargets="AfterBuild">
+    <!-- Copy all asset files to the build output directory -->
+    <ItemGroup>
+      <AssetsToCopy Include="@(None)" Condition="'%(None.IsAsset)' == 'true'" />
+    </ItemGroup>
+    <Message Importance="High" Text="Copying Assets to: $(OutputPath)" />
+    <Copy SourceFiles="@(AssetsToCopy)" DestinationFiles="$(OutputPath)%(Link)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
+  </Target>
+  <Target Name="GenerateGitVersion" BeforeTargets="BeforeCompile">
+    <!-- Get Git commit count and hash from the repository and write them to a temporary compile-time file -->
+    <Exec Command="git rev-list --count HEAD" ConsoleToMSBuild="true" StandardOutputImportance="low" IgnoreExitCode="true">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitCommitCount" />
+    </Exec>
+    <Exec Command="git.exe rev-parse --short=7 HEAD" ConsoleToMSBuild="true" StandardOutputImportance="low" IgnoreExitCode="true">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitCommitHash" />
+    </Exec>
 
-  <Message Importance="High" Text="Copying Assets to: $(OutputPath)" />
+    <PropertyGroup>
+      <GitCommitCount Condition="'$(GitCommitCount)' == ''">unknown</GitCommitCount>
+      <GitCommitHash Condition="'$(GitCommitHash)' == ''">unknown</GitCommitHash>
 
-  <Copy SourceFiles="@(_AssetsToCopy)" 
-        DestinationFiles="$(OutputPath)%(Link)" 
-        SkipUnchangedFiles="true" 
-        OverwriteReadOnlyFiles="true" />
-</Target>  
+      <FullVersion>3.0.0.$(GitCommitCount)</FullVersion>
+      <VersionFilePath>$(IntermediateOutputPath)GeneratedVersionInfo.cs</VersionFilePath>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <VersionLines Include="using System.Reflection%3b" />
+      <VersionLines Include="using CodeImp.DoomBuilder%3b" />
+      <VersionLines Include="[assembly: AssemblyVersion(&quot;$(FullVersion)&quot;)]" />
+      <VersionLines Include="[assembly: AssemblyFileVersion(&quot;$(FullVersion)&quot;)]" />
+      <VersionLines Include="[assembly: AssemblyHash(&quot;$(GitCommitHash)&quot;)]" />
+    </ItemGroup>
+
+    <WriteLinesToFile File="$(VersionFilePath)" Lines="@(VersionLines)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+
+    <ItemGroup>
+      <Compile Include="$(VersionFilePath)" />
+    </ItemGroup>
+    
+    <Message Importance="high" Text="Got build version from Git: $(FullVersion) (saved to temporary compile-time file $(VersionFilePath))" />
+  </Target>
 </Project>

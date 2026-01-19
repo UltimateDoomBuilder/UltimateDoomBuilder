@@ -32,8 +32,8 @@ ECHO.
 
 MKDIR %DB_OUTDIR%
 
-git.exe checkout "Source/Core/Properties/AssemblyInfo.cs" > NUL
-git.exe checkout "Source/Plugins/BuilderModes/Properties/AssemblyInfo.cs" > NUL
+rem git.exe checkout "Source/Core/Properties/AssemblyInfo.cs" > NUL
+rem git.exe checkout "Source/Plugins/BuilderModes/Properties/AssemblyInfo.cs" > NUL
 
 ECHO.
 ECHO Writing GIT log file...
@@ -57,20 +57,20 @@ rem "%HHWDIR%\hhc" Help\Refmanual.hhp
 rem IF %ERRORLEVEL% NEQ 1 GOTO ERRORFAIL
 rem IF NOT EXIST "Build\Refmanual.chm" GOTO FILEFAIL
 
-ECHO.
-ECHO Looking up current repository revision numbers...
-ECHO.
-IF EXIST "setenv.bat" DEL /F /Q "setenv.bat" > NUL
-IF DEFINED EXPERIMENTALNAME (
-	VersionFromGIT.exe "Source\Core\Properties\AssemblyInfo.cs" "Source\Plugins\BuilderModes\Properties\AssemblyInfo.cs" -O "setenv.bat" -N %EXPERIMENTALNAME%
-) ELSE (
-	VersionFromGIT.exe "Source\Core\Properties\AssemblyInfo.cs" "Source\Plugins\BuilderModes\Properties\AssemblyInfo.cs" -O "setenv.bat"
-)
-IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
-IF NOT EXIST "setenv.bat" GOTO FILEFAIL
-
-CALL "setenv.bat"
-DEL /F /Q "setenv.bat"
+rem ECHO.
+rem ECHO Looking up current repository revision numbers...
+rem ECHO.
+rem IF EXIST "setenv.bat" DEL /F /Q "setenv.bat" > NUL
+rem IF DEFINED EXPERIMENTALNAME (
+rem 	VersionFromGIT.exe "Source\Core\Properties\AssemblyInfo.cs" "Source\Plugins\BuilderModes\Properties\AssemblyInfo.cs" -O "setenv.bat" -N %EXPERIMENTALNAME%
+rem ) ELSE (
+rem 	VersionFromGIT.exe "Source\Core\Properties\AssemblyInfo.cs" "Source\Plugins\BuilderModes\Properties\AssemblyInfo.cs" -O "setenv.bat"
+rem )
+rem IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
+rem IF NOT EXIST "setenv.bat" GOTO FILEFAIL
+rem 
+rem CALL "setenv.bat"
+rem DEL /F /Q "setenv.bat"
 
 ECHO.
 ECHO Cleaning solutions...
@@ -92,6 +92,18 @@ rem IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
 rem IF NOT EXIST "setenv.bat" GOTO FILEFAIL
 rem CALL "setenv.bat"
 rem DEL /F /Q "setenv.bat"
+
+ECHO.
+ECHO Looking up current repository revision number...
+ECHO.
+git rev-list --count HEAD > REVISIONNUMBER.txt
+IF %ERRORLEVEL% EQU 0 (
+	set /p REVISIONNUMBER=<REVISIONNUMBER.txt
+) ELSE (
+	set REVISIONNUMBER=unknown
+)
+IF EXIST REVISIONNUMBER.txt DEL /F /Q REVISIONNUMBER.txt > NUL
+ECHO Got revision number: %REVISIONNUMBER%
 
 ECHO.
 ECHO Compiling Doom Builder...
@@ -164,8 +176,8 @@ IF EXIST "Build\Changelog.txt" DEL /F /Q "Build\Changelog.txt" > NUL
 @ECHO %REVISIONNUMBER%> %DB_OUTDIR%\Version.txt
 @ (ECHO %REVISIONNUMBER% && ECHO %EXEREVISIONNUMBER%) > %DB_OUTDIR%\Versions.txt
 
-git.exe checkout "Source\Core\Properties\AssemblyInfo.cs" > NUL
-git.exe checkout "Source\Plugins\BuilderModes\Properties\AssemblyInfo.cs" > NUL
+rem git.exe checkout "Source\Core\Properties\AssemblyInfo.cs" > NUL
+rem git.exe checkout "Source\Plugins\BuilderModes\Properties\AssemblyInfo.cs" > NUL
 
 :BUILDDONE
 ECHO.

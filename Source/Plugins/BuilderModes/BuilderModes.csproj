@@ -791,4 +791,31 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
+  <Target Name="GenerateGitVersion" BeforeTargets="BeforeCompile">
+    <!-- Get Git commit count and hash from the repository and write them to a temporary compile-time file -->
+    <Exec Command="git rev-list --count HEAD" ConsoleToMSBuild="true" StandardOutputImportance="low" IgnoreExitCode="true">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitCommitCount" />
+    </Exec>
+
+    <PropertyGroup>
+      <GitCommitCount Condition="'$(GitCommitCount)' == ''">unknown</GitCommitCount>
+
+      <FullVersion>3.0.0.$(GitCommitCount)</FullVersion>
+      <VersionFilePath>$(IntermediateOutputPath)GeneratedVersionInfo.cs</VersionFilePath>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <VersionLines Include="using System.Reflection%3b" />
+      <VersionLines Include="[assembly: AssemblyVersion(&quot;$(FullVersion)&quot;)]" />
+      <VersionLines Include="[assembly: AssemblyFileVersion(&quot;$(FullVersion)&quot;)]" />
+    </ItemGroup>
+
+    <WriteLinesToFile File="$(VersionFilePath)" Lines="@(VersionLines)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+
+    <ItemGroup>
+      <Compile Include="$(VersionFilePath)" />
+    </ItemGroup>
+    
+    <Message Importance="high" Text="##### Got build version from Git: $(FullVersion) (saved to temporary compile-time file $(VersionFilePath))" />
+  </Target>  
 </Project>
