@@ -1,12 +1,13 @@
 #!/usr/bin/bash
 
-UDB_VERSION=0
 HAS_FLATPAK=1
 HAS_FLATPAK_BUILDER=1
 
-# Check if git is installed and try to get the commit count
-if ! command -v git > /dev/null 2>&1; then
-    UDB_VERSION=$(git rev-list --count HEAD 2>/dev/null || echo "0");
+# Check if Git is installed and get the commit count if it's a Git repository
+if command -v git > /dev/null 2>&1 && [ -d .git ]; then
+    UDB_VERSION=$(git rev-list --count HEAD 2>/dev/null)
+else
+    UDB_VERSION="0"
 fi
 
 # Check if flatpak and flatpak-builder are installed
