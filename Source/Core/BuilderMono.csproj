@@ -1611,31 +1611,82 @@
     <IsLinux Condition="'$(OS)' != 'Windows_NT'">true</IsLinux>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="..\..\Assets\Common\**\*">
+    <!-- Get all files in the assets directory to show them in the solution explorer -->
+    <None Include="..\..\Assets\**\*">
+      <Link>Assets\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <Visible>true</Visible>
+    </None>
+    <!-- Get all files in the assets directory to copy them to output. Everything with IsAsset set to true will be copied -->
+    <None Include="..\..\Assets\Common\**\*">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\Assets\Windows\**\*" Condition="'$(IsWindows)' == 'true'">
-      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\Assets\Windows.$(Platform)\**\*" Condition="'$(IsWindows)' == 'true'">
-      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>false</Visible>
-    </Content>    
-    <Content Include="..\..\Assets\Linux\**\*" Condition="'$(IsLinux)' == 'true'">
+      <IsAsset>true</IsAsset>
+    </None>
+    <None Include="..\..\Assets\Windows\**\*" Condition="'$(IsWindows)' == 'true'">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\Assets\Linux.$(Platform)\**\*" Condition="'$(IsLinux)' == 'true'">
-      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>false</Visible>
-    </Content>      
+      <IsAsset>true</IsAsset>
+    </None>
+    <None Include="..\..\Assets\Windows.$(Platform)\**\*" Condition="'$(IsWindows)' == 'true'">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <Visible>false</Visible>
+      <IsAsset>true</IsAsset>
+    </None>
+    <None Include="..\..\Assets\Linux\**\*" Condition="'$(IsLinux)' == 'true'">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <Visible>false</Visible>
+      <IsAsset>true</IsAsset>
+    </None>
+    <None Include="..\..\Assets\Linux.$(Platform)\**\*" Condition="'$(IsLinux)' == 'true'">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <Visible>false</Visible>
+      <IsAsset>true</IsAsset>
+    </None>
   </ItemGroup>
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-  </PropertyGroup>
+  <Target Name="CleanOutputDirectory" BeforeTargets="BeforeBuild">
+    <!-- Clean the output directory before building -->
+    <Message Text="Cleaning output directory: $(OutputPath)" Importance="high" />
+    <RemoveDir Directories="$(OutputPath)" Condition="Exists('$(OutputPath)')" />
+  </Target>
+  <Target Name="CopyAssetsToBuildFolder" AfterTargets="AfterBuild">
+    <!-- Copy all asset files to the build output directory -->
+    <ItemGroup>
+      <AssetsToCopy Include="@(None)" Condition="'%(None.IsAsset)' == 'true'" />
+    </ItemGroup>
+    <Message Importance="High" Text="Copying Assets to: $(OutputPath)" />
+    <Copy SourceFiles="@(AssetsToCopy)" DestinationFiles="$(OutputPath)%(Link)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
+  </Target>
+  <Target Name="GenerateGitVersion" BeforeTargets="BeforeCompile">
+    <!-- Get Git commit count and hash from the repository and write them to a temporary compile-time file -->
+    <Exec Command="git rev-list --count HEAD" ConsoleToMSBuild="true" StandardOutputImportance="low" IgnoreExitCode="true">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitCommitCount" />
+    </Exec>
+    <Exec Command="git rev-parse --short=7 HEAD" ConsoleToMSBuild="true" StandardOutputImportance="low" IgnoreExitCode="true">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitCommitHash" />
+    </Exec>
+
+    <PropertyGroup>
+      <GitCommitCount Condition="'$(GitCommitCount)' == '' Or $(GitCommitCount.StartsWith('fatal'))">0</GitCommitCount>
+      <GitCommitHash Condition="'$(GitCommitHash)' == '' Or $(GitCommitHash.StartsWith('fatal'))">0</GitCommitHash>
+
+      <FullVersion>3.0.0.$(GitCommitCount)</FullVersion>
+      <VersionFilePath>$(IntermediateOutputPath)GeneratedVersionInfo.cs</VersionFilePath>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <VersionLines Include="using System.Reflection%3b" />
+      <VersionLines Include="using CodeImp.DoomBuilder%3b" />
+      <VersionLines Include="[assembly: AssemblyVersion(&quot;$(FullVersion)&quot;)]" />
+      <VersionLines Include="[assembly: AssemblyFileVersion(&quot;$(FullVersion)&quot;)]" />
+      <VersionLines Include="[assembly: AssemblyHash(&quot;$(GitCommitHash)&quot;)]" />
+    </ItemGroup>
+
+    <WriteLinesToFile File="$(VersionFilePath)" Lines="@(VersionLines)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+
+    <ItemGroup>
+      <Compile Include="$(VersionFilePath)" />
+    </ItemGroup>
+    
+    <Message Importance="high" Text="Got build version from Git: $(FullVersion) (saved to temporary compile-time file $(VersionFilePath))" />
+  </Target>
 </Project>

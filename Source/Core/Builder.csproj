@@ -1689,13 +1689,13 @@
     <Exec Command="git rev-list --count HEAD" ConsoleToMSBuild="true" StandardOutputImportance="low" IgnoreExitCode="true">
       <Output TaskParameter="ConsoleOutput" PropertyName="GitCommitCount" />
     </Exec>
-    <Exec Command="git.exe rev-parse --short=7 HEAD" ConsoleToMSBuild="true" StandardOutputImportance="low" IgnoreExitCode="true">
+    <Exec Command="git rev-parse --short=7 HEAD" ConsoleToMSBuild="true" StandardOutputImportance="low" IgnoreExitCode="true">
       <Output TaskParameter="ConsoleOutput" PropertyName="GitCommitHash" />
     </Exec>
 
     <PropertyGroup>
-      <GitCommitCount Condition="'$(GitCommitCount)' == ''">unknown</GitCommitCount>
-      <GitCommitHash Condition="'$(GitCommitHash)' == ''">unknown</GitCommitHash>
+      <GitCommitCount Condition="'$(GitCommitCount)' == '' Or $(GitCommitCount.StartsWith('fatal'))">unknown</GitCommitCount>
+      <GitCommitHash Condition="'$(GitCommitHash)' == '' Or $(GitCommitHash.StartsWith('fatal'))">unknown</GitCommitHash>
 
       <FullVersion>3.0.0.$(GitCommitCount)</FullVersion>
       <VersionFilePath>$(IntermediateOutputPath)GeneratedVersionInfo.cs</VersionFilePath>
