@@ -46,7 +46,7 @@ The advantage of using Flatpak to build a package is that you do not need to ins
   cd UltimateDoomBuilder
   ```
 
-- Build the Flatpak:
+- Build the Flatpak. This will also download all required dependencies:
   ```
   ./build_flatpak.sh
   ```

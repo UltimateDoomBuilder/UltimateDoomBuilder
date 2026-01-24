@@ -61,7 +61,8 @@ fi
 echo
 echo "Flatpak bundle 'ultimatedoombuilder.flatpak' created successfully."
 echo
-echo "You can install it using the following command:"
+echo "You can install and run it using the following commands:"
 echo
 echo "    flatpak install --user ./ultimatedoombuilder-$UDB_VERSION.flatpak"
+echo "    flatpak run io.github.ultimatedoombuilder.ultimatedoombuilder"
 echo

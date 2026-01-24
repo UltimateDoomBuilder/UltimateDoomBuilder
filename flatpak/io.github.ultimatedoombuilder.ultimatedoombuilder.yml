@@ -47,7 +47,7 @@ modules:
         cat <<EOF > /app/bin/start-ultimatedoombuilder.sh
         #!/bin/sh
 
-        # Execute Mono
+        cd /app/lib/ultimatedoombuilder
         exec /app/bin/mono Builder.exe "\$@"
         EOF
       - chmod +x /app/bin/start-ultimatedoombuilder.sh
