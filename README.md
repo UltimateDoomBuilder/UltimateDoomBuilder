@@ -51,11 +51,38 @@ The advantage of using Flatpak to build a package is that you do not need to ins
   ./build_flatpak.sh
   ```
 
-- This will create a file in the format `ultimatedoombuilder-<version>.flatpak`. You can now install and run the Flatpak:
+- This will create a file in the format `ultimatedoombuilder-<version>.flatpak` in the `Releases` directory. You can now install and run the Flatpak:
 
   ```
-  flatpak install --user ultimatedoombuilder-<version>.flatpak
-  flatpak run io.ultimatedoombuilder.ultimatedoombuilder
+  flatpak install --user Releases/ultimatedoombuilder-<version>.flatpak
+  flatpak run io.github.ultimatedoombuilder.ultimatedoombuilder
+  ```
+### Flatpak build using WSL2
+
+You can also build the flatpak on Windows using WSL2.
+
+#### Initial setup
+- Create the instance. Requires entering a user name and password:
+  ```powershell
+  wsl --install Ubuntu-24.04 --name udb-flatpak-builder
+  ```
+- Install required Flatpak packages and clone the repository, then exit the insance. Requires entering the user password from the previous step:
+  ```bash
+  sudo apt update && sudo apt -y install flatpak flatpak-builder
+  cd ~
+  git clone https://github.com/UltimateDoomBuilder/UltimateDoomBuilder.git
+  exit
+  ```
+
+#### Building the flatpak
+- Update the repository and build the flatpak:
+  ```powershell
+  wsl --distribution udb-flatpak-builder --cd ~/UltimateDoomBuilder -- git pull `&`& ./build_flatpak.sh
+  ```
+- Get the flatpak from the UNC path `\\wsl.localhost\udb-flatpak-builder\home\$env:username\UltimateDoomBuilder\Releases`.
+- Stop the instance (optional, it should shut itself down after some time):
+  ```powershell
+  wsl --terminate udb-flatpak-builder
   ```
 
 

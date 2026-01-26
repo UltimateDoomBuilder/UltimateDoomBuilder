@@ -51,20 +51,24 @@ if ! flatpak-builder --user --force-clean --install-deps-from=flathub --repo=udb
 fi
 
 # Create the flatpak bundle
+if [ ! -d Releases ]; then
+    mkdir Releases
+fi
 echo
 echo "Creating flatpak bundle (this may take a while)..."
-if ! flatpak build-bundle udb-flatpak-repo ultimatedoombuilder-$UDB_VERSION.flatpak io.github.ultimatedoombuilder.ultimatedoombuilder --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo; then
+if ! flatpak build-bundle udb-flatpak-repo Releases/ultimatedoombuilder-$UDB_VERSION.flatpak io.github.ultimatedoombuilder.ultimatedoombuilder --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo; then
     echo
     echo "Failed to create the flatpak bundle."
     echo
     exit 1
 fi
 
+
 echo
 echo "Flatpak bundle 'ultimatedoombuilder-$UDB_VERSION.flatpak' created successfully."
 echo
 echo "You can install and run it using the following commands:"
 echo
-echo "    flatpak install --user ./ultimatedoombuilder-$UDB_VERSION.flatpak"
+echo "    flatpak install --user ./Releases/ultimatedoombuilder-$UDB_VERSION.flatpak"
 echo "    flatpak run io.github.ultimatedoombuilder.ultimatedoombuilder"
 echo
