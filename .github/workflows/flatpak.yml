@@ -1,0 +1,39 @@
+name: Build Flatpak
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  flatpak:
+    name: "Build Flatpak"
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-24.08
+      options: --privileged
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build Flatpak
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          bundle: UltimateDoomBuilder.flatpak
+          manifest-path: flatpak/io.github.ultimatedoombuilder.ultimatedoombuilder.yml # Update this path if different
+          cache: true
+          # We need to ensure the mono extension is available
+          run-tests: false 
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: UltimateDoomBuilder-Flatpak
+          path: UltimateDoomBuilder.flatpak
