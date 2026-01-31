@@ -44,7 +44,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: UltimateDoomBuilder-Flatpak
-          path: UltimateDoomBuilder.flatpak
+          path: ultimatedoombuilder-r${{ env.REV_COUNT }}.flatpak
           if-no-files-found: error
           retention-days: 7
 
@@ -57,5 +57,7 @@ jobs:
           files: ultimatedoombuilder-r${{ env.REV_COUNT }}.flatpak
           body: "Automated Flatpak build for Ultimate Doom Builder R${{ env.REV_COUNT }}."
           prerelease: true
+          make_latest: true
+          overwrite: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}          
