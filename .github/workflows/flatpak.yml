@@ -29,7 +29,11 @@ jobs:
 
       - name: Get Revision Count
         id: vars
-        run: echo "REV_COUNT=$(git rev-list --count HEAD)" >> $GITHUB_ENV          
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          COUNT=$(git rev-list --count HEAD)
+          echo "REV_COUNT=$COUNT" >> $GITHUB_ENV
+          echo "Detected Revision: $COUNT"     
 
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
