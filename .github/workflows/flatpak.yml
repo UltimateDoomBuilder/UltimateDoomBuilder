@@ -29,7 +29,6 @@ jobs:
         with:
           bundle: UltimateDoomBuilder.flatpak
           manifest-path: flatpak/io.github.ultimatedoombuilder.ultimatedoombuilder.yml # Update this path if different
-          cache: true
           run-tests: false
           cache: true
           restore-cache: true
