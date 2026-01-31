@@ -14,6 +14,8 @@ jobs:
   flatpak:
     name: "Build Flatpak"
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-24.08
       options: --privileged
@@ -32,7 +34,7 @@ jobs:
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
-          bundle: ultimatedoombuilder-r${{ env.REV_COUNT }}.flatpak
+          bundle: ultimatedoombuilder-latest.flatpak
           manifest-path: flatpak/io.github.ultimatedoombuilder.ultimatedoombuilder.yml # Update this path if different
           run-tests: false
           cache: true
@@ -54,10 +56,10 @@ jobs:
         with:
           tag_name: latest
           name: "Build R${{ env.REV_COUNT }}"
-          files: ultimatedoombuilder-r${{ env.REV_COUNT }}.flatpak
+          files: ultimatedoombuilder-latest.flatpak
           body: "Automated Flatpak build for Ultimate Doom Builder R${{ env.REV_COUNT }}."
           prerelease: true
           make_latest: true
-          overwrite: true
+          overwrite_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}          
