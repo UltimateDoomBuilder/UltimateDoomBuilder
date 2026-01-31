@@ -32,8 +32,8 @@ ECHO.
 
 MKDIR %DB_OUTDIR%
 
-git.exe checkout "Source/Core/Properties/AssemblyInfo.cs" > NUL
-git.exe checkout "Source/Plugins/BuilderModes/Properties/AssemblyInfo.cs" > NUL
+rem git.exe checkout "Source/Core/Properties/AssemblyInfo.cs" > NUL
+rem git.exe checkout "Source/Plugins/BuilderModes/Properties/AssemblyInfo.cs" > NUL
 
 ECHO.
 ECHO Writing GIT log file...
@@ -48,50 +48,62 @@ echo [OB]/log[CB]
 IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
 IF NOT EXIST "%DB_OUTDIR%\Changelog.xml" GOTO FILEFAIL
 
-ECHO.
-ECHO Compiling HTML Help file...
-ECHO.
-IF EXIST "Build\Refmanual.chm" DEL /F /Q "Build\Refmanual.chm" > NUL
-"%HHWDIR%\hhc" Help\Refmanual.hhp
-IF %ERRORLEVEL% NEQ 1 GOTO ERRORFAIL
-IF NOT EXIST "Build\Refmanual.chm" GOTO FILEFAIL
+rem ECHO.
+rem ECHO Compiling HTML Help file...
+rem ECHO.
+rem IF NOT EXIST "Build" MKDIR "Build"
+rem IF EXIST "Build\Refmanual.chm" DEL /F /Q "Build\Refmanual.chm" > NUL
+rem "%HHWDIR%\hhc" Help\Refmanual.hhp
+rem IF %ERRORLEVEL% NEQ 1 GOTO ERRORFAIL
+rem IF NOT EXIST "Build\Refmanual.chm" GOTO FILEFAIL
 
-ECHO.
-ECHO Looking up current repository revision numbers...
-ECHO.
-IF EXIST "setenv.bat" DEL /F /Q "setenv.bat" > NUL
-IF DEFINED EXPERIMENTALNAME (
-	VersionFromGIT.exe "Source\Core\Properties\AssemblyInfo.cs" "Source\Plugins\BuilderModes\Properties\AssemblyInfo.cs" -O "setenv.bat" -N %EXPERIMENTALNAME%
-) ELSE (
-	VersionFromGIT.exe "Source\Core\Properties\AssemblyInfo.cs" "Source\Plugins\BuilderModes\Properties\AssemblyInfo.cs" -O "setenv.bat"
-)
-IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
-IF NOT EXIST "setenv.bat" GOTO FILEFAIL
-
-CALL "setenv.bat"
-DEL /F /Q "setenv.bat"
+rem ECHO.
+rem ECHO Looking up current repository revision numbers...
+rem ECHO.
+rem IF EXIST "setenv.bat" DEL /F /Q "setenv.bat" > NUL
+rem IF DEFINED EXPERIMENTALNAME (
+rem 	VersionFromGIT.exe "Source\Core\Properties\AssemblyInfo.cs" "Source\Plugins\BuilderModes\Properties\AssemblyInfo.cs" -O "setenv.bat" -N %EXPERIMENTALNAME%
+rem ) ELSE (
+rem 	VersionFromGIT.exe "Source\Core\Properties\AssemblyInfo.cs" "Source\Plugins\BuilderModes\Properties\AssemblyInfo.cs" -O "setenv.bat"
+rem )
+rem IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
+rem IF NOT EXIST "setenv.bat" GOTO FILEFAIL
+rem 
+rem CALL "setenv.bat"
+rem DEL /F /Q "setenv.bat"
 
 ECHO.
 ECHO Cleaning solutions...
 ECHO.
 msbuild.exe Builder.sln /t:Clean
-msbuild.exe Source/Tools/Updater/Updater.csproj /t:Clean
+rem msbuild.exe Source/Tools/Updater/Updater.csproj /t:Clean
+
+rem ECHO.
+rem ECHO Compiling Updater...
+rem ECHO.
+rem IF EXIST "Build\Updater.exe" DEL /F /Q "Build\Updater.exe" > NUL
+rem IF EXIST "Source\Tools\Updater\obj" RD /S /Q "Source\Tools\Updater\obj"
+rem msbuild "Source\Tools\Updater\Updater.csproj" /t:Rebuild /p:Configuration=Release /p:Platform=%PLATFORM% /v:minimal
+rem IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
+rem IF NOT EXIST "Build\Updater.exe" GOTO FILEFAIL
+
+rem VersionFromEXE.exe "Build\Updater.exe" "setenv.bat"
+rem IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
+rem IF NOT EXIST "setenv.bat" GOTO FILEFAIL
+rem CALL "setenv.bat"
+rem DEL /F /Q "setenv.bat"
 
 ECHO.
-ECHO Compiling Updater...
+ECHO Looking up current repository revision number...
 ECHO.
-IF EXIST "Build\Updater.exe" DEL /F /Q "Build\Updater.exe" > NUL
-IF EXIST "Source\Tools\Updater\obj" RD /S /Q "Source\Tools\Updater\obj"
-msbuild "Source\Tools\Updater\Updater.csproj" /t:Rebuild /p:Configuration=Release /p:Platform=%PLATFORM% /v:minimal
-IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
-IF NOT EXIST "Build\Updater.exe" GOTO FILEFAIL
-
-VersionFromEXE.exe "Build\Updater.exe" "setenv.bat"
-IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
-IF NOT EXIST "setenv.bat" GOTO FILEFAIL
-
-CALL "setenv.bat"
-DEL /F /Q "setenv.bat"
+git rev-list --count HEAD > REVISIONNUMBER.txt
+IF %ERRORLEVEL% EQU 0 (
+	set /p REVISIONNUMBER=<REVISIONNUMBER.txt
+) ELSE (
+	set REVISIONNUMBER=unknown
+)
+IF EXIST REVISIONNUMBER.txt DEL /F /Q REVISIONNUMBER.txt > NUL
+ECHO Got revision number: %REVISIONNUMBER%
 
 ECHO.
 ECHO Compiling Doom Builder...
@@ -117,12 +129,19 @@ IF NOT EXIST "Build\Plugins\TagExplorer.dll" GOTO FILEFAIL
 IF NOT EXIST "Build\Plugins\TagRange.dll" GOTO FILEFAIL
 IF NOT EXIST "Build\Plugins\ThreeDFloorMode.dll" GOTO FILEFAIL
 IF NOT EXIST "Build\Plugins\VisplaneExplorer.dll" GOTO FILEFAIL
+IF NOT EXIST "Build\Updater.exe" GOTO FILEFAIL
 
 ECHO.
 ECHO Creating changelog...
 ECHO.
 ChangelogMaker.exe "%DB_OUTDIR%\Changelog.xml" "Build" "m-x-d>MaxED" %REVISIONNUMBER%
 IF %ERRORLEVEL% NEQ 0 GOTO LOGFAIL
+
+VersionFromEXE.exe "Build\Updater.exe" "setenv.bat"
+IF %ERRORLEVEL% NEQ 0 GOTO ERRORFAIL
+IF NOT EXIST "setenv.bat" GOTO FILEFAIL
+CALL "setenv.bat"
+DEL /F /Q "setenv.bat"
 
 ECHO.
 ECHO Packing release...
@@ -157,8 +176,8 @@ IF EXIST "Build\Changelog.txt" DEL /F /Q "Build\Changelog.txt" > NUL
 @ECHO %REVISIONNUMBER%> %DB_OUTDIR%\Version.txt
 @ (ECHO %REVISIONNUMBER% && ECHO %EXEREVISIONNUMBER%) > %DB_OUTDIR%\Versions.txt
 
-git.exe checkout "Source\Core\Properties\AssemblyInfo.cs" > NUL
-git.exe checkout "Source\Plugins\BuilderModes\Properties\AssemblyInfo.cs" > NUL
+rem git.exe checkout "Source\Core\Properties\AssemblyInfo.cs" > NUL
+rem git.exe checkout "Source\Plugins\BuilderModes\Properties\AssemblyInfo.cs" > NUL
 
 :BUILDDONE
 ECHO.
