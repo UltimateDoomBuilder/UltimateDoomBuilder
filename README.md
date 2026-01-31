@@ -35,8 +35,7 @@ These instructions are for Debian-based distros and were tested with Ubuntu 24.0
 
 The advantage of using Flatpak to build a package is that you do not need to install Mono directly into your system, since everything in the build process will be self-contained. This also means that this works on Linux distributions that do not have `msbuild` in their repository.
 
-- Install Flatpak and Flatpak Builder
-  To use and build UDB using Flatpak you need both Flatpak and Flatpak Builder. How they are installed depends on your distribution. For example on Debian-based distributions they can be installed using `sudo apt install flatpak flatpak-builder`. Check your distro's documentation for information on how to install them.
+- To build UDB using Flatpak you need both **Flatpak** and **Flatpak Builder**. How they are installed depends on your distribution. For example on Debian-based distributions they can be installed using `sudo apt install flatpak flatpak-builder`. Check your distro's documentation for information on how to install them.
 - Go to a directory of your choice and clone the repository (it'll automatically create an UltimateDoomBuilder directory in the current directory):
   ```
   git clone https://github.com/UltimateDoomBuilder/UltimateDoomBuilder.git
