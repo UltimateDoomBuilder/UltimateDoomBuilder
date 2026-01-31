@@ -30,8 +30,10 @@ jobs:
           bundle: UltimateDoomBuilder.flatpak
           manifest-path: flatpak/io.github.ultimatedoombuilder.ultimatedoombuilder.yml # Update this path if different
           cache: true
-          # We need to ensure the mono extension is available
-          run-tests: false 
+          run-tests: false
+          cache: true
+          restore-cache: true
+          cache-key: flatpak-builder-${{ hashFiles('flatpak/io.github.ultimatedoombuilder.ultimatedoombuilder.yml') }}          
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
