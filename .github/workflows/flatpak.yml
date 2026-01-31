@@ -46,7 +46,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: UltimateDoomBuilder-Flatpak
-          path: ultimatedoombuilder-r${{ env.REV_COUNT }}.flatpak
+          path: ultimatedoombuilder-latest.flatpak
           if-no-files-found: error
           retention-days: 7
 
