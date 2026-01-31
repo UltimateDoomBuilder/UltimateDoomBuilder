@@ -38,7 +38,7 @@ jobs:
           cache: true
           restore-cache: true
           cache-key: flatpak-builder-${{ hashFiles('flatpak/io.github.ultimatedoombuilder.ultimatedoombuilder.yml') }}          
-          upload-bundle: false
+          upload-artifact: false
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
