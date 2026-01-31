@@ -23,19 +23,39 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
+          fetch-depth: 0 # Required to properly get the commit count
+
+      - name: Get Revision Count
+        id: vars
+        run: echo "REV_COUNT=$(git rev-list --count HEAD)" >> $GITHUB_ENV          
 
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
-          bundle: UltimateDoomBuilder.flatpak
+          bundle: ultimatedoombuilder-r${{ env.REV_COUNT }}.flatpak
           manifest-path: flatpak/io.github.ultimatedoombuilder.ultimatedoombuilder.yml # Update this path if different
           run-tests: false
           cache: true
           restore-cache: true
           cache-key: flatpak-builder-${{ hashFiles('flatpak/io.github.ultimatedoombuilder.ultimatedoombuilder.yml') }}          
+          upload-bundle: false
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: UltimateDoomBuilder-Flatpak
           path: UltimateDoomBuilder.flatpak
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/master'
+        with:
+          tag_name: latest
+          name: "Build R${{ env.REV_COUNT }}"
+          files: ultimatedoombuilder-r${{ env.REV_COUNT }}.flatpak
+          body: "Automated Flatpak build for Ultimate Doom Builder R${{ env.REV_COUNT }}."
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}          
