@@ -83,6 +83,11 @@ namespace ScintillaNET
     		{
     			Text = "";
     		}
+
+			public Line(string text)
+			{
+				Text = text;
+			}
     		
 		public int Position { get; private set; }
 		public int EndPosition { get; private set; }
@@ -106,6 +111,15 @@ namespace ScintillaNET
 
 		public int Count { get { return lines.Count; } }
 		public Line this[int index] { get { return lines[index]; } }
+
+		public void Update(string[] allLines)
+		{
+			lines.Clear();
+			foreach (string line in allLines)
+			{
+				lines.Add(new Line(line));
+			}
+		}
 
 		internal List<Line> lines = new List<Line>();
 	}
@@ -295,6 +309,13 @@ namespace ScintillaNET
 			textbox.Location = new Point(0, 0);
 			textbox.Multiline = true;
 			textbox.Font = new Font(FontFamily.GenericMonospace, 10.0f);
+			textbox.TextChanged += (s, e) =>
+			{
+				if (s is TextBox tb)
+				{
+					Lines.Update(textbox.Lines);
+				}
+			};
 
 			Controls.Add(textbox);
 			Size = textbox.PreferredSize;
