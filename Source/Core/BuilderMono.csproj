@@ -315,6 +315,12 @@
     <Compile Include="Windows\RunExternalCommandForm.Designer.cs">
       <DependentUpon>RunExternalCommandForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Windows\ThingMultipleBrowserForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\ThingMultipleBrowserForm.Designer.cs">
+      <DependentUpon>ThingMultipleBrowserForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Windows\ThingStatisticsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -712,6 +718,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\RunExternalCommandForm.resx">
       <DependentUpon>RunExternalCommandForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\ThingMultipleBrowserForm.resx">
+      <DependentUpon>ThingMultipleBrowserForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\ThingStatisticsForm.resx">
       <DependentUpon>ThingStatisticsForm.cs</DependentUpon>
