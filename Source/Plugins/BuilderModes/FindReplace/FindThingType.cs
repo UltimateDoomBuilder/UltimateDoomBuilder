@@ -100,7 +100,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			int[] replacetypes = ParseTypes(replacewith);
 			if(replace)
 			{
-				if (replacetypes.Length == 0 || replacetypes.Any(rt => rt < 0 || rt > Int16.MaxValue))
+				if (replacetypes.Length == 0 || replacetypes.Any(rt => rt < General.Map.FormatInterface.MinThingType || rt > General.Map.FormatInterface.MaxThingType))
 				{
 					MessageBox.Show("Invalid replace value for this search type!", "Find and Replace", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					return objs.ToArray();
