@@ -11,6 +11,7 @@ finish-args:
   - --share=ipc
   - --device=dri
   - --filesystem=home
+  - --env=FONTCONFIG_FILE=/app/etc/fonts/fonts.conf
 build-options:
   append-path: /usr/lib/sdk/mono6/bin
 
@@ -67,4 +68,16 @@ modules:
     build-commands:
       - cp -ra /usr/lib/sdk/mono6/bin/* /app/bin/
       - cp -ra /usr/lib/sdk/mono6/lib/* /app/lib/
-      - cp -ra /usr/lib/sdk/mono6/etc/* /app/etc/ 2>/dev/null || true          
+      - cp -ra /usr/lib/sdk/mono6/etc/* /app/etc/ 2>/dev/null || true
+  - name: bundled-fonts
+    buildsystem: simple
+    build-commands:
+      - install -d /app/share/fonts
+      - install -d /app/etc/fonts
+      - install -m 644 Fonts/*.ttf /app/share/fonts/
+      - install -m 644 Fonts/*.txt /app/share/fonts/
+      - install -m 644 Fonts/*.md /app/share/fonts/
+      - install -m 644 Fonts/fonts.conf /app/etc/fonts/fonts.conf
+    sources:
+      - type: dir
+        path: ..
