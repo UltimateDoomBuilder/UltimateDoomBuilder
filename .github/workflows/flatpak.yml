@@ -54,6 +54,14 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+      - uses: actions/checkout@v4
+      - name: Update Release Tag
+        run: |
+          git tag -d latest || true
+          git push origin :refs/tags/latest || true
+          git tag latest
+          git push origin latest
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/master'
@@ -62,8 +70,7 @@ jobs:
           name: "Build R${{ env.REV_COUNT }}"
           files: ultimatedoombuilder-latest.flatpak
           body: "Automated Flatpak build for Ultimate Doom Builder R${{ env.REV_COUNT }}."
-          prerelease: true
+          prerelease: false
           make_latest: true
           overwrite_files: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}          
+      
