@@ -23,6 +23,7 @@ using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Rendering;
 using System.Drawing;
 using CodeImp.DoomBuilder.Config;
+using System.Linq;
 
 #endregion
 
@@ -55,12 +56,38 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// This is called when the browse button is pressed
 		public override string Browse(string initialvalue)
 		{
-			int type;
-			int.TryParse(initialvalue, out type);
-			type = General.Interface.BrowseThingType(BuilderPlug.Me.FindReplaceForm, type);
-			return type.ToString();
+			// jaeden: enabled multiselect for thing type find
+			int[] types;
+			types = ParseTypes(initialvalue);
+			types = Windows.ThingMultipleBrowserForm.BrowseThings(BuilderPlug.Me.FindReplaceForm, types);
+			return TypesToString(types);
 		}
 
+		// Converts array of thing type numbers to a string
+		private string TypesToString(int[] types)
+		{
+			return string.Join(",", types);
+		}
+
+		// Converts string of thing type numbers to number array
+		private int[] ParseTypes(string typestring)
+		{
+			string[] typestrings = typestring.Split(',');
+
+			List<int> types = new List<int>();
+			foreach (var ts in typestrings)
+			{
+				string trimmed = ts.Trim();
+				if (trimmed.Length == 0)
+					continue;
+
+				if (int.TryParse(trimmed, out int parsed))
+					types.Add(parsed);
+				else
+					return Array.Empty<int>();
+			}
+			return types.ToArray();
+		}
 
 		// This is called to perform a search (and replace)
 		// Returns a list of items to show in the results list
@@ -70,23 +97,19 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			List<FindReplaceObject> objs = new List<FindReplaceObject>();
 
 			// Interpret the replacement
-			int replacetype = 0;
+			int[] replacetypes = ParseTypes(replacewith);
 			if(replace)
 			{
-				// If it cannot be interpreted, set replacewith to null (not replacing at all)
-				if(!int.TryParse(replacewith, out replacetype)) replacewith = null;
-				if(replacetype < 0) replacewith = null;
-				if(replacetype > Int16.MaxValue) replacewith = null;
-				if(replacewith == null)
+				if (replacetypes.Length == 0 || replacetypes.Any(rt => rt < General.Map.FormatInterface.MinThingType || rt > General.Map.FormatInterface.MaxThingType))
 				{
 					MessageBox.Show("Invalid replace value for this search type!", "Find and Replace", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					return objs.ToArray();
 				}
 			}
 
-			// Interpret the number given
-			int findtype;
-			if(int.TryParse(value, out findtype))
+			// Interpret the values to find
+			HashSet<int> valuestofind = ParseTypes(value).ToHashSet();
+			if (valuestofind.Count > 0)
 			{
 				// Where to search?
 				ICollection<Thing> list = withinselection ? General.Map.Map.GetSelectedThings(true) : General.Map.Map.Things;
@@ -95,12 +118,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				foreach(Thing t in list)
 				{
 					// Match?
-					if(t.Type == findtype)
+					if(valuestofind.Contains(t.Type))
 					{
 						// Replace
-						if(replace)
+						if(replace && replacetypes.Length > 0)
 						{
-							t.Type = replacetype;
+							t.Type = replacetypes[General.Random(0, replacetypes.Length - 1)];
 							t.UpdateConfiguration();
 						}
 						
