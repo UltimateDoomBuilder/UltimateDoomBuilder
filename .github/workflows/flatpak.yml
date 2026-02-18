@@ -27,6 +27,13 @@ jobs:
           submodules: recursive
           fetch-depth: 0 # Required to properly get the commit count
 
+      - name: Update Release Tag
+        run: |
+          git tag -d latest || true
+          git push origin :refs/tags/latest || true
+          git tag latest
+          git push origin latest
+
       - name: Get Revision Count
         id: vars
         run: |
@@ -53,14 +60,6 @@ jobs:
           path: ultimatedoombuilder-latest.flatpak
           if-no-files-found: error
           retention-days: 7
-
-      - uses: actions/checkout@v4
-      - name: Update Release Tag
-        run: |
-          git tag -d latest || true
-          git push origin :refs/tags/latest || true
-          git tag latest
-          git push origin latest
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
