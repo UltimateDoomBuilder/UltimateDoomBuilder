@@ -29,6 +29,7 @@ jobs:
 
       - name: Update Release Tag
         run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
           git tag -d latest || true
           git push origin :refs/tags/latest || true
           git tag latest
@@ -37,7 +38,6 @@ jobs:
       - name: Get Revision Count
         id: vars
         run: |
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
           COUNT=$(git rev-list --count HEAD)
           echo "REV_COUNT=$COUNT" >> $GITHUB_ENV
           echo "Detected Revision: $COUNT"     
@@ -46,7 +46,7 @@ jobs:
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
           bundle: ultimatedoombuilder-latest.flatpak
-          manifest-path: flatpak/io.github.ultimatedoombuilder.ultimatedoombuilder.yml # Update this path if different
+          manifest-path: flatpak/io.github.ultimatedoombuilder.ultimatedoombuilder.yml
           run-tests: false
           cache: true
           restore-cache: true
