@@ -134,7 +134,9 @@ namespace CodeImp.DoomBuilder.Dehacked
 				{
 					case "id #":
 						int.TryParse(value, out doomednum);
-						hasdoomednum = true;
+
+						// Things with DoomEdNum -1 can not be placed in a map, so treat them as having no DoomEdNum at all
+						hasdoomednum = (doomednum == -1) ? false : true;
 						break;
 					case "initial frame":
 						if (sprite == null && int.TryParse(value, out initialframe))
