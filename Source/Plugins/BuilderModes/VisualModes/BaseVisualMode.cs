@@ -4627,7 +4627,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				SectorLevel level = bvgs.Level;
 				bool applytoceiling = false;
-				if (level.extrafloor)
+				if (level.extrafloor != null)
 				{
 					// The top side of 3D floors is the ceiling of the sector, but it's a "floor" in UDB, so the
 					// ceiling of the control sector has to be modified

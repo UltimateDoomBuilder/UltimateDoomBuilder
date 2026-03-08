@@ -65,9 +65,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			length = handleline.GetLength();
 
 			if (handle1.Level.type == SectorLevelType.Ceiling)
-				baseheight = handle1.Level.extrafloor ? handle1.Level.sector.FloorHeight : handle1.Level.sector.CeilHeight;
+				baseheight = handle1.Level.extrafloor != null ? handle1.Level.sector.FloorHeight : handle1.Level.sector.CeilHeight;
 			else
-				baseheight = handle1.Level.extrafloor ? handle1.Level.sector.CeilHeight : handle1.Level.sector.FloorHeight;
+				baseheight = handle1.Level.extrafloor != null ? handle1.Level.sector.CeilHeight : handle1.Level.sector.FloorHeight;
 
 			baseheightoffset = 0.0;
 		}
