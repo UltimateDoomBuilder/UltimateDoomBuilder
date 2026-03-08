@@ -16,11 +16,8 @@
 
 #region ================== Namespaces
 
-using System;
-using ScintillaNET;
 using System.Collections.Generic;
 using System.Linq;
-using CodeImp.DoomBuilder.Map;
 
 #endregion
 
