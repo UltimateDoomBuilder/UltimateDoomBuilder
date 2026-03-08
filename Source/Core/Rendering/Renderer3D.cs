@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using CodeImp.DoomBuilder.Data;
 using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.GZBuilder.Data;
@@ -27,7 +26,6 @@ using CodeImp.DoomBuilder.GZBuilder.Models;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.VisualModes;
 using CodeImp.DoomBuilder.GZBuilder;
-using ColorMap = System.Drawing.Imaging.ColorMap;
 
 #endregion
 
@@ -128,8 +126,8 @@ namespace CodeImp.DoomBuilder.Rendering
 
         // FPS-related
         private int fps = 0;
-        private System.Diagnostics.Stopwatch fpsWatch;
-        private TextLabel fpsLabel;
+        private readonly System.Diagnostics.Stopwatch fpsWatch;
+        private readonly TextLabel fpsLabel;
 
         #endregion
 
@@ -140,7 +138,7 @@ namespace CodeImp.DoomBuilder.Rendering
 		public bool ShowSelection { get { return showselection; } set { showselection = value; } }
 		public bool ShowHighlight { get { return showhighlight; } set { showhighlight = value; } }
 		
-		protected bool UseIndexedTexture
+		public  bool UseIndexedTexture
 		{
 			get { return General.Settings.ClassicRendering && !fullbrightness; }
 		}
@@ -164,11 +162,13 @@ namespace CodeImp.DoomBuilder.Rendering
 			frustum = new ProjectedFrustum2D(new Vector2D(), 0.0f, 0.0f, PROJ_NEAR_PLANE,
 				General.Settings.ViewDistance, (float)Angle2D.DegToRad(General.Settings.VisualFOV));
 
-            fpsLabel = new TextLabel();
-            fpsLabel.AlignX = TextAlignmentX.Left;
-            fpsLabel.AlignY = TextAlignmentY.Top;
-            fpsLabel.Text = "(FPS unavailable)";
-            fpsWatch = new System.Diagnostics.Stopwatch();
+			fpsLabel = new TextLabel
+			{
+				AlignX = TextAlignmentX.Left,
+				AlignY = TextAlignmentY.Top,
+				Text = "(FPS unavailable)"
+			};
+			fpsWatch = new System.Diagnostics.Stopwatch();
 
             // We have no destructor
             GC.SuppressFinalize(this);
@@ -181,8 +181,8 @@ namespace CodeImp.DoomBuilder.Rendering
 			if(!isdisposed)
 			{
 				// Clean up
-				if(vertexhandle != null) vertexhandle.Dispose(); //mxd
-				if (visualslopehandle != null) visualslopehandle.Dispose();
+				vertexhandle?.Dispose(); //mxd
+				visualslopehandle?.Dispose();
 
 				// Done
 				base.Dispose();
@@ -1757,21 +1757,21 @@ namespace CodeImp.DoomBuilder.Rendering
             return (float)(t * t * (3.0 - 2.0 * t));
         }
 
-		private float clamp(float v, float mn, float mx)
+		private float Clamp(float v, float mn, float mx)
 		{
 			return Math.Min(Math.Max(v, mn), mx);
 		}
 
-		private float mix(float a, float b, float v)
+		private float Mix(float a, float b, float v)
 		{
 			return a * (1 - v) + b * v;
 		}
 
-		float inverseSquareDistanceAttenuation(float dist, float radius, float strength, float linearity)
+		float InverseSquareDistanceAttenuation(float dist, float radius, float strength, float linearity)
 		{
 			float a = dist / radius;
-			float b = clamp(1.0f - a * a * a * a, 0.0f, 1.0f);
-			return mix((b * b) / (dist * dist + 1.0f) * strength, clamp((radius - dist) / radius, 0.0f, 1.0f), linearity);
+			float b = Clamp(1.0f - a * a * a * a, 0.0f, 1.0f);
+			return Mix((b * b) / (dist * dist + 1.0f) * strength, Clamp((radius - dist) / radius, 0.0f, 1.0f), linearity);
 		}
 
 		//mxd. This gets color from dynamic lights based on distance to thing. 
@@ -1798,7 +1798,7 @@ namespace CodeImp.DoomBuilder.Rendering
 					if(General.Map.Data.MapInfo.LightAttenuationMode == "InverseSquare")
 					{
 						float diameter = lt.LightRadius * 2;
-						attn = inverseSquareDistanceAttenuation(Math.Max(dist, (float)Math.Sqrt(lt.LightRadius) * 2), diameter, Math.Min(1500.0f, (diameter * diameter) / 10), lt.LightLinearity);
+						attn = InverseSquareDistanceAttenuation(Math.Max(dist, (float)Math.Sqrt(lt.LightRadius) * 2), diameter, Math.Min(1500.0f, (diameter * diameter) / 10), lt.LightLinearity);
 					}
 					else
 					{

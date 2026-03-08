@@ -242,10 +242,12 @@
     <ProjectReference Include="..\BuilderEffects\BuilderEffects.csproj">
       <Project>{B859BE0F-A992-476D-A642-FA8EFE94AAA5}</Project>
       <Name>BuilderEffects</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\BuilderModes\BuilderModes.csproj">
       <Project>{B42D5AA0-F9A6-4234-9C4B-A05B11A64851}</Project>
       <Name>BuilderModes</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

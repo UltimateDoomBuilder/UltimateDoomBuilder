@@ -85,126 +85,140 @@ namespace CodeImp.DoomBuilder.Controls
 			// 
 			// label13
 			// 
-			label13.Location = new System.Drawing.Point(183, 64);
+			label13.AutoSize = true;
+			label13.Location = new System.Drawing.Point(195, 63);
 			label13.Name = "label13";
-			label13.Size = new System.Drawing.Size(70, 14);
+			label13.Size = new System.Drawing.Size(59, 13);
 			label13.TabIndex = 14;
 			label13.Text = "Brightness:";
 			label13.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label5
 			// 
-			label5.Location = new System.Drawing.Point(8, 64);
+			label5.AutoSize = true;
+			label5.Location = new System.Drawing.Point(11, 63);
 			label5.Name = "label5";
-			label5.Size = new System.Drawing.Size(44, 14);
+			label5.Size = new System.Drawing.Size(41, 13);
 			label5.TabIndex = 8;
 			label5.Text = "Height:";
 			label5.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// labelfloor
 			// 
-			this.labelfloor.Location = new System.Drawing.Point(8, 49);
+			this.labelfloor.AutoSize = true;
+			this.labelfloor.Location = new System.Drawing.Point(19, 49);
 			this.labelfloor.Name = "labelfloor";
-			this.labelfloor.Size = new System.Drawing.Size(44, 14);
+			this.labelfloor.Size = new System.Drawing.Size(33, 13);
 			this.labelfloor.TabIndex = 3;
 			this.labelfloor.Text = "Floor:";
 			this.labelfloor.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// labelceiling
 			// 
-			this.labelceiling.Location = new System.Drawing.Point(8, 34);
+			this.labelceiling.AutoSize = true;
+			this.labelceiling.Location = new System.Drawing.Point(11, 34);
 			this.labelceiling.Name = "labelceiling";
-			this.labelceiling.Size = new System.Drawing.Size(44, 14);
+			this.labelceiling.Size = new System.Drawing.Size(41, 13);
 			this.labelceiling.TabIndex = 2;
 			this.labelceiling.Text = "Ceiling:";
 			this.labelceiling.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// taglabel
 			// 
-			this.taglabel.Location = new System.Drawing.Point(8, 79);
+			this.taglabel.AutoSize = true;
+			this.taglabel.Location = new System.Drawing.Point(23, 79);
 			this.taglabel.Name = "taglabel";
-			this.taglabel.Size = new System.Drawing.Size(44, 14);
+			this.taglabel.Size = new System.Drawing.Size(29, 13);
 			this.taglabel.TabIndex = 4;
 			this.taglabel.Text = "Tag:";
 			this.taglabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// effectlabel
 			// 
-			this.effectlabel.Location = new System.Drawing.Point(8, 19);
+			this.effectlabel.AutoSize = true;
+			this.effectlabel.Location = new System.Drawing.Point(14, 19);
 			this.effectlabel.Name = "effectlabel";
-			this.effectlabel.Size = new System.Drawing.Size(44, 14);
+			this.effectlabel.Size = new System.Drawing.Size(38, 13);
 			this.effectlabel.TabIndex = 0;
 			this.effectlabel.Text = "Effect:";
 			this.effectlabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// ceilingLightLabel
 			// 
-			this.ceilingLightLabel.Location = new System.Drawing.Point(77, 63);
+			this.ceilingLightLabel.AutoSize = true;
+			this.ceilingLightLabel.Location = new System.Drawing.Point(89, 63);
 			this.ceilingLightLabel.Name = "ceilingLightLabel";
-			this.ceilingLightLabel.Size = new System.Drawing.Size(45, 14);
+			this.ceilingLightLabel.Size = new System.Drawing.Size(33, 13);
 			this.ceilingLightLabel.TabIndex = 27;
 			this.ceilingLightLabel.Text = "Light:";
 			this.ceilingLightLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// ceilingScaleLabel
 			// 
-			this.ceilingScaleLabel.Location = new System.Drawing.Point(77, 47);
+			this.ceilingScaleLabel.AutoSize = true;
+			this.ceilingScaleLabel.Location = new System.Drawing.Point(85, 47);
 			this.ceilingScaleLabel.Name = "ceilingScaleLabel";
-			this.ceilingScaleLabel.Size = new System.Drawing.Size(45, 14);
+			this.ceilingScaleLabel.Size = new System.Drawing.Size(37, 13);
 			this.ceilingScaleLabel.TabIndex = 26;
 			this.ceilingScaleLabel.Text = "Scale:";
 			this.ceilingScaleLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// ceilingAngleLabel
 			// 
-			this.ceilingAngleLabel.Location = new System.Drawing.Point(77, 31);
+			this.ceilingAngleLabel.AutoSize = true;
+			this.ceilingAngleLabel.Location = new System.Drawing.Point(85, 31);
 			this.ceilingAngleLabel.Name = "ceilingAngleLabel";
-			this.ceilingAngleLabel.Size = new System.Drawing.Size(45, 14);
+			this.ceilingAngleLabel.Size = new System.Drawing.Size(37, 13);
 			this.ceilingAngleLabel.TabIndex = 24;
 			this.ceilingAngleLabel.Text = "Angle:";
 			this.ceilingAngleLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// ceilingOffsetLabel
 			// 
-			this.ceilingOffsetLabel.Location = new System.Drawing.Point(77, 15);
+			this.ceilingOffsetLabel.AutoSize = true;
+			this.ceilingOffsetLabel.Location = new System.Drawing.Point(84, 15);
 			this.ceilingOffsetLabel.Name = "ceilingOffsetLabel";
-			this.ceilingOffsetLabel.Size = new System.Drawing.Size(45, 14);
+			this.ceilingOffsetLabel.Size = new System.Drawing.Size(38, 13);
 			this.ceilingOffsetLabel.TabIndex = 22;
 			this.ceilingOffsetLabel.Text = "Offset:";
 			this.ceilingOffsetLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// floorOffsetLabel
 			// 
-			this.floorOffsetLabel.Location = new System.Drawing.Point(77, 15);
+			this.floorOffsetLabel.AutoSize = true;
+			this.floorOffsetLabel.Location = new System.Drawing.Point(84, 15);
 			this.floorOffsetLabel.Name = "floorOffsetLabel";
-			this.floorOffsetLabel.Size = new System.Drawing.Size(45, 14);
+			this.floorOffsetLabel.Size = new System.Drawing.Size(38, 13);
 			this.floorOffsetLabel.TabIndex = 22;
 			this.floorOffsetLabel.Text = "Offset:";
 			this.floorOffsetLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// floorLightLabel
 			// 
-			this.floorLightLabel.Location = new System.Drawing.Point(77, 63);
+			this.floorLightLabel.AutoSize = true;
+			this.floorLightLabel.Location = new System.Drawing.Point(89, 63);
 			this.floorLightLabel.Name = "floorLightLabel";
-			this.floorLightLabel.Size = new System.Drawing.Size(45, 14);
+			this.floorLightLabel.Size = new System.Drawing.Size(33, 13);
 			this.floorLightLabel.TabIndex = 27;
 			this.floorLightLabel.Text = "Light:";
 			this.floorLightLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// floorAngleLabel
 			// 
-			this.floorAngleLabel.Location = new System.Drawing.Point(77, 31);
+			this.floorAngleLabel.AutoSize = true;
+			this.floorAngleLabel.Location = new System.Drawing.Point(85, 31);
 			this.floorAngleLabel.Name = "floorAngleLabel";
-			this.floorAngleLabel.Size = new System.Drawing.Size(45, 14);
+			this.floorAngleLabel.Size = new System.Drawing.Size(37, 13);
 			this.floorAngleLabel.TabIndex = 24;
 			this.floorAngleLabel.Text = "Angle:";
 			this.floorAngleLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// floorScaleLabel
 			// 
-			this.floorScaleLabel.Location = new System.Drawing.Point(77, 47);
+			this.floorScaleLabel.AutoSize = true;
+			this.floorScaleLabel.Location = new System.Drawing.Point(85, 47);
 			this.floorScaleLabel.Name = "floorScaleLabel";
-			this.floorScaleLabel.Size = new System.Drawing.Size(45, 14);
+			this.floorScaleLabel.Size = new System.Drawing.Size(37, 13);
 			this.floorScaleLabel.TabIndex = 26;
 			this.floorScaleLabel.Text = "Scale:";
 			this.floorScaleLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -253,59 +267,66 @@ namespace CodeImp.DoomBuilder.Controls
 			// 
 			// labelFade
 			// 
-			this.labelFade.Location = new System.Drawing.Point(183, 49);
+			this.labelFade.AutoSize = true;
+			this.labelFade.Location = new System.Drawing.Point(220, 47);
 			this.labelFade.Name = "labelFade";
-			this.labelFade.Size = new System.Drawing.Size(70, 14);
+			this.labelFade.Size = new System.Drawing.Size(34, 13);
 			this.labelFade.TabIndex = 19;
 			this.labelFade.Text = "Fade:";
 			this.labelFade.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// labelLight
 			// 
-			this.labelLight.Location = new System.Drawing.Point(183, 34);
+			this.labelLight.AutoSize = true;
+			this.labelLight.Location = new System.Drawing.Point(221, 34);
 			this.labelLight.Name = "labelLight";
-			this.labelLight.Size = new System.Drawing.Size(70, 14);
+			this.labelLight.Size = new System.Drawing.Size(33, 13);
 			this.labelLight.TabIndex = 18;
 			this.labelLight.Text = "Light:";
 			this.labelLight.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// brightness
 			// 
+			this.brightness.AutoSize = true;
 			this.brightness.Location = new System.Drawing.Point(257, 64);
 			this.brightness.Name = "brightness";
-			this.brightness.Size = new System.Drawing.Size(38, 14);
+			this.brightness.Size = new System.Drawing.Size(13, 13);
 			this.brightness.TabIndex = 17;
 			this.brightness.Text = "0";
 			// 
 			// height
 			// 
+			this.height.AutoSize = true;
 			this.height.Location = new System.Drawing.Point(55, 64);
 			this.height.Name = "height";
-			this.height.Size = new System.Drawing.Size(38, 14);
+			this.height.Size = new System.Drawing.Size(13, 13);
 			this.height.TabIndex = 11;
 			this.height.Text = "0";
 			// 
 			// tag
 			// 
+			this.tag.AutoSize = true;
 			this.tag.Location = new System.Drawing.Point(55, 79);
 			this.tag.Name = "tag";
-			this.tag.Size = new System.Drawing.Size(239, 14);
+			this.tag.Size = new System.Drawing.Size(13, 13);
 			this.tag.TabIndex = 7;
 			this.tag.Text = "0";
 			// 
 			// floor
 			// 
+			this.floor.AutoSize = true;
 			this.floor.Location = new System.Drawing.Point(55, 49);
 			this.floor.Name = "floor";
-			this.floor.Size = new System.Drawing.Size(42, 14);
+			this.floor.Size = new System.Drawing.Size(25, 13);
 			this.floor.TabIndex = 6;
 			this.floor.Text = "360";
 			// 
 			// ceiling
 			// 
+			this.ceiling.AutoSize = true;
 			this.ceiling.Location = new System.Drawing.Point(55, 34);
 			this.ceiling.Name = "ceiling";
-			this.ceiling.Size = new System.Drawing.Size(42, 14);
+			this.ceiling.Size = new System.Drawing.Size(31, 13);
 			this.ceiling.TabIndex = 5;
 			this.ceiling.Text = "1024";
 			// 
@@ -541,6 +562,7 @@ namespace CodeImp.DoomBuilder.Controls
 			this.flags.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.flags.CheckBoxes = true;
 			this.flags.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+			this.flags.HideSelection = false;
 			this.flags.Location = new System.Drawing.Point(6, 18);
 			this.flags.Name = "flags";
 			this.flags.Scrollable = false;

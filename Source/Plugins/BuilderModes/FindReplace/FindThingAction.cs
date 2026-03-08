@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using CodeImp.DoomBuilder.GZBuilder;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Rendering;
 using System.Drawing;

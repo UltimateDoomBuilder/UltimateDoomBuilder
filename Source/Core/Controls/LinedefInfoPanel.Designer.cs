@@ -84,32 +84,32 @@ namespace CodeImp.DoomBuilder.Controls
 			this.backpanel = new System.Windows.Forms.GroupBox();
 			this.flowLayoutPanelBack = new System.Windows.Forms.FlowLayoutPanel();
 			this.panelBackTop = new System.Windows.Forms.Panel();
+			this.labelTextureBackTop = new System.Windows.Forms.Label();
+			this.backhightex = new CodeImp.DoomBuilder.Controls.ConfigurablePictureBox();
 			this.backTopUDMFOffsetLabel = new System.Windows.Forms.Label();
 			this.backTopUDMFOffset = new System.Windows.Forms.Label();
 			this.backTopUDMFScaleLabel = new System.Windows.Forms.Label();
 			this.backTopUDMFScale = new System.Windows.Forms.Label();
-			this.labelTextureBackTop = new System.Windows.Forms.Label();
 			this.backhighname = new System.Windows.Forms.Label();
 			this.panelBackMid = new System.Windows.Forms.Panel();
+			this.labelTextureBackMid = new System.Windows.Forms.Label();
+			this.backmidtex = new CodeImp.DoomBuilder.Controls.ConfigurablePictureBox();
 			this.backMidUDMFOffsetLabel = new System.Windows.Forms.Label();
 			this.backMidUDMFOffset = new System.Windows.Forms.Label();
 			this.backMidUDMFScaleLabel = new System.Windows.Forms.Label();
 			this.backMidUDMFScale = new System.Windows.Forms.Label();
-			this.labelTextureBackMid = new System.Windows.Forms.Label();
 			this.backmidname = new System.Windows.Forms.Label();
 			this.panelBackLow = new System.Windows.Forms.Panel();
+			this.labelTextureBackBottom = new System.Windows.Forms.Label();
+			this.backlowtex = new CodeImp.DoomBuilder.Controls.ConfigurablePictureBox();
 			this.backBottomUDMFOffsetLabel = new System.Windows.Forms.Label();
 			this.backBottomUDMFOffset = new System.Windows.Forms.Label();
 			this.backBottomUDMFScaleLabel = new System.Windows.Forms.Label();
 			this.backBottomUDMFScale = new System.Windows.Forms.Label();
-			this.labelTextureBackBottom = new System.Windows.Forms.Label();
 			this.backlowname = new System.Windows.Forms.Label();
 			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
 			this.flagsPanel = new System.Windows.Forms.GroupBox();
 			this.flags = new CodeImp.DoomBuilder.Controls.TransparentListView();
-			this.backhightex = new CodeImp.DoomBuilder.Controls.ConfigurablePictureBox();
-			this.backmidtex = new CodeImp.DoomBuilder.Controls.ConfigurablePictureBox();
-			this.backlowtex = new CodeImp.DoomBuilder.Controls.ConfigurablePictureBox();
 			this.infopanel.SuspendLayout();
 			this.frontpanel.SuspendLayout();
 			this.flowLayoutPanelFront.SuspendLayout();
@@ -122,56 +122,61 @@ namespace CodeImp.DoomBuilder.Controls
 			this.backpanel.SuspendLayout();
 			this.flowLayoutPanelBack.SuspendLayout();
 			this.panelBackTop.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.backhightex)).BeginInit();
 			this.panelBackMid.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.backmidtex)).BeginInit();
 			this.panelBackLow.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.backlowtex)).BeginInit();
 			this.flowLayoutPanel1.SuspendLayout();
 			this.flagsPanel.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.backhightex)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.backmidtex)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.backlowtex)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// actionlabel
 			// 
-			this.actionlabel.Location = new System.Drawing.Point(8, 19);
+			this.actionlabel.AutoSize = true;
+			this.actionlabel.Location = new System.Drawing.Point(26, 19);
 			this.actionlabel.Name = "actionlabel";
-			this.actionlabel.Size = new System.Drawing.Size(58, 14);
+			this.actionlabel.Size = new System.Drawing.Size(40, 13);
 			this.actionlabel.TabIndex = 0;
 			this.actionlabel.Text = "Action:";
 			this.actionlabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// activationlabel
 			// 
-			this.activationlabel.Location = new System.Drawing.Point(8, 34);
+			this.activationlabel.AutoSize = true;
+			this.activationlabel.Location = new System.Drawing.Point(9, 34);
 			this.activationlabel.Name = "activationlabel";
-			this.activationlabel.Size = new System.Drawing.Size(58, 14);
+			this.activationlabel.Size = new System.Drawing.Size(57, 13);
 			this.activationlabel.TabIndex = 30;
 			this.activationlabel.Text = "Activation:";
 			this.activationlabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// taglabel
 			// 
-			this.taglabel.Location = new System.Drawing.Point(8, 79);
+			this.taglabel.AutoSize = true;
+			this.taglabel.Location = new System.Drawing.Point(37, 79);
 			this.taglabel.Name = "taglabel";
-			this.taglabel.Size = new System.Drawing.Size(58, 14);
+			this.taglabel.Size = new System.Drawing.Size(29, 13);
 			this.taglabel.TabIndex = 4;
 			this.taglabel.Text = "Tag:";
 			this.taglabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// anglelabel
 			// 
-			this.anglelabel.Location = new System.Drawing.Point(8, 64);
+			this.anglelabel.AutoSize = true;
+			this.anglelabel.Location = new System.Drawing.Point(29, 64);
 			this.anglelabel.Name = "anglelabel";
-			this.anglelabel.Size = new System.Drawing.Size(58, 14);
+			this.anglelabel.Size = new System.Drawing.Size(37, 13);
 			this.anglelabel.TabIndex = 3;
 			this.anglelabel.Text = "Angle:";
 			this.anglelabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// lengthlabel
 			// 
-			this.lengthlabel.Location = new System.Drawing.Point(8, 49);
+			this.lengthlabel.AutoSize = true;
+			this.lengthlabel.Location = new System.Drawing.Point(23, 49);
 			this.lengthlabel.Name = "lengthlabel";
-			this.lengthlabel.Size = new System.Drawing.Size(58, 14);
+			this.lengthlabel.Size = new System.Drawing.Size(43, 13);
 			this.lengthlabel.TabIndex = 2;
 			this.lengthlabel.Text = "Length:";
 			this.lengthlabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -245,9 +250,10 @@ namespace CodeImp.DoomBuilder.Controls
 			// arg5
 			// 
 			this.arg5.AutoEllipsis = true;
+			this.arg5.AutoSize = true;
 			this.arg5.Location = new System.Drawing.Point(373, 79);
 			this.arg5.Name = "arg5";
-			this.arg5.Size = new System.Drawing.Size(83, 14);
+			this.arg5.Size = new System.Drawing.Size(35, 13);
 			this.arg5.TabIndex = 27;
 			this.arg5.Text = "Arg 1:";
 			this.arg5.UseMnemonic = false;
@@ -255,10 +261,11 @@ namespace CodeImp.DoomBuilder.Controls
 			// arglbl5
 			// 
 			this.arglbl5.AutoEllipsis = true;
+			this.arglbl5.AutoSize = true;
 			this.arglbl5.BackColor = System.Drawing.Color.Transparent;
-			this.arglbl5.Location = new System.Drawing.Point(246, 79);
+			this.arglbl5.Location = new System.Drawing.Point(332, 79);
 			this.arglbl5.Name = "arglbl5";
-			this.arglbl5.Size = new System.Drawing.Size(121, 14);
+			this.arglbl5.Size = new System.Drawing.Size(35, 13);
 			this.arglbl5.TabIndex = 22;
 			this.arglbl5.Text = "Arg 1:";
 			this.arglbl5.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -267,10 +274,11 @@ namespace CodeImp.DoomBuilder.Controls
 			// arglbl4
 			// 
 			this.arglbl4.AutoEllipsis = true;
+			this.arglbl4.AutoSize = true;
 			this.arglbl4.BackColor = System.Drawing.Color.Transparent;
-			this.arglbl4.Location = new System.Drawing.Point(246, 64);
+			this.arglbl4.Location = new System.Drawing.Point(332, 64);
 			this.arglbl4.Name = "arglbl4";
-			this.arglbl4.Size = new System.Drawing.Size(121, 14);
+			this.arglbl4.Size = new System.Drawing.Size(35, 13);
 			this.arglbl4.TabIndex = 21;
 			this.arglbl4.Text = "Arg 1:";
 			this.arglbl4.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -279,9 +287,10 @@ namespace CodeImp.DoomBuilder.Controls
 			// arg4
 			// 
 			this.arg4.AutoEllipsis = true;
+			this.arg4.AutoSize = true;
 			this.arg4.Location = new System.Drawing.Point(373, 64);
 			this.arg4.Name = "arg4";
-			this.arg4.Size = new System.Drawing.Size(83, 14);
+			this.arg4.Size = new System.Drawing.Size(35, 13);
 			this.arg4.TabIndex = 26;
 			this.arg4.Text = "Arg 1:";
 			this.arg4.UseMnemonic = false;
@@ -289,10 +298,11 @@ namespace CodeImp.DoomBuilder.Controls
 			// arglbl3
 			// 
 			this.arglbl3.AutoEllipsis = true;
+			this.arglbl3.AutoSize = true;
 			this.arglbl3.BackColor = System.Drawing.Color.Transparent;
-			this.arglbl3.Location = new System.Drawing.Point(246, 49);
+			this.arglbl3.Location = new System.Drawing.Point(332, 49);
 			this.arglbl3.Name = "arglbl3";
-			this.arglbl3.Size = new System.Drawing.Size(121, 14);
+			this.arglbl3.Size = new System.Drawing.Size(35, 13);
 			this.arglbl3.TabIndex = 20;
 			this.arglbl3.Text = "Arg 1:";
 			this.arglbl3.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -301,10 +311,11 @@ namespace CodeImp.DoomBuilder.Controls
 			// arglbl2
 			// 
 			this.arglbl2.AutoEllipsis = true;
+			this.arglbl2.AutoSize = true;
 			this.arglbl2.BackColor = System.Drawing.Color.Transparent;
-			this.arglbl2.Location = new System.Drawing.Point(246, 34);
+			this.arglbl2.Location = new System.Drawing.Point(332, 34);
 			this.arglbl2.Name = "arglbl2";
-			this.arglbl2.Size = new System.Drawing.Size(121, 14);
+			this.arglbl2.Size = new System.Drawing.Size(35, 13);
 			this.arglbl2.TabIndex = 19;
 			this.arglbl2.Text = "Arg 1:";
 			this.arglbl2.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -313,9 +324,10 @@ namespace CodeImp.DoomBuilder.Controls
 			// arg3
 			// 
 			this.arg3.AutoEllipsis = true;
+			this.arg3.AutoSize = true;
 			this.arg3.Location = new System.Drawing.Point(373, 49);
 			this.arg3.Name = "arg3";
-			this.arg3.Size = new System.Drawing.Size(83, 14);
+			this.arg3.Size = new System.Drawing.Size(35, 13);
 			this.arg3.TabIndex = 25;
 			this.arg3.Text = "Arg 1:";
 			this.arg3.UseMnemonic = false;
@@ -323,10 +335,11 @@ namespace CodeImp.DoomBuilder.Controls
 			// arglbl1
 			// 
 			this.arglbl1.AutoEllipsis = true;
+			this.arglbl1.AutoSize = true;
 			this.arglbl1.BackColor = System.Drawing.Color.Transparent;
-			this.arglbl1.Location = new System.Drawing.Point(246, 19);
+			this.arglbl1.Location = new System.Drawing.Point(332, 19);
 			this.arglbl1.Name = "arglbl1";
-			this.arglbl1.Size = new System.Drawing.Size(121, 14);
+			this.arglbl1.Size = new System.Drawing.Size(35, 13);
 			this.arglbl1.TabIndex = 18;
 			this.arglbl1.Text = "Arg 1:";
 			this.arglbl1.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -335,9 +348,10 @@ namespace CodeImp.DoomBuilder.Controls
 			// arg2
 			// 
 			this.arg2.AutoEllipsis = true;
+			this.arg2.AutoSize = true;
 			this.arg2.Location = new System.Drawing.Point(373, 34);
 			this.arg2.Name = "arg2";
-			this.arg2.Size = new System.Drawing.Size(83, 14);
+			this.arg2.Size = new System.Drawing.Size(35, 13);
 			this.arg2.TabIndex = 24;
 			this.arg2.Text = "Arg 1:";
 			this.arg2.UseMnemonic = false;
@@ -354,18 +368,20 @@ namespace CodeImp.DoomBuilder.Controls
 			// arg1
 			// 
 			this.arg1.AutoEllipsis = true;
+			this.arg1.AutoSize = true;
 			this.arg1.Location = new System.Drawing.Point(373, 19);
 			this.arg1.Name = "arg1";
-			this.arg1.Size = new System.Drawing.Size(83, 14);
+			this.arg1.Size = new System.Drawing.Size(35, 13);
 			this.arg1.TabIndex = 23;
 			this.arg1.Text = "Arg 1:";
 			this.arg1.UseMnemonic = false;
 			// 
 			// backoffsetlabel
 			// 
-			this.backoffsetlabel.Location = new System.Drawing.Point(107, 79);
+			this.backoffsetlabel.AutoSize = true;
+			this.backoffsetlabel.Location = new System.Drawing.Point(114, 79);
 			this.backoffsetlabel.Name = "backoffsetlabel";
-			this.backoffsetlabel.Size = new System.Drawing.Size(70, 14);
+			this.backoffsetlabel.Size = new System.Drawing.Size(64, 13);
 			this.backoffsetlabel.TabIndex = 14;
 			this.backoffsetlabel.Text = "Back offset:";
 			this.backoffsetlabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -381,9 +397,10 @@ namespace CodeImp.DoomBuilder.Controls
 			// 
 			// frontoffsetlabel
 			// 
-			this.frontoffsetlabel.Location = new System.Drawing.Point(107, 64);
+			this.frontoffsetlabel.AutoSize = true;
+			this.frontoffsetlabel.Location = new System.Drawing.Point(115, 64);
 			this.frontoffsetlabel.Name = "frontoffsetlabel";
-			this.frontoffsetlabel.Size = new System.Drawing.Size(70, 14);
+			this.frontoffsetlabel.Size = new System.Drawing.Size(63, 13);
 			this.frontoffsetlabel.TabIndex = 8;
 			this.frontoffsetlabel.Text = "Front offset:";
 			this.frontoffsetlabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -496,9 +513,10 @@ namespace CodeImp.DoomBuilder.Controls
 			// 
 			// frontTopUDMFOffsetLabel
 			// 
-			this.frontTopUDMFOffsetLabel.Location = new System.Drawing.Point(71, 3);
+			this.frontTopUDMFOffsetLabel.AutoSize = true;
+			this.frontTopUDMFOffsetLabel.Location = new System.Drawing.Point(74, 3);
 			this.frontTopUDMFOffsetLabel.Name = "frontTopUDMFOffsetLabel";
-			this.frontTopUDMFOffsetLabel.Size = new System.Drawing.Size(41, 14);
+			this.frontTopUDMFOffsetLabel.Size = new System.Drawing.Size(38, 13);
 			this.frontTopUDMFOffsetLabel.TabIndex = 7;
 			this.frontTopUDMFOffsetLabel.Text = "Offset:";
 			this.frontTopUDMFOffsetLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -514,9 +532,10 @@ namespace CodeImp.DoomBuilder.Controls
 			// 
 			// frontTopUDMFScaleLabel
 			// 
-			this.frontTopUDMFScaleLabel.Location = new System.Drawing.Point(71, 20);
+			this.frontTopUDMFScaleLabel.AutoSize = true;
+			this.frontTopUDMFScaleLabel.Location = new System.Drawing.Point(75, 20);
 			this.frontTopUDMFScaleLabel.Name = "frontTopUDMFScaleLabel";
-			this.frontTopUDMFScaleLabel.Size = new System.Drawing.Size(41, 14);
+			this.frontTopUDMFScaleLabel.Size = new System.Drawing.Size(37, 13);
 			this.frontTopUDMFScaleLabel.TabIndex = 8;
 			this.frontTopUDMFScaleLabel.Text = "Scale:";
 			this.frontTopUDMFScaleLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -558,9 +577,10 @@ namespace CodeImp.DoomBuilder.Controls
 			// 
 			// frontMidUDMFOffsetLabel
 			// 
-			this.frontMidUDMFOffsetLabel.Location = new System.Drawing.Point(71, 3);
+			this.frontMidUDMFOffsetLabel.AutoSize = true;
+			this.frontMidUDMFOffsetLabel.Location = new System.Drawing.Point(74, 3);
 			this.frontMidUDMFOffsetLabel.Name = "frontMidUDMFOffsetLabel";
-			this.frontMidUDMFOffsetLabel.Size = new System.Drawing.Size(41, 14);
+			this.frontMidUDMFOffsetLabel.Size = new System.Drawing.Size(38, 13);
 			this.frontMidUDMFOffsetLabel.TabIndex = 7;
 			this.frontMidUDMFOffsetLabel.Text = "Offset:";
 			this.frontMidUDMFOffsetLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -576,9 +596,10 @@ namespace CodeImp.DoomBuilder.Controls
 			// 
 			// frontMidUDMFScaleLabel
 			// 
-			this.frontMidUDMFScaleLabel.Location = new System.Drawing.Point(71, 20);
+			this.frontMidUDMFScaleLabel.AutoSize = true;
+			this.frontMidUDMFScaleLabel.Location = new System.Drawing.Point(75, 20);
 			this.frontMidUDMFScaleLabel.Name = "frontMidUDMFScaleLabel";
-			this.frontMidUDMFScaleLabel.Size = new System.Drawing.Size(41, 14);
+			this.frontMidUDMFScaleLabel.Size = new System.Drawing.Size(37, 13);
 			this.frontMidUDMFScaleLabel.TabIndex = 8;
 			this.frontMidUDMFScaleLabel.Text = "Scale:";
 			this.frontMidUDMFScaleLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -680,9 +701,10 @@ namespace CodeImp.DoomBuilder.Controls
 			// 
 			// frontBottomUDMFOffsetLabel
 			// 
-			this.frontBottomUDMFOffsetLabel.Location = new System.Drawing.Point(71, 3);
+			this.frontBottomUDMFOffsetLabel.AutoSize = true;
+			this.frontBottomUDMFOffsetLabel.Location = new System.Drawing.Point(74, 3);
 			this.frontBottomUDMFOffsetLabel.Name = "frontBottomUDMFOffsetLabel";
-			this.frontBottomUDMFOffsetLabel.Size = new System.Drawing.Size(41, 14);
+			this.frontBottomUDMFOffsetLabel.Size = new System.Drawing.Size(38, 13);
 			this.frontBottomUDMFOffsetLabel.TabIndex = 7;
 			this.frontBottomUDMFOffsetLabel.Text = "Offset:";
 			this.frontBottomUDMFOffsetLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -698,9 +720,10 @@ namespace CodeImp.DoomBuilder.Controls
 			// 
 			// frontBottomUDMFScaleLabel
 			// 
-			this.frontBottomUDMFScaleLabel.Location = new System.Drawing.Point(71, 20);
+			this.frontBottomUDMFScaleLabel.AutoSize = true;
+			this.frontBottomUDMFScaleLabel.Location = new System.Drawing.Point(75, 20);
 			this.frontBottomUDMFScaleLabel.Name = "frontBottomUDMFScaleLabel";
-			this.frontBottomUDMFScaleLabel.Size = new System.Drawing.Size(41, 14);
+			this.frontBottomUDMFScaleLabel.Size = new System.Drawing.Size(37, 13);
 			this.frontBottomUDMFScaleLabel.TabIndex = 8;
 			this.frontBottomUDMFScaleLabel.Text = "Scale:";
 			this.frontBottomUDMFScaleLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -763,11 +786,42 @@ namespace CodeImp.DoomBuilder.Controls
 			this.panelBackTop.Size = new System.Drawing.Size(160, 82);
 			this.panelBackTop.TabIndex = 5;
 			// 
+			// labelTextureBackTop
+			// 
+			this.labelTextureBackTop.AutoSize = true;
+			this.labelTextureBackTop.BackColor = System.Drawing.Color.Black;
+			this.labelTextureBackTop.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.labelTextureBackTop.ForeColor = System.Drawing.Color.White;
+			this.labelTextureBackTop.Location = new System.Drawing.Point(6, 3);
+			this.labelTextureBackTop.MaximumSize = new System.Drawing.Size(0, 13);
+			this.labelTextureBackTop.Name = "labelTextureBackTop";
+			this.labelTextureBackTop.Size = new System.Drawing.Size(48, 13);
+			this.labelTextureBackTop.TabIndex = 3;
+			this.labelTextureBackTop.Text = "128x128";
+			// 
+			// backhightex
+			// 
+			this.backhightex.BackColor = System.Drawing.SystemColors.AppWorkspace;
+			this.backhightex.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.backhightex.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.Default;
+			this.backhightex.Highlighted = false;
+			this.backhightex.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+			this.backhightex.Location = new System.Drawing.Point(3, 0);
+			this.backhightex.Name = "backhightex";
+			this.backhightex.PageUnit = System.Drawing.GraphicsUnit.Pixel;
+			this.backhightex.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
+			this.backhightex.Size = new System.Drawing.Size(64, 64);
+			this.backhightex.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.backhightex.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
+			this.backhightex.TabIndex = 12;
+			this.backhightex.TabStop = false;
+			// 
 			// backTopUDMFOffsetLabel
 			// 
-			this.backTopUDMFOffsetLabel.Location = new System.Drawing.Point(71, 3);
+			this.backTopUDMFOffsetLabel.AutoSize = true;
+			this.backTopUDMFOffsetLabel.Location = new System.Drawing.Point(74, 3);
 			this.backTopUDMFOffsetLabel.Name = "backTopUDMFOffsetLabel";
-			this.backTopUDMFOffsetLabel.Size = new System.Drawing.Size(41, 14);
+			this.backTopUDMFOffsetLabel.Size = new System.Drawing.Size(38, 13);
 			this.backTopUDMFOffsetLabel.TabIndex = 7;
 			this.backTopUDMFOffsetLabel.Text = "Offset:";
 			this.backTopUDMFOffsetLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -783,9 +837,10 @@ namespace CodeImp.DoomBuilder.Controls
 			// 
 			// backTopUDMFScaleLabel
 			// 
-			this.backTopUDMFScaleLabel.Location = new System.Drawing.Point(71, 20);
+			this.backTopUDMFScaleLabel.AutoSize = true;
+			this.backTopUDMFScaleLabel.Location = new System.Drawing.Point(75, 20);
 			this.backTopUDMFScaleLabel.Name = "backTopUDMFScaleLabel";
-			this.backTopUDMFScaleLabel.Size = new System.Drawing.Size(41, 14);
+			this.backTopUDMFScaleLabel.Size = new System.Drawing.Size(37, 13);
 			this.backTopUDMFScaleLabel.TabIndex = 8;
 			this.backTopUDMFScaleLabel.Text = "Scale:";
 			this.backTopUDMFScaleLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -798,19 +853,6 @@ namespace CodeImp.DoomBuilder.Controls
 			this.backTopUDMFScale.Size = new System.Drawing.Size(25, 13);
 			this.backTopUDMFScale.TabIndex = 10;
 			this.backTopUDMFScale.Text = "--, --";
-			// 
-			// labelTextureBackTop
-			// 
-			this.labelTextureBackTop.AutoSize = true;
-			this.labelTextureBackTop.BackColor = System.Drawing.Color.Black;
-			this.labelTextureBackTop.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.labelTextureBackTop.ForeColor = System.Drawing.Color.White;
-			this.labelTextureBackTop.Location = new System.Drawing.Point(6, 3);
-			this.labelTextureBackTop.MaximumSize = new System.Drawing.Size(0, 13);
-			this.labelTextureBackTop.Name = "labelTextureBackTop";
-			this.labelTextureBackTop.Size = new System.Drawing.Size(48, 13);
-			this.labelTextureBackTop.TabIndex = 3;
-			this.labelTextureBackTop.Text = "128x128";
 			// 
 			// backhighname
 			// 
@@ -838,11 +880,42 @@ namespace CodeImp.DoomBuilder.Controls
 			this.panelBackMid.Size = new System.Drawing.Size(160, 82);
 			this.panelBackMid.TabIndex = 7;
 			// 
+			// labelTextureBackMid
+			// 
+			this.labelTextureBackMid.AutoSize = true;
+			this.labelTextureBackMid.BackColor = System.Drawing.Color.Black;
+			this.labelTextureBackMid.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.labelTextureBackMid.ForeColor = System.Drawing.Color.White;
+			this.labelTextureBackMid.Location = new System.Drawing.Point(6, 3);
+			this.labelTextureBackMid.MaximumSize = new System.Drawing.Size(0, 13);
+			this.labelTextureBackMid.Name = "labelTextureBackMid";
+			this.labelTextureBackMid.Size = new System.Drawing.Size(48, 13);
+			this.labelTextureBackMid.TabIndex = 2;
+			this.labelTextureBackMid.Text = "128x128";
+			// 
+			// backmidtex
+			// 
+			this.backmidtex.BackColor = System.Drawing.SystemColors.AppWorkspace;
+			this.backmidtex.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.backmidtex.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.Default;
+			this.backmidtex.Highlighted = false;
+			this.backmidtex.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+			this.backmidtex.Location = new System.Drawing.Point(3, 0);
+			this.backmidtex.Name = "backmidtex";
+			this.backmidtex.PageUnit = System.Drawing.GraphicsUnit.Pixel;
+			this.backmidtex.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
+			this.backmidtex.Size = new System.Drawing.Size(64, 64);
+			this.backmidtex.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.backmidtex.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
+			this.backmidtex.TabIndex = 13;
+			this.backmidtex.TabStop = false;
+			// 
 			// backMidUDMFOffsetLabel
 			// 
-			this.backMidUDMFOffsetLabel.Location = new System.Drawing.Point(71, 3);
+			this.backMidUDMFOffsetLabel.AutoSize = true;
+			this.backMidUDMFOffsetLabel.Location = new System.Drawing.Point(74, 4);
 			this.backMidUDMFOffsetLabel.Name = "backMidUDMFOffsetLabel";
-			this.backMidUDMFOffsetLabel.Size = new System.Drawing.Size(41, 14);
+			this.backMidUDMFOffsetLabel.Size = new System.Drawing.Size(38, 13);
 			this.backMidUDMFOffsetLabel.TabIndex = 7;
 			this.backMidUDMFOffsetLabel.Text = "Offset:";
 			this.backMidUDMFOffsetLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -858,9 +931,10 @@ namespace CodeImp.DoomBuilder.Controls
 			// 
 			// backMidUDMFScaleLabel
 			// 
-			this.backMidUDMFScaleLabel.Location = new System.Drawing.Point(71, 20);
+			this.backMidUDMFScaleLabel.AutoSize = true;
+			this.backMidUDMFScaleLabel.Location = new System.Drawing.Point(75, 20);
 			this.backMidUDMFScaleLabel.Name = "backMidUDMFScaleLabel";
-			this.backMidUDMFScaleLabel.Size = new System.Drawing.Size(41, 14);
+			this.backMidUDMFScaleLabel.Size = new System.Drawing.Size(37, 13);
 			this.backMidUDMFScaleLabel.TabIndex = 8;
 			this.backMidUDMFScaleLabel.Text = "Scale:";
 			this.backMidUDMFScaleLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -873,19 +947,6 @@ namespace CodeImp.DoomBuilder.Controls
 			this.backMidUDMFScale.Size = new System.Drawing.Size(25, 13);
 			this.backMidUDMFScale.TabIndex = 10;
 			this.backMidUDMFScale.Text = "--, --";
-			// 
-			// labelTextureBackMid
-			// 
-			this.labelTextureBackMid.AutoSize = true;
-			this.labelTextureBackMid.BackColor = System.Drawing.Color.Black;
-			this.labelTextureBackMid.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.labelTextureBackMid.ForeColor = System.Drawing.Color.White;
-			this.labelTextureBackMid.Location = new System.Drawing.Point(6, 3);
-			this.labelTextureBackMid.MaximumSize = new System.Drawing.Size(0, 13);
-			this.labelTextureBackMid.Name = "labelTextureBackMid";
-			this.labelTextureBackMid.Size = new System.Drawing.Size(48, 13);
-			this.labelTextureBackMid.TabIndex = 2;
-			this.labelTextureBackMid.Text = "128x128";
 			// 
 			// backmidname
 			// 
@@ -913,11 +974,42 @@ namespace CodeImp.DoomBuilder.Controls
 			this.panelBackLow.Size = new System.Drawing.Size(160, 82);
 			this.panelBackLow.TabIndex = 12;
 			// 
+			// labelTextureBackBottom
+			// 
+			this.labelTextureBackBottom.AutoSize = true;
+			this.labelTextureBackBottom.BackColor = System.Drawing.Color.Black;
+			this.labelTextureBackBottom.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.labelTextureBackBottom.ForeColor = System.Drawing.Color.White;
+			this.labelTextureBackBottom.Location = new System.Drawing.Point(6, 3);
+			this.labelTextureBackBottom.MaximumSize = new System.Drawing.Size(0, 13);
+			this.labelTextureBackBottom.Name = "labelTextureBackBottom";
+			this.labelTextureBackBottom.Size = new System.Drawing.Size(48, 13);
+			this.labelTextureBackBottom.TabIndex = 3;
+			this.labelTextureBackBottom.Text = "128x128";
+			// 
+			// backlowtex
+			// 
+			this.backlowtex.BackColor = System.Drawing.SystemColors.AppWorkspace;
+			this.backlowtex.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.backlowtex.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.Default;
+			this.backlowtex.Highlighted = false;
+			this.backlowtex.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+			this.backlowtex.Location = new System.Drawing.Point(3, 0);
+			this.backlowtex.Name = "backlowtex";
+			this.backlowtex.PageUnit = System.Drawing.GraphicsUnit.Pixel;
+			this.backlowtex.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
+			this.backlowtex.Size = new System.Drawing.Size(64, 64);
+			this.backlowtex.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.backlowtex.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
+			this.backlowtex.TabIndex = 14;
+			this.backlowtex.TabStop = false;
+			// 
 			// backBottomUDMFOffsetLabel
 			// 
-			this.backBottomUDMFOffsetLabel.Location = new System.Drawing.Point(71, 3);
+			this.backBottomUDMFOffsetLabel.AutoSize = true;
+			this.backBottomUDMFOffsetLabel.Location = new System.Drawing.Point(74, 3);
 			this.backBottomUDMFOffsetLabel.Name = "backBottomUDMFOffsetLabel";
-			this.backBottomUDMFOffsetLabel.Size = new System.Drawing.Size(41, 14);
+			this.backBottomUDMFOffsetLabel.Size = new System.Drawing.Size(38, 13);
 			this.backBottomUDMFOffsetLabel.TabIndex = 7;
 			this.backBottomUDMFOffsetLabel.Text = "Offset:";
 			this.backBottomUDMFOffsetLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -933,9 +1025,10 @@ namespace CodeImp.DoomBuilder.Controls
 			// 
 			// backBottomUDMFScaleLabel
 			// 
-			this.backBottomUDMFScaleLabel.Location = new System.Drawing.Point(71, 20);
+			this.backBottomUDMFScaleLabel.AutoSize = true;
+			this.backBottomUDMFScaleLabel.Location = new System.Drawing.Point(75, 20);
 			this.backBottomUDMFScaleLabel.Name = "backBottomUDMFScaleLabel";
-			this.backBottomUDMFScaleLabel.Size = new System.Drawing.Size(41, 14);
+			this.backBottomUDMFScaleLabel.Size = new System.Drawing.Size(37, 13);
 			this.backBottomUDMFScaleLabel.TabIndex = 8;
 			this.backBottomUDMFScaleLabel.Text = "Scale:";
 			this.backBottomUDMFScaleLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -948,19 +1041,6 @@ namespace CodeImp.DoomBuilder.Controls
 			this.backBottomUDMFScale.Size = new System.Drawing.Size(25, 13);
 			this.backBottomUDMFScale.TabIndex = 10;
 			this.backBottomUDMFScale.Text = "--, --";
-			// 
-			// labelTextureBackBottom
-			// 
-			this.labelTextureBackBottom.AutoSize = true;
-			this.labelTextureBackBottom.BackColor = System.Drawing.Color.Black;
-			this.labelTextureBackBottom.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.labelTextureBackBottom.ForeColor = System.Drawing.Color.White;
-			this.labelTextureBackBottom.Location = new System.Drawing.Point(6, 3);
-			this.labelTextureBackBottom.MaximumSize = new System.Drawing.Size(0, 13);
-			this.labelTextureBackBottom.Name = "labelTextureBackBottom";
-			this.labelTextureBackBottom.Size = new System.Drawing.Size(48, 13);
-			this.labelTextureBackBottom.TabIndex = 3;
-			this.labelTextureBackBottom.Text = "128x128";
 			// 
 			// backlowname
 			// 
@@ -1004,6 +1084,7 @@ namespace CodeImp.DoomBuilder.Controls
 			this.flags.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.flags.CheckBoxes = true;
 			this.flags.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+			this.flags.HideSelection = false;
 			this.flags.Location = new System.Drawing.Point(6, 18);
 			this.flags.Name = "flags";
 			this.flags.Scrollable = false;
@@ -1012,57 +1093,6 @@ namespace CodeImp.DoomBuilder.Controls
 			this.flags.TabIndex = 0;
 			this.flags.UseCompatibleStateImageBehavior = false;
 			this.flags.View = System.Windows.Forms.View.List;
-			// 
-			// backhightex
-			// 
-			this.backhightex.BackColor = System.Drawing.SystemColors.AppWorkspace;
-			this.backhightex.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.backhightex.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.Default;
-			this.backhightex.Highlighted = false;
-			this.backhightex.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-			this.backhightex.Location = new System.Drawing.Point(3, 0);
-			this.backhightex.Name = "backhightex";
-			this.backhightex.PageUnit = System.Drawing.GraphicsUnit.Pixel;
-			this.backhightex.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
-			this.backhightex.Size = new System.Drawing.Size(64, 64);
-			this.backhightex.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-			this.backhightex.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
-			this.backhightex.TabIndex = 12;
-			this.backhightex.TabStop = false;
-			// 
-			// backmidtex
-			// 
-			this.backmidtex.BackColor = System.Drawing.SystemColors.AppWorkspace;
-			this.backmidtex.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.backmidtex.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.Default;
-			this.backmidtex.Highlighted = false;
-			this.backmidtex.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-			this.backmidtex.Location = new System.Drawing.Point(3, 0);
-			this.backmidtex.Name = "backmidtex";
-			this.backmidtex.PageUnit = System.Drawing.GraphicsUnit.Pixel;
-			this.backmidtex.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
-			this.backmidtex.Size = new System.Drawing.Size(64, 64);
-			this.backmidtex.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-			this.backmidtex.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
-			this.backmidtex.TabIndex = 13;
-			this.backmidtex.TabStop = false;
-			// 
-			// backlowtex
-			// 
-			this.backlowtex.BackColor = System.Drawing.SystemColors.AppWorkspace;
-			this.backlowtex.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.backlowtex.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.Default;
-			this.backlowtex.Highlighted = false;
-			this.backlowtex.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-			this.backlowtex.Location = new System.Drawing.Point(3, 0);
-			this.backlowtex.Name = "backlowtex";
-			this.backlowtex.PageUnit = System.Drawing.GraphicsUnit.Pixel;
-			this.backlowtex.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
-			this.backlowtex.Size = new System.Drawing.Size(64, 64);
-			this.backlowtex.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-			this.backlowtex.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.Default;
-			this.backlowtex.TabIndex = 14;
-			this.backlowtex.TabStop = false;
 			// 
 			// LinedefInfoPanel
 			// 
@@ -1091,15 +1121,15 @@ namespace CodeImp.DoomBuilder.Controls
 			this.flowLayoutPanelBack.ResumeLayout(false);
 			this.panelBackTop.ResumeLayout(false);
 			this.panelBackTop.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.backhightex)).EndInit();
 			this.panelBackMid.ResumeLayout(false);
 			this.panelBackMid.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.backmidtex)).EndInit();
 			this.panelBackLow.ResumeLayout(false);
 			this.panelBackLow.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.backlowtex)).EndInit();
 			this.flowLayoutPanel1.ResumeLayout(false);
 			this.flagsPanel.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.backhightex)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.backmidtex)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.backlowtex)).EndInit();
 			this.ResumeLayout(false);
 
 		}

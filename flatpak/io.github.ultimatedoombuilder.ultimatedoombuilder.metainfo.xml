@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.ultimatedoombuilder.ultimatedoombuilder</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-only</project_license>
+  <name>Ultimate Doom Builder</name>
+  <summary>Comprehensive map editor for Doom, Heretic, Hexen and Strife based games</summary>
+
+  <description>
+    <p>
+        Comprehensive map editor for Doom, Heretic, Hexen and Strife based games. Works best for ZDoom-family ports while also supporting classic engines. Based on GZDoomBuilder by MaxED and Doom Builder 2 by CodeImp
+    </p>
+  </description>
+
+  <developer id="io.github.ultimatedoombuilder">
+    <name>Ultimate Doom Builder developers</name>
+  </developer>
+
+  <launchable type="desktop-id">io.github.ultimatedoombuilder.ultimatedoombuilder.desktop</launchable>
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>Splash Screen</caption>
+      <image>https://raw.githubusercontent.com/UltimateDoomBuilder/UltimateDoomBuilder/master/Source/Core/Resources/Splash3_trans.png</image>
+    </screenshot>
+  </screenshots>
+
+  <url type="homepage">https://ultimatedoombuilder.github.io/</url>
+  <url type="bugtracker">https://github.com/UltimateDoomBuilder/UltimateDoomBuilder/issues</url>
+
+  <content_rating type="oars-1.1" />
+
+  <releases>
+    <release version="3.0.0.{UDB_VERSION}" date="{UDB_DATE}" />
+  </releases>
+</component>

@@ -19,9 +19,6 @@
 using System;
 using System.Drawing;
 using System.IO;
-using System.Runtime.InteropServices;
-using CodeImp.DoomBuilder.IO;
-using CodeImp.DoomBuilder.Windows;
 
 #endregion
 

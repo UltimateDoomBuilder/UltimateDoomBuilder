@@ -1,8 +1,6 @@
 ﻿#region ================== Namespaces
 
 using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
 using CodeImp.DoomBuilder.Actions;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Plugins;

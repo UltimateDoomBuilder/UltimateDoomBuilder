@@ -8,7 +8,6 @@ using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.GZBuilder.Data;
 using CodeImp.DoomBuilder.Rendering;
 using System.IO;
-using System.Globalization;
 
 #endregion
 

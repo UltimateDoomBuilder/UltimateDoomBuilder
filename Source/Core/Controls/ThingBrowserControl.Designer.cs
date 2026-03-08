@@ -56,36 +56,40 @@ namespace CodeImp.DoomBuilder.Controls
 			// 
 			// sizecaption
 			// 
-			this.sizecaption.Location = new System.Drawing.Point(0, 38);
+			this.sizecaption.AutoSize = true;
+			this.sizecaption.Location = new System.Drawing.Point(24, 38);
 			this.sizecaption.Name = "sizecaption";
-			this.sizecaption.Size = new System.Drawing.Size(54, 13);
+			this.sizecaption.Size = new System.Drawing.Size(30, 13);
 			this.sizecaption.TabIndex = 16;
 			this.sizecaption.Text = "Size:";
 			this.sizecaption.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// blockingcaption
 			// 
-			this.blockingcaption.Location = new System.Drawing.Point(0, 54);
+			this.blockingcaption.AutoSize = true;
+			this.blockingcaption.Location = new System.Drawing.Point(3, 54);
 			this.blockingcaption.Name = "blockingcaption";
-			this.blockingcaption.Size = new System.Drawing.Size(54, 13);
+			this.blockingcaption.Size = new System.Drawing.Size(51, 13);
 			this.blockingcaption.TabIndex = 14;
 			this.blockingcaption.Text = "Blocking:";
 			this.blockingcaption.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// positioncaption
 			// 
-			this.positioncaption.Location = new System.Drawing.Point(0, 22);
+			this.positioncaption.AutoSize = true;
+			this.positioncaption.Location = new System.Drawing.Point(7, 22);
 			this.positioncaption.Name = "positioncaption";
-			this.positioncaption.Size = new System.Drawing.Size(54, 13);
+			this.positioncaption.Size = new System.Drawing.Size(47, 13);
 			this.positioncaption.TabIndex = 12;
 			this.positioncaption.Text = "Position:";
 			this.positioncaption.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// typecaption
 			// 
-			this.typecaption.Location = new System.Drawing.Point(0, 6);
+			this.typecaption.AutoSize = true;
+			this.typecaption.Location = new System.Drawing.Point(20, 5);
 			this.typecaption.Name = "typecaption";
-			this.typecaption.Size = new System.Drawing.Size(54, 13);
+			this.typecaption.Size = new System.Drawing.Size(34, 13);
 			this.typecaption.TabIndex = 10;
 			this.typecaption.Text = "Type:";
 			this.typecaption.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -244,9 +248,10 @@ namespace CodeImp.DoomBuilder.Controls
 			// 
 			// labelclassname
 			// 
-			this.labelclassname.Location = new System.Drawing.Point(0, 70);
+			this.labelclassname.AutoSize = true;
+			this.labelclassname.Location = new System.Drawing.Point(19, 70);
 			this.labelclassname.Name = "labelclassname";
-			this.labelclassname.Size = new System.Drawing.Size(54, 13);
+			this.labelclassname.Size = new System.Drawing.Size(35, 13);
 			this.labelclassname.TabIndex = 25;
 			this.labelclassname.Text = "Class:";
 			this.labelclassname.TextAlign = System.Drawing.ContentAlignment.MiddleRight;

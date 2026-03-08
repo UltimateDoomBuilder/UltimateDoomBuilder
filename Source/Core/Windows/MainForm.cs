@@ -4641,7 +4641,7 @@ namespace CodeImp.DoomBuilder.Windows
 		internal void ImageDataLoaded(ImageData img)
 		{
 			// Image is used in the map?
-			if ((img != null) && img.UsedInMap && !img.IsDisposed)
+			if ((img != null) && img.UsedInMap && !img.IsDisposed && General.Map.Map.IsSafeToAccess)
 			{
 				// Go for all setors
 				bool updated = false;

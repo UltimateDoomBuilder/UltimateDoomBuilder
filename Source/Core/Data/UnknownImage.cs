@@ -16,7 +16,6 @@
 
 #region ================== Namespaces
 
-using System;
 using System.Drawing;
 
 #endregion

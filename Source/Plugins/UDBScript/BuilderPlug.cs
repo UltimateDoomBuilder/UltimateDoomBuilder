@@ -402,10 +402,13 @@ namespace CodeImp.DoomBuilder.UDBScript
 			string name = path.TrimEnd(Path.DirectorySeparatorChar).Split(Path.DirectorySeparatorChar).Last();
 			ScriptDirectoryStructure sds = new ScriptDirectoryStructure(path, name, expanded, hash);
 
-			foreach (string directory in Directory.GetDirectories(path))
+			// Go through all subdirectories, skipping hidden ones (that start with a dot)
+			foreach (string directory in Directory.EnumerateDirectories(path).Where(d => !Path.GetFileName(d).StartsWith(".")))
+			{
 				sds.Directories.Add(LoadScriptDirectoryStructure(directory));
+			}
 
-			foreach (string filename in Directory.GetFiles(path, "*.js"))
+			foreach (string filename in Directory.EnumerateFiles(path, "*.js"))
 			{
 				bool retry = true;
 				int retrycounter = 5;

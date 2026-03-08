@@ -879,6 +879,7 @@ namespace CodeImp.DoomBuilder.Controls
 			this.tabs.TabIndex = 0;
 			this.tabs.TabStop = false;
 			this.tabs.TextColor = System.Drawing.SystemColors.WindowText;
+			this.tabs.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabs_Selecting);
 			// 
 			// infotabs
 			// 

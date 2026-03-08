@@ -43,7 +43,7 @@ namespace CodeImp.DoomBuilder.Data
 			General.WriteLogLine("Opening directory resource \"" + location.location + "\"");
 			
 			// Initialize
-			files = new DirectoryFilesList(dl.location, config, true);
+			files = new DirectoryFilesList(dl.location, config, true, config.FileTitleStyle);
 			Initialize(config);
 			
 			// We have no destructor

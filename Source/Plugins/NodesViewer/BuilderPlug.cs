@@ -18,11 +18,19 @@
 
 #endregion
 
+using System;
+
 namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 {
 	internal class ToastMessages
 	{
 		public static readonly string NODESVIEWER = "nodesviewer";
+	}
+
+	internal class ZNodesStreamException : Exception
+	{
+		public ZNodesStreamException(string message) : base(message) { }
+		public ZNodesStreamException(string message, Exception inner) : base(message, inner) { }
 	}
 
 	public class BuilderPlug : Plug

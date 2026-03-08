@@ -35,5 +35,17 @@ namespace CodeImp.DoomBuilder.Controls
         {
             if(ValueChanged != null) ValueChanged(this, e);
         }
+
+#if MONO_WINFORMS
+		// Mono fix. Ensure the control minimum size is updated when the bounds change.
+		// Otherwise the NumericUpDown appears very small.
+		protected override void OnBoundsChanged()
+		{
+			base.OnBoundsChanged();
+
+			if (Control != null)
+				Control.MinimumSize = Size;
+		}
+#endif
 	}
 }

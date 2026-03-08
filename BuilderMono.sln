@@ -34,6 +34,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThreeDFloorModeMono", "Sour
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UDBScriptMono", "Source\Plugins\UDBScript\UDBScriptMono.csproj", "{3088C327-5FFB-49A0-8D40-58E92D89DF07}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlockmapExplorerMono", "Source\Plugins\BlockmapExplorer\BlockmapExplorerMono.csproj", "{5E8E0E62-0A05-49B4-9A0D-EC5636C4FF78}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug + Profiler|x64 = Debug + Profiler|x64
@@ -270,6 +272,22 @@ Global
 		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Release|x64.Build.0 = Release|x64
 		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Release|x86.ActiveCfg = Release|x86
 		{3088C327-5FFB-49A0-8D40-58E92D89DF07}.Release|x86.Build.0 = Release|x86
+		{5E8E0E62-0A05-49B4-9A0D-EC5636C4FF78}.Debug + Profiler|x64.ActiveCfg = Debug|x64
+		{5E8E0E62-0A05-49B4-9A0D-EC5636C4FF78}.Debug + Profiler|x64.Build.0 = Debug|x64
+		{5E8E0E62-0A05-49B4-9A0D-EC5636C4FF78}.Debug + Profiler|x86.ActiveCfg = Debug|x86
+		{5E8E0E62-0A05-49B4-9A0D-EC5636C4FF78}.Debug + Profiler|x86.Build.0 = Debug|x86
+		{5E8E0E62-0A05-49B4-9A0D-EC5636C4FF78}.Debug|x64.ActiveCfg = Debug|x64
+		{5E8E0E62-0A05-49B4-9A0D-EC5636C4FF78}.Debug|x64.Build.0 = Debug|x64
+		{5E8E0E62-0A05-49B4-9A0D-EC5636C4FF78}.Debug|x86.ActiveCfg = Debug|x86
+		{5E8E0E62-0A05-49B4-9A0D-EC5636C4FF78}.Debug|x86.Build.0 = Debug|x86
+		{5E8E0E62-0A05-49B4-9A0D-EC5636C4FF78}.Release + Profiler|x64.ActiveCfg = Release|x64
+		{5E8E0E62-0A05-49B4-9A0D-EC5636C4FF78}.Release + Profiler|x64.Build.0 = Release|x64
+		{5E8E0E62-0A05-49B4-9A0D-EC5636C4FF78}.Release + Profiler|x86.ActiveCfg = Release|x86
+		{5E8E0E62-0A05-49B4-9A0D-EC5636C4FF78}.Release + Profiler|x86.Build.0 = Release|x86
+		{5E8E0E62-0A05-49B4-9A0D-EC5636C4FF78}.Release|x64.ActiveCfg = Release|x64
+		{5E8E0E62-0A05-49B4-9A0D-EC5636C4FF78}.Release|x64.Build.0 = Release|x64
+		{5E8E0E62-0A05-49B4-9A0D-EC5636C4FF78}.Release|x86.ActiveCfg = Release|x86
+		{5E8E0E62-0A05-49B4-9A0D-EC5636C4FF78}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
