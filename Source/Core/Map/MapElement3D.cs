@@ -277,7 +277,7 @@ namespace CodeImp.DoomBuilder.Map
 	{
 		public Linedef ControlLinedef { get; protected set; }
 		public Sector Sector { get; protected set; }
-		public override bool IsDisposed { get => ControlLinedef.IsDisposed || Sector.IsDisposed; }
+		public override bool IsDisposed { get => ControlLinedef.IsDisposed || Sector.IsDisposed || !General.Map.Config.GetLinedefActionInfo(ControlLinedef.Action).IsExtraFloor; }
 
 		protected ThreeDFloorSurface3D(Linedef controllinedef, Sector sidedef)
 		{
@@ -334,7 +334,7 @@ namespace CodeImp.DoomBuilder.Map
 	{
 		public Linedef ControlLinedef { get; protected set; }
 		public Sidedef Sidedef { get; protected set; }
-		public override bool IsDisposed { get => ControlLinedef.IsDisposed || Sidedef.IsDisposed; }
+		public override bool IsDisposed { get => ControlLinedef.IsDisposed || Sidedef.IsDisposed || !General.Map.Config.GetLinedefActionInfo(ControlLinedef.Action).IsExtraFloor; }
 
 		public ThreeDFloorSide3D(Linedef controllinedef, Sidedef sidedef)
 		{
@@ -380,7 +380,7 @@ namespace CodeImp.DoomBuilder.Map
 	{
 		public Sidedef Sidedef { get; protected set; }
 		public override Sector Sector { get => Sidedef.Sector; protected set => Sector = value; }
-		public override bool IsDisposed { get => Sidedef.IsDisposed || (ControlLinedef?.IsDisposed ?? false); }
+		public override bool IsDisposed => Sidedef.IsDisposed || (ControlLinedef != null && (ControlLinedef.IsDisposed || !General.Map.Config.GetLinedefActionInfo(ControlLinedef.Action).IsExtraFloor));
 
 		public SidedefSlope3D(Sidedef sidedef, bool ceiling, Linedef controllinedef = null) : base(ceiling, controllinedef)
 		{
@@ -412,7 +412,7 @@ namespace CodeImp.DoomBuilder.Map
 	{
 		public Vertex Vertex { get; protected set; }
 		public override Sector Sector { get; protected set; }
-		public override bool IsDisposed { get => Vertex.IsDisposed || Sector.IsDisposed || (ControlLinedef?.IsDisposed ?? false); }
+		public override bool IsDisposed => Vertex.IsDisposed || Sector.IsDisposed || (ControlLinedef != null && (ControlLinedef.IsDisposed || !General.Map.Config.GetLinedefActionInfo(ControlLinedef.Action).IsExtraFloor));
 
 		public VertexSlope3D(Vertex vertex, Sector sector, bool ceiling, Linedef controllinedef = null) : base(ceiling, controllinedef)
 		{
