@@ -891,7 +891,75 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			return handles;
 		}
+
+		private IVisualEventReceiver GetObjectByMapElement3D(MapElement3D element)
+		{
+			if (element.IsDisposed)
+				return null;
+			else if (element is Floor3D floor)
+				return GetBaseVisualSector(floor.Sector).Floor;
+			else if (element is Ceiling3D ceiling)
+				return GetBaseVisualSector(ceiling.Sector).Ceiling;
+			else if (element is Lower3D lower)
+				return GetBaseVisualSector(lower.Sidedef.Sector).GetSidedefParts(lower.Sidedef).lower;
+			else if (element is Upper3D upper)
+				return GetBaseVisualSector(upper.Sidedef.Sector).GetSidedefParts(upper.Sidedef).upper;
+			else if (element is Middle3D middle)
+			{
+				var parts = GetBaseVisualSector(middle.Sidedef.Sector).GetSidedefParts(middle.Sidedef);
+				if (parts.middlesingle != null)
+					return parts.middlesingle;
+				else
+					return parts.middledouble;
+			}
+			else if (element is Vertex3D vertex)
+				return GetVisualVertex(vertex.Vertex, vertex.IsFloor);
+			else if (element is Thing3D thing)
+				return GetVisualThing(thing.Thing) as BaseVisualThing;
+			else if (element is ThreeDFloorBottom3D threedfloorbottom)
+			{
+				var vs = GetBaseVisualSector(threedfloorbottom.Sector);
+				return vs.ExtraFloors.Find(f => f.ExtraFloor.Linedef == threedfloorbottom.ControlLinedef);
+			}
+			else if (element is ThreeDFloorTop3D threedfloortop)
+			{
+				var vs = GetBaseVisualSector(threedfloortop.Sector);
+				return vs.ExtraCeilings.Find(f => f.ExtraFloor.Linedef == threedfloortop.ControlLinedef);
+			}
+			else if (element is ThreeDFloorSide3D threedfloorside)
+			{
+				var vs = GetBaseVisualSector(threedfloorside.Sidedef.Sector);
+				var parts = vs.GetSidedefParts(threedfloorside.Sidedef).middle3d;
+				return parts.Find(p => p.GetControlLinedef() == threedfloorside.ControlLinedef);
+			}
+			if (element is SidedefSlope3D sideslope)
+			{
+				return sidedefslopehandles[sideslope.Sidedef.Sector]
+					?.Find(s => {
+						var ss = s as VisualSidedefSlope;
 		
+						return
+							ss.Sidedef == sideslope.Sidedef &&
+							ss.Level.extrafloor?.Linedef == sideslope.ControlLinedef &&
+							ss.Level.type == (sideslope.IsFloor ? SectorLevelType.Floor : SectorLevelType.Ceiling);
+					}) as VisualSidedefSlope;
+			}
+			else if (element is VertexSlope3D vertexslope)
+			{
+				return vertexslopehandles[vertexslope.Sector]
+					?.Find(s => {
+						var vs = s as VisualVertexSlope;
+
+						return
+							vs.Vertex == vertexslope.Vertex &&
+							vs.Level.extrafloor?.Linedef == vertexslope.ControlLinedef &&
+						vs.Level.type == (vertexslope.IsFloor ? SectorLevelType.Floor : SectorLevelType.Ceiling);
+					}) as VisualVertexSlope;
+			}
+			else
+				return null;
+		}
+
 		#endregion
 
 		#region ================== Extended Methods
