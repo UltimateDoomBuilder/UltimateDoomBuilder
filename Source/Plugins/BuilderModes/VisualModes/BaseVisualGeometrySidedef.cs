@@ -73,6 +73,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		
 		public bool IsDraggingUV { get { return uvdragging; } }
 		new public BaseVisualSector Sector { get { return (BaseVisualSector)base.Sector; } }
+		public abstract MapElement3D AsMapElement3D { get; }
 		
 		#endregion
 		

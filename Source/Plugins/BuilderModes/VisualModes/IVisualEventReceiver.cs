@@ -26,7 +26,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 	{
 		//mxd. Properties
 		bool Selected { get; }
-		
+		MapElement3D AsMapElement3D { get; }
+
 		// The events that must be handled
 		void OnSelectBegin();
 		void OnSelectEnd();

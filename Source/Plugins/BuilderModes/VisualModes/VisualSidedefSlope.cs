@@ -26,6 +26,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 		public Sidedef Sidedef { get { return sidedef; } }
 		public int NormalizedAngleDeg { get { return (sidedef.Line.AngleDeg >= 180) ? (sidedef.Line.AngleDeg - 180) : sidedef.Line.AngleDeg; } }
+		public override MapElement3D AsMapElement3D { get => new SidedefSlope3D(Sidedef, !up, Level.extrafloor?.Linedef); }
 
 		#endregion
 

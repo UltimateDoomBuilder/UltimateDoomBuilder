@@ -26,7 +26,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 	internal class NullVisualEventReceiver : IVisualEventReceiver
 	{
 		public bool Selected { get { return false; } } //mxd
-		
+		public MapElement3D AsMapElement3D { get => null; }
+
 		public void OnSelectBegin() { }
 		public void OnSelectEnd() { }
 		public void OnEditBegin() {	}
