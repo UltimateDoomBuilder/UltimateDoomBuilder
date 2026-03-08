@@ -168,6 +168,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public bool PaintSelectPressed { get { return paintselectpressed; } } // biwa
 		public Type PaintSelectType { get { return paintselecttype; } set { paintselecttype = value; } } // biwa
 		public IVisualPickable Highlighted { get { return highlighted; } } // biwa
+		public Group3D SelectedGroup3D { get; internal set; }
+		public Group3D LastSelectedGroup3D { get; internal set; }
 
 		#endregion
 		
@@ -2613,6 +2615,29 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			return t;
         }
 		
+		internal List<Group3D> FindGroups3DWithObject(IVisualEventReceiver o)
+		{
+			if (General.Map.Map.GroupsByMapElement3D.ContainsKey(o.AsMapElement3D))
+			{
+				var groups = General.Map.Map.GroupsByMapElement3D[o.AsMapElement3D];
+				groups.RemoveAll(g => General.Map.Map.CleanupGroup3D(g));
+				return groups;
+			}
+			else
+			{
+				return new List<Group3D>();
+			}
+		}
+
+		public Group3D FindSelectedGroup3D()
+		{
+			return General.Map.Map.Groups3D
+				.Find(group =>
+					group.Count == selectedobjects.Count &&
+						selectedobjects.All(o => group.Contains(o.AsMapElement3D))
+				);
+		}
+
 		#endregion
 
 		#region ================== Actions
@@ -2727,6 +2752,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public void ClearSelection()
 		{
             ClearSelection(true, true, true, true, true, true);
+			SelectedGroup3D = null;
 		}
 
 		[BeginAction("visualselect", BaseAction = true)]
@@ -4886,6 +4912,133 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				((BaseVisualThing)allthings[t]).Rebuild();
 
 				General.Interface.DisplayStatus(StatusType.Action, $"Applied camera rotation and pitch to {things.Count} thing{(things.Count == 1 ? "" : "s")}.");
+			}
+		}
+
+		[BeginAction("selectgroup")]
+		public void SelectGroup()
+		{
+			PickTargetUnlocked();
+
+			if (HighlightedTarget == null)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "You must highlight an element to select a group.");
+				return;
+			}
+
+			var selectablegroups = FindGroups3DWithObject(HighlightedTarget as IVisualEventReceiver);
+			if (!selectablegroups.Any())
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "The highlighted element does not belong to any group.");
+				return;
+			}
+
+			var selectedgroupindex = selectablegroups.IndexOf(SelectedGroup3D);
+			var nextgroupindex = selectedgroupindex + 1;
+
+			if (selectedgroupindex >= 0)
+			{
+				foreach (var e in selectablegroups[selectedgroupindex])
+				{
+					var o = GetObjectByMapElement3D(e);
+					if (o != null && o.Selected)
+					{
+						o.OnSelectBegin();
+						o.OnSelectEnd();
+					}
+				}
+			}
+
+			if (nextgroupindex < selectablegroups.Count)
+			{
+				SelectedGroup3D = selectablegroups[nextgroupindex];
+				LastSelectedGroup3D = SelectedGroup3D;
+
+				foreach (var e in SelectedGroup3D)
+				{
+					var o = GetObjectByMapElement3D(e);
+					if (o != null && !o.Selected)
+					{
+						o.OnSelectBegin();
+						o.OnSelectEnd();
+					}
+				}
+
+				General.Interface.DisplayStatus(StatusType.Info, "Selected group " + (nextgroupindex + 1) + "/" + selectablegroups.Count + ".");
+			}
+			else
+			{
+				SelectedGroup3D = null;
+				LastSelectedGroup3D = null;
+				General.Interface.DisplayStatus(StatusType.Info, "Deselected group.");
+			}
+		}
+
+		[BeginAction("creategroup")]
+		public void CreateGroup()
+		{
+			General.Map.Map.CleanupGroups3D();
+
+			if (FindSelectedGroup3D() != null) return;
+
+			var group = new Group3D();
+
+			foreach (var o in selectedobjects)
+				if (o.AsMapElement3D != null)
+					group.Add(o.AsMapElement3D);
+
+			foreach (var e in group)
+				General.Map.Map.GroupsByMapElement3D.Add(e, group);
+
+			if (!group.Any())
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "You must select at least one element to create a group.");
+				return;
+			}
+
+			General.Map.Map.Groups3D.Add(group);
+			SelectedGroup3D = group;
+			LastSelectedGroup3D = group;
+
+			General.Interface.DisplayStatus(StatusType.Action, "Created a new group with " + group.Count + " elements.");
+		}
+
+		[BeginAction("updateordeletelastselectedgroup")]
+		public void UpdateOrDeleteLastSelectedGroup()
+		{
+			General.Map.Map.CleanupGroups3D();
+
+			if (LastSelectedGroup3D == null || !General.Map.Map.Groups3D.Contains(LastSelectedGroup3D))
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "Select a group first.");
+				return;
+			}
+
+			foreach (var e in LastSelectedGroup3D)
+				if (!e.IsDisposed)
+					General.Map.Map.GroupsByMapElement3D.Remove(e, LastSelectedGroup3D);
+			LastSelectedGroup3D.Clear();
+
+			foreach (var o in selectedobjects)
+			{
+				var e = o.AsMapElement3D;
+				if (e != null)
+				{
+					LastSelectedGroup3D.Add(e);
+					General.Map.Map.GroupsByMapElement3D.Add(e, LastSelectedGroup3D);
+				}
+			}
+
+			if (LastSelectedGroup3D.Any())
+			{
+				General.Interface.DisplayStatus(StatusType.Action, "Updated a group.");
+			}
+			else
+			{
+				General.Map.Map.Groups3D.Remove(LastSelectedGroup3D);
+				LastSelectedGroup3D = null;
+
+				General.Interface.DisplayStatus(StatusType.Action, "Deleted a group.");
 			}
 		}
 
