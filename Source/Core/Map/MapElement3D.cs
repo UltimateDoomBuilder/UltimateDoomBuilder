@@ -55,7 +55,7 @@ namespace CodeImp.DoomBuilder.Map
 			else if (e is Upper3D)
 				prefix = "up";
 			else if (e is Vertex3D)
-				prefix = "vertex";
+				prefix = "vertex3d";
 			else if (e is Thing3D)
 				prefix = "thing";
 			else if (e is ThreeDFloorBottom3D)
@@ -94,7 +94,7 @@ namespace CodeImp.DoomBuilder.Map
 				return Middle3D.Deserialize(content, map);
 			else if (type == "up")
 				return Upper3D.Deserialize(content, map);
-			else if (type == "vertex")
+			else if (type == "vertex3d")
 				return Vertex3D.Deserialize(content, map);
 			else if (type == "thing")
 				return Thing3D.Deserialize(content, map);
