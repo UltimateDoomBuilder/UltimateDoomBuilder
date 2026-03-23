@@ -27,9 +27,13 @@ jobs:
           submodules: recursive
           fetch-depth: 0 # Required to properly get the commit count
 
-      - name: Update Release Tag
+      - name: Git setup
         run: |
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Update Release Tag
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+        run: |
           git tag -d latest || true
           git push origin :refs/tags/latest || true
           git tag latest
@@ -54,6 +58,7 @@ jobs:
           upload-artifact: false
 
       - name: Upload Artifact
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
         uses: actions/upload-artifact@v4
         with:
           name: UltimateDoomBuilder-Flatpak
@@ -63,7 +68,7 @@ jobs:
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
-        if: github.ref == 'refs/heads/master'
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
         with:
           tag_name: latest
           name: "Build R${{ env.REV_COUNT }}"
