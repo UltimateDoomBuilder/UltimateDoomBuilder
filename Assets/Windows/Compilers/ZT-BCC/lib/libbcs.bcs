@@ -1,7 +1,7 @@
 strict namespace bcs {
 
-#if 1
-#if __PTR_SPC_TYPE__ == 1
+#ifdef __LINE__
+#ifdef __PTR_SPC_MODULE__
 #ifndef HEAP_SIZE
 #define HEAP_SIZE 65536 // around 250KB
 #endif
@@ -10,13 +10,31 @@ strict namespace bcs {
 #endif
 
 #ifndef LIBBCS_ARR_EXTRA
-#define LIBBCS_ARR_EXTRA 1
+#define LIBBCS_ARR_EXTRA 8
 #endif
 
-#define _LIBBCS_REV "libbcs0100-alpha-5"
+#define _LIBBCS_REV "libbcs0100-alpha-8"
+#endif
+
+#ifdef __LIBBCS_NO_LOCAL_HEAP
+#define __LIBBCS_PTR_VIS
+#else
+#define __LIBBCS_PTR_VIS internal
 #endif
 
 special -44:__libbcs_CallACS(str;raw,raw,raw,raw):int;
+
+enum
+{
+	INT_MAX = 2147483647,
+	INT_MIN = -INT_MAX - 1
+};
+
+enum : fixed
+{
+	FIXED_MAX = (fixed)INT_MAX,
+	FIXED_MIN = (fixed)INT_MIN
+};
 
 #ifndef __LIBBCS_NO_LOCAL_HEAP
 internal raw _Heap[HEAP_SIZE];
@@ -49,7 +67,7 @@ internal struct HeapHead
 };
 
 // Main memory allocation function. Returns a pointer to a buffer of the requested size.
-internal void[]* malloc (int size)
+__LIBBCS_PTR_VIS void[]* malloc (int size)
 {
     struct HeapHead* head;
     struct AllocBlock* block;
@@ -129,6 +147,10 @@ internal void[]* malloc (int size)
 		#else
 		Log(s:"\cglibbcs malloc ERROR: heap overflow!");
 		#endif
+
+		#ifdef LIBBCS_FATAL_ALLOC_ERROR
+		>terminate;
+		#endif
 		return null;
 	}
 
@@ -136,7 +158,7 @@ internal void[]* malloc (int size)
 }
 
 // Frees the memory so it is usable by future calls to malloc.
-internal void free (void[]* ptr)
+__LIBBCS_PTR_VIS void free (void[]* ptr)
 {
     if(!ptr)
         return;
@@ -160,7 +182,7 @@ internal void free (void[]* ptr)
     head.lastFreed = block;
 }
 
-internal void memmove (void[]* dstIn, void[]* srcIn, int size)
+__LIBBCS_PTR_VIS void memmove (void[]* dstIn, void[]* srcIn, int size)
 {
 	int[]* dst = dstIn;
 	int[]* src = srcIn;
@@ -180,7 +202,7 @@ internal void memmove (void[]* dstIn, void[]* srcIn, int size)
 	}
 }
 
-internal int memcmp (void[]* ptr1in, void[]* ptr2in, int size)
+__LIBBCS_PTR_VIS int memcmp (void[]* ptr1in, void[]* ptr2in, int size)
 {
 	int[]* ptr1 = ptr1in;
 	int[]* ptr2 = ptr2in;
@@ -195,7 +217,7 @@ internal int memcmp (void[]* ptr1in, void[]* ptr2in, int size)
 }
 
 // Creates a new bigger buffer if needed, copying the contents of the original passed in.
-internal void[]* realloc (void[]* oldPtr, int size)
+__LIBBCS_PTR_VIS void[]* realloc (void[]* oldPtr, int size)
 {
     if(!oldPtr)
         return malloc(size);
@@ -230,7 +252,7 @@ Script _LIBBCS_REV "-alloca" (int ptr)
 	}
 }
 
-internal void[]* alloca (int size)
+__LIBBCS_PTR_VIS void[]* alloca (int size)
 {
 	void[]* ptr = malloc(size);
 
@@ -293,7 +315,7 @@ internal void printArrPtr (void[]? arr)
 	}
 }
 
-internal void[]? arrNew (int len, int elementSize = 1)
+__LIBBCS_PTR_VIS void[]? arrNew (int len, int elementSize = 1)
 {
     int ptr = (int)malloc((len + 1 + LIBBCS_ARR_EXTRA) * elementSize);
 
@@ -303,12 +325,12 @@ internal void[]? arrNew (int len, int elementSize = 1)
     return makeArrPtr(ptr, len);
 }
 
-internal void arrDelete (void[]? arr)
+__LIBBCS_PTR_VIS void arrDelete (void[]? arr)
 {
     free((int)arr - 1);
 }
 
-internal void[]? arrResize (void[]? arr, int newSize, int elementSize = 1)
+__LIBBCS_PTR_VIS void[]? arrResize (void[]? arr, int newSize, int elementSize = 1)
 {
 	struct AllocBlock* arrBlock;
 	arrBlock = (int)arr - lengthof(arrBlock);
@@ -327,115 +349,13 @@ internal void[]? arrResize (void[]? arr, int newSize, int elementSize = 1)
     return makeArrPtr((int)newPtr, newSize * elementSize);
 }
 
-#if 1
-	#define __printf_parms str string, raw i1 = 0, raw i2 = 0, raw i3 = 0, raw i4 = 0, raw i5 = 0, \
-							raw i6 = 0, raw i7 = 0, raw i8 = 0, raw i9 = 0, raw i10 = 0, \
-							raw i11 = 0, raw i12 = 0, raw i13 = 0, raw i14 = 0, \
-							raw i15 = 0, raw i16 = 0
-
-	#define __printf_args string, i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12, i13, i14, i15, i16
-#endif
-
-internal raw __printf_params_array[16];
-
-#if 1
-	#define __LIBBCS_PRINTF_IMPL() \
-	__printf_params_array[0] = i1; \
-	__printf_params_array[1] = i2; \
-	__printf_params_array[2] = i3; \
-	__printf_params_array[3] = i4; \
-	__printf_params_array[4] = i5; \
-	__printf_params_array[5] = i6; \
-	__printf_params_array[6] = i7; \
-	__printf_params_array[7] = i8; \
-	__printf_params_array[8] = i9; \
-	__printf_params_array[9] = i10; \
-	__printf_params_array[10] = i11; \
-	__printf_params_array[11] = i12; \
-	__printf_params_array[12] = i13; \
-	__printf_params_array[13] = i14; \
-	__printf_params_array[14] = i15; \
-	__printf_params_array[15] = i16; \
-	int paramNum; \
-	int len = strlen(string); \
-	int ch; \
-	raw tmp; \
-	for(int i = 0; i < len; i++) \
-	{ \
-		ch = string[i]; \
-		if(ch != '%') \
-		{ \
-			>pushscriptvar 20; \
-			>printcharacter; \
-		} \
-		else \
-		{ \
-			i++; \
-			if(string[i] == '%') \
-			{ \
-				>pushnumber 37; \
-				>printcharacter; \
-				continue; \
-			} \
-			tmp = __printf_params_array[paramNum]; \
-			>pushscriptvar 21; \
-			switch(string[i]) \
-			{ \
-			case 'i': \
-			case 'd': >printnumber; break; \
-			case 'c': >printcharacter; break; \
-			case 'f': >printfixed; break; \
-			case 's': >printstring; break; \
-			case 'n': >printname; break; \
-			case 'x': >printhex; break; \
-			case 'b': >printbinary; break; \
-			case 'k': >printbind; break; \
-			case 'l': >printlocalized; break; \
-			default: \
-				Log(s:__FUNCTION__, s:" ERROR: unexpected flag identifier ", c:string[i]); \
-			goto exitloop; \
-			} \
-			paramNum++; \
-		} \
-	} \
-	exitloop:
-#endif
-
-void printf (__printf_parms)
+// Terminates the running script. Can be called inside functions.
+void exit ()
 {
-	str unused;
-	buildmsg(Print())
-		{__LIBBCS_PRINTF_IMPL()}
+	>terminate;
 }
 
-void printboldf (__printf_parms)
-{
-	str unused;
-	buildmsg(PrintBold())
-		{__LIBBCS_PRINTF_IMPL()}
-}
-
-void logf (__printf_parms)
-{
-	str unused;
-	buildmsg(Log())
-		{__LIBBCS_PRINTF_IMPL()}
-}
-
-str strformat (__printf_parms)
-{
-	str retval;
-
-	buildmsg(retval = StrParam())
-		{__LIBBCS_PRINTF_IMPL()}
-
-	return retval;
-}
-
-#undef __printf_parms
-#undef __printf_args
-
-#if 1
+#ifdef __LINE__
 #define LIBBCS_SIMPLE_CMP(a, b) (((int)a) - ((int)b))
 #define LIBBCS_STRING_CMP(a, b) StrCmp(a, b)
 
@@ -486,13 +406,13 @@ str strformat (__printf_parms)
 			int[]* arr = a_In; \
 			int mid = left + (right - left) / 2; \
 			/* Check if key is present at mid */ \
-			if(cmpfunc(arr[mid], key) == 0) \
+			if(cmpfunc((raw)arr[mid], (raw)key) == 0) \
 			{ \
 				SetResultValue(mid); \
 				terminate; \
 			} \
 			/* If key greater than arr[mid], ignore left half */ \
-			if(cmpfunc(arr[mid], key) < 0) \
+			if(cmpfunc((raw)arr[mid], (raw)key) < 0) \
 				left = mid + 1; \
 			/* If key is smaller than or equal to arr[mid], */ \
 			/* ignore right half */ \
