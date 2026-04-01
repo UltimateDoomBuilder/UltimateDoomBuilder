@@ -157,6 +157,7 @@
     <ProjectReference Include="..\BuilderModes\BuilderModes.csproj">
       <Project>{b42d5aa0-f9a6-4234-9c4b-a05b11a64851}</Project>
       <Name>BuilderModes</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

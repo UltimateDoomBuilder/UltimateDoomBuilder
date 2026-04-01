@@ -24,7 +24,6 @@
 #region ================== Namespaces
 
 using CodeImp.DoomBuilder.Data;
-using CodeImp.DoomBuilder.UDBScript.Wrapper;
 
 #endregion
 

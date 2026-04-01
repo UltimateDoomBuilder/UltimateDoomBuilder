@@ -15,14 +15,11 @@
 
 using System;
 using System.Windows.Forms;
-using System.Collections;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Linq;
-using System.Text;
 using System.Drawing;
-using System.Diagnostics;
 using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.Editing;

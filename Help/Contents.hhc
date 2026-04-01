@@ -355,6 +355,10 @@
 				<param name="Local" value="gzdb\features\classic_modes\mode_soundenvironment.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Blockmap Explorer Mode">
+				<param name="Local" value="gzdb\features\classic_modes\mode_blockmapexplorer.html">
+				</OBJECT>				
+			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="3D Floor Mode">
 				<param name="Local" value="gzdb\features\classic_modes\mode_3dfloor.html">
 				</OBJECT>		

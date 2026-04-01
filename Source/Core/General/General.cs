@@ -1624,6 +1624,10 @@ namespace CodeImp.DoomBuilder
 			//mxd. Also reset the clock...
 			MainWindow.ResetClock();
 
+			// Make sure to give focus to the display, otherwise it will become unresponsive to keyboard input
+			// when executed from visual mode
+			Interface.FocusDisplay();
+
 			return result;
 		}
 
@@ -1705,48 +1709,52 @@ namespace CodeImp.DoomBuilder
 		// Returns false when action was cancelled
 		internal static bool AskSaveMap()
 		{
+			if (map == null)
+				return true;
+
+			bool returnvalue;
+
 			// Map open and not saved?
-			if(map != null)
+			if (map.IsChanged)
 			{
-				if(map.IsChanged)
+				// Ask to save changes
+				DialogResult result = MessageBox.Show(mainwindow, "Do you want to save changes to " + map.FileTitle + " (" + map.Options.CurrentName + ")?", Application.ProductName, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+				if (result == DialogResult.Yes)
 				{
-					// Ask to save changes
-					DialogResult result = MessageBox.Show(mainwindow, "Do you want to save changes to " + map.FileTitle + " (" + map.Options.CurrentName + ")?", Application.ProductName, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-					if(result == DialogResult.Yes)
+					// Save map
+					if (SaveMap())
 					{
-						// Save map
-						if(SaveMap())
-						{
-							// Ask to save changes to scripts
-							return map.AskSaveScriptChanges();
-						}
-						else
-						{
-							// Failed to save map
-							return false;
-						}
-					}
-					else if(result == DialogResult.Cancel)
-					{
-						// Abort
-						return false;
+						// Ask to save changes to scripts
+						returnvalue = map.AskSaveScriptChanges();
 					}
 					else
 					{
-						// Ask to save changes to scripts
-						return map.AskSaveScriptChanges();
+						// Failed to save map
+						returnvalue = false;
 					}
+				}
+				else if (result == DialogResult.Cancel)
+				{
+					// Abort
+					returnvalue = false;
 				}
 				else
 				{
 					// Ask to save changes to scripts
-					return map.AskSaveScriptChanges();
+					returnvalue = map.AskSaveScriptChanges();
 				}
 			}
 			else
 			{
-				return true;
+				// Ask to save changes to scripts
+				returnvalue = map.AskSaveScriptChanges();
 			}
+
+			// Make sure to give focus to the display, otherwise it will become unresponsive to keyboard input
+			// when executed from visual mode
+			Interface.FocusDisplay();
+
+			return returnvalue;
 		}
 		
 #endregion

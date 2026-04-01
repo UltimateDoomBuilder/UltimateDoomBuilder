@@ -21,8 +21,6 @@ using System.Collections.Generic;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Geometry;
 using System.Drawing;
-using System.Diagnostics;
-using System.Linq;
 
 #endregion
 

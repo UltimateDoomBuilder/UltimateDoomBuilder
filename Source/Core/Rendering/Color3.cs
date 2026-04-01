@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CodeImp.DoomBuilder.Rendering
+﻿namespace CodeImp.DoomBuilder.Rendering
 {
     public struct Color3
     {

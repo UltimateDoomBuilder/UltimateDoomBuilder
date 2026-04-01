@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	
+	<title>Template</title>
+	
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+	<link rel="stylesheet" type="text/css" href="../../../default.css" media="screen" title="Default" />
+</head>
+<body>
+	
+	<object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+	<param name="keyword" value="3D Floor Mode">
+	</object>
+	
+	<div id="gz_title"><h1>Blockmap Explorer Mode</h1></div>
+	
+	<div id="contents">
+	<p>
+		This mode lets you view the map's blockmap. Available in Doom and Hexen format<br>
+		<b>Menu path:</b> Mode -&gt; Blockmap Explorer Mode<br>
+		<b>Default key:</b> None.<br>
+		<br>
+		The information about the map's blockmap, and the currently highlighted block will be shown in the mode's docker.<br>
+		<br>
+		Holding shift will display all shared block of the currently highlighted block.
+	</p>
+	<p>
+		The docker shows the following info:<br>
+		<br>
+		<b>Block info</b><br>
+		Shows info about the currently highlighted block.
+		<ul>
+			<li>Column: the column</li>
+			<li>Row: the row</li>
+			<li>Offset (bytes): the offset of the block list from the start of the BLOCKMAP lump in bytes</li>
+			<li>Is sublist: if the block points to a sublist in the block list, i.e. if the offset points to the first linedef index in the block list or not</li>
+			<li>Lines in block: the number of lines in the block</li>
+		</ul>
+		<b>Blockmap info</b>
+		Shows info about the whole blockmap.
+		<ul>
+			<li>Columns: total number of columns</li>
+			<li>Rows: total number of rows</li>
+			<li>Total blocks: total number of blocks (columns * rows)</li>
+			<li>Unique blocks: number of unique blocks (number of total blocks minus the number of blocks saved by reusing blocks)</li>
+			<li>Lines not in blocks: number of lines that are not present in any block</li>
+			<li>Lump size: the size of the BLOCKMAP lump in bytes</li>
+			<li>Offset list end: where the header plus offset list ends in bytes</li>
+		</ul>
+		<b>Questionable offsets</b><br>
+		If there are questionable offsets in the offset list a message will be shown. It will also show a checkbox that, when enabled, will highlight all blocks deemed to be quiestionable.<br>
+		A block is deemed questionable if the offset points inside the header or offset list of the lump.
+	</p>
+</div>
+</body>

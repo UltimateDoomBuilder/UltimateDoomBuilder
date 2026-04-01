@@ -1,0 +1,15 @@
+zt-bcc 0.10.0 alpha 8:
+* Added a `char` alias to `int` as syntactic sugar.
+* Added support for the `return` statement inside scripts.
+* Added support for the BUSY script flag.
+* Added FIXED_MIN/MAX to libbcs.
+* Added Q-Zandronum defs to zcommon.
+* libbcs memory functions can now be exported if using hub/global pointer spaces.
+* LIBBCS_ARR_EXTRA now defaults to 8 for faster dynamic array operations.
+* Moved INT_MIN/MAX to libbcs.
+* Removed changes for libGDCC compatibility as they broke allocations.
+* Update errors to say `internal` instead of `private`.
+* Update outdated and/or broken zcommon definitions (thanks, FusedQYou!).
+
+Known bugs:
+* #if preprocessor directive causes issues with character literal parsing. It's recommended to not use it for now (#ifdef and the rest work fine, however).

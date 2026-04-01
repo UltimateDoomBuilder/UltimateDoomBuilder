@@ -18,7 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.BuilderModes.Interface;
@@ -693,9 +692,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			if(coordinates.Length == 0) return null;
 
-			direction.x = Math.Round(direction.x);
-			direction.y = Math.Round(direction.y);
-
 			Vector3D[] translatedCoords = new Vector3D[coordinates.Length];
 
 			//move things...
@@ -705,7 +701,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				int sector = General.ClampAngle(camAngle - 45) / 90;
 				direction = direction.GetRotated(sector * Angle2D.PIHALF);
 
-				for(int i = 0; i < coordinates.Length; i++)
+				// When one of the values were zero before rotation the resulting value
+				// will be really small but not zero, so we round them here
+				direction.x = Math.Round(direction.x, 6);
+				direction.y = Math.Round(direction.y, 6);
+
+				for (int i = 0; i < coordinates.Length; i++)
 					translatedCoords[i] = coordinates[i] + new Vector3D(direction);
 
 				return translatedCoords;
@@ -4000,6 +4001,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				General.Interface.DisplayStatus(StatusType.Warning, "Cannot paste here!");
 				return;
 			}
+
+			hitpos.x = Math.Round(hitpos.x);
+			hitpos.y = Math.Round(hitpos.y);
 
 			string rest = copybuffer.Count + (copybuffer.Count > 1 ? " things." : " thing.");
 			General.Map.UndoRedo.CreateUndo("Paste " + rest);

@@ -25,9 +25,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Dynamic;
-using System.Linq;
 using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.Map;
 
@@ -112,6 +109,9 @@ namespace CodeImp.DoomBuilder.UDBScript.Wrapper
 					Vector2D v = BuilderPlug.Me.GetVector3DFromObject(value);
 
 					vertex.Move(v);
+
+					foreach (Linedef ld in vertex.Linedefs)
+						ld.UpdateCache();
 				}
 				catch (CantConvertToVectorException e)
 				{

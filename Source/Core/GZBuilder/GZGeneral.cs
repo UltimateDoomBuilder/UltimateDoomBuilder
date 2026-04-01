@@ -1,8 +1,5 @@
 ﻿#region ================== Namespaces
 
-using CodeImp.DoomBuilder.Config;
-using CodeImp.DoomBuilder.GZBuilder.Data;
-using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.ZDoom;
 using System;
 using System.Collections.Generic;

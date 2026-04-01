@@ -79,18 +79,18 @@ namespace CodeImp.DoomBuilder.Controls
 				case VisualGeometryType.WALL_UPPER:
 					fieldname = "light_top";
 					fieldabsolutename = "lightabsolute_top";
-					lbLight.Text = "Upper brightness:";
+					lbLight.SetLeftExpandText("Upper brightness:");
 					break;
 				case VisualGeometryType.WALL_MIDDLE:
 				case VisualGeometryType.WALL_MIDDLE_3D:
 					fieldname = "light_mid";
 					fieldabsolutename = "lightabsolute_mid";
-					lbLight.Text = "Middle brightness:";
+					lbLight.SetLeftExpandText("Middle brightness:");
 					break;
 				case VisualGeometryType.WALL_LOWER:
 					fieldname = "light_bottom";
 					fieldabsolutename = "lightabsolute_bottom";
-					lbLight.Text = "Lower brightness:";
+					lbLight.SetLeftExpandText("Lower brightness:");
 					break;
 				default:
 					throw new NotImplementedException("Unsupported geometry type: " + Enum.GetName(typeof(VisualGeometryType), geometrytype));

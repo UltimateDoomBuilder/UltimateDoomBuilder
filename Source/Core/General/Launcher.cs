@@ -43,6 +43,27 @@ namespace CodeImp.DoomBuilder
 		private Dictionary<Process, string> processes; //mxd
 		private bool isdisposed;
 
+		private static Dictionary<int, string> additionalexceptiontext = new Dictionary<int, string>() {
+			{ 216,
+				"It looks like your test program ({0}) is a DOS executable, which is not compatible with your operating system. Please use an engine that is compatible with your operating system instead."
+			},
+			{ 1223,
+				"It looks like your test program ({0}) was blocked by Microsoft Defender SmartScreen. To unblock the test program you have two options.\n" +
+				"\n" +
+				"Option 1:\n" +
+				"- Run the program manually\n" +
+				"- Click on \"More info\"\n" +
+				"- Click on \"Run anyway\"\n" +
+				"\n" +
+				"Option 2:\n" +
+				"- Right-click on the program and select \"Properties\"\n" +
+				"- In the \"General\" tab check the \"Unblock\" checkbox\n" +
+				"- Click OK\n" +
+				"\n" +
+				"After performing one of these options, please try launching the test again."
+			}
+		};
+
 		delegate void EngineExitedCallback(Process p); //mxd
 		
 		#endregion
@@ -380,8 +401,15 @@ namespace CodeImp.DoomBuilder
 						}
 						catch (Exception e)
 						{
+							string additionaltext = string.Empty;
+
+							if (e is System.ComponentModel.Win32Exception w32e)
+							{
+								additionaltext = string.Format(additionalexceptiontext.TryGetValue(w32e.NativeErrorCode, out var tmp) ? ("\n\n" + tmp) : string.Empty, General.Map.ConfigSettings.TestProgram);
+							}
+
 							// Unable to start the program
-							General.ShowErrorMessage("Unable to start the test program, " + e.GetType().Name + ": " + e.Message, MessageBoxButtons.OK);
+							General.ShowErrorMessage("Unable to start the test program, " + e.GetType().Name + ": " + e.Message + additionaltext, MessageBoxButtons.OK);
 						}
 
 						// Check if there's a post command to run, and try to execute it
