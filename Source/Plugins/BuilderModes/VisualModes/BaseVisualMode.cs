@@ -917,7 +917,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			else if (element is Vertex3D vertex)
 				return GetVisualVertex(vertex.Vertex, vertex.IsFloor);
 			else if (element is Thing3D thing)
-				return GetVisualThing(thing.Thing) as BaseVisualThing;
+			{
+				VisualThing vt = !VisualThingExists(thing.Thing) ? CreateVisualThing(thing.Thing) : GetVisualThing(thing.Thing);
+				return vt as BaseVisualThing;
+			}
 			else if (element is ThreeDFloorBottom3D threedfloorbottom)
 			{
 				var vs = GetBaseVisualSector(threedfloorbottom.Sector);
