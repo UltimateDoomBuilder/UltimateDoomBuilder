@@ -230,7 +230,7 @@ namespace CodeImp.DoomBuilder.Map
 		}
 
 		public override bool Equals(object o) => o is Vertex3D v && Vertex == v.Vertex && IsCeiling == v.IsCeiling;
-		public override int GetHashCode() => Vertex.GetHashCode();
+		public override int GetHashCode() => Vertex.GetHashCode() + IsCeiling.GetHashCode();
 		public override string Serialize() => $"{(IsCeiling ? "c" : "f")} {Vertex.Index}";
 
 		public new static Vertex3D Deserialize(string s, MapSet map)
