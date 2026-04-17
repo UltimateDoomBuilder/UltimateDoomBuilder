@@ -47,6 +47,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		private const double MOVE_SPEED_MULTIPLIER = 0.001;
 		protected const float PICK_RANGE = 0.98f;
 		private const float MOVE_CAMERA_DISTANCE = 64.0f;
+		private const long CURSOR_UNLOCK_HOLD_TIME = 300;
 		
 		#endregion
 
@@ -72,6 +73,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		private bool keydown;
 		private bool orbit;
 		protected bool cursorunlocked;
+		private long cursorunlockpresstime;
 
 		//mxd
 		private List<VisualThing> selectedVisualThings;
@@ -568,9 +570,20 @@ namespace CodeImp.DoomBuilder.VisualModes
 			if(cursorunlocked)
 			{
 				General.Interface.StopExclusiveMouseInput();
+				cursorunlockpresstime = Clock.CurrentTime;
 			}
 			else
 			{
+				General.Interface.StartExclusiveMouseInput();
+			}
+		}
+
+		[EndAction("unlockcursor", BaseAction = true)]
+		public virtual void EndUnlockCursor()
+		{
+			if (cursorunlocked && Clock.CurrentTime - cursorunlockpresstime >= CURSOR_UNLOCK_HOLD_TIME)
+			{
+				cursorunlocked = false;
 				General.Interface.StartExclusiveMouseInput();
 			}
 		}
