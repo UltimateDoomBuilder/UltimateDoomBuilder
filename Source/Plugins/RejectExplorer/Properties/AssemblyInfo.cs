@@ -5,12 +5,12 @@ using System.Resources;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Automap Mode")]
+[assembly: AssemblyTitle("Reject Explorer Mode")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("AutomapMode")]
-[assembly: AssemblyCopyright("Copyright (c) 2016 Boris Iwanski")]
+[assembly: AssemblyProduct("Reject Explorer Mode")]
+[assembly: AssemblyCopyright("Copyright (c) 2026 Boris Iwanski")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
