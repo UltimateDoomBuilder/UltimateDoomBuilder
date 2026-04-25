@@ -87,6 +87,8 @@ Source: Plugins\CommentsPanel.dll; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\CommentsPanel.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\NodesViewer.dll; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\NodesViewer.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
+Source: Plugins\RejectExplorer.dll; DestDir: {app}\Plugins; Flags: ignoreversion
+Source: Plugins\RejectExplorer.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\SoundPropagationMode.dll; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\SoundPropagationMode.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\StairSectorBuilder.dll; DestDir: {app}\Plugins; Flags: ignoreversion
