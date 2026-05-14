@@ -1686,6 +1686,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							if (size.x < 0.0f) normal.x *= -1;
 							if (size.y < 0.0f) normal.y *= -1;
 
+							normal.x /= size.x / basesize.x;
+							normal.y /= size.y / basesize.y;
+
 							double angle = normal.GetAngleXY() + rotation + Angle2D.PIHALF;
 
 							// Get the center of the *new* sector position. Use the z value of the center *old* sector position
@@ -1693,7 +1696,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							Vector3D newcenter = GetTransformedVector(originalcenter);
 							newcenter.z = new Plane(s.FloorSlope, s.FloorSlopeOffset).GetZ(originalcenter);
 
-							Plane p = new Plane(newcenter, angle, -s.FloorSlope.GetAngleZ(), true);
+							Plane p = new Plane(newcenter, angle, -normal.GetAngleZ(), true);
 							s.FloorSlope = p.Normal;
 							s.FloorSlopeOffset = p.Offset;
 						}
@@ -1716,6 +1719,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 								if (size.x < 0.0f) normal.x *= -1;
 								if (size.y < 0.0f) normal.y *= -1;
 
+								normal.x /= size.x / basesize.x;
+								normal.y /= size.y / basesize.y;
+
 								double angle = normal.GetAngleXY() + rotation + Angle2D.PIHALF;
 
 								// Get the center of the *new* tagged sector position. Use the z value of the center *old* tagged sector position
@@ -1723,7 +1729,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 								Vector3D newcenter = GetTransformedVector(originalcenter);
 								newcenter.z = new Plane(cs.FloorSlope, cs.FloorSlopeOffset).GetZ(originalcenter);
 
-								Plane p = new Plane(newcenter, angle, -cs.FloorSlope.GetAngleZ(), true);
+								Plane p = new Plane(newcenter, angle, -normal.GetAngleZ(), true);
 								cs.FloorSlope = p.Normal;
 								cs.FloorSlopeOffset = p.Offset;
 
@@ -1739,6 +1745,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							if (size.x < 0.0f) normal.x *= -1;
 							if (size.y < 0.0f) normal.y *= -1;
 
+							normal.x /= size.x / basesize.x;
+							normal.y /= size.y / basesize.y;
+
 							double angle = normal.GetAngleXY() + rotation + Angle2D.PIHALF;
 
 							// Get the center of the *new* sector position. Use the z value of the center *old* sector position
@@ -1746,7 +1755,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							Vector3D newcenter = GetTransformedVector(originalcenter);
 							newcenter.z = new Plane(s.CeilSlope, s.CeilSlopeOffset).GetZ(originalcenter);
 
-							Plane p = new Plane(newcenter, angle, -s.CeilSlope.GetAngleZ(), false);
+							Plane p = new Plane(newcenter, angle, -normal.GetAngleZ(), false);
 							s.CeilSlope = p.Normal;
 							s.CeilSlopeOffset = p.Offset;
 						}
@@ -1769,6 +1778,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 								if (size.x < 0.0f) normal.x *= -1;
 								if (size.y < 0.0f) normal.y *= -1;
 
+								normal.x /= size.x / basesize.x;
+								normal.y /= size.y / basesize.y;
+
 								double angle = normal.GetAngleXY() + rotation + Angle2D.PIHALF;
 
 								// Get the center of the *new* tagged sector position. Use the z value of the center *old* tagged sector position
@@ -1776,7 +1788,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 								Vector3D newcenter = GetTransformedVector(originalcenter);
 								newcenter.z = new Plane(cs.CeilSlope, cs.CeilSlopeOffset).GetZ(originalcenter);
 
-								Plane p = new Plane(newcenter, angle, -cs.CeilSlope.GetAngleZ(), false);
+								Plane p = new Plane(newcenter, angle, -normal.GetAngleZ(), false);
 								cs.CeilSlope = p.Normal;
 								cs.CeilSlopeOffset = p.Offset;
 
