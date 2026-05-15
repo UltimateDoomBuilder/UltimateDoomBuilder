@@ -126,7 +126,6 @@ namespace CodeImp.DoomBuilder.CommentsPanel
 				if(!comments.ContainsKey(c.Key))
 				{
 					// Create grid row
-					//int index = grid.Rows.Add();
 					DataGridViewRow row = new DataGridViewRow(); //grid.Rows[index];
 					row.CreateCells(grid);
 					row.Cells[0].Value = icon;
@@ -164,17 +163,12 @@ namespace CodeImp.DoomBuilder.CommentsPanel
 			
 			if (!preventupdate && General.Map.Map.IsSafeToAccess)
 			{
-				//grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
-				//grid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
-				//grid.RowHeadersVisible = false; // Slight speed boost
-				
 				grid.SuspendLayout();
 				var rowBatch = new List<DataGridViewRow>();
 				foreach (DataGridViewRow r in grid.Rows)
 				{
 					rowBatch.Add(r);
 				}
-				//grid.Rows
 				// Update vertices
 				Dictionary<string, CommentInfo> newcomments = new Dictionary<string, CommentInfo>(StringComparer.Ordinal);
 				if(!filtermode.Checked || (General.Editing.Mode.GetType().Name == "VerticesMode"))
