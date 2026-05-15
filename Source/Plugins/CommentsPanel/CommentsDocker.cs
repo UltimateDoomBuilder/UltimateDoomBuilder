@@ -146,8 +146,6 @@ namespace CodeImp.DoomBuilder.CommentsPanel
 					cc.ReplaceElements(c.Value);
 				}
 			}
-			
-
 		}
 		
 		// This sets the timer to update the list very soon
