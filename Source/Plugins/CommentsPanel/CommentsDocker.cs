@@ -105,7 +105,7 @@ namespace CodeImp.DoomBuilder.CommentsPanel
 		}
 		
 		// This updates the list for a specific kind of group
-		private void UpdateGroupList(Dictionary<string, CommentInfo> newcomments, Dictionary<string, CommentInfo> comments, Image icon, ref List<DataGridViewRow> rowBatch)
+		private void UpdateGroupList(Dictionary<string, CommentInfo> newcomments, Dictionary<string, CommentInfo> comments, Image icon, List<DataGridViewRow> rowBatch)
 		{
 			// Remove old comments
 			List<CommentInfo> commentslist = new List<CommentInfo>(comments.Values);
@@ -181,7 +181,7 @@ namespace CodeImp.DoomBuilder.CommentsPanel
 				{
 					foreach(Vertex v in General.Map.Map.Vertices) AddComments(v, newcomments);
 				}
-				UpdateGroupList(newcomments, v_comments, Properties.Resources.VerticesMode, ref rowBatch);
+				UpdateGroupList(newcomments, v_comments, Properties.Resources.VerticesMode, rowBatch);
 
 				// Update linedefs/sidedefs
 				newcomments.Clear();
@@ -190,7 +190,7 @@ namespace CodeImp.DoomBuilder.CommentsPanel
 					foreach(Linedef l in General.Map.Map.Linedefs) AddComments(l, newcomments);
 					foreach(Sidedef sd in General.Map.Map.Sidedefs) AddComments(sd, newcomments);
 				}
-				UpdateGroupList(newcomments, l_comments, Properties.Resources.LinesMode, ref rowBatch);
+				UpdateGroupList(newcomments, l_comments, Properties.Resources.LinesMode, rowBatch);
 
 				// Update sectors
 				newcomments.Clear();
@@ -198,7 +198,7 @@ namespace CodeImp.DoomBuilder.CommentsPanel
 				{
 					foreach(Sector s in General.Map.Map.Sectors) AddComments(s, newcomments);
 				}
-				UpdateGroupList(newcomments, s_comments, Properties.Resources.SectorsMode, ref rowBatch);
+				UpdateGroupList(newcomments, s_comments, Properties.Resources.SectorsMode, rowBatch);
 
 				// Update things
 				newcomments.Clear();
@@ -206,7 +206,7 @@ namespace CodeImp.DoomBuilder.CommentsPanel
 				{
 					foreach(Thing t in General.Map.Map.Things) AddComments(t, newcomments);
 				}
-				UpdateGroupList(newcomments, t_comments, Properties.Resources.ThingsMode, ref rowBatch);
+				UpdateGroupList(newcomments, t_comments, Properties.Resources.ThingsMode, rowBatch);
 				grid.Rows.Clear();
 				grid.Rows.AddRange(rowBatch.ToArray());
 				
