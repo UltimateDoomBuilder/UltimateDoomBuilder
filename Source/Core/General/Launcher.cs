@@ -80,7 +80,7 @@ namespace CodeImp.DoomBuilder
 		public Launcher(MapManager manager)
 		{
 			// Initialize
-			CleanTempFile(manager);
+			InitializeTempFile(manager);
 			processes = new Dictionary<Process, string>(); //mxd
 
 			// Bind actions
@@ -344,7 +344,6 @@ namespace CodeImp.DoomBuilder
 			
 			// Save map to temporary file
 			Cursor.Current = Cursors.WaitCursor;
-			tempwad = General.MakeTempFilename(General.Map.TempPath, "wad");
 			General.Plugins.OnMapSaveBegin(SavePurpose.Testing);
 			if(General.Map.SaveMap(tempwad, SavePurpose.Testing))
 			{
@@ -461,9 +460,6 @@ namespace CodeImp.DoomBuilder
 			
 			General.MainWindow.DisplayReady();
 
-			// Clean up temp file
-			CleanTempFile(General.Map);
-
 			if(General.Map != null)
 			{
 				// Device reset may be needed...
@@ -482,17 +478,20 @@ namespace CodeImp.DoomBuilder
 			General.MainWindow.Invoke(new EngineExitedCallback(TestingFinished), new[] { sender });
 		}
 
-		// This deletes the previous temp file and creates a new, empty temp file
-		private void CleanTempFile(MapManager manager)
+		/// <summary>
+		/// Initializes the temporary file used for testing.
+		/// </summary>
+		/// <param name="manager">The MapManager instance.</param>
+		private void InitializeTempFile(MapManager manager)
 		{
-			// Remove temporary file
-			try { File.Delete(tempwad); }
-			catch { }
-			
 			// Make new empty temp file
 			tempwad = General.MakeTempFilename(manager.TempPath, "wad");
-			File.WriteAllText(tempwad, "");
+
+			// General.GetShortFilePath, which is used when the "use short paths and file name" option is set, uses
+			// a Win32 function that returns an empty string when the file doesn't exist, so make sure it exists.
+			File.Create(tempwad).Dispose();
 		}
+
 
 		#endregion
 	}
