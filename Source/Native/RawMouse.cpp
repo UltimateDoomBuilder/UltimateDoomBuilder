@@ -110,8 +110,20 @@ LRESULT RawMouse::OnMessage(INT message, WPARAM wparam, LPARAM lparam)
 				RAWINPUT* rawinput = (RAWINPUT*)buf.data();
 				if (rawinput->header.dwType == RIM_TYPEMOUSE)
 				{
-					x += rawinput->data.mouse.lLastX;
-					y += rawinput->data.mouse.lLastY;
+					if (rawinput->data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE)
+					{
+						// some sources report absolute coordinates (Wine, RDP, ...); use the delta
+						long ax = rawinput->data.mouse.lLastX;
+						long ay = rawinput->data.mouse.lLastY;
+						if (haveAbs) { x += (int)(ax - lastAbsX); y += (int)(ay - lastAbsY); }
+						lastAbsX = ax; lastAbsY = ay; haveAbs = true;
+					}
+					else
+					{
+						x += rawinput->data.mouse.lLastX;
+						y += rawinput->data.mouse.lLastY;
+						haveAbs = false;
+					}
 				}
 			}
 		}
