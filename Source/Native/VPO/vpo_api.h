@@ -21,6 +21,10 @@
 #ifndef __VPO_API_H__
 #define __VPO_API_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef void* VPOContext;
 
 VPOContext VPO_NewContext();
@@ -97,6 +101,10 @@ int VPO_TestSpot(VPOContext ctx,
                  int *num_drawsegs,
                  int *num_openings,
                  int *num_solidsegs);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif  /* __VPO_API_H__ */
 
