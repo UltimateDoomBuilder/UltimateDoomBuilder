@@ -238,6 +238,7 @@
     <Compile Include="Data\ImageLoadState.cs" />
     <Compile Include="General\AutoSaver.cs" />
     <Compile Include="General\Hasher.cs" />
+    <Compile Include="General\MultiDictionary.cs" />
     <Compile Include="General\SHA256Hash.cs" />
     <Compile Include="General\ToastManager.cs" />
     <Compile Include="GZBuilder\Models\GZModel.cs" />

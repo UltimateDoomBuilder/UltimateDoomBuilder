@@ -17,6 +17,7 @@
 #region ================== Namespaces
 
 using System.Windows.Forms;
+using CodeImp.DoomBuilder.Map;
 
 #endregion
 
