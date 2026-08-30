@@ -52,6 +52,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 		public Vertex Vertex { get { return vertex; } }
 		public Sector Sector { get { return sector; } }
+		public override MapElement3D AsMapElement3D { get => new VertexSlope3D(Vertex, Sector, !up, Level.extrafloor?.Linedef); }
 
 		#endregion
 

@@ -246,6 +246,7 @@
     <Compile Include="Dehacked\DehackedThing.cs" />
     <Compile Include="General\AutoSaver.cs" />
     <Compile Include="General\Hasher.cs" />
+    <Compile Include="General\MultiDictionary.cs" />
     <Compile Include="General\SHA256Hash.cs" />
     <Compile Include="General\ToastManager.cs" />
     <Compile Include="GZBuilder\Models\GZModel.cs" />
@@ -257,6 +258,7 @@
     <Compile Include="GZBuilder\Models\MD3ModelLoader.cs" />
     <Compile Include="GZBuilder\Models\OBJModelLoader.cs" />
     <Compile Include="GZBuilder\Models\ModelLoadResult.cs" />
+    <Compile Include="Map\MapElement3D.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

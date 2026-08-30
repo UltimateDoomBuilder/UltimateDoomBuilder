@@ -466,7 +466,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							if(!l.affectedbyglow) l.color = GetLevelColor(src, l);
 
 							// Transfer brightnessbelow and colorbelow if current level is not extrafloor top
-							if(!(l.extrafloor && l.type == SectorLevelType.Floor))
+							if(!(l.extrafloor != null && l.type == SectorLevelType.Floor))
 							{
 								l.brightnessbelow = src.brightnessbelow;
 								l.colorbelow = src.colorbelow;
@@ -474,7 +474,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 						}
 
 						// Store bottom extrafloor level if it doesn't have "restrictlighting" or "restrictlighting" flags set
-						if(l.extrafloor && l.type == SectorLevelType.Ceiling && !l.restrictlighting && !l.disablelighting) stored = l;
+						if(l.extrafloor != null && l.type == SectorLevelType.Ceiling && !l.restrictlighting && !l.disablelighting) stored = l;
 					}
 
 					// Reset lighting?
