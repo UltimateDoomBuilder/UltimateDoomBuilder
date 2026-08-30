@@ -361,6 +361,7 @@
     <Compile Include="IO\UniversalStreamReader.cs" />
     <Compile Include="IO\UniversalStreamWriter.cs" />
     <Compile Include="Map\MapElement.cs" />
+    <Compile Include="Map\MapElement3D.cs" />
     <Compile Include="Map\SelectableElement.cs" />
     <Compile Include="Map\UniFields.cs" />
     <Compile Include="Map\UniValue.cs" />
