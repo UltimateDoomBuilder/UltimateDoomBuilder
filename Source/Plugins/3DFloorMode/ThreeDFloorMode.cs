@@ -1683,7 +1683,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 				int newtag;
 				int oldtag = tdf.UDMFTag;
 
-				if(!tdf.CreateGeometry(new List<int>(), drawnvertices, tdf.LinedefProperties, tdf.SectorProperties, true, out newtag))
+				if(!tdf.CreateGeometry(tagblacklist, drawnvertices, tdf.LinedefProperties, tdf.SectorProperties, true, out newtag))
 				{
 					// No need to show a warning here, that was already done by CreateGeometry
 					General.Map.UndoRedo.WithdrawUndo();
