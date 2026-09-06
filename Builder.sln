@@ -47,6 +47,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlockmapExplorer", "Source\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RejectExplorer", "Source\Plugins\RejectExplorer\RejectExplorer.csproj", "{06F4E9DB-88CC-4ACD-AB4F-04DB0B54A50F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIBuilder", "Source\Plugins\AIBuilder\AIBuilder.csproj", "{4B5621DA-8399-459E-8006-A70C79E7BEEE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug + Profiler|x64 = Debug + Profiler|x64
@@ -359,6 +361,22 @@ Global
 		{06F4E9DB-88CC-4ACD-AB4F-04DB0B54A50F}.Release|x64.Build.0 = Release|x64
 		{06F4E9DB-88CC-4ACD-AB4F-04DB0B54A50F}.Release|x86.ActiveCfg = Release|x86
 		{06F4E9DB-88CC-4ACD-AB4F-04DB0B54A50F}.Release|x86.Build.0 = Release|x86
+		{4B5621DA-8399-459E-8006-A70C79E7BEEE}.Debug + Profiler|x64.ActiveCfg = Debug + Profiler|x64
+		{4B5621DA-8399-459E-8006-A70C79E7BEEE}.Debug + Profiler|x64.Build.0 = Debug + Profiler|x64
+		{4B5621DA-8399-459E-8006-A70C79E7BEEE}.Debug + Profiler|x86.ActiveCfg = Debug + Profiler|x86
+		{4B5621DA-8399-459E-8006-A70C79E7BEEE}.Debug + Profiler|x86.Build.0 = Debug + Profiler|x86
+		{4B5621DA-8399-459E-8006-A70C79E7BEEE}.Debug|x64.ActiveCfg = Debug|x64
+		{4B5621DA-8399-459E-8006-A70C79E7BEEE}.Debug|x64.Build.0 = Debug|x64
+		{4B5621DA-8399-459E-8006-A70C79E7BEEE}.Debug|x86.ActiveCfg = Debug|x86
+		{4B5621DA-8399-459E-8006-A70C79E7BEEE}.Debug|x86.Build.0 = Debug|x86
+		{4B5621DA-8399-459E-8006-A70C79E7BEEE}.Release + Profiler|x64.ActiveCfg = Release + Profiler|x64
+		{4B5621DA-8399-459E-8006-A70C79E7BEEE}.Release + Profiler|x64.Build.0 = Release + Profiler|x64
+		{4B5621DA-8399-459E-8006-A70C79E7BEEE}.Release + Profiler|x86.ActiveCfg = Release + Profiler|x86
+		{4B5621DA-8399-459E-8006-A70C79E7BEEE}.Release + Profiler|x86.Build.0 = Release + Profiler|x86
+		{4B5621DA-8399-459E-8006-A70C79E7BEEE}.Release|x64.ActiveCfg = Release|x64
+		{4B5621DA-8399-459E-8006-A70C79E7BEEE}.Release|x64.Build.0 = Release|x64
+		{4B5621DA-8399-459E-8006-A70C79E7BEEE}.Release|x86.ActiveCfg = Release|x86
+		{4B5621DA-8399-459E-8006-A70C79E7BEEE}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
