@@ -105,7 +105,7 @@ namespace CodeImp.DoomBuilder.CommentsPanel
 		}
 		
 		// This updates the list for a specific kind of group
-		private void UpdateGroupList(Dictionary<string, CommentInfo> newcomments, Dictionary<string, CommentInfo> comments, Image icon)
+		private void UpdateGroupList(Dictionary<string, CommentInfo> newcomments, Dictionary<string, CommentInfo> comments, Image icon, List<DataGridViewRow> rowBatch)
 		{
 			// Remove old comments
 			List<CommentInfo> commentslist = new List<CommentInfo>(comments.Values);
@@ -113,28 +113,28 @@ namespace CodeImp.DoomBuilder.CommentsPanel
 			{
 				if(!newcomments.ContainsKey(c.Comment))
 				{
-					grid.Rows.Remove(c.Row);
+					rowBatch.Remove(c.Row);
 					comments.Remove(c.Comment);
 				}
 			}
 			
 			// Update the list with comments
-			foreach(KeyValuePair<string, CommentInfo> c in newcomments)
+			foreach (KeyValuePair<string, CommentInfo> c in newcomments)
 			{
 				CommentInfo cc = c.Value;
 				
 				if(!comments.ContainsKey(c.Key))
 				{
 					// Create grid row
-					int index = grid.Rows.Add();
-					DataGridViewRow row = grid.Rows[index];
+					DataGridViewRow row = new DataGridViewRow(); //grid.Rows[index];
+					row.CreateCells(grid);
 					row.Cells[0].Value = icon;
 					row.Cells[0].Style.Alignment = DataGridViewContentAlignment.TopCenter;
 					row.Cells[0].Style.Padding = new Padding(0, 5, 0, 0);
 					row.Cells[1].Value = cc.Comment;
 					row.Cells[1].Style.WrapMode = DataGridViewTriState.True;
 					row.Cells[1].Tag = cc;
-					
+					rowBatch.Add(row);
 					// Add to list of comments
 					cc.Row = row;
 					comments.Add(c.Key, cc);
@@ -158,15 +158,22 @@ namespace CodeImp.DoomBuilder.CommentsPanel
 		// This finds all comments and updates the list
 		public void UpdateList()
 		{
-			if(!preventupdate && General.Map.Map.IsSafeToAccess)
+			
+			if (!preventupdate && General.Map.Map.IsSafeToAccess)
 			{
+				grid.SuspendLayout();
+				var rowBatch = new List<DataGridViewRow>();
+				foreach (DataGridViewRow r in grid.Rows)
+				{
+					rowBatch.Add(r);
+				}
 				// Update vertices
 				Dictionary<string, CommentInfo> newcomments = new Dictionary<string, CommentInfo>(StringComparer.Ordinal);
 				if(!filtermode.Checked || (General.Editing.Mode.GetType().Name == "VerticesMode"))
 				{
 					foreach(Vertex v in General.Map.Map.Vertices) AddComments(v, newcomments);
 				}
-				UpdateGroupList(newcomments, v_comments, Properties.Resources.VerticesMode);
+				UpdateGroupList(newcomments, v_comments, Properties.Resources.VerticesMode, rowBatch);
 
 				// Update linedefs/sidedefs
 				newcomments.Clear();
@@ -175,7 +182,7 @@ namespace CodeImp.DoomBuilder.CommentsPanel
 					foreach(Linedef l in General.Map.Map.Linedefs) AddComments(l, newcomments);
 					foreach(Sidedef sd in General.Map.Map.Sidedefs) AddComments(sd, newcomments);
 				}
-				UpdateGroupList(newcomments, l_comments, Properties.Resources.LinesMode);
+				UpdateGroupList(newcomments, l_comments, Properties.Resources.LinesMode, rowBatch);
 
 				// Update sectors
 				newcomments.Clear();
@@ -183,7 +190,7 @@ namespace CodeImp.DoomBuilder.CommentsPanel
 				{
 					foreach(Sector s in General.Map.Map.Sectors) AddComments(s, newcomments);
 				}
-				UpdateGroupList(newcomments, s_comments, Properties.Resources.SectorsMode);
+				UpdateGroupList(newcomments, s_comments, Properties.Resources.SectorsMode, rowBatch);
 
 				// Update things
 				newcomments.Clear();
@@ -191,11 +198,13 @@ namespace CodeImp.DoomBuilder.CommentsPanel
 				{
 					foreach(Thing t in General.Map.Map.Things) AddComments(t, newcomments);
 				}
-				UpdateGroupList(newcomments, t_comments, Properties.Resources.ThingsMode);
-
+				UpdateGroupList(newcomments, t_comments, Properties.Resources.ThingsMode, rowBatch);
+				grid.Rows.Clear();
+				grid.Rows.AddRange(rowBatch.ToArray());
+				
 				// Sort grid
 				grid.Sort(grid.Columns[1], ListSortDirection.Ascending);
-
+				grid.ResumeLayout();
 				// Update
 				grid.Update();
 

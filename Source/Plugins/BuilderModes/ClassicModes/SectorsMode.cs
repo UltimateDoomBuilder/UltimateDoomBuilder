@@ -400,12 +400,19 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// Support function for joining and merging sectors
 		private void JoinMergeSectors(bool removelines)
 		{
+			List<Sector> orderedselection = General.Map.Map.GetSelectedSectors(true).Where(s => !s.IsDisposed).ToList();
+
+			if(orderedselection.Count < 2) return; // Need at least 2 sectors to join
+
+			// Get the properties of the first selected sector. Do this before disposing the lines, since that might delete the
+			// sector if it's completely enclosed by other selected sectors
+			SectorProperties sectorProperties = new SectorProperties(orderedselection[0]);
+
 			// Remove lines in betwen joining sectors?
 			if(removelines)
 			{
 				// Go for all selected linedefs
-				List<Linedef> selectedlines = new List<Linedef>(General.Map.Map.GetSelectedLinedefs(true));
-				foreach(Linedef ld in selectedlines)
+				foreach (Linedef ld in General.Map.Map.GetSelectedLinedefs(true))
 				{
 					// Front and back side?
 					if((ld.Front != null) && (ld.Back != null))
@@ -422,15 +429,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 
 			// Find the first sector that is not disposed
-			List<Sector> orderedselection = new List<Sector>(General.Map.Map.GetSelectedSectors(true));
-			Sector first = null;
-			foreach(Sector s in orderedselection)
-				if(!s.IsDisposed) { first = s; break; }
-			
+			Sector first = orderedselection.First(s => !s.IsDisposed);
+
 			// Join all selected sectors with the first
-			for(int i = 0; i < orderedselection.Count; i++)
-				if((orderedselection[i] != first) && !orderedselection[i].IsDisposed)
+			for (int i = 0; i < orderedselection.Count; i++)
+				if (orderedselection[i] != first && !orderedselection[i].IsDisposed)
 					orderedselection[i].Join(first);
+
+			// Apply the properties to the joined sector. Only have to do it to the first, since it's the only one left
+			sectorProperties.Apply(new[] { first }, true);
 
 			// Clear selection
 			General.Map.Map.ClearAllSelected();

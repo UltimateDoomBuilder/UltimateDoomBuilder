@@ -321,11 +321,14 @@ HGLRC OpenGLContext::CreateGL3Context(HWND window, HDC hdc, HGLRC share_context)
 	{
 		for (int version : { 46, 45, 44, 43, 42, 41, 40, 33, 32 })
 		{
+			// some drivers only provide 3.2+ as forward-compatible core (e.g. macOS)
+			int flags = (profile == WGL_CONTEXT_CORE_PROFILE_BIT_ARB) ? WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB : 0;
 			std::vector<int> int_attributes =
 			{
 				WGL_CONTEXT_MAJOR_VERSION_ARB, version / 10,
 				WGL_CONTEXT_MINOR_VERSION_ARB, version % 10,
 				WGL_CONTEXT_PROFILE_MASK_ARB, profile,
+				WGL_CONTEXT_FLAGS_ARB, flags,
 				0, 0
 			};
 			HGLRC opengl3_context = functions.wglCreateContextAttribsARB(hdc, share_context, int_attributes.data());

@@ -699,7 +699,8 @@ namespace CodeImp.DoomBuilder.Map
 					}
 
 					// Have slope?
-					return (sloped ? new Geometry.Plane(verts[0], verts[1], verts[2], true) : floor);
+					if(sloped)
+						return new Geometry.Plane(verts[0], verts[1], verts[2], true);
 				}
 			}
 
@@ -779,7 +780,8 @@ namespace CodeImp.DoomBuilder.Map
 					}
 
 					// Have slope?
-					return (sloped ? new Geometry.Plane(verts[0], verts[2], verts[1], false) : ceiling);
+					if(sloped)
+						return new Geometry.Plane(verts[0], verts[2], verts[1], false);
 				}
 			}
 

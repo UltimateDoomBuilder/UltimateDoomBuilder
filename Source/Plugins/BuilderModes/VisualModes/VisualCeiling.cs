@@ -581,6 +581,16 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Map.Data.UpdateUsedTextures();
 		}
 
+		private bool ArePlanesSame(Plane p1, Plane p2)
+		{
+			return (
+				Math.Abs(p1.Normal.x - p2.Normal.x) < 0.001 &&
+				Math.Abs(p1.Normal.y - p2.Normal.y) < 0.001 &&
+				Math.Abs(p1.Normal.z - p2.Normal.z) < 0.001 &&
+				Math.Abs(p1.Offset - p2.Offset) < 0.001
+			);
+		}
+
 		//mxd
 		public override void SelectNeighbours(bool select, bool withSameTexture, bool withSameHeight, bool stopatselected) 
 		{
@@ -612,7 +622,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					if(level.sector != Sector.Sector && !regularorvavoom)
 					{
 						if((!withSameTexture || side.Other.Sector.LongFloorTexture == level.sector.LongCeilTexture) &&
-							(!withSameHeight || side.Other.Sector.FloorHeight == level.sector.CeilHeight)) 
+							(!withSameHeight || ArePlanesSame(Map.Sector.GetFloorPlane(side.Other.Sector), Map.Sector.GetCeilingPlane(level.sector)))) 
 						{
 							neighbours.Add(side.Other.Sector);
 
@@ -625,7 +635,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					{
 						// (De)select adjacent ceilings
 						if((!withSameTexture || side.Other.Sector.LongCeilTexture == level.sector.LongCeilTexture) &&
-							(!withSameHeight || side.Other.Sector.CeilHeight == level.sector.CeilHeight)) 
+							(!withSameHeight || ArePlanesSame(Map.Sector.GetCeilingPlane(side.Other.Sector), Map.Sector.GetCeilingPlane(level.sector)))) 
 						{
 							neighbours.Add(side.Other.Sector);
 
@@ -640,7 +650,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					{
 						if(select == ec.Selected || ec.extrafloor.VavoomType != regularorvavoom) continue;
 						if((!withSameTexture || level.sector.LongCeilTexture == ec.level.sector.LongCeilTexture) &&
-							(!withSameHeight || level.sector.CeilHeight == ec.level.sector.CeilHeight)) 
+							(!withSameHeight || ArePlanesSame(Map.Sector.GetCeilingPlane(level.sector), Map.Sector.GetCeilingPlane(ec.level.sector)))) 
 						{
 							ec.SelectNeighbours(select, withSameTexture, withSameHeight, stopatselected);
 						}
@@ -651,7 +661,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					{
 						if(select == ef.Selected || ef.ExtraFloor.VavoomType == regularorvavoom) continue;
 						if((!withSameTexture || level.sector.LongCeilTexture == ef.Level.sector.LongFloorTexture) &&
-							(!withSameHeight || level.sector.CeilHeight == ef.Level.sector.FloorHeight)) 
+							(!withSameHeight || ArePlanesSame(Map.Sector.GetCeilingPlane(level.sector), Map.Sector.GetFloorPlane(ef.Level.sector)))) 
 						{
 							ef.SelectNeighbours(select, withSameTexture, withSameHeight, stopatselected);
 						}

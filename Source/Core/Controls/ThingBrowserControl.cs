@@ -157,6 +157,8 @@ namespace CodeImp.DoomBuilder.Controls
 			// Set type index
 			typeid.Text = type.ToString();
 			typeid_TextChanged(this, EventArgs.Empty);
+
+			validnodes = GetValidNodes();
 		}
 
 		// Select multiple thing types
@@ -166,12 +168,18 @@ namespace CodeImp.DoomBuilder.Controls
 			{
 				ClearSelectedType();
 				typeid_TextChanged(this, EventArgs.Empty);
+
+				validnodes = GetValidNodes();
+
 				return;
 			}
 
 			if (types.Length == 1)
 			{
 				SelectType(types[0]);
+
+				validnodes = GetValidNodes();
+
 				return;
 			}
 
@@ -197,6 +205,8 @@ namespace CodeImp.DoomBuilder.Controls
 			}
 			doupdatenode = true;
 			doupdatetextbox = true;
+
+			validnodes = GetValidNodes();
 		}
 
 		// Return selected type info
