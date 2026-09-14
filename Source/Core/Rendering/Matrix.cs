@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace CodeImp.DoomBuilder.Rendering
@@ -303,6 +304,48 @@ namespace CodeImp.DoomBuilder.Rendering
             result.M34 = 2.0f * zfar * znear / (znear - zfar);
             result.M43 = -1.0f;
             return result;
+        }
+
+        public static Matrix4x4 ToMatrix4x4(Matrix matrix)
+        {
+            return new Matrix4x4(
+                matrix.M11, matrix.M21, matrix.M31, matrix.M41,
+                matrix.M12, matrix.M22, matrix.M32, matrix.M42,
+                matrix.M13, matrix.M23, matrix.M33, matrix.M43,
+                matrix.M14, matrix.M24, matrix.M34, matrix.M44
+            );
+        }
+
+
+        public static Matrix FromMatrix4x4(Matrix4x4 matrix)
+        {
+            Matrix result;
+
+            result.M11 = matrix.M11;
+            result.M12 = matrix.M21;
+            result.M13 = matrix.M31;
+            result.M14 = matrix.M41;
+            result.M21 = matrix.M12;
+            result.M22 = matrix.M22;
+            result.M23 = matrix.M32;
+            result.M24 = matrix.M42;
+            result.M31 = matrix.M13;
+            result.M32 = matrix.M23;
+            result.M33 = matrix.M33;
+            result.M34 = matrix.M43;
+            result.M41 = matrix.M14;
+            result.M42 = matrix.M24;
+            result.M43 = matrix.M34;
+            result.M44 = matrix.M44;
+
+            return result;
+        }
+
+        public static Matrix Invert(Matrix matrix)
+        {
+            Matrix4x4 matrix4x4 = ToMatrix4x4(matrix);
+            Matrix4x4.Invert(matrix4x4, out Matrix4x4 result);
+            return FromMatrix4x4(result);
         }
 
         public override bool Equals(object o)

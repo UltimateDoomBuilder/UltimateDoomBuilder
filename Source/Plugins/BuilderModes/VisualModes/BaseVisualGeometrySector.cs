@@ -132,8 +132,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			double u_ray = 1.0f;
 
 			// Calculate intersection position
-			this.Level.plane.GetIntersection(General.Map.VisualCamera.Position, General.Map.VisualCamera.Target, ref u_ray);
-			Vector3D intersect = General.Map.VisualCamera.Position + (General.Map.VisualCamera.Target - General.Map.VisualCamera.Position) * u_ray;
+			this.Level.plane.GetIntersection(General.Map.VisualCamera.Position, General.Map.VisualCamera.Position + mode.PickingDir, ref u_ray);
+			Vector3D intersect = General.Map.VisualCamera.Position + mode.PickingDir * u_ray;
 
 			// Calculate offsets
 			Vector3D dragdelta = intersect - dragorigin;
@@ -145,7 +145,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			if(lockX || lockY) 
 			{
-				double camAngle = Angle2D.RadToDeg(General.Map.VisualCamera.AngleXY);
+				double camAngle = Angle2D.RadToDeg(mode.PickingDir.GetAngleXY());
 				
 				if(camAngle > 315 || camAngle < 46) 
 				{
@@ -415,8 +415,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public virtual void OnSelectBegin()
 		{
 			mode.LockTarget();
-			dragstartanglexy = General.Map.VisualCamera.AngleXY;
-			dragstartanglez = General.Map.VisualCamera.AngleZ;
+			dragstartanglexy = mode.PickingDir.GetAngleXY();
+			dragstartanglez = mode.PickingDir.GetAngleZ();
 			dragorigin = pickintersect;
 			startoffsetx = GetTextureOffset().X;
 			startoffsety = GetTextureOffset().Y;
@@ -502,8 +502,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(General.Actions.CheckActionActive(General.ThisAssembly, "visualselect"))
 				{
 					// Check if tolerance is exceeded to start UV dragging
-					double deltaxy = General.Map.VisualCamera.AngleXY - dragstartanglexy;
-					double deltaz = General.Map.VisualCamera.AngleZ - dragstartanglez;
+					double deltaxy = mode.PickingDir.GetAngleXY() - dragstartanglexy;
+					double deltaz = mode.PickingDir.GetAngleZ() - dragstartanglez;
 					if((Math.Abs(deltaxy) + Math.Abs(deltaz)) > DRAG_ANGLE_TOLERANCE)
 					{
 						mode.PreAction(UndoGroup.TextureOffsetChange);
@@ -869,7 +869,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(doSurfaceAngleCorrection)
 			{
 				Point p = new Point(horizontal, vertical);
-				double angle = Angle2D.RadToDeg(General.Map.VisualCamera.AngleXY);
+				double angle = Angle2D.RadToDeg(mode.PickingDir.GetAngleXY());
 				if(GeometryType == VisualGeometryType.CEILING) 
 					angle += level.sector.Fields.GetValue("rotationceiling", 0.0);
 				else
@@ -963,7 +963,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				undoticket = mode.CreateUndo("Change texture scale");
 
 			// Adjust to camera view
-			double angle = Angle2D.RadToDeg(General.Map.VisualCamera.AngleXY);
+			double angle = Angle2D.RadToDeg(mode.PickingDir.GetAngleXY());
 			if(GeometryType == VisualGeometryType.CEILING) angle += level.sector.Fields.GetValue("rotationceiling", 0.0);
 			else angle += level.sector.Fields.GetValue("rotationfloor", 0.0);
 			angle = General.ClampAngle(angle);

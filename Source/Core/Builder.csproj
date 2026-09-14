@@ -711,6 +711,7 @@
       <HintPath>..\..\Assets\Common\System.Memory.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assets\Common\System.Numerics.Vectors.dll</HintPath>
@@ -1702,15 +1703,12 @@
     <Exec Command="git rev-parse --short=7 HEAD" ConsoleToMSBuild="true" StandardOutputImportance="low" IgnoreExitCode="true">
       <Output TaskParameter="ConsoleOutput" PropertyName="GitCommitHash" />
     </Exec>
-
     <PropertyGroup>
       <GitCommitCount Condition="'$(GitCommitCount)' == '' Or $(GitCommitCount.StartsWith('fatal'))">unknown</GitCommitCount>
       <GitCommitHash Condition="'$(GitCommitHash)' == '' Or $(GitCommitHash.StartsWith('fatal'))">unknown</GitCommitHash>
-
       <FullVersion>3.0.0.$(GitCommitCount)</FullVersion>
       <VersionFilePath>$(IntermediateOutputPath)GeneratedVersionInfo.cs</VersionFilePath>
     </PropertyGroup>
-
     <ItemGroup>
       <VersionLines Include="using System.Reflection%3b" />
       <VersionLines Include="using CodeImp.DoomBuilder%3b" />
@@ -1718,13 +1716,10 @@
       <VersionLines Include="[assembly: AssemblyFileVersion(&quot;$(FullVersion)&quot;)]" />
       <VersionLines Include="[assembly: AssemblyHash(&quot;$(GitCommitHash)&quot;)]" />
     </ItemGroup>
-
     <WriteLinesToFile File="$(VersionFilePath)" Lines="@(VersionLines)" Overwrite="true" WriteOnlyWhenDifferent="true" />
-
     <ItemGroup>
       <Compile Include="$(VersionFilePath)" />
     </ItemGroup>
-    
     <Message Importance="high" Text="Got build version from Git: $(FullVersion) (saved to temporary compile-time file $(VersionFilePath))" />
   </Target>
 </Project>

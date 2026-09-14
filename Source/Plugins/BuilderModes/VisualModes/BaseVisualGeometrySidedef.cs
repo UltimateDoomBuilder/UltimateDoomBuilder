@@ -98,8 +98,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(!performautoselection) return;
 			if(Triangles > 0)
 			{
-				dragstartanglexy = General.Map.VisualCamera.AngleXY;
-				dragstartanglez = General.Map.VisualCamera.AngleZ;
+				dragstartanglexy = mode.PickingDir.GetAngleXY();
+				dragstartanglez = mode.PickingDir.GetAngleZ();
 				dragorigin = pickintersect;
 
 				Point texoffset = GetTextureOffset();
@@ -1383,8 +1383,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public virtual void OnSelectBegin()
 		{
 			mode.LockTarget();
-			dragstartanglexy = General.Map.VisualCamera.AngleXY;
-			dragstartanglez = General.Map.VisualCamera.AngleZ;
+			dragstartanglexy = mode.PickingDir.GetAngleXY();
+			dragstartanglez = mode.PickingDir.GetAngleZ();
 			dragorigin = pickintersect;
 
 			Point texoffset = GetTextureOffset(); //mxd
@@ -1508,8 +1508,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(General.Actions.CheckActionActive(General.ThisAssembly, "visualselect"))
 				{
 					// Check if tolerance is exceeded to start UV dragging
-					double deltaxy = General.Map.VisualCamera.AngleXY - dragstartanglexy;
-					double deltaz = General.Map.VisualCamera.AngleZ - dragstartanglez;
+					double deltaxy = mode.PickingDir.GetAngleXY() - dragstartanglexy;
+					double deltaz = mode.PickingDir.GetAngleZ() - dragstartanglez;
 					if((Math.Abs(deltaxy) + Math.Abs(deltaz)) > DRAG_ANGLE_TOLERANCE)
 					{
 						mode.PreAction(UndoGroup.TextureOffsetChange);
@@ -1531,9 +1531,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			double u_ray;
 			
 			// Calculate intersection position
-			Line2D ray = new Line2D(General.Map.VisualCamera.Position, General.Map.VisualCamera.Target);
+			Line2D ray = new Line2D(General.Map.VisualCamera.Position, General.Map.VisualCamera.Position + mode.PickingDir);
 			Sidedef.Line.Line.GetIntersection(ray, out u_ray);
-			Vector3D intersect = General.Map.VisualCamera.Position + (General.Map.VisualCamera.Target - General.Map.VisualCamera.Position) * u_ray;
+			Vector3D intersect = General.Map.VisualCamera.Position + mode.PickingDir * u_ray;
 			
 			// Calculate offsets
 			Vector3D dragdelta = intersect - dragorigin;
