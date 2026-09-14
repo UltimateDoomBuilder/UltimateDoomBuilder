@@ -143,8 +143,11 @@ namespace CodeImp.DoomBuilder.Data
 		public int OffsetX { get { return offsetx; } }
 		public int OffsetY { get { return offsety; } }
 		//mxd. Scaled texture size is integer in ZDoom.
-		public virtual float ScaledWidth { get { return (float)Math.Round(width * scale.x); } }
-		public virtual float ScaledHeight { get { return (float)Math.Round(height * scale.y); } }
+		//smoke. Yeah but this has probably been changed between 10 years ago and now, and aligment is screwed at large values, changing back
+		//public virtual float ScaledWidth { get { return (float)Math.Round(width * scale.x); } }
+		//public virtual float ScaledHeight { get { return (float)Math.Round(height * scale.y); } }
+		public virtual float ScaledWidth { get { return (float)(width * scale.x); } }
+		public virtual float ScaledHeight { get { return (float)(height * scale.y); } }
 		public virtual Vector2D Scale { get { return scale; } }
 		public bool WorldPanning { get { return worldpanning; } }
 		public int NameWidth {  get { return namewidth; } } // biwa
