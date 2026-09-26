@@ -967,6 +967,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					if(!this.Sector.Floor.Changed) this.Sector.Floor.OnChangeTargetHeight(amount);
 					if(!this.Sector.Ceiling.Changed) this.Sector.Ceiling.OnChangeTargetHeight(amount);
 					break;
+
+				// Change texture offset
+				case 4:
+					OnChangeTextureOffset(0, -amount, true);
+					break;
 			}
 		}
 		

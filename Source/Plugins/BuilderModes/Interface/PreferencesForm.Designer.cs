@@ -728,7 +728,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
             "Do nothing",
             "Change the ceiling height",
             "Change the floor height",
-            "Change both floor and ceiling height"});
+            "Change both floor and ceiling height",
+            "Change the texture offset"});
 			this.heightbysidedef.Location = new System.Drawing.Point(342, 19);
 			this.heightbysidedef.Name = "heightbysidedef";
 			this.heightbysidedef.Size = new System.Drawing.Size(309, 21);
