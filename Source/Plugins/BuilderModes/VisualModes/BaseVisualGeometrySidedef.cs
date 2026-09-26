@@ -73,6 +73,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		
 		public bool IsDraggingUV { get { return uvdragging; } }
 		new public BaseVisualSector Sector { get { return (BaseVisualSector)base.Sector; } }
+		public abstract MapElement3D AsMapElement3D { get; }
 		
 		#endregion
 		
@@ -225,7 +226,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 									int lightlevel;
 
 									// Sidedef part is not affected by 3d floor brightness
-									if(l.type != SectorLevelType.Light && (l.disablelighting || !l.extrafloor))
+									if(l.type != SectorLevelType.Light && (l.disablelighting || l.extrafloor == null))
 										lightlevel = (lightabsolute ? lightvalue : l.brightnessbelow + lightvalue);
 									// 3d floors and light transfer effects transfers brightness below them ignoring sidedef's brightness
 									else

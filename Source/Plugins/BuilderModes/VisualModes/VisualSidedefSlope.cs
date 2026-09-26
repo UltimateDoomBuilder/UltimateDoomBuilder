@@ -26,6 +26,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 		public Sidedef Sidedef { get { return sidedef; } }
 		public int NormalizedAngleDeg { get { return (sidedef.Line.AngleDeg >= 180) ? (sidedef.Line.AngleDeg - 180) : sidedef.Line.AngleDeg; } }
+		public override MapElement3D AsMapElement3D { get => new SidedefSlope3D(Sidedef, !up, Level.extrafloor?.Linedef); }
 
 		#endregion
 
@@ -121,7 +122,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 			if (up)
 			{
-				if (level.extrafloor && level.type == SectorLevelType.Ceiling)
+				if (level.extrafloor != null && level.type == SectorLevelType.Ceiling)
 				{
 					if (sidedef.IsFront)
 						invertline = true;
@@ -134,7 +135,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 			}
 			else
 			{
-				if (level.extrafloor && level.type == SectorLevelType.Floor)
+				if (level.extrafloor != null && level.type == SectorLevelType.Floor)
 				{
 					if (!sidedef.IsFront)
 						invertline = true;
@@ -225,7 +226,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 			Vector2D center = new Vector2D(level.sector.BBox.X + level.sector.BBox.Width / 2,
 											   level.sector.BBox.Y + level.sector.BBox.Height / 2);
 
-			if (level.extrafloor)
+			if (level.extrafloor != null)
 			{
 				// The top side of 3D floors is the ceiling of the sector, but it's a "floor" in UDB, so the
 				// ceiling of the control sector has to be modified

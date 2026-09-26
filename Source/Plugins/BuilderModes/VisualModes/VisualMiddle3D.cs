@@ -45,6 +45,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		
 		#region ================== Properties
 
+		public Effect3DFloor ExtraFloor { get { return extrafloor; } }
+		public override MapElement3D AsMapElement3D { get => new ThreeDFloorSide3D(GetControlLinedef(), Sidedef); }
+
 		#endregion
 		
 		#region ================== Constructor / Setup

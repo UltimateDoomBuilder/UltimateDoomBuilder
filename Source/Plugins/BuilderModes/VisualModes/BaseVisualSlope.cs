@@ -23,6 +23,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		#region ================== Properties
 
 		public SectorLevel Level { get { return level; } }
+		public abstract MapElement3D AsMapElement3D { get; }
 
 		#endregion
 

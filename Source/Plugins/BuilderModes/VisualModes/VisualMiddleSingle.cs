@@ -36,17 +36,19 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		#region ================== Constants
 
 		#endregion
-		
+
 		#region ================== Variables
 
 		#endregion
-		
+
 		#region ================== Properties
 
+		public override MapElement3D AsMapElement3D { get => new Middle3D(Sidedef); }
+
 		#endregion
-		
+
 		#region ================== Constructor / Setup
-		
+
 		// Constructor
 		public VisualMiddleSingle(BaseVisualMode mode, VisualSector vs, Sidedef s) : base(mode, vs, s)
 		{
