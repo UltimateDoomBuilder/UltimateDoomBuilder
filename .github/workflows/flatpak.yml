@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
           fetch-depth: 0 # Required to properly get the commit count
@@ -44,7 +44,7 @@ jobs:
         run: |
           COUNT=$(git rev-list --count HEAD)
           echo "REV_COUNT=$COUNT" >> $GITHUB_ENV
-          echo "Detected Revision: $COUNT"     
+          echo "Detected Revision: $COUNT"
 
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
@@ -54,12 +54,12 @@ jobs:
           run-tests: false
           cache: true
           restore-cache: true
-          cache-key: flatpak-builder-${{ hashFiles('flatpak/io.github.ultimatedoombuilder.ultimatedoombuilder.yml') }}          
+          cache-key: flatpak-builder-${{ hashFiles('flatpak/io.github.ultimatedoombuilder.ultimatedoombuilder.yml') }}
           upload-artifact: false
 
       - name: Upload Artifact
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: UltimateDoomBuilder-Flatpak
           path: ultimatedoombuilder-latest.flatpak
@@ -67,7 +67,7 @@ jobs:
           retention-days: 7
 
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
         with:
           tag_name: latest
@@ -77,4 +77,3 @@ jobs:
           prerelease: false
           make_latest: true
           overwrite_files: true
-      

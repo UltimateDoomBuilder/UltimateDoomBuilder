@@ -13,7 +13,7 @@ jobs:
         platform: [x64, x86]
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v7
 
     - name: Build
       run: |
@@ -64,7 +64,7 @@ jobs:
         Remove-Item Build\Setup -recurse
 
     - name: Upload Package
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v7
       with:
         path: Build
         name: "vs_${{ matrix.platform }}_${{ matrix.configuration }}"
