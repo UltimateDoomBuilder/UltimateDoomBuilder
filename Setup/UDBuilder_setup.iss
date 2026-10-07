@@ -75,6 +75,8 @@ Source: UDBScript\Scripts\Examples\*; DestDir: {app}\UDBScript\Scripts\Examples;
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 Source: Plugins\AutomapMode.dll; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\AutomapMode.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
+Source: Plugins\BlockmapExplorer.dll; DestDir: {app}\Plugins; Flags: ignoreversion
+Source: Plugins\BlockmapExplorer.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\BuilderModes.dll; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\BuilderModes.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\BuilderEffects.dll; DestDir: {app}\Plugins; Flags: ignoreversion
@@ -85,6 +87,8 @@ Source: Plugins\CommentsPanel.dll; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\CommentsPanel.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\NodesViewer.dll; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\NodesViewer.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
+Source: Plugins\RejectExplorer.dll; DestDir: {app}\Plugins; Flags: ignoreversion
+Source: Plugins\RejectExplorer.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\SoundPropagationMode.dll; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\SoundPropagationMode.pdb; DestDir: {app}\Plugins; Flags: ignoreversion
 Source: Plugins\StairSectorBuilder.dll; DestDir: {app}\Plugins; Flags: ignoreversion

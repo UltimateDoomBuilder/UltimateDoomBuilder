@@ -56,7 +56,8 @@ namespace CodeImp.DoomBuilder.IO
 			"9b07b02ab3c275a6a7570c3f73cc20d63a0e3833",  // Doom Ud
 			"37de4510216eb3ce9a835dd939109443375d10c5",  // Doom Xbla
 			"1d1d4f69fe14fa255228d8243470678b1b4efdc5",  // Doom Xbox
-			"997bae5e5a190c5bb3b1fb9e7e3e75b2da88cb27",  // Doom 2024 Re-Re-Release
+			"997bae5e5a190c5bb3b1fb9e7e3e75b2da88cb27",  // Doom 2024 Re-Re-Release 1.0
+			"87651324502044f9a6eed403e48853aa16c93e49",  // Doom 2024 Re-Re-Release 1.1
 
 			// Doom 2
 			"a4ce5128d57cb129fdd1441c12b58245be55c8ce",  // Doom2 1.666g
@@ -76,7 +77,8 @@ namespace CodeImp.DoomBuilder.IO
 			"1c91d86cd8a2f3817227986503a6672a5e1613f0",  // Doom2 Xbox
 			"b7ba1c68631023ea1aab1d7b9f7f6e9afc508f39",  // Doom2 Xbox360bfg
 			"2cda310805397ae44059bbcaed3cd602f4864a82",  // Doom2 Zodiac
-			"c745f04a6abc2e6d2a2d52382f45500dd2a260be",  // Doom 2 2024 Re-Re-Release
+			"c745f04a6abc2e6d2a2d52382f45500dd2a260be",  // Doom 2 2024 Re-Re-Release 1.0
+			"2921cf667359fd3a80aba3c0cf62ab39297e7e9e",  // Doom 2 2024 Re-Re-Release 1.1
 
 			// Plutonia
 			"90361e2a538d2388506657252ae41aceeb1ba360",  // Plutonia 1.9

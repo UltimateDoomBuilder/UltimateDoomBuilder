@@ -158,8 +158,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 
 			//mxd
-			floor.extrafloor = true;
-			ceiling.extrafloor = true;
+			floor.extrafloor = this;
+			ceiling.extrafloor = this;
 			floor.splitsides = !clipsides;
 			ceiling.splitsides = (!clipsides && !ignorebottomheight); // if "ignorebottomheight" flag is set, both ceiling and floor will be at the same level and sidedef clipping with floor level will fail resulting in incorrect light props transfer in some cases
 
@@ -168,8 +168,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 							 (Angle2D.RadToDeg(ceiling.plane.Normal.GetAngleZ()) != 270 ||
 							  Angle2D.RadToDeg(floor.plane.Normal.GetAngleZ()) != 90));
 
-			// As GZDoom doesn't support translucent 3D floors make is fully opaque
-			if (sloped3dfloor)
+			// As GZDoom doesn't support translucent 3D floors make is fully opaque, except when the alpha is 0 (invisible)
+			if (sloped3dfloor && alpha > 0)
 				alpha = 255;
 
 			// Apply alpha

@@ -36,7 +36,6 @@ using Jint;
 using Jint.Runtime;
 using Jint.Runtime.Interop;
 using Esprima;
-using Jint.Native;
 
 #endregion
 

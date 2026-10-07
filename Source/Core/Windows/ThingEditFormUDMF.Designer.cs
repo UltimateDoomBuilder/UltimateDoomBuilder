@@ -215,9 +215,10 @@
 			// 
 			// labelroll
 			// 
-			this.labelroll.Location = new System.Drawing.Point(5, 71);
+			this.labelroll.AutoSize = true;
+			this.labelroll.Location = new System.Drawing.Point(21, 71);
 			this.labelroll.Name = "labelroll";
-			this.labelroll.Size = new System.Drawing.Size(44, 14);
+			this.labelroll.Size = new System.Drawing.Size(28, 13);
 			this.labelroll.TabIndex = 23;
 			this.labelroll.Text = "Roll:";
 			this.labelroll.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -244,9 +245,10 @@
 			// 
 			// labelpitch
 			// 
-			this.labelpitch.Location = new System.Drawing.Point(5, 46);
+			this.labelpitch.AutoSize = true;
+			this.labelpitch.Location = new System.Drawing.Point(15, 47);
 			this.labelpitch.Name = "labelpitch";
-			this.labelpitch.Size = new System.Drawing.Size(44, 14);
+			this.labelpitch.Size = new System.Drawing.Size(34, 13);
 			this.labelpitch.TabIndex = 21;
 			this.labelpitch.Text = "Pitch:";
 			this.labelpitch.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -272,9 +274,10 @@
 			// 
 			// labelAngle
 			// 
-			this.labelAngle.Location = new System.Drawing.Point(5, 21);
+			this.labelAngle.AutoSize = true;
+			this.labelAngle.Location = new System.Drawing.Point(12, 22);
 			this.labelAngle.Name = "labelAngle";
-			this.labelAngle.Size = new System.Drawing.Size(44, 14);
+			this.labelAngle.Size = new System.Drawing.Size(37, 13);
 			this.labelAngle.TabIndex = 8;
 			this.labelAngle.Text = "Angle:";
 			this.labelAngle.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -468,18 +471,20 @@
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(4, 21);
+			this.label4.AutoSize = true;
+			this.label4.Location = new System.Drawing.Point(9, 21);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(22, 14);
+			this.label4.Size = new System.Drawing.Size(17, 13);
 			this.label4.TabIndex = 15;
 			this.label4.Text = "X:";
 			this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// label5
 			// 
-			this.label5.Location = new System.Drawing.Point(4, 46);
+			this.label5.AutoSize = true;
+			this.label5.Location = new System.Drawing.Point(9, 47);
 			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(22, 14);
+			this.label5.Size = new System.Drawing.Size(17, 13);
 			this.label5.TabIndex = 14;
 			this.label5.Text = "Y:";
 			this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -543,9 +548,10 @@
 			// 
 			// zlabel
 			// 
-			this.zlabel.Location = new System.Drawing.Point(4, 71);
+			this.zlabel.AutoSize = true;
+			this.zlabel.Location = new System.Drawing.Point(9, 71);
 			this.zlabel.Name = "zlabel";
-			this.zlabel.Size = new System.Drawing.Size(22, 14);
+			this.zlabel.Size = new System.Drawing.Size(17, 13);
 			this.zlabel.TabIndex = 9;
 			this.zlabel.Text = "Z:";
 			this.zlabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -754,9 +760,10 @@
 			// 
 			// labelScale
 			// 
-			this.labelScale.Location = new System.Drawing.Point(5, 27);
+			this.labelScale.AutoSize = true;
+			this.labelScale.Location = new System.Drawing.Point(48, 27);
 			this.labelScale.Name = "labelScale";
-			this.labelScale.Size = new System.Drawing.Size(80, 14);
+			this.labelScale.Size = new System.Drawing.Size(37, 13);
 			this.labelScale.TabIndex = 32;
 			this.labelScale.Tag = "scalex";
 			this.labelScale.Text = "Scale:";
@@ -773,7 +780,7 @@
 			this.scale.Location = new System.Drawing.Point(89, 22);
 			this.scale.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
 			this.scale.Name = "scale";
-			this.scale.Size = new System.Drawing.Size(186, 26);
+			this.scale.Size = new System.Drawing.Size(182, 26);
 			this.scale.TabIndex = 0;
 			this.scale.Tag = "scalex";
 			this.scale.OnValuesChanged += new System.EventHandler(this.scale_OnValuesChanged);

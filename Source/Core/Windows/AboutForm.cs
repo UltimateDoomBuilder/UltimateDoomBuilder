@@ -19,7 +19,6 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using CodeImp.DoomBuilder.Config;
 
 #endregion
 

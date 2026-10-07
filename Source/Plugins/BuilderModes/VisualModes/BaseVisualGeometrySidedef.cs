@@ -24,7 +24,6 @@ using System.IO;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Data;
 using CodeImp.DoomBuilder.Geometry;
-using CodeImp.DoomBuilder.GZBuilder.Data;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.VisualModes;
@@ -74,6 +73,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		
 		public bool IsDraggingUV { get { return uvdragging; } }
 		new public BaseVisualSector Sector { get { return (BaseVisualSector)base.Sector; } }
+		public abstract MapElement3D AsMapElement3D { get; }
 		
 		#endregion
 		
@@ -226,7 +226,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 									int lightlevel;
 
 									// Sidedef part is not affected by 3d floor brightness
-									if(l.type != SectorLevelType.Light && (l.disablelighting || !l.extrafloor))
+									if(l.type != SectorLevelType.Light && (l.disablelighting || l.extrafloor == null))
 										lightlevel = (lightabsolute ? lightvalue : l.brightnessbelow + lightvalue);
 									// 3d floors and light transfer effects transfers brightness below them ignoring sidedef's brightness
 									else
@@ -966,6 +966,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				case 3:
 					if(!this.Sector.Floor.Changed) this.Sector.Floor.OnChangeTargetHeight(amount);
 					if(!this.Sector.Ceiling.Changed) this.Sector.Ceiling.OnChangeTargetHeight(amount);
+					break;
+
+				// Change texture offset
+				case 4:
+					OnChangeTextureOffset(0, -amount, true);
 					break;
 			}
 		}

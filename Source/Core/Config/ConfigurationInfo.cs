@@ -328,7 +328,7 @@ namespace CodeImp.DoomBuilder.Config
 				rlinfo.Add("testprogram", testEngines[i].TestProgram);
 				rlinfo.Add("testparameters", testEngines[i].TestParameters);
 				rlinfo.Add("testshortpaths", testEngines[i].TestShortPaths);
-				rlinfo.Add("testlinuxpaths", testEngines[i].TestShortPaths);
+				rlinfo.Add("testlinuxpaths", testEngines[i].TestLinuxPaths);
 				rlinfo.Add("customparameters", testEngines[i].CustomParameters);
 				rlinfo.Add("testskill", testEngines[i].TestSkill);
 				rlinfo.Add("additionalparameters", testEngines[i].AdditionalParameters);

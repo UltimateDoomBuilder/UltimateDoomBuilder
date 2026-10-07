@@ -13,6 +13,11 @@ namespace CodeImp.DoomBuilder.TagRange
 		{
 			InitializeComponent();
 			buttonontoolbar = false;
+
+			// Mono fix
+#if MONO_WINFORMS
+			toolstrip.Items.Clear();
+#endif
 		}
 		
 		// This invokes an action from control event

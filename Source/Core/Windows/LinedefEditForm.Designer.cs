@@ -91,9 +91,10 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// label11
 			// 
-			label11.Location = new System.Drawing.Point(6, 40);
+			label11.AutoSize = true;
+			label11.Location = new System.Drawing.Point(17, 40);
 			label11.Name = "label11";
-			label11.Size = new System.Drawing.Size(80, 14);
+			label11.Size = new System.Drawing.Size(69, 13);
 			label11.TabIndex = 13;
 			label11.Text = "Sector index:";
 			label11.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -130,9 +131,10 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// label12
 			// 
-			label12.Location = new System.Drawing.Point(6, 40);
+			label12.AutoSize = true;
+			label12.Location = new System.Drawing.Point(17, 40);
 			label12.Name = "label12";
-			label12.Size = new System.Drawing.Size(80, 14);
+			label12.Size = new System.Drawing.Size(69, 13);
 			label12.TabIndex = 16;
 			label12.Text = "Sector index:";
 			label12.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -283,9 +285,10 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// labelFrontTextureOffset
 			// 
-			this.labelFrontTextureOffset.Location = new System.Drawing.Point(6, 70);
+			this.labelFrontTextureOffset.AutoSize = true;
+			this.labelFrontTextureOffset.Location = new System.Drawing.Point(11, 71);
 			this.labelFrontTextureOffset.Name = "labelFrontTextureOffset";
-			this.labelFrontTextureOffset.Size = new System.Drawing.Size(80, 14);
+			this.labelFrontTextureOffset.Size = new System.Drawing.Size(75, 13);
 			this.labelFrontTextureOffset.TabIndex = 42;
 			this.labelFrontTextureOffset.Text = "Texture offset:";
 			this.labelFrontTextureOffset.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -378,9 +381,10 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// labelBackTextureOffset
 			// 
-			this.labelBackTextureOffset.Location = new System.Drawing.Point(6, 70);
+			this.labelBackTextureOffset.AutoSize = true;
+			this.labelBackTextureOffset.Location = new System.Drawing.Point(11, 71);
 			this.labelBackTextureOffset.Name = "labelBackTextureOffset";
-			this.labelBackTextureOffset.Size = new System.Drawing.Size(80, 14);
+			this.labelBackTextureOffset.Size = new System.Drawing.Size(75, 13);
 			this.labelBackTextureOffset.TabIndex = 43;
 			this.labelBackTextureOffset.Text = "Texture offset:";
 			this.labelBackTextureOffset.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -582,7 +586,9 @@ namespace CodeImp.DoomBuilder.Windows
 			this.panel.ResumeLayout(false);
 			this.panel.PerformLayout();
 			this.frontgroup.ResumeLayout(false);
+			this.frontgroup.PerformLayout();
 			this.backgroup.ResumeLayout(false);
+			this.backgroup.PerformLayout();
 			this.flagsgroup.ResumeLayout(false);
 			this.actiongroup.ResumeLayout(false);
 			this.actiongroup.PerformLayout();

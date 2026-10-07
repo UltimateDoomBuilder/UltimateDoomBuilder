@@ -1,23 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
-using CodeImp.DoomBuilder.Windows;
-using CodeImp.DoomBuilder.IO;
 using CodeImp.DoomBuilder.Map;
-using CodeImp.DoomBuilder.Rendering;
-using CodeImp.DoomBuilder.Geometry;
-using CodeImp.DoomBuilder.Editing;
-using CodeImp.DoomBuilder.Plugins;
-using CodeImp.DoomBuilder.Actions;
-using CodeImp.DoomBuilder.Types;
-using CodeImp.DoomBuilder.Config;
-using CodeImp.DoomBuilder.Data;
 
 namespace CodeImp.DoomBuilder.ThreeDFloorMode
 {
@@ -195,9 +183,9 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 			threeDFloor.BottomFlat = sectorBottomFlat.TextureName;
 			threeDFloor.BorderTexture = sectorBorderTexture.TextureName;
 
-			threeDFloor.Type = int.Parse(typeArgument.Text);
-			threeDFloor.Flags = int.Parse(flagsArgument.Text);
-			threeDFloor.Alpha = int.Parse(alphaArgument.Text);
+			threeDFloor.Type = typeArgument.GetResult(threeDFloor.Type);
+			threeDFloor.Flags = flagsArgument.GetResult(threeDFloor.Flags);
+			threeDFloor.Alpha = alphaArgument.GetResult(threeDFloor.Alpha);
 			threeDFloor.Brightness = sectorBrightness.GetResult(threeDFloor.Brightness);
 
 			threeDFloor.Tags = sector.Tags;

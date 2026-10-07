@@ -39,6 +39,10 @@ private:
 	HWND handle = 0;
 	int x = 0;
 	int y = 0;
+	// previous position for devices that report MOUSE_MOVE_ABSOLUTE
+	bool haveAbs = false;
+	long lastAbsX = 0;
+	long lastAbsY = 0;
 
 	friend class RawMouseWindowClass;
 };

@@ -131,6 +131,10 @@
     <Compile Include="Subsector.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="SharpCompress">
+      <HintPath>..\..\..\Assets\Common\SharpCompress.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />

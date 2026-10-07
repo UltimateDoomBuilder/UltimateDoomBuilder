@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using CodeImp.DoomBuilder.BuilderModes;
 using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.Map;
@@ -56,6 +52,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 		public Vertex Vertex { get { return vertex; } }
 		public Sector Sector { get { return sector; } }
+		public override MapElement3D AsMapElement3D { get => new VertexSlope3D(Vertex, Sector, !up, Level.extrafloor?.Linedef); }
 
 		#endregion
 

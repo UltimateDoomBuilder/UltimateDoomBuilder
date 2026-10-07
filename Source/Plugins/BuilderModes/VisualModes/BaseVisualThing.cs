@@ -60,11 +60,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		#region ================== Properties
 
 		public bool Changed { get { return changed; } set { changed |= value; } }
+		public virtual MapElement3D AsMapElement3D { get => new Thing3D(Thing); }
 
 		#endregion
-		
+
 		#region ================== Constructor / Setup
-		
+
 		// Constructor
 		public BaseVisualThing(BaseVisualMode mode, Thing t) : base(t)
 		{

@@ -1,5 +1,13 @@
 #region ================== Namespaces
 
+using CodeImp.DoomBuilder.Editing;
+using CodeImp.DoomBuilder.Geometry;
+using CodeImp.DoomBuilder.Map;
+using CodeImp.DoomBuilder.Rendering;
+using CodeImp.DoomBuilder.Windows;
+using SharpCompress.Compressors;
+using SharpCompress.Compressors.BZip2;
+using SharpCompress.Compressors.Deflate;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -7,11 +15,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using CodeImp.DoomBuilder.Editing;
-using CodeImp.DoomBuilder.Geometry;
-using CodeImp.DoomBuilder.Map;
-using CodeImp.DoomBuilder.Rendering;
-using CodeImp.DoomBuilder.Windows;
 
 #endregion
 
@@ -39,10 +42,20 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 		private Node[] nodes;
 		private Vector2D[] verts;
 		private Subsector[] ssectors;
-		private List<PixelColor> distinctcolors;
+		private readonly List<PixelColor> distinctcolors;
 		private NodesForm form;
 		private int mouseinssector = -1;
 		private string nodesformat = "Classic nodes";
+		private List<byte[]> supportedZNodesFormats = new List<byte[]> {
+				Encoding.ASCII.GetBytes("XNOD"),
+				Encoding.ASCII.GetBytes("XGLN"),
+				Encoding.ASCII.GetBytes("XGL2"),
+				Encoding.ASCII.GetBytes("XGL3"),
+				Encoding.ASCII.GetBytes("ZNOD"),
+				Encoding.ASCII.GetBytes("ZGLN"),
+				Encoding.ASCII.GetBytes("ZGL2"),
+				Encoding.ASCII.GetBytes("ZGL3")
+			};
 
 		#endregion
 
@@ -88,6 +101,91 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 		#endregion
 
 		#region ================== Methods
+
+		/// <summary>
+		/// Check if a lump has a valid ZNODES header.
+		/// </summary>
+		/// <param name="lumpName">Lump name which contains the node data</param>
+		/// <returns>True if the lump has a valid ZNODES header, false otherwise</returns>
+		private bool HasZNodesHeader(string lumpName)
+		{
+			MemoryStream stream = General.Map.GetLumpData(lumpName);
+
+			// Boilerplate...
+			if (stream.Length < 4)
+			{
+				MessageBox.Show($"{lumpName} lump is empty.", "Nodes Viewer mode", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				stream.Close();
+				return false;
+			}
+
+			using (BinaryReader reader = new BinaryReader(stream))
+			{
+				// Read signature
+				byte[] header = reader.ReadBytes(4);
+				if (supportedZNodesFormats.Where(e => Enumerable.SequenceEqual(e, header)).Any())
+					return true;
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Get a stream with the node data from a lump. If the lump is compressed, it will be decompressed.
+		/// </summary>
+		/// <param name="lumpName">Lump name which contains the node data</param>
+		/// <returns>A tuple of the memory stream containing the node data and the header string</returns>
+		/// <exception cref="ZNodesStreamException"></exception>
+		private (MemoryStream, string) GetZNodesStream(string lumpName)
+		{
+			MemoryStream stream = General.Map.GetLumpData(lumpName);
+
+			// Boilerplate...
+			if (stream.Length < 4)
+			{
+				MessageBox.Show($"{lumpName} lump is empty.", "Nodes Viewer mode", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				stream.Close();
+				throw new ZNodesStreamException($"{lumpName} lump is empty.");
+			}
+
+			using (BinaryReader reader = new BinaryReader(stream))
+			{
+				// Read signature
+				byte[] header = reader.ReadBytes(4);
+				if (!supportedZNodesFormats.Where(e => Enumerable.SequenceEqual(e, header)).Any())
+					throw new ZNodesStreamException($"Unsupported nodes format: {Encoding.UTF8.GetString(header)}");
+
+				if (header[0] == 'Z')
+				{
+					ZlibStream deflateStream = new ZlibStream(stream, CompressionMode.Decompress);
+
+					byte[] buffer = new byte[16 * 1024];
+					MemoryStream ms = new MemoryStream();
+					int read;
+
+					try
+					{
+						while ((read = deflateStream.Read(buffer, 0, buffer.Length)) > 0)
+							ms.Write(buffer, 0, read);
+					}
+					catch (ZlibException e)
+					{
+						throw new ZNodesStreamException($"Failed to decompress {lumpName}: {e.Message}", e);
+					}
+
+					ms.Position = 0; // Reset stream position, since writing to it moved it to the end
+
+					return (ms, Encoding.UTF8.GetString(header));
+				}
+				else
+				{
+					MemoryStream ms = new MemoryStream();
+					stream.CopyTo(ms);
+					ms.Position = 0; // Reset stream position, since writing to it moved it to the end
+					return (ms, Encoding.UTF8.GetString(header));
+				}
+			}
+		}
 
 		/// <summary>
 		/// This loads all nodes structures data from the lumps
@@ -261,28 +359,40 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 		}
 
 		//mxd. This loads all data from the ZNODES lump
-		private bool LoadZNodes() 
+		private bool LoadZNodes(string lumpName) 
 		{
-			List<string> supportedformats = new List<string> { "XNOD", "XGLN", "XGL2", "XGL3" };
-			MemoryStream stream = General.Map.GetLumpData("ZNODES");
+			//List<string> supportedformats = new List<string> { "XNOD", "XGLN", "XGL2", "XGL3" };
+			//MemoryStream stream = General.Map.GetLumpData(lumpName);
 
-			// Boilerplate...
-			if(stream.Length < 4) 
+			//// Boilerplate...
+			//if (stream.Length < 4)
+			//{
+			//	MessageBox.Show("ZNODES lump is empty.", "Nodes Viewer mode", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			//	stream.Close();
+			//	return false;
+			//}
+
+			MemoryStream stream;
+
+			try
 			{
-				MessageBox.Show("ZNODES lump is empty.", "Nodes Viewer mode", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				stream.Close();
+				(stream, nodesformat) = GetZNodesStream(lumpName);
+			}
+			catch (ZNodesStreamException e)
+			{
+				MessageBox.Show($"Failed to load {lumpName}: {e.Message}", "Nodes Viewer mode", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
 
-			using(BinaryReader reader = new BinaryReader(stream)) 
+			using (BinaryReader reader = new BinaryReader(stream)) 
 			{
 				// Read signature
-				nodesformat = new string(reader.ReadChars(4));
-				if(!supportedformats.Contains(nodesformat)) 
-				{
-					MessageBox.Show("\"" + nodesformat + "\" node format is not supported.", "Nodes Viewer mode", MessageBoxButtons.OK, MessageBoxIcon.Error);
-					return false;
-				}
+				//nodesformat = new string(reader.ReadChars(4));
+				//if (!supportedformats.Contains(nodesformat))
+				//{
+				//	MessageBox.Show("\"" + nodesformat + "\" node format is not supported.", "Nodes Viewer mode", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				//	return false;
+				//}
 
 				uint vertscount = reader.ReadUInt32();
 				uint newvertscount = reader.ReadUInt32();
@@ -325,7 +435,8 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 				switch(nodesformat) 
 				{
 					case "XGLN":
-						for(int i = 0; i < segs.Length; i++) 
+					case "ZGLN":
+						for (int i = 0; i < segs.Length; i++) 
 						{
 							segs[i].startvertex = (int)reader.ReadUInt32();
 							reader.BaseStream.Position += 4; //skip partner
@@ -336,7 +447,9 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 
 					case "XGL3":
 					case "XGL2":
-						for(int i = 0; i < segs.Length; i++) 
+					case "ZGL3":
+					case "ZGL2":
+						for (int i = 0; i < segs.Length; i++) 
 						{
 							segs[i].startvertex = (int)reader.ReadUInt32();
 							reader.BaseStream.Position += 4; //skip partner
@@ -347,7 +460,8 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 						break;
 
 					case "XNOD":
-						for(int i = 0; i < segs.Length; i++) 
+					case "ZNOD":
+						for (int i = 0; i < segs.Length; i++) 
 						{
 							segs[i].startvertex = (int)reader.ReadUInt32();
 							segs[i].endvertex = (int)reader.ReadUInt32();
@@ -358,7 +472,7 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 				}
 
 				// Set second vertex, angle and reverse segs order
-				if(nodesformat == "XGLN" || nodesformat == "XGL2" || nodesformat == "XGL3") 
+				if(nodesformat == "XGLN" || nodesformat == "XGL2" || nodesformat == "XGL3" || nodesformat == "ZGLN" || nodesformat == "ZGL2" || nodesformat == "ZGL3") 
 				{
 					int index = 0;
 					foreach(Subsector ss in ssectors) 
@@ -395,7 +509,7 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 
 				for(int i = 0; i < nodes.Length; i++) 
 				{
-					if(nodesformat == "XGL3") 
+					if(nodesformat == "XGL3" || nodesformat == "ZGL3") 
 					{
 						nodes[i].linestart.x = reader.ReadInt32() / 65536.0f;
 						nodes[i].linestart.y = reader.ReadInt32() / 65536.0f;
@@ -501,11 +615,13 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 		private void BuildSubsectorPoly(int ss, IEnumerable<Split> nodesplits)
 		{
 			// Begin with a giant square polygon that covers the entire map
-			List<Vector2D> poly = new List<Vector2D>(16);
-			poly.Add(new Vector2D(-General.Map.FormatInterface.MaxCoordinate, General.Map.FormatInterface.MaxCoordinate));
-			poly.Add(new Vector2D(General.Map.FormatInterface.MaxCoordinate, General.Map.FormatInterface.MaxCoordinate));
-			poly.Add(new Vector2D(General.Map.FormatInterface.MaxCoordinate, -General.Map.FormatInterface.MaxCoordinate));
-			poly.Add(new Vector2D(-General.Map.FormatInterface.MaxCoordinate, -General.Map.FormatInterface.MaxCoordinate));
+			List<Vector2D> poly = new List<Vector2D>(16)
+			{
+				new Vector2D(-General.Map.FormatInterface.MaxCoordinate, General.Map.FormatInterface.MaxCoordinate),
+				new Vector2D(General.Map.FormatInterface.MaxCoordinate, General.Map.FormatInterface.MaxCoordinate),
+				new Vector2D(General.Map.FormatInterface.MaxCoordinate, -General.Map.FormatInterface.MaxCoordinate),
+				new Vector2D(-General.Map.FormatInterface.MaxCoordinate, -General.Map.FormatInterface.MaxCoordinate)
+			};
 
 			// Crop the polygon by the node tree splits
 			foreach(Split s in nodesplits) CropPolygon(poly, s);
@@ -584,8 +700,7 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 					if(side1 > EPSILON)
 					{
 						// Split line with plane and insert the vertex
-						double u;
-						Line2D.GetIntersection(split.pos, split.pos + split.delta, prev.x, prev.y, cur.x, cur.y, out u, false);
+						Line2D.GetIntersection(split.pos, split.pos + split.delta, prev.x, prev.y, cur.x, cur.y, out double u, false);
 						Vector2D newv = prev + (cur - prev) * u;
 						newp.Add(newv);
 					}
@@ -598,8 +713,7 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 					if(side1 < -EPSILON)
 					{
 						// Split line with plane and insert the vertex
-						double u;
-						Line2D.GetIntersection(split.pos, split.pos + split.delta, prev.x, prev.y, cur.x, cur.y, out u, false);
+						Line2D.GetIntersection(split.pos, split.pos + split.delta, prev.x, prev.y, cur.x, cur.y, out double u, false);
 						Vector2D newv = prev + (cur - prev) * u;
 						newp.Add(newv);
 					}
@@ -782,11 +896,13 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 			Node node = nodes[nodeindex];
 
 			// Begin with a square bounding box polygon
-			List<Vector2D> poly = new List<Vector2D>(16);
-			poly.Add(new Vector2D(bbox.Left, bbox.Top));
-			poly.Add(new Vector2D(bbox.Right, bbox.Top));
-			poly.Add(new Vector2D(bbox.Right, bbox.Bottom));
-			poly.Add(new Vector2D(bbox.Left, bbox.Bottom));
+			List<Vector2D> poly = new List<Vector2D>(16)
+			{
+				new Vector2D(bbox.Left, bbox.Top),
+				new Vector2D(bbox.Right, bbox.Top),
+				new Vector2D(bbox.Right, bbox.Bottom),
+				new Vector2D(bbox.Left, bbox.Bottom)
+			};
 
 			// Remove everything behind the split from the area
 			if(left)
@@ -882,18 +998,22 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 				// and then the Nodes Viewer is engaged the vertices in the ZNODES are not the same, resulting in an incorrect
 				// view or even a crash.
 				// See https://github.com/jewalky/UltimateDoomBuilder/issues/659
-				General.Interface.DisplayStatus(StatusType.Warning, "ZNODES are currently not supported.");
-				General.Editing.CancelMode();
-				return;
+				// biwa 2026-02-28: can't reproduce that anymore, but leave this comment in if it happens again, so that the knowledge is not lost.
+				//General.Interface.DisplayStatus(StatusType.Warning, "ZNODES are currently not supported.");
+				//General.Editing.CancelMode();
+				//return;
+
+				// The following code is commented out until the issue above is resolved.
 
 				General.Interface.DisplayStatus(StatusType.Busy, "Reading map nodes...");
-				if(!LoadZNodes()) 
+				if (!LoadZNodes("ZNODES"))
 				{
 					General.Interface.DisplayStatus(StatusType.Warning, "Failed to read map nodes.");
 					General.Editing.CancelMode();
 					return;
 				}
-			} 
+
+			}
 			else 
 			{
 				if(!haveNodes) 
@@ -925,7 +1045,17 @@ namespace CodeImp.DoomBuilder.Plugins.NodesViewer
 				}
 
 				General.Interface.DisplayStatus(StatusType.Busy, "Reading map nodes...");
-				if(!LoadClassicStructures())
+
+				if(HasZNodesHeader("NODES")) 
+				{
+					if (!LoadZNodes("NODES"))
+					{
+						General.Interface.DisplayStatus(StatusType.Warning, "Failed to read map nodes.");
+						General.Editing.CancelMode();
+						return;
+					}
+				}
+				else if (!LoadClassicStructures())
 				{
 					General.Interface.DisplayStatus(StatusType.Warning, "Failed to read map nodes.");
 					General.Editing.CancelMode();

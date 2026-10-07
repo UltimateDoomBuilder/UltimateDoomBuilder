@@ -24,9 +24,7 @@ using System.Text.RegularExpressions;
 using CodeImp.DoomBuilder.Compilers;
 using CodeImp.DoomBuilder.Config;
 using CodeImp.DoomBuilder.Data.Scripting;
-using CodeImp.DoomBuilder.GZBuilder.Data;
 using CodeImp.DoomBuilder.IO;
-using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.ZDoom;
 
 #endregion
@@ -1061,7 +1059,7 @@ namespace CodeImp.DoomBuilder.Data
 		#endregion
 
 		// This finds and returns DECORATE streams
-		public override IEnumerable<TextResourceData> GetDecorateData(string pname)
+		public override IEnumerable<TextResourceData> GetDecorateData(string pname, bool exactmatch)
 		{
 			if(issuspended) throw new Exception("Data reader is suspended");
 			List<TextResourceData> result = GetAllLumpsData(pname); //mxd
@@ -1075,7 +1073,7 @@ namespace CodeImp.DoomBuilder.Data
 		}
 
         // [ZZ] This finds and returns ZSCRIPT streams
-        public override IEnumerable<TextResourceData> GetZScriptData(string pname)
+        public override IEnumerable<TextResourceData> GetZScriptData(string pname, bool exactmatch)
         {
             if (issuspended) throw new Exception("Data reader is suspended");
             List<TextResourceData> result = GetAllLumpsData(pname); //mxd

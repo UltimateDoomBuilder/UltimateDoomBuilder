@@ -71,6 +71,8 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 			if(!i1.isinclude && i2.isinclude) return -1;
 			
 			if(i1.Name == i2.Name) return 0;
+			if(i1.Name.Length == 0) return -1;
+			if(i2.Name.Length == 0) return 1;
 			if(i1.Name.ToUpper()[0] > i2.Name.ToUpper()[0]) return 1;
 			if(i1.Name.ToUpper()[0] == i2.Name.ToUpper()[0]) 
 			{

@@ -79,7 +79,6 @@ namespace CodeImp.DoomBuilder.Data
 			FileShare share;
 
 			isreadonly = asreadonly;
-			config = config;
 
 			// Determine if opening for read only
 			if (isreadonly)
@@ -124,7 +123,7 @@ namespace CodeImp.DoomBuilder.Data
                     MemoryStream s = new MemoryStream();
                     reader.WriteEntryTo(s);
                     sevenzipentries.Add(reader.Entry.Key.ToLowerInvariant(), s.ToArray());
-                    fileentries.Add(new DirectoryFileEntry(reader.Entry.Key));
+                    fileentries.Add(new DirectoryFileEntry(reader.Entry.Key, config.FileTitleStyle));
                 }
 			}
             else
@@ -132,7 +131,7 @@ namespace CodeImp.DoomBuilder.Data
                 foreach (IArchiveEntry entry in archive.Entries)
                 {
                     if (!entry.IsDirectory && CheckInvalidPathChars(entry.Key))
-                        fileentries.Add(new DirectoryFileEntry(entry.Key));
+                        fileentries.Add(new DirectoryFileEntry(entry.Key, config.FileTitleStyle));
                 }
             }
 
@@ -605,8 +604,12 @@ namespace CodeImp.DoomBuilder.Data
 					{
 						if (entry.IsDirectory) continue;
 
+						// As per ZIP specification, forward slashes are used as directory separators, but programs may create them with backslashes
+						// See https://github.com/UltimateDoomBuilder/UltimateDoomBuilder/issues/1281
+						string entryname = entry.Key.Replace('\\', '/');
+
 						// Is this the entry we are looking for?
-						if (string.Compare(entry.Key, fn, true) == 0)
+						if (string.Compare(entryname, fn, true) == 0)
 						{
 							filedata = new MemoryStream();
 
@@ -828,15 +831,14 @@ namespace CodeImp.DoomBuilder.Data
 
 					//mxd. Move and rename the result file
 					string targetfilename;
-					if(compiler is AccCompiler)
+					if (compiler is AccCompiler acccompiler)
 					{
-						AccCompiler acccompiler = (AccCompiler)compiler;
 						targetfilename = Path.Combine(Path.GetDirectoryName(filename), acccompiler.Parser.LibraryName + ".o");
 					}
 					else
 					{
 						//mxd. No can't do...
-						if(String.IsNullOrEmpty(scriptconfig.ResultLump))
+						if (String.IsNullOrEmpty(scriptconfig.ResultLump))
 						{
 							// Fail
 							compiler.Dispose();

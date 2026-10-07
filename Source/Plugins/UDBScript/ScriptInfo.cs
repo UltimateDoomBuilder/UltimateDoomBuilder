@@ -28,9 +28,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Security.Cryptography;
 using CodeImp.DoomBuilder.IO;
 using Esprima;
 

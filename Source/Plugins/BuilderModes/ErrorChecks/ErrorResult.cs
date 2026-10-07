@@ -20,7 +20,6 @@ using System.Collections.Generic;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.Geometry;
-using CodeImp.DoomBuilder.Editing;
 using System.Drawing;
 
 #endregion

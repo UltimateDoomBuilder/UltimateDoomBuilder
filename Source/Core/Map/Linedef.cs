@@ -337,6 +337,23 @@ namespace CodeImp.DoomBuilder.Map
 						rawflags |= fnum;
 				}
 			}
+
+			// In Hexen format line activations are also stored in the flags bitmap, so take that into account here as well. Set bits to 0 first, then set bit if necessary.
+			if (General.Map.Config.LinedefActivates.Count > 0)
+			{
+				foreach (LinedefActivateInfo lai in General.Map.Config.LinedefActivates)
+				{
+					if (lai.Index > 0)
+					{
+						// Set bit to 0
+						rawflags &= (ushort)~lai.Index;
+					}
+				}
+
+				// Set bit if necessary
+				if (activate > 0)
+					rawflags |= (ushort)activate;
+			}
 		}
 
 		/// <summary>

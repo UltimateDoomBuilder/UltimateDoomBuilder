@@ -7,6 +7,7 @@ using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.Rendering;
 using CodeImp.DoomBuilder.VisualModes;
+using System.Text.RegularExpressions;
 
 #endregion
 
@@ -784,20 +785,34 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 				if(info == null) continue;
 
 				float minradius, maxradius;
-				if(info.AmbientSound != null)
+				if(General.Map.DOOM && info.AmbientSound != null)
 				{
 					minradius = info.AmbientSound.MinimumRadius;
 					maxradius = info.AmbientSound.MaximumRadius;
 				}
-				else if(!General.Map.DOOM && (info.ClassName == "AmbientSound" || info.ClassName == "AmbientSoundNoGravity"))
+				else if(!General.Map.DOOM && (info.ClassName == "AmbientSound" || info.ClassName == "AmbientSoundNoGravity" || info.ClassName.StartsWith("$AmbientSound")))
 				{
+					int soundindex = 0;
+
 					//arg0: ambient slot
 					//arg1: (optional) sound volume, in percent. 1 is nearly silent, 100 and above are full volume. If left to zero, full volume is also used.
 					//arg2: (optional) minimum distance, in map units, at which volume attenuation begins. Note that arg3 must also be set. If both are left to zero, normal rolloff is used instead.
 					//arg3: (optional) maximum distance, in map units, at which the sound can be heard. If left to zero or lower than arg2, normal rolloff is used instead.
 					//arg4: (optional) scalar by which to multiply the values of arg2 and arg3. If left to zero, no multiplication takes place.
 
-					if(t.Args[0] == 0 || !General.Map.Data.AmbientSounds.ContainsKey(t.Args[0]))
+					// Use regex to get the ambient sound index from class name, if applicable
+					Regex regex = new Regex(@"^\$AmbientSound(\d+)$");
+					Match match = regex.Match(info.ClassName);
+					if(match.Success)
+					{
+						soundindex = int.Parse(match.Groups[1].Value);
+					}
+					else
+					{
+						soundindex = t.Args[0];
+					}
+
+					if (soundindex == 0 || !General.Map.Data.AmbientSounds.ContainsKey(soundindex))
 						continue;
 
 					// Use custom radii?
@@ -808,8 +823,8 @@ namespace CodeImp.DoomBuilder.GZBuilder.Data
 					}
 					else
 					{
-						minradius = General.Map.Data.AmbientSounds[t.Args[0]].MinimumRadius;
-						maxradius = General.Map.Data.AmbientSounds[t.Args[0]].MaximumRadius;
+						minradius = General.Map.Data.AmbientSounds[soundindex].MinimumRadius;
+						maxradius = General.Map.Data.AmbientSounds[soundindex].MaximumRadius;
 					}
 				}
 				else

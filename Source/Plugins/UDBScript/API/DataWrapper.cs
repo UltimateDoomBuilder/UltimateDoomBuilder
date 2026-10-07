@@ -23,15 +23,6 @@
 
 #region ================== Namespaces
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CodeImp.DoomBuilder.Data;
-using CodeImp.DoomBuilder.Geometry;
-using CodeImp.DoomBuilder.UDBScript.Wrapper;
-
 #endregion
 
 namespace CodeImp.DoomBuilder.UDBScript.Wrapper

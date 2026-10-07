@@ -40,6 +40,9 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 		public bool IsBlocking { get; }
 		public bool IsSkip { get; set; }
 
+		private static int hashcounter;
+		private readonly int hashcode;
+
 		public SoundNode(Vector2D position)
 		{
 			Position = position;
@@ -48,6 +51,8 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 			IsBlocking = false;
 			IsSkip = false;
 			Neighbors = new List<SoundNode>();
+
+			hashcode = hashcounter++;
 		}
 
 		public SoundNode(Vector2D position, SoundNode destination): this(position)
@@ -65,7 +70,7 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 		/// </summary>
 		/// <param name="openset">The open set, the add the neighbor to if necessary</param>
 		/// <param name="start">The start sound node</param>
-		public void ProcessNeighbors(List<SoundNode> openset, SoundNode start)
+		public void ProcessNeighbors(HashSet<SoundNode> openset, SoundNode start)
 		{
 			bool blockinginpath = HasBlockingInPath(start);
 
@@ -85,8 +90,7 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 					neighbor.G = newg;
 					neighbor.F = neighbor.G + neighbor.H;
 
-					if (!openset.Contains(neighbor))
-						openset.Add(neighbor);
+					openset.Add(neighbor);
 				}
 			}
 		}
@@ -143,6 +147,15 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 				// One step back
 				current = current.From;
 			}
+		}
+
+		/// <summary>
+		/// Returns the hash code for this sound node
+		/// </summary>
+		/// <returns>The hash code</returns>
+		public override int GetHashCode()
+		{
+			return hashcode;
 		}
 	}
 }

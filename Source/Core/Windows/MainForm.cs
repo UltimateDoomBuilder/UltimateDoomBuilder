@@ -560,6 +560,16 @@ namespace CodeImp.DoomBuilder.Windows
 					//mxd. Get proper configuration file
 					bool longtexturenamessupported = false;
 					string configfile = null;
+					string compiler = null;
+
+					// Set the script type of the map if provided.
+					if (General.AutoLoadScriptConfig != null)
+					{
+						if(General.CompiledScriptConfigs.ContainsKey(General.AutoLoadScriptConfig))
+						{
+							compiler = General.AutoLoadScriptConfig;
+						}
+					}
 
 					// Make sure the config file exists
 					if(General.GetConfigurationInfo(General.AutoLoadConfig) != null)
@@ -588,6 +598,11 @@ namespace CodeImp.DoomBuilder.Windows
 					
 					// Set configuration file (constructor already does this, but we want this info from the cmd args if possible)
 					options.ConfigFile = configfile;
+
+					if (compiler != null)
+					{
+						options.ScriptCompiler = compiler;
+					}
 				}
 				else
 				{
@@ -2838,8 +2853,25 @@ namespace CodeImp.DoomBuilder.Windows
 			// Get the item that was clicked
 			ToolStripItem item = (sender as ToolStripItem);
 
+			// The case of the filename might be different when the file was renamed, due to case sensitivity, so we need to find the exact file
+			string filename = item.Tag.ToString();
+			string[] possiblefiles = Directory.GetFiles(Path.GetDirectoryName(filename), Path.GetFileName(filename));
+
+			if (!possiblefiles.Contains(filename))
+			{
+				// This should never happen
+				if (possiblefiles.Length == 0)
+				{
+					General.Interface.DisplayStatus(StatusType.Warning, $"The file '{filename}  could not be found.");
+					return;
+				}
+
+				// Just pick the first matching file
+				filename = possiblefiles[0];
+			}
+
 			// Open this file
-			General.OpenMapFile(item.Tag.ToString(), null);
+			General.OpenMapFile(filename, null);
 		}
 
 		//mxd
@@ -4609,7 +4641,7 @@ namespace CodeImp.DoomBuilder.Windows
 		internal void ImageDataLoaded(ImageData img)
 		{
 			// Image is used in the map?
-			if ((img != null) && img.UsedInMap && !img.IsDisposed)
+			if ((img != null) && img.UsedInMap && !img.IsDisposed && General.Map.Map.IsSafeToAccess)
 			{
 				// Go for all setors
 				bool updated = false;

@@ -50,7 +50,7 @@ namespace CodeImp.DoomBuilder.Controls
             get { return argzeromode; }
             set
             {
-                arg0label.Text = (value == ArgZeroMode.STRING ? arginfo[0].TitleStr : arginfo[0].Title) + ":";
+                arg0label.SetLeftExpandText((value == ArgZeroMode.STRING ? arginfo[0].TitleStr : arginfo[0].Title) + ":");
                 argzeromode = value;
             }
         }
@@ -409,7 +409,7 @@ namespace CodeImp.DoomBuilder.Controls
 		private void UpdateArgument(ArgumentBox arg, Label label, ArgumentInfo info)
 		{
 			// Update labels
-			label.Text = info.Title + ":";
+			label.SetLeftExpandText(info.Title + ":");
 			label.Enabled = info.Used;
 			arg.ForeColor = (label.Enabled ? SystemColors.WindowText : SystemColors.GrayText);
 			arg.Setup(info);

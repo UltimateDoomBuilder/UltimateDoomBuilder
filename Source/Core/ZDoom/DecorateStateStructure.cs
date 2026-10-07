@@ -1,12 +1,4 @@
-﻿using CodeImp.DoomBuilder.Config;
-using CodeImp.DoomBuilder.Data;
-using CodeImp.DoomBuilder.Types;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.IO;
 
 namespace CodeImp.DoomBuilder.ZDoom
 {

@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
+using System.Linq;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Config;
 using CodeImp.DoomBuilder.Data;
@@ -156,6 +157,56 @@ namespace CodeImp.DoomBuilder.Controls
 			// Set type index
 			typeid.Text = type.ToString();
 			typeid_TextChanged(this, EventArgs.Empty);
+
+			validnodes = GetValidNodes();
+		}
+
+		// Select multiple thing types
+		public void SelectMultipleTypes(int[] types)
+		{
+			if (types.Length == 0)
+			{
+				ClearSelectedType();
+				typeid_TextChanged(this, EventArgs.Empty);
+
+				validnodes = GetValidNodes();
+
+				return;
+			}
+
+			if (types.Length == 1)
+			{
+				SelectType(types[0]);
+
+				validnodes = GetValidNodes();
+
+				return;
+			}
+
+			ClearSelectedType();
+			typeid_TextChanged(this, EventArgs.Empty);
+
+			doupdatetextbox = false;
+			doupdatenode = false;
+			HashSet<int> indexSet = types.ToHashSet();
+			foreach (TreeNode n in nodes)
+			{
+				// Node in index input?
+				if (indexSet.Contains((n.Tag as ThingTypeInfo).Index))
+				{
+					// Add this to selection
+					if (n.TreeView != null) //mxd. Tree node may've been removed during filtering
+					{
+						if (n.Parent != null) n.Parent.Expand(); // node won't have parent when the list is prefiltered
+						typelist.SelectedNodes.Add(n);
+						n.EnsureVisible();
+					}
+				}
+			}
+			doupdatenode = true;
+			doupdatetextbox = true;
+
+			validnodes = GetValidNodes();
 		}
 
 		// Return selected type info
@@ -191,6 +242,17 @@ namespace CodeImp.DoomBuilder.Controls
 			}
 			
 			return typeid.GetResult(original);
+		}
+
+		//jaeden
+		public int[] GetMultiResult(int[] original)
+		{
+			if (typelist.SelectionMode == TreeViewSelectionMode.MultiSelectSameLevel && validnodes.Count > 0)
+			{
+				return validnodes.Select(node => (node.Tag as ThingTypeInfo).Index).ToArray();
+			}
+
+			return original.Select(id => typeid.GetResult(id)).ToArray();
 		}
 
 		//mxd

@@ -114,7 +114,8 @@ namespace CodeImp.DoomBuilder.Dehacked
 			int dehackedid = int.Parse(entry.Key.ToString());
 			string path = string.Format("{0}.things.{1}.", root, dehackedid);
 			string name = cfg.ReadSetting(path + "name", "<No name>");
-			int doomednum = cfg.ReadSetting(path + "doomednum", -1);
+			int doomednum = cfg.ReadSetting(path + "doomednum", 0);
+			bool hasdoomednum = cfg.SettingExists(path + "doomednum");
 			int height = cfg.ReadSetting(path + "height", 0);
 			int width = cfg.ReadSetting(path + "width", 0);
 			int initialframe = cfg.ReadSetting(path + "initialframe", 0);
@@ -122,14 +123,16 @@ namespace CodeImp.DoomBuilder.Dehacked
 
 			Dictionary<string, string> props = new Dictionary<string, string>
 			{
-				{ "id #", doomednum.ToString() },
 				{ "initial frame", initialframe.ToString() },
 				{ "width", width.ToString() },
 				{ "height", height.ToString() },
 				{ "bits", bits.ToString() }
 			};
 
-			return new DehackedThing(dehackedid, name, props);
+			if(hasdoomednum)
+				props["id #"] = doomednum.ToString();
+
+			return new DehackedThing(dehackedid, name, props) { HasDoomEdNum = hasdoomednum };
 		}
 
 		private DehackedFrame LoadFrame(DictionaryEntry entry)

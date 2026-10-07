@@ -170,18 +170,20 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// label11
 			// 
-			label11.Location = new System.Drawing.Point(15, 23);
+			label11.AutoSize = true;
+			label11.Location = new System.Drawing.Point(27, 24);
 			label11.Name = "label11";
-			label11.Size = new System.Drawing.Size(80, 14);
+			label11.Size = new System.Drawing.Size(69, 13);
 			label11.TabIndex = 13;
 			label11.Text = "Sector index:";
 			label11.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label12
 			// 
-			label12.Location = new System.Drawing.Point(15, 23);
+			label12.AutoSize = true;
+			label12.Location = new System.Drawing.Point(27, 24);
 			label12.Name = "label12";
-			label12.Size = new System.Drawing.Size(80, 14);
+			label12.Size = new System.Drawing.Size(69, 13);
 			label12.TabIndex = 16;
 			label12.Text = "Sector index:";
 			label12.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -218,9 +220,10 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// labelLightFront
 			// 
-			this.labelLightFront.Location = new System.Drawing.Point(15, 53);
+			this.labelLightFront.AutoSize = true;
+			this.labelLightFront.Location = new System.Drawing.Point(37, 55);
 			this.labelLightFront.Name = "labelLightFront";
-			this.labelLightFront.Size = new System.Drawing.Size(80, 14);
+			this.labelLightFront.Size = new System.Drawing.Size(59, 13);
 			this.labelLightFront.TabIndex = 25;
 			this.labelLightFront.Tag = "light";
 			this.labelLightFront.Text = "Brightness:";
@@ -579,9 +582,10 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// labelFrontScaleBottom
 			// 
-			this.labelFrontScaleBottom.Location = new System.Drawing.Point(14, 86);
+			this.labelFrontScaleBottom.AutoSize = true;
+			this.labelFrontScaleBottom.Location = new System.Drawing.Point(29, 87);
 			this.labelFrontScaleBottom.Name = "labelFrontScaleBottom";
-			this.labelFrontScaleBottom.Size = new System.Drawing.Size(80, 14);
+			this.labelFrontScaleBottom.Size = new System.Drawing.Size(67, 13);
 			this.labelFrontScaleBottom.TabIndex = 42;
 			this.labelFrontScaleBottom.Tag = "scalex_bottom";
 			this.labelFrontScaleBottom.Text = "Lower scale:";
@@ -589,9 +593,10 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// labelFrontScaleMid
 			// 
-			this.labelFrontScaleMid.Location = new System.Drawing.Point(14, 54);
+			this.labelFrontScaleMid.AutoSize = true;
+			this.labelFrontScaleMid.Location = new System.Drawing.Point(27, 55);
 			this.labelFrontScaleMid.Name = "labelFrontScaleMid";
-			this.labelFrontScaleMid.Size = new System.Drawing.Size(80, 14);
+			this.labelFrontScaleMid.Size = new System.Drawing.Size(69, 13);
 			this.labelFrontScaleMid.TabIndex = 41;
 			this.labelFrontScaleMid.Tag = "scalex_mid";
 			this.labelFrontScaleMid.Text = "Middle scale:";
@@ -599,9 +604,10 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// labelFrontScaleTop
 			// 
-			this.labelFrontScaleTop.Location = new System.Drawing.Point(14, 22);
+			this.labelFrontScaleTop.AutoSize = true;
+			this.labelFrontScaleTop.Location = new System.Drawing.Point(29, 23);
 			this.labelFrontScaleTop.Name = "labelFrontScaleTop";
-			this.labelFrontScaleTop.Size = new System.Drawing.Size(80, 14);
+			this.labelFrontScaleTop.Size = new System.Drawing.Size(67, 13);
 			this.labelFrontScaleTop.TabIndex = 28;
 			this.labelFrontScaleTop.Tag = "scalex_top";
 			this.labelFrontScaleTop.Text = "Upper scale:";
@@ -686,9 +692,10 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// labelFrontTextureOffset
 			// 
-			this.labelFrontTextureOffset.Location = new System.Drawing.Point(14, 23);
+			this.labelFrontTextureOffset.AutoSize = true;
+			this.labelFrontTextureOffset.Location = new System.Drawing.Point(21, 23);
 			this.labelFrontTextureOffset.Name = "labelFrontTextureOffset";
-			this.labelFrontTextureOffset.Size = new System.Drawing.Size(80, 14);
+			this.labelFrontTextureOffset.Size = new System.Drawing.Size(75, 13);
 			this.labelFrontTextureOffset.TabIndex = 46;
 			this.labelFrontTextureOffset.Tag = "";
 			this.labelFrontTextureOffset.Text = "Sidedef offset:";
@@ -696,9 +703,10 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// labelFrontOffsetBottom
 			// 
-			this.labelFrontOffsetBottom.Location = new System.Drawing.Point(14, 118);
+			this.labelFrontOffsetBottom.AutoSize = true;
+			this.labelFrontOffsetBottom.Location = new System.Drawing.Point(28, 119);
 			this.labelFrontOffsetBottom.Name = "labelFrontOffsetBottom";
-			this.labelFrontOffsetBottom.Size = new System.Drawing.Size(80, 14);
+			this.labelFrontOffsetBottom.Size = new System.Drawing.Size(68, 13);
 			this.labelFrontOffsetBottom.TabIndex = 45;
 			this.labelFrontOffsetBottom.Tag = "offsetx_bottom";
 			this.labelFrontOffsetBottom.Text = "Lower offset:";
@@ -719,9 +727,10 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// labelFrontOffsetMid
 			// 
-			this.labelFrontOffsetMid.Location = new System.Drawing.Point(14, 86);
+			this.labelFrontOffsetMid.AutoSize = true;
+			this.labelFrontOffsetMid.Location = new System.Drawing.Point(26, 87);
 			this.labelFrontOffsetMid.Name = "labelFrontOffsetMid";
-			this.labelFrontOffsetMid.Size = new System.Drawing.Size(80, 14);
+			this.labelFrontOffsetMid.Size = new System.Drawing.Size(70, 13);
 			this.labelFrontOffsetMid.TabIndex = 44;
 			this.labelFrontOffsetMid.Tag = "offsetx_mid";
 			this.labelFrontOffsetMid.Text = "Middle offset:";
@@ -749,9 +758,10 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// labelFrontOffsetTop
 			// 
-			this.labelFrontOffsetTop.Location = new System.Drawing.Point(14, 54);
+			this.labelFrontOffsetTop.AutoSize = true;
+			this.labelFrontOffsetTop.Location = new System.Drawing.Point(28, 55);
 			this.labelFrontOffsetTop.Name = "labelFrontOffsetTop";
-			this.labelFrontOffsetTop.Size = new System.Drawing.Size(80, 14);
+			this.labelFrontOffsetTop.Size = new System.Drawing.Size(68, 13);
 			this.labelFrontOffsetTop.TabIndex = 43;
 			this.labelFrontOffsetTop.Tag = "offsetx_top";
 			this.labelFrontOffsetTop.Text = "Upper offset:";
@@ -1093,9 +1103,10 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// labelLightBack
 			// 
-			this.labelLightBack.Location = new System.Drawing.Point(15, 53);
+			this.labelLightBack.AutoSize = true;
+			this.labelLightBack.Location = new System.Drawing.Point(37, 55);
 			this.labelLightBack.Name = "labelLightBack";
-			this.labelLightBack.Size = new System.Drawing.Size(80, 14);
+			this.labelLightBack.Size = new System.Drawing.Size(59, 13);
 			this.labelLightBack.TabIndex = 28;
 			this.labelLightBack.Tag = "light";
 			this.labelLightBack.Text = "Brightness:";
@@ -1154,9 +1165,10 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// labelBackScaleBottom
 			// 
-			this.labelBackScaleBottom.Location = new System.Drawing.Point(14, 86);
+			this.labelBackScaleBottom.AutoSize = true;
+			this.labelBackScaleBottom.Location = new System.Drawing.Point(29, 87);
 			this.labelBackScaleBottom.Name = "labelBackScaleBottom";
-			this.labelBackScaleBottom.Size = new System.Drawing.Size(80, 14);
+			this.labelBackScaleBottom.Size = new System.Drawing.Size(67, 13);
 			this.labelBackScaleBottom.TabIndex = 45;
 			this.labelBackScaleBottom.Tag = "scalex_bottom";
 			this.labelBackScaleBottom.Text = "Lower scale:";
@@ -1164,9 +1176,10 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// labelBackScaleMid
 			// 
-			this.labelBackScaleMid.Location = new System.Drawing.Point(14, 54);
+			this.labelBackScaleMid.AutoSize = true;
+			this.labelBackScaleMid.Location = new System.Drawing.Point(27, 55);
 			this.labelBackScaleMid.Name = "labelBackScaleMid";
-			this.labelBackScaleMid.Size = new System.Drawing.Size(80, 14);
+			this.labelBackScaleMid.Size = new System.Drawing.Size(69, 13);
 			this.labelBackScaleMid.TabIndex = 44;
 			this.labelBackScaleMid.Tag = "scalex_mid";
 			this.labelBackScaleMid.Text = "Middle scale:";
@@ -1174,9 +1187,10 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// labelBackScaleTop
 			// 
-			this.labelBackScaleTop.Location = new System.Drawing.Point(14, 22);
+			this.labelBackScaleTop.AutoSize = true;
+			this.labelBackScaleTop.Location = new System.Drawing.Point(29, 23);
 			this.labelBackScaleTop.Name = "labelBackScaleTop";
-			this.labelBackScaleTop.Size = new System.Drawing.Size(80, 14);
+			this.labelBackScaleTop.Size = new System.Drawing.Size(67, 13);
 			this.labelBackScaleTop.TabIndex = 43;
 			this.labelBackScaleTop.Tag = "scalex_top";
 			this.labelBackScaleTop.Text = "Upper scale:";
@@ -1261,9 +1275,10 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// labelBackTextureOffset
 			// 
-			this.labelBackTextureOffset.Location = new System.Drawing.Point(14, 23);
+			this.labelBackTextureOffset.AutoSize = true;
+			this.labelBackTextureOffset.Location = new System.Drawing.Point(21, 23);
 			this.labelBackTextureOffset.Name = "labelBackTextureOffset";
-			this.labelBackTextureOffset.Size = new System.Drawing.Size(80, 14);
+			this.labelBackTextureOffset.Size = new System.Drawing.Size(75, 13);
 			this.labelBackTextureOffset.TabIndex = 50;
 			this.labelBackTextureOffset.Tag = "";
 			this.labelBackTextureOffset.Text = "Sidedef offset:";
@@ -1271,9 +1286,10 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// labelBackOffsetBottom
 			// 
-			this.labelBackOffsetBottom.Location = new System.Drawing.Point(14, 118);
+			this.labelBackOffsetBottom.AutoSize = true;
+			this.labelBackOffsetBottom.Location = new System.Drawing.Point(28, 119);
 			this.labelBackOffsetBottom.Name = "labelBackOffsetBottom";
-			this.labelBackOffsetBottom.Size = new System.Drawing.Size(80, 14);
+			this.labelBackOffsetBottom.Size = new System.Drawing.Size(68, 13);
 			this.labelBackOffsetBottom.TabIndex = 49;
 			this.labelBackOffsetBottom.Tag = "offsetx_bottom";
 			this.labelBackOffsetBottom.Text = "Lower offset:";
@@ -1281,9 +1297,10 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// labelBackOffsetMid
 			// 
-			this.labelBackOffsetMid.Location = new System.Drawing.Point(14, 86);
+			this.labelBackOffsetMid.AutoSize = true;
+			this.labelBackOffsetMid.Location = new System.Drawing.Point(26, 87);
 			this.labelBackOffsetMid.Name = "labelBackOffsetMid";
-			this.labelBackOffsetMid.Size = new System.Drawing.Size(80, 14);
+			this.labelBackOffsetMid.Size = new System.Drawing.Size(70, 13);
 			this.labelBackOffsetMid.TabIndex = 48;
 			this.labelBackOffsetMid.Tag = "offsetx_mid";
 			this.labelBackOffsetMid.Text = "Middle offset:";
@@ -1291,9 +1308,10 @@ namespace CodeImp.DoomBuilder.Windows
 			// 
 			// labelBackOffsetTop
 			// 
-			this.labelBackOffsetTop.Location = new System.Drawing.Point(14, 54);
+			this.labelBackOffsetTop.AutoSize = true;
+			this.labelBackOffsetTop.Location = new System.Drawing.Point(28, 55);
 			this.labelBackOffsetTop.Name = "labelBackOffsetTop";
-			this.labelBackOffsetTop.Size = new System.Drawing.Size(80, 14);
+			this.labelBackOffsetTop.Size = new System.Drawing.Size(68, 13);
 			this.labelBackOffsetTop.TabIndex = 47;
 			this.labelBackOffsetTop.Tag = "offsetx_top";
 			this.labelBackOffsetTop.Text = "Upper offset:";
@@ -1502,7 +1520,9 @@ namespace CodeImp.DoomBuilder.Windows
 			this.frontgroup.ResumeLayout(false);
 			this.frontflagsgroup.ResumeLayout(false);
 			this.frontscalegroup.ResumeLayout(false);
+			this.frontscalegroup.PerformLayout();
 			this.groupBox6.ResumeLayout(false);
+			this.groupBox6.PerformLayout();
 			this.groupBox5.ResumeLayout(false);
 			this.groupBox5.PerformLayout();
 			this.tabback.ResumeLayout(false);
@@ -1512,7 +1532,9 @@ namespace CodeImp.DoomBuilder.Windows
 			this.groupBox4.PerformLayout();
 			this.backflagsgroup.ResumeLayout(false);
 			this.backscalegroup.ResumeLayout(false);
+			this.backscalegroup.PerformLayout();
 			this.groupBox1.ResumeLayout(false);
+			this.groupBox1.PerformLayout();
 			this.tabcomment.ResumeLayout(false);
 			this.tabcustom.ResumeLayout(false);
 			this.ResumeLayout(false);

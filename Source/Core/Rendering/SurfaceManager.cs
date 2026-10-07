@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using CodeImp.DoomBuilder.Data;
 using CodeImp.DoomBuilder.Map;
 

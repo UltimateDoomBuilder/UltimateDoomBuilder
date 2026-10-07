@@ -1,7 +1,8 @@
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Resources;
 using CodeImp.DoomBuilder;
+using System.Reflection;
+using System.Resources;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -30,6 +31,9 @@ using CodeImp.DoomBuilder;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("3.0.0.3274")]
+// Assembly versioning is now handled at compile time using Git information.
+// See the GenerateGitVersion target in the project file for details.
+
 [assembly: NeutralResourcesLanguageAttribute("en")]
-[assembly: AssemblyHash("cbe8abb")]
+
+[assembly: InternalsVisibleTo("Builder.Tests")]

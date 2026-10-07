@@ -45,6 +45,7 @@ namespace CodeImp.DoomBuilder.Dehacked
 		private string name;
 		private Dictionary<string, string> props;
 		private int doomednum;
+		private bool hasdoomednum;
 		private int initialframe;
 		private string sprite;
 		private int height;
@@ -62,6 +63,7 @@ namespace CodeImp.DoomBuilder.Dehacked
 		public int Number { get { return number; } }
 		public Dictionary<string, string> Props { get { return props; } }
 		public int DoomEdNum { get { return doomednum; } internal set { doomednum = value; } }
+		public bool HasDoomEdNum { get { return hasdoomednum; } internal set { hasdoomednum = value; } }
 		public string Name { get { return name; } internal set { name = value; } }
 		public int InitialFrame { get { return initialframe; } internal set { initialframe = value; } }
 		public string Sprite { get { return sprite; } internal set { sprite = value; } }
@@ -84,6 +86,7 @@ namespace CodeImp.DoomBuilder.Dehacked
 			color = -1;
 			sprite = null;
 			angled = ThingAngled.UNCHANGED;
+			hasdoomednum = false;
 
 			props = new Dictionary<string, string>();
 			bits = new List<string>();
@@ -94,6 +97,9 @@ namespace CodeImp.DoomBuilder.Dehacked
 			foreach(string key in props.Keys)
 			{
 				this.props[key.ToLowerInvariant()] = props[key];
+
+				if (key.ToLowerInvariant() == "id #")
+					hasdoomednum = true;
 			}
 		}
 
@@ -109,9 +115,11 @@ namespace CodeImp.DoomBuilder.Dehacked
 		internal void Process(Dictionary<int, DehackedFrame> frames, Dictionary<long, string> bitmnemonics, DehackedThing basething, HashSet<string> availablesprites)
 		{
 			// Copy all missing properties from the base thing
-			if(basething != null)
+			if (basething != null)
 			{
 				doomednum = basething.DoomEdNum;
+				hasdoomednum = basething.HasDoomEdNum;
+
 				foreach (string key in basething.Props.Keys)
 					if (!props.ContainsKey(key))
 						props[key] = basething.props[key];
@@ -126,6 +134,9 @@ namespace CodeImp.DoomBuilder.Dehacked
 				{
 					case "id #":
 						int.TryParse(value, out doomednum);
+
+						// Things with DoomEdNum -1 can not be placed in a map, so treat them as having no DoomEdNum at all
+						hasdoomednum = (doomednum == -1) ? false : true;
 						break;
 					case "initial frame":
 						if (sprite == null && int.TryParse(value, out initialframe))

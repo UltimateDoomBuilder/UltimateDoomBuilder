@@ -1,6 +1,4 @@
-﻿using System;
-using CodeImp.DoomBuilder.Geometry;
-using CodeImp.DoomBuilder.Map;
+﻿using CodeImp.DoomBuilder.Geometry;
 using CodeImp.DoomBuilder.Rendering;
 
 namespace CodeImp.DoomBuilder.VisualModes
@@ -14,9 +12,6 @@ namespace CodeImp.DoomBuilder.VisualModes
 	public abstract class VisualSlope : IVisualPickable
 	{
 		#region ================== Variables
-
-		// Disposing
-		private bool isdisposed;
 
 		// Selected?
 		protected bool selected;
@@ -48,11 +43,6 @@ namespace CodeImp.DoomBuilder.VisualModes
 		/// Pivot or not? This is only used by the core to determine what color to draw it with.
 		/// </summary>
 		public bool Pivot { get { return pivot; } set { pivot = value; } }
-
-		/// <summary>
-		/// Disposed or not?
-		/// </summary>
-		public bool IsDisposed { get { return isdisposed; } }
 
 		public bool SmartPivot { get { return smartpivot; } set { smartpivot = value; } }
 

@@ -305,8 +305,17 @@ namespace CodeImp.DoomBuilder.Editing
 				bool havepastedata = Clipboard.ContainsData(CLIPBOARD_DATA_FORMAT); //mxd
 				bool havedb2pastedata = Clipboard.ContainsData(CLIPBOARD_DATA_FORMAT_DB2); //mxd
 				#else
-				bool havepastedata = Clipboard.ContainsText() && Clipboard.GetText().Length > CLIPBOARD_DATA_FORMAT.Length && Clipboard.GetText().Substring(0, CLIPBOARD_DATA_FORMAT.Length) == CLIPBOARD_DATA_FORMAT;
+				bool havepastedata = false;
 				bool havedb2pastedata = false;
+				try
+				{
+					string clipText = Clipboard.GetText();
+					havepastedata = clipText.Length > CLIPBOARD_DATA_FORMAT.Length && clipText.StartsWith(CLIPBOARD_DATA_FORMAT);
+				}
+				catch(Exception)
+				{
+					havepastedata = false;
+				}
 				#endif
 				
 				// Anything to paste?

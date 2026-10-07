@@ -227,6 +227,7 @@ namespace CodeImp.DoomBuilder
 		private static string autoloadfile;
 		private static string autoloadmap;
 		private static string autoloadconfig;
+		private static string autoloadscriptconfig;
 		private static bool autoloadstrictpatches;
 		private static DataLocationList autoloadresources;
 		private static bool delaymainwindow;
@@ -279,6 +280,7 @@ namespace CodeImp.DoomBuilder
 		public static string AutoLoadFile { get { return autoloadfile; } }
 		public static string AutoLoadMap { get { return autoloadmap; } }
 		public static string AutoLoadConfig { get { return autoloadconfig; } }
+		public static string AutoLoadScriptConfig { get { return autoloadscriptconfig; } }
 		public static bool AutoLoadStrictPatches { get { return autoloadstrictpatches; } }
 		public static DataLocationList AutoLoadResources { get { return new DataLocationList(autoloadresources); } }
 		public static bool DelayMainWindow { get { return delaymainwindow; } }
@@ -880,6 +882,12 @@ namespace CodeImp.DoomBuilder
 				{
 					// Store next arg as config filename information
 					autoloadconfig = argslist.Dequeue();
+				}
+				// Script config? (picks the compiler configuration to use)
+				else if (string.Compare(curarg, "-SCRIPTCONFIG", true) == 0)
+				{
+					// Store next arg as the script configuration name, being the configuration's file name.
+					autoloadscriptconfig = argslist.Dequeue().ToLowerInvariant();
 				}
 				// Strict patches rules?
 				else if(string.Compare(curarg, "-STRICTPATCHES", true) == 0)
@@ -1616,6 +1624,10 @@ namespace CodeImp.DoomBuilder
 			//mxd. Also reset the clock...
 			MainWindow.ResetClock();
 
+			// Make sure to give focus to the display, otherwise it will become unresponsive to keyboard input
+			// when executed from visual mode
+			Interface.FocusDisplay();
+
 			return result;
 		}
 
@@ -1697,48 +1709,52 @@ namespace CodeImp.DoomBuilder
 		// Returns false when action was cancelled
 		internal static bool AskSaveMap()
 		{
+			if (map == null)
+				return true;
+
+			bool returnvalue;
+
 			// Map open and not saved?
-			if(map != null)
+			if (map.IsChanged)
 			{
-				if(map.IsChanged)
+				// Ask to save changes
+				DialogResult result = MessageBox.Show(mainwindow, "Do you want to save changes to " + map.FileTitle + " (" + map.Options.CurrentName + ")?", Application.ProductName, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+				if (result == DialogResult.Yes)
 				{
-					// Ask to save changes
-					DialogResult result = MessageBox.Show(mainwindow, "Do you want to save changes to " + map.FileTitle + " (" + map.Options.CurrentName + ")?", Application.ProductName, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-					if(result == DialogResult.Yes)
+					// Save map
+					if (SaveMap())
 					{
-						// Save map
-						if(SaveMap())
-						{
-							// Ask to save changes to scripts
-							return map.AskSaveScriptChanges();
-						}
-						else
-						{
-							// Failed to save map
-							return false;
-						}
-					}
-					else if(result == DialogResult.Cancel)
-					{
-						// Abort
-						return false;
+						// Ask to save changes to scripts
+						returnvalue = map.AskSaveScriptChanges();
 					}
 					else
 					{
-						// Ask to save changes to scripts
-						return map.AskSaveScriptChanges();
+						// Failed to save map
+						returnvalue = false;
 					}
+				}
+				else if (result == DialogResult.Cancel)
+				{
+					// Abort
+					returnvalue = false;
 				}
 				else
 				{
 					// Ask to save changes to scripts
-					return map.AskSaveScriptChanges();
+					returnvalue = map.AskSaveScriptChanges();
 				}
 			}
 			else
 			{
-				return true;
+				// Ask to save changes to scripts
+				returnvalue = map.AskSaveScriptChanges();
 			}
+
+			// Make sure to give focus to the display, otherwise it will become unresponsive to keyboard input
+			// when executed from visual mode
+			Interface.FocusDisplay();
+
+			return returnvalue;
 		}
 		
 #endregion

@@ -43,6 +43,27 @@ namespace CodeImp.DoomBuilder
 		private Dictionary<Process, string> processes; //mxd
 		private bool isdisposed;
 
+		private static Dictionary<int, string> additionalexceptiontext = new Dictionary<int, string>() {
+			{ 216,
+				"It looks like your test program ({0}) is a DOS executable, which is not compatible with your operating system. Please use an engine that is compatible with your operating system instead."
+			},
+			{ 1223,
+				"It looks like your test program ({0}) was blocked by Microsoft Defender SmartScreen. To unblock the test program you have two options.\n" +
+				"\n" +
+				"Option 1:\n" +
+				"- Run the program manually\n" +
+				"- Click on \"More info\"\n" +
+				"- Click on \"Run anyway\"\n" +
+				"\n" +
+				"Option 2:\n" +
+				"- Right-click on the program and select \"Properties\"\n" +
+				"- In the \"General\" tab check the \"Unblock\" checkbox\n" +
+				"- Click OK\n" +
+				"\n" +
+				"After performing one of these options, please try launching the test again."
+			}
+		};
+
 		delegate void EngineExitedCallback(Process p); //mxd
 		
 		#endregion
@@ -59,7 +80,7 @@ namespace CodeImp.DoomBuilder
 		public Launcher(MapManager manager)
 		{
 			// Initialize
-			CleanTempFile(manager);
+			InitializeTempFile(manager);
 			processes = new Dictionary<Process, string>(); //mxd
 
 			// Bind actions
@@ -323,7 +344,6 @@ namespace CodeImp.DoomBuilder
 			
 			// Save map to temporary file
 			Cursor.Current = Cursors.WaitCursor;
-			tempwad = General.MakeTempFilename(General.Map.TempPath, "wad");
 			General.Plugins.OnMapSaveBegin(SavePurpose.Testing);
 			if(General.Map.SaveMap(tempwad, SavePurpose.Testing))
 			{
@@ -380,8 +400,15 @@ namespace CodeImp.DoomBuilder
 						}
 						catch (Exception e)
 						{
+							string additionaltext = string.Empty;
+
+							if (e is System.ComponentModel.Win32Exception w32e)
+							{
+								additionaltext = string.Format(additionalexceptiontext.TryGetValue(w32e.NativeErrorCode, out var tmp) ? ("\n\n" + tmp) : string.Empty, General.Map.ConfigSettings.TestProgram);
+							}
+
 							// Unable to start the program
-							General.ShowErrorMessage("Unable to start the test program, " + e.GetType().Name + ": " + e.Message, MessageBoxButtons.OK);
+							General.ShowErrorMessage("Unable to start the test program, " + e.GetType().Name + ": " + e.Message + additionaltext, MessageBoxButtons.OK);
 						}
 
 						// Check if there's a post command to run, and try to execute it
@@ -433,9 +460,6 @@ namespace CodeImp.DoomBuilder
 			
 			General.MainWindow.DisplayReady();
 
-			// Clean up temp file
-			CleanTempFile(General.Map);
-
 			if(General.Map != null)
 			{
 				// Device reset may be needed...
@@ -454,17 +478,20 @@ namespace CodeImp.DoomBuilder
 			General.MainWindow.Invoke(new EngineExitedCallback(TestingFinished), new[] { sender });
 		}
 
-		// This deletes the previous temp file and creates a new, empty temp file
-		private void CleanTempFile(MapManager manager)
+		/// <summary>
+		/// Initializes the temporary file used for testing.
+		/// </summary>
+		/// <param name="manager">The MapManager instance.</param>
+		private void InitializeTempFile(MapManager manager)
 		{
-			// Remove temporary file
-			try { File.Delete(tempwad); }
-			catch { }
-			
 			// Make new empty temp file
 			tempwad = General.MakeTempFilename(manager.TempPath, "wad");
-			File.WriteAllText(tempwad, "");
+
+			// General.GetShortFilePath, which is used when the "use short paths and file name" option is set, uses
+			// a Win32 function that returns an empty string when the file doesn't exist, so make sure it exists.
+			File.Create(tempwad).Dispose();
 		}
+
 
 		#endregion
 	}

@@ -1,10 +1,7 @@
 ﻿#region ================== Namespaces
 
 using System;
-using System.Reflection;
-using System.Runtime.Serialization;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Linq;
 using System.Diagnostics;
 using CodeImp.DoomBuilder.Geometry;

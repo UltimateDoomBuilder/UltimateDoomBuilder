@@ -160,16 +160,16 @@ namespace CodeImp.DoomBuilder.SoundPropagationMode
 			// that until a path was found, or all blocking nodes are set to be ignored (which shouldn't happen)
 			while (true)
 			{
-				List<SoundNode> openset = new List<SoundNode>() { Start };
+				HashSet<SoundNode> openset = new HashSet<SoundNode>() { Start };
 
 				while (openset.Count > 0)
 				{
 					// Find the node with the lowest F score. Doing it that way seems to be fastest
-					SoundNode current = openset[0];
-					for (int i = 1; i < openset.Count; i++)
+					SoundNode current = openset.First();
+					foreach(SoundNode n in openset)
 					{
-						if (openset[i].F < current.F)
-							current = openset[i];
+						if (n.F < current.F)
+							current = n;
 					}
 
 					// We're done if the node with the lowest F score is the end node

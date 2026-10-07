@@ -271,11 +271,12 @@
 			// 
 			// label4
 			// 
+			label4.AutoSize = true;
 			label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			label4.ForeColor = System.Drawing.SystemColors.HotTrack;
-			label4.Location = new System.Drawing.Point(270, 79);
+			label4.Location = new System.Drawing.Point(280, 79);
 			label4.Name = "label4";
-			label4.Size = new System.Drawing.Size(74, 14);
+			label4.Size = new System.Drawing.Size(64, 13);
 			label4.TabIndex = 9;
 			label4.Tag = "fogdensity";
 			label4.Text = "Fog density:";
@@ -365,9 +366,10 @@
 			// 
 			// label2
 			// 
-			label2.Location = new System.Drawing.Point(9, 79);
+			label2.AutoSize = true;
+			label2.Location = new System.Drawing.Point(37, 79);
 			label2.Name = "label2";
-			label2.Size = new System.Drawing.Size(74, 14);
+			label2.Size = new System.Drawing.Size(43, 13);
 			label2.TabIndex = 5;
 			label2.Tag = "gravity";
 			label2.Text = "Gravity:";
@@ -427,11 +429,12 @@
 			// 
 			// label15
 			// 
+			label15.AutoSize = true;
 			label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			label15.ForeColor = System.Drawing.SystemColors.HotTrack;
-			label15.Location = new System.Drawing.Point(9, 83);
+			label15.Location = new System.Drawing.Point(13, 83);
 			label15.Name = "label15";
-			label15.Size = new System.Drawing.Size(74, 14);
+			label15.Size = new System.Drawing.Size(70, 13);
 			label15.TabIndex = 4;
 			label15.Text = "Height offset:";
 			label15.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -440,18 +443,20 @@
 			// 
 			// label6
 			// 
-			label6.Location = new System.Drawing.Point(9, 23);
+			label6.AutoSize = true;
+			label6.Location = new System.Drawing.Point(10, 23);
 			label6.Name = "label6";
-			label6.Size = new System.Drawing.Size(74, 14);
+			label6.Size = new System.Drawing.Size(73, 13);
 			label6.TabIndex = 0;
 			label6.Text = "Ceiling height:";
 			label6.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label5
 			// 
-			label5.Location = new System.Drawing.Point(9, 53);
+			label5.AutoSize = true;
+			label5.Location = new System.Drawing.Point(18, 53);
 			label5.Name = "label5";
-			label5.Size = new System.Drawing.Size(74, 14);
+			label5.Size = new System.Drawing.Size(65, 13);
 			label5.TabIndex = 2;
 			label5.Text = "Floor height:";
 			label5.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -496,9 +501,10 @@
 			// 
 			// sectorheightlabel
 			// 
-			this.sectorheightlabel.Location = new System.Drawing.Point(9, 113);
+			this.sectorheightlabel.AutoSize = true;
+			this.sectorheightlabel.Location = new System.Drawing.Point(10, 114);
 			this.sectorheightlabel.Name = "sectorheightlabel";
-			this.sectorheightlabel.Size = new System.Drawing.Size(74, 14);
+			this.sectorheightlabel.Size = new System.Drawing.Size(73, 13);
 			this.sectorheightlabel.TabIndex = 6;
 			this.sectorheightlabel.Text = "Sector height:";
 			this.sectorheightlabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -533,11 +539,12 @@
 			// 
 			// label17
 			// 
+			label17.AutoSize = true;
 			label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			label17.ForeColor = System.Drawing.SystemColors.HotTrack;
-			label17.Location = new System.Drawing.Point(10, 51);
+			label17.Location = new System.Drawing.Point(38, 51);
 			label17.Name = "label17";
-			label17.Size = new System.Drawing.Size(74, 14);
+			label17.Size = new System.Drawing.Size(46, 13);
 			label17.TabIndex = 3;
 			label17.Tag = "damageamount";
 			label17.Text = "Amount:";
@@ -548,9 +555,10 @@
 			// 
 			// label16
 			// 
-			label16.Location = new System.Drawing.Point(10, 23);
+			label16.AutoSize = true;
+			label16.Location = new System.Drawing.Point(50, 23);
 			label16.Name = "label16";
-			label16.Size = new System.Drawing.Size(74, 14);
+			label16.Size = new System.Drawing.Size(34, 13);
 			label16.TabIndex = 0;
 			label16.Tag = "damagetype";
 			label16.Text = "Type:";
@@ -558,11 +566,12 @@
 			// 
 			// label18
 			// 
+			label18.AutoSize = true;
 			label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			label18.ForeColor = System.Drawing.SystemColors.HotTrack;
-			label18.Location = new System.Drawing.Point(10, 81);
+			label18.Location = new System.Drawing.Point(39, 81);
 			label18.Name = "label18";
-			label18.Size = new System.Drawing.Size(74, 14);
+			label18.Size = new System.Drawing.Size(45, 13);
 			label18.TabIndex = 5;
 			label18.Text = "Interval:";
 			label18.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -570,11 +579,12 @@
 			// 
 			// label19
 			// 
+			label19.AutoSize = true;
 			label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			label19.ForeColor = System.Drawing.SystemColors.HotTrack;
-			label19.Location = new System.Drawing.Point(10, 111);
+			label19.Location = new System.Drawing.Point(26, 111);
 			label19.Name = "label19";
-			label19.Size = new System.Drawing.Size(74, 14);
+			label19.Size = new System.Drawing.Size(58, 13);
 			label19.TabIndex = 7;
 			label19.Text = "Leakiness:";
 			label19.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -582,9 +592,10 @@
 			// 
 			// label13
 			// 
-			label13.Location = new System.Drawing.Point(35, 83);
+			label13.AutoSize = true;
+			label13.Location = new System.Drawing.Point(39, 83);
 			label13.Name = "label13";
-			label13.Size = new System.Drawing.Size(74, 14);
+			label13.Size = new System.Drawing.Size(70, 13);
 			label13.TabIndex = 18;
 			label13.Tag = "desaturation";
 			label13.Text = "Desaturation:";
@@ -818,9 +829,10 @@
 			// 
 			// floorglowheightlabel
 			// 
-			this.floorglowheightlabel.Location = new System.Drawing.Point(10, 55);
+			this.floorglowheightlabel.AutoSize = true;
+			this.floorglowheightlabel.Location = new System.Drawing.Point(27, 55);
 			this.floorglowheightlabel.Name = "floorglowheightlabel";
-			this.floorglowheightlabel.Size = new System.Drawing.Size(80, 14);
+			this.floorglowheightlabel.Size = new System.Drawing.Size(66, 13);
 			this.floorglowheightlabel.TabIndex = 30;
 			this.floorglowheightlabel.Tag = "floorglowheight";
 			this.floorglowheightlabel.Text = "Glow height:";
@@ -838,7 +850,7 @@
 			this.floorglowheight.ButtonStepSmall = 1F;
 			this.floorglowheight.ButtonStepsUseModifierKeys = true;
 			this.floorglowheight.ButtonStepsWrapAround = false;
-			this.floorglowheight.Location = new System.Drawing.Point(97, 50);
+			this.floorglowheight.Location = new System.Drawing.Point(99, 50);
 			this.floorglowheight.Name = "floorglowheight";
 			this.floorglowheight.Size = new System.Drawing.Size(62, 24);
 			this.floorglowheight.StepValues = null;
@@ -851,7 +863,7 @@
 			this.floorglowcolor.DefaultValue = 0;
 			this.floorglowcolor.Field = "floorglowcolor";
 			this.floorglowcolor.Label = "Glow color:";
-			this.floorglowcolor.Location = new System.Drawing.Point(28, 19);
+			this.floorglowcolor.Location = new System.Drawing.Point(30, 19);
 			this.floorglowcolor.Name = "floorglowcolor";
 			this.floorglowcolor.Size = new System.Drawing.Size(210, 29);
 			this.floorglowcolor.TabIndex = 28;
@@ -913,9 +925,10 @@
 			// 
 			// ceilingglowheightlabel
 			// 
-			this.ceilingglowheightlabel.Location = new System.Drawing.Point(12, 55);
+			this.ceilingglowheightlabel.AutoSize = true;
+			this.ceilingglowheightlabel.Location = new System.Drawing.Point(27, 55);
 			this.ceilingglowheightlabel.Name = "ceilingglowheightlabel";
-			this.ceilingglowheightlabel.Size = new System.Drawing.Size(80, 14);
+			this.ceilingglowheightlabel.Size = new System.Drawing.Size(66, 13);
 			this.ceilingglowheightlabel.TabIndex = 29;
 			this.ceilingglowheightlabel.Tag = "ceilingglowheight";
 			this.ceilingglowheightlabel.Text = "Glow height:";
@@ -1141,9 +1154,10 @@
 			// 
 			// label23
 			// 
-			this.label23.Location = new System.Drawing.Point(26, 202);
+			this.label23.AutoSize = true;
+			this.label23.Location = new System.Drawing.Point(44, 202);
 			this.label23.Name = "label23";
-			this.label23.Size = new System.Drawing.Size(80, 14);
+			this.label23.Size = new System.Drawing.Size(62, 13);
 			this.label23.TabIndex = 17;
 			this.label23.Tag = "floor_reflect";
 			this.label23.Text = "Reflectivity:";
@@ -1184,9 +1198,10 @@
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(26, 114);
+			this.label3.AutoSize = true;
+			this.label3.Location = new System.Drawing.Point(63, 114);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(80, 14);
+			this.label3.Size = new System.Drawing.Size(43, 13);
 			this.label3.TabIndex = 6;
 			this.label3.Tag = "floorterrain";
 			this.label3.Text = "Terrain:";
@@ -1217,9 +1232,10 @@
 			// 
 			// labelFloorOffsets
 			// 
-			this.labelFloorOffsets.Location = new System.Drawing.Point(8, 27);
+			this.labelFloorOffsets.AutoSize = true;
+			this.labelFloorOffsets.Location = new System.Drawing.Point(26, 27);
 			this.labelFloorOffsets.Name = "labelFloorOffsets";
-			this.labelFloorOffsets.Size = new System.Drawing.Size(98, 14);
+			this.labelFloorOffsets.Size = new System.Drawing.Size(80, 13);
 			this.labelFloorOffsets.TabIndex = 0;
 			this.labelFloorOffsets.Tag = "xpanningfloor";
 			this.labelFloorOffsets.Text = "Texture offsets:";
@@ -1227,9 +1243,10 @@
 			// 
 			// labelFloorScale
 			// 
-			this.labelFloorScale.Location = new System.Drawing.Point(8, 59);
+			this.labelFloorScale.AutoSize = true;
+			this.labelFloorScale.Location = new System.Drawing.Point(32, 59);
 			this.labelFloorScale.Name = "labelFloorScale";
-			this.labelFloorScale.Size = new System.Drawing.Size(98, 14);
+			this.labelFloorScale.Size = new System.Drawing.Size(74, 13);
 			this.labelFloorScale.TabIndex = 2;
 			this.labelFloorScale.Tag = "xscalefloor";
 			this.labelFloorScale.Text = "Texture scale:";
@@ -1249,7 +1266,7 @@
 			// 
 			// floorAngleControl
 			// 
-			this.floorAngleControl.Angle = -2700;
+			this.floorAngleControl.Angle = -2790;
 			this.floorAngleControl.AngleOffset = 90;
 			this.floorAngleControl.DoomAngleClamping = false;
 			this.floorAngleControl.Location = new System.Drawing.Point(6, 156);
@@ -1261,9 +1278,10 @@
 			// 
 			// labelfloorrenderstyle
 			// 
-			this.labelfloorrenderstyle.Location = new System.Drawing.Point(26, 88);
+			this.labelfloorrenderstyle.AutoSize = true;
+			this.labelfloorrenderstyle.Location = new System.Drawing.Point(37, 88);
 			this.labelfloorrenderstyle.Name = "labelfloorrenderstyle";
-			this.labelfloorrenderstyle.Size = new System.Drawing.Size(80, 14);
+			this.labelfloorrenderstyle.Size = new System.Drawing.Size(69, 13);
 			this.labelfloorrenderstyle.TabIndex = 4;
 			this.labelfloorrenderstyle.Tag = "renderstylefloor";
 			this.labelfloorrenderstyle.Text = "Render style:";
@@ -1271,9 +1289,10 @@
 			// 
 			// label11
 			// 
-			this.label11.Location = new System.Drawing.Point(26, 172);
+			this.label11.AutoSize = true;
+			this.label11.Location = new System.Drawing.Point(56, 173);
 			this.label11.Name = "label11";
-			this.label11.Size = new System.Drawing.Size(80, 14);
+			this.label11.Size = new System.Drawing.Size(50, 13);
 			this.label11.TabIndex = 14;
 			this.label11.Tag = "rotationfloor";
 			this.label11.Text = "Rotation:";
@@ -1313,9 +1332,10 @@
 			// 
 			// label12
 			// 
-			this.label12.Location = new System.Drawing.Point(26, 142);
+			this.label12.AutoSize = true;
+			this.label12.Location = new System.Drawing.Point(47, 142);
 			this.label12.Name = "label12";
-			this.label12.Size = new System.Drawing.Size(80, 14);
+			this.label12.Size = new System.Drawing.Size(59, 13);
 			this.label12.TabIndex = 9;
 			this.label12.Tag = "lightfloor";
 			this.label12.Text = "Brightness:";
@@ -1447,9 +1467,10 @@
 			// 
 			// label20
 			// 
-			this.label20.Location = new System.Drawing.Point(26, 202);
+			this.label20.AutoSize = true;
+			this.label20.Location = new System.Drawing.Point(44, 202);
 			this.label20.Name = "label20";
-			this.label20.Size = new System.Drawing.Size(80, 14);
+			this.label20.Size = new System.Drawing.Size(62, 13);
 			this.label20.TabIndex = 17;
 			this.label20.Tag = "ceiling_reflect";
 			this.label20.Text = "Reflectivity:";
@@ -1490,9 +1511,10 @@
 			// 
 			// label7
 			// 
-			this.label7.Location = new System.Drawing.Point(26, 114);
+			this.label7.AutoSize = true;
+			this.label7.Location = new System.Drawing.Point(63, 114);
 			this.label7.Name = "label7";
-			this.label7.Size = new System.Drawing.Size(80, 14);
+			this.label7.Size = new System.Drawing.Size(43, 13);
 			this.label7.TabIndex = 6;
 			this.label7.Tag = "ceilingterrain";
 			this.label7.Text = "Terrain:";
@@ -1523,9 +1545,10 @@
 			// 
 			// labelCeilOffsets
 			// 
-			this.labelCeilOffsets.Location = new System.Drawing.Point(8, 27);
+			this.labelCeilOffsets.AutoSize = true;
+			this.labelCeilOffsets.Location = new System.Drawing.Point(26, 27);
 			this.labelCeilOffsets.Name = "labelCeilOffsets";
-			this.labelCeilOffsets.Size = new System.Drawing.Size(98, 14);
+			this.labelCeilOffsets.Size = new System.Drawing.Size(80, 13);
 			this.labelCeilOffsets.TabIndex = 0;
 			this.labelCeilOffsets.Tag = "xpanningceiling";
 			this.labelCeilOffsets.Text = "Texture offsets:";
@@ -1533,9 +1556,10 @@
 			// 
 			// labelCeilScale
 			// 
-			this.labelCeilScale.Location = new System.Drawing.Point(8, 59);
+			this.labelCeilScale.AutoSize = true;
+			this.labelCeilScale.Location = new System.Drawing.Point(32, 59);
 			this.labelCeilScale.Name = "labelCeilScale";
-			this.labelCeilScale.Size = new System.Drawing.Size(98, 14);
+			this.labelCeilScale.Size = new System.Drawing.Size(74, 13);
 			this.labelCeilScale.TabIndex = 2;
 			this.labelCeilScale.Tag = "xscaleceiling";
 			this.labelCeilScale.Text = "Texture scale:";
@@ -1555,7 +1579,7 @@
 			// 
 			// ceilAngleControl
 			// 
-			this.ceilAngleControl.Angle = -2700;
+			this.ceilAngleControl.Angle = -2790;
 			this.ceilAngleControl.AngleOffset = 90;
 			this.ceilAngleControl.DoomAngleClamping = false;
 			this.ceilAngleControl.Location = new System.Drawing.Point(6, 156);
@@ -1567,9 +1591,10 @@
 			// 
 			// labelceilrenderstyle
 			// 
-			this.labelceilrenderstyle.Location = new System.Drawing.Point(26, 88);
+			this.labelceilrenderstyle.AutoSize = true;
+			this.labelceilrenderstyle.Location = new System.Drawing.Point(37, 88);
 			this.labelceilrenderstyle.Name = "labelceilrenderstyle";
-			this.labelceilrenderstyle.Size = new System.Drawing.Size(80, 14);
+			this.labelceilrenderstyle.Size = new System.Drawing.Size(69, 13);
 			this.labelceilrenderstyle.TabIndex = 4;
 			this.labelceilrenderstyle.Tag = "renderstyleceiling";
 			this.labelceilrenderstyle.Text = "Render style:";
@@ -1577,9 +1602,10 @@
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(26, 172);
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(56, 173);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(80, 14);
+			this.label1.Size = new System.Drawing.Size(50, 13);
 			this.label1.TabIndex = 14;
 			this.label1.Tag = "rotationceiling";
 			this.label1.Text = "Rotation:";
@@ -1619,9 +1645,10 @@
 			// 
 			// labelLightFront
 			// 
-			this.labelLightFront.Location = new System.Drawing.Point(26, 142);
+			this.labelLightFront.AutoSize = true;
+			this.labelLightFront.Location = new System.Drawing.Point(47, 142);
 			this.labelLightFront.Name = "labelLightFront";
-			this.labelLightFront.Size = new System.Drawing.Size(80, 14);
+			this.labelLightFront.Size = new System.Drawing.Size(59, 13);
 			this.labelLightFront.TabIndex = 9;
 			this.labelLightFront.Tag = "lightceiling";
 			this.labelLightFront.Text = "Brightness:";
@@ -1763,9 +1790,10 @@
 			// 
 			// label22
 			// 
-			this.label22.Location = new System.Drawing.Point(6, 54);
+			this.label22.AutoSize = true;
+			this.label22.Location = new System.Drawing.Point(41, 54);
 			this.label22.Name = "label22";
-			this.label22.Size = new System.Drawing.Size(72, 14);
+			this.label22.Size = new System.Drawing.Size(37, 13);
 			this.label22.TabIndex = 58;
 			this.label22.Tag = "";
 			this.label22.Text = "Alpha:";
@@ -1793,9 +1821,10 @@
 			// 
 			// floorportalrenderstylelabel
 			// 
-			this.floorportalrenderstylelabel.Location = new System.Drawing.Point(6, 26);
+			this.floorportalrenderstylelabel.AutoSize = true;
+			this.floorportalrenderstylelabel.Location = new System.Drawing.Point(9, 25);
 			this.floorportalrenderstylelabel.Name = "floorportalrenderstylelabel";
-			this.floorportalrenderstylelabel.Size = new System.Drawing.Size(72, 14);
+			this.floorportalrenderstylelabel.Size = new System.Drawing.Size(69, 13);
 			this.floorportalrenderstylelabel.TabIndex = 56;
 			this.floorportalrenderstylelabel.Tag = "";
 			this.floorportalrenderstylelabel.Text = "Render style:";
@@ -1853,9 +1882,10 @@
 			// 
 			// label21
 			// 
-			this.label21.Location = new System.Drawing.Point(6, 54);
+			this.label21.AutoSize = true;
+			this.label21.Location = new System.Drawing.Point(41, 54);
 			this.label21.Name = "label21";
-			this.label21.Size = new System.Drawing.Size(72, 14);
+			this.label21.Size = new System.Drawing.Size(37, 13);
 			this.label21.TabIndex = 58;
 			this.label21.Tag = "";
 			this.label21.Text = "Alpha:";
@@ -1883,9 +1913,10 @@
 			// 
 			// ceilportalrenderstylelabel
 			// 
-			this.ceilportalrenderstylelabel.Location = new System.Drawing.Point(6, 26);
+			this.ceilportalrenderstylelabel.AutoSize = true;
+			this.ceilportalrenderstylelabel.Location = new System.Drawing.Point(9, 25);
 			this.ceilportalrenderstylelabel.Name = "ceilportalrenderstylelabel";
-			this.ceilportalrenderstylelabel.Size = new System.Drawing.Size(72, 14);
+			this.ceilportalrenderstylelabel.Size = new System.Drawing.Size(69, 13);
 			this.ceilportalrenderstylelabel.TabIndex = 56;
 			this.ceilportalrenderstylelabel.Tag = "";
 			this.ceilportalrenderstylelabel.Text = "Render style:";
@@ -2054,6 +2085,7 @@
 			this.tabs.ResumeLayout(false);
 			this.tabproperties.ResumeLayout(false);
 			this.groupdamage.ResumeLayout(false);
+			this.groupdamage.PerformLayout();
 			this.groupBox3.ResumeLayout(false);
 			this.tabColors.ResumeLayout(false);
 			this.groupBox11.ResumeLayout(false);
@@ -2064,6 +2096,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.ceilingglowheightrequired)).EndInit();
 			this.groupBox9.ResumeLayout(false);
 			this.groupBox8.ResumeLayout(false);
+			this.groupBox8.PerformLayout();
 			this.tabSurfaces.ResumeLayout(false);
 			this.groupBox2.ResumeLayout(false);
 			this.groupBox2.PerformLayout();
@@ -2071,7 +2104,9 @@
 			this.groupBox1.PerformLayout();
 			this.tabslopes.ResumeLayout(false);
 			this.groupBox7.ResumeLayout(false);
+			this.groupBox7.PerformLayout();
 			this.groupBox6.ResumeLayout(false);
+			this.groupBox6.PerformLayout();
 			this.gbFloorSlope.ResumeLayout(false);
 			this.gbCeilingSLope.ResumeLayout(false);
 			this.tabcomment.ResumeLayout(false);

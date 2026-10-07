@@ -209,6 +209,7 @@ namespace CodeImp.DoomBuilder.ZDoom
         {
             long cpos = LastPosition = reader.BaseStream.Position;
             char c;
+			if (reader.PeekChar() == -1) return null;
             try
             {
                 c = reader.ReadChar();
@@ -227,7 +228,7 @@ namespace CodeImp.DoomBuilder.ZDoom
                 //string ws_content = "";
                 SB.Length = 0;
                 SB.Append(c);
-                while (true)
+                while (reader.PeekChar()!=-1)
                 {
                     char cnext;
                     try
@@ -263,7 +264,8 @@ namespace CodeImp.DoomBuilder.ZDoom
         {
             long cpos = LastPosition = reader.BaseStream.Position;
             char c;
-            try
+			if(reader.PeekChar() == -1) return null;
+			try
             {
                 c = reader.ReadChar();
             }
@@ -279,7 +281,7 @@ namespace CodeImp.DoomBuilder.ZDoom
             {
                 SB.Length = 0;
                 SB.Append(c);
-                while (true)
+                while (reader.PeekChar()!=-1)
                 {
                     char cnext;
                     try
@@ -318,7 +320,8 @@ namespace CodeImp.DoomBuilder.ZDoom
         {
             long cpos = LastPosition = reader.BaseStream.Position;
             char c;
-            try
+			if(reader.PeekChar() == -1) return null;
+			try
             {
                 c = reader.ReadChar();
             }
@@ -349,7 +352,7 @@ namespace CodeImp.DoomBuilder.ZDoom
                     bool ishex = false;
                     SB.Length = 0;
                     SB.Append(c);
-                    while (true)
+                    while (reader.PeekChar()!=-1)
                     {
                         char cnext;
                         try
@@ -382,6 +385,11 @@ namespace CodeImp.DoomBuilder.ZDoom
                             isexponent = true;
                             isdouble = true;
                             SB.Append('e');
+							if (reader.PeekChar() == -1)
+							{
+								reader.BaseStream.Position = cpos;
+								return null;
+							}
                             try
                             {
                                 cnext = reader.ReadChar();
@@ -465,7 +473,8 @@ namespace CodeImp.DoomBuilder.ZDoom
         {
             long cpos = LastPosition = reader.BaseStream.Position;
             char c;
-            try
+			if(reader.PeekChar() == -1) return null;
+			try
             {
                 c = reader.ReadChar();
             }
@@ -739,7 +748,8 @@ namespace CodeImp.DoomBuilder.ZDoom
         // short_circuit only checks for string literals and "everything else", reporting "everything else" as invalid tokens
         public ZScriptToken ReadToken(bool short_circuit = false)
         {
-            try
+			if(reader.PeekChar() == -1) return null;
+			try
             {
                 ZScriptToken tok;
 
