@@ -84,6 +84,7 @@ jobs:
       - name: Upload Installer
         uses: actions/upload-artifact@v7
         with:
+          name: windows-installer-${{ matrix.platform }}
           path: Release/UltimateDoomBuilder-Setup-R${{ needs.get-revision.outputs.revision }}-${{ matrix.platform }}.exe
           archive: false
           if-no-files-found: error
@@ -92,6 +93,7 @@ jobs:
       - name: Upload 7-Zip file
         uses: actions/upload-artifact@v7
         with:
+          name: windows-zip-${{ matrix.platform }}
           path: Release/UltimateDoomBuilder-R${{ needs.get-revision.outputs.revision }}-${{ matrix.platform }}.7z
           archive: false
           if-no-files-found: error
@@ -105,13 +107,15 @@ jobs:
       contents: write
 
     steps:
-      - name: Download Artifacts
+      - name: Download Windows Artifacts
         uses: actions/download-artifact@v4
         with:
-          path: ./artifacts
+          pattern:: windows-*
+          merge-multiple: true
+          path: ./artifacts/windows
 
       - name: "Create Release R${{ needs.get-revision.outputs.revision }}"
         uses: softprops/action-gh-release@v3
         with:
           body: "Automated builds for Ultimate Doom Builder R${{ needs.get-revision.outputs.revision }}."
-          files: ./artifacts/*
+          files: ./artifacts/windows/*
