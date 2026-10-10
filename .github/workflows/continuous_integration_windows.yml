@@ -61,7 +61,6 @@ jobs:
             'Build\Plugins\TagRange.dll', `
             'Build\Plugins\ThreeDFloorMode.dll', `
             'Build\Plugins\VisplaneExplorer.dll', `
-            'Build\Updater.exe' `
           )
           foreach($file in $files)
           {
@@ -72,8 +71,8 @@ jobs:
             }
           }
 
-#      - name: Upload Package
-#        uses: actions/upload-artifact@v7
-#        with:
-#          path: Build
-#          name: "vs_${{ matrix.platform }}_${{ matrix.configuration }}"
+      - name: Upload Package
+        uses: actions/upload-artifact@v7
+        with:
+          path: Build
+          name: "vs_${{ matrix.platform }}_${{ matrix.configuration }}"
