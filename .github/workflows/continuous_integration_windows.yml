@@ -107,9 +107,8 @@ jobs:
       - name: Download Windows Artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: windows-*
           merge-multiple: true
-          path: ./artifacts/windows
+          path: ./artifacts
 
       - name: "Create Release R${{ needs.get-revision.outputs.revision }}"
         uses: softprops/action-gh-release@v3
@@ -117,6 +116,6 @@ jobs:
           tag_name: R${{ needs.get-revision.outputs.revision }}
           name: "Ultimate Doom Builder R${{ needs.get-revision.outputs.revision }}"
           body: "Automated builds for Ultimate Doom Builder R${{ needs.get-revision.outputs.revision }}."
-          files: ./artifacts/windows/*
+          files: ./artifacts/*
           prerelease: false
           make_latest: true
