@@ -118,6 +118,6 @@ jobs:
           tag_name: R${{ needs.get-revision.outputs.revision }}
           name: "Ultimate Doom Builder R${{ needs.get-revision.outputs.revision }}"
           body: "Automated builds for Ultimate Doom Builder R${{ needs.get-revision.outputs.revision }}."
-          files: ./artifacts/files/*
+          files: artifacts/*
           prerelease: false
           make_latest: true
