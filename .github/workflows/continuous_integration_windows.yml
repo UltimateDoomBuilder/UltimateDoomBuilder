@@ -108,6 +108,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           path: artifacts
+          merge-multiple: true
 
       - name: Display structure of downloaded files
         run: ls -R artifacts
