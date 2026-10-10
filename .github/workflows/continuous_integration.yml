@@ -25,7 +25,7 @@ jobs:
 
   call-build-windows:
     needs: get-revision
-    uses: ./.github/workflows/continuous_integration_windows.yml
+    uses: ./.github/workflows/build_windows.yml
     with:
       revision: ${{ needs.get-revision.outputs.revision }}
 
