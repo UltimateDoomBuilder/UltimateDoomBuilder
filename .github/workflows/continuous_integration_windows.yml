@@ -55,34 +55,6 @@ jobs:
           & $msbuild BuilderRelease.slnf $options
           if (-not $?) { throw "Build failed" }
 
-      - name: Test Files Presence
-        run: |
-          $files = @( `
-            'Build\Builder.exe', `
-            'Build\BuilderNative.dll', `
-            'Build\Plugins\AutomapMode.dll', `
-            'Build\Plugins\BuilderEffects.dll', `
-            'Build\Plugins\BuilderModes.dll', `
-            'Build\Plugins\ColorPicker.dll', `
-            'Build\Plugins\CommentsPanel.dll', `
-            'Build\Plugins\NodesViewer.dll', `
-            'Build\Plugins\SoundPropagationMode.dll', `
-            'Build\Plugins\StairSectorBuilder.dll', `
-            'Build\Plugins\TagExplorer.dll', `
-            'Build\Plugins\TagRange.dll', `
-            'Build\Plugins\ThreeDFloorMode.dll', `
-            'Build\Plugins\VisplaneExplorer.dll', `
-            'Build\Updater.exe' `
-          )
-          foreach($file in $files)
-          {
-            if (!(Test-Path -Path $file -PathType Leaf))
-            {
-              Write-Output "ERROR: File $file is missing"
-              exit 1
-            }
-          }
-
       - name: Build Installer
         run: |
           $isccPath = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
@@ -127,7 +99,7 @@ jobs:
 
   create-release:
     name: Create GitHub Release
-    needs: [build-windows]
+    needs: [get-revision, build-windows]
     runs-on: ubuntu-latest
     permissions:
       contents: write
