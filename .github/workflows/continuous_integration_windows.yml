@@ -52,7 +52,7 @@ jobs:
           & $msbuild BuilderRelease.slnf $options
           if (-not $?) { throw "Build failed" }
 
-      - name: Build Installer
+      - name: Create Installer
         run: |
           $isccPath = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
           
@@ -72,13 +72,13 @@ jobs:
       - name: Install 7-Zip
         run: choco install 7zip -y
 
-      - name: Zip files
+      - name: Create 7-Zip Archive
         run: |
           $outputFileName = "UltimateDoomBuilder-R${{ needs.get-revision.outputs.revision }}-${{ matrix.platform }}.7z"
           & 7z a Release\$outputFileName .\Build\* "-xr!*.xml" "-x!.gitignore"
           if (-not $?) { throw "Zipping files failed" }
 
-      - name: Upload Installer
+      - name: Upload Installer Artifact
         uses: actions/upload-artifact@v7
         with:
           path: Release/UltimateDoomBuilder-Setup-R${{ needs.get-revision.outputs.revision }}-${{ matrix.platform }}.exe
@@ -86,7 +86,7 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-      - name: Upload 7-Zip file
+      - name: Upload 7-Zip Archive Artifact
         uses: actions/upload-artifact@v7
         with:
           path: Release/UltimateDoomBuilder-R${{ needs.get-revision.outputs.revision }}-${{ matrix.platform }}.7z
@@ -102,13 +102,13 @@ jobs:
       contents: write
 
     steps:
-      - name: Download Windows Artifacts
+      - name: Download Artifacts
         uses: actions/download-artifact@v8
         with:
           path: artifacts
           merge-multiple: true
 
-      - name: Check if artifacts exist
+      - name: Check If Artifacts Exist
         run: |
           if [ -z "$(ls -A artifacts)" ]; then
             echo "Error: No artifacts found after download"
