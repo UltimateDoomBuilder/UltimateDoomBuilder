@@ -86,10 +86,27 @@ jobs:
           & $isccPath /DUDB_arch=${{ matrix.platform }} "Setup\UDBuilder_setup.iss" "-f$outputFileName" "/ORelease"
           if (-not $?) { throw "Building installer failed" }
 
-      - name: Upload Package
+      - name: Install 7-Zip
+        run: choco install 7zip -y
+
+      - name: Zip files
+        run: |
+          $outputFileName = "UltimateDoomBuilder-R${{ env.REV_COUNT }}-${{ matrix.platform }}.7z"
+          & 7z a Release\$outputFileName .\Build\* -xr!*.xml -x!.gitignore
+          if (-not $?) { throw "Zipping files failed" }
+
+      - name: Upload Installer
         uses: actions/upload-artifact@v7
         with:
           path: Release/UltimateDoomBuilder-Setup-R${{ env.REV_COUNT }}-${{ matrix.platform }}.exe
+          archive: false
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Upload 7-Zip file
+        uses: actions/upload-artifact@v7
+        with:
+          path: Release/UltimateDoomBuilder-R${{ env.REV_COUNT }}-${{ matrix.platform }}.7z
           archive: false
           if-no-files-found: error
           retention-days: 1
