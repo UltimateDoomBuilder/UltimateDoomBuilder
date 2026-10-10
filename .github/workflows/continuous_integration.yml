@@ -1,0 +1,63 @@
+name: Continuous Integration
+
+on: [push, pull_request]
+
+jobs:
+  get-revision:
+    name: Get Revision
+    runs-on: ubuntu-latest
+    outputs:
+      revision: ${{ steps.vars.outputs.REV_COUNT }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+        with:
+          submodules: recursive
+          fetch-depth: 0 # Required to properly get the commit count      
+      
+      - name: Determine Revision
+        id: vars
+        run: |
+          COUNT=$(git rev-list --count HEAD)
+          echo "REV_COUNT=$COUNT" >> $GITHUB_OUTPUT
+          echo "Detected Revision: $COUNT"  
+
+  call-build-windows:
+    needs: get-revision
+    uses: ./.github/workflows/continuous_integration_windows.yml
+    with:
+      revision: ${{ needs.get-revision.outputs.revision }}
+
+  create-release:
+    name: Create GitHub Release
+    needs: [get-revision, call-build-windows]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Check If Artifacts Exist
+        run: |
+          if [ -z "$(ls -A artifacts)" ]; then
+            echo "Error: No artifacts found after download"
+            exit 1
+          else
+            echo "Success: Artifacts found after download"
+          fi
+
+      - name: "Create Release R${{ needs.get-revision.outputs.revision }}"
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: R${{ needs.get-revision.outputs.revision }}
+          name: "Ultimate Doom Builder R${{ needs.get-revision.outputs.revision }}"
+          body: "Automated builds for Ultimate Doom Builder R${{ needs.get-revision.outputs.revision }}."
+          files: artifacts/*
+          prerelease: false
+          make_latest: true

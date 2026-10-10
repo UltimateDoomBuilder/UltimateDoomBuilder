@@ -1,31 +1,15 @@
 name: Continuous Integration - Windows
 
-on: [push, pull_request]
+on:
+  workflow_call:
+    inputs:
+      revision:
+        required: true
+        type: string
 
 jobs:
-  get-revision:
-    name: Get Revision
-    runs-on: ubuntu-latest
-    outputs:
-      revision: ${{ steps.vars.outputs.REV_COUNT }}
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v7
-        with:
-          submodules: recursive
-          fetch-depth: 0 # Required to properly get the commit count      
-      
-      - name: Determine Revision
-        id: vars
-        run: |
-          COUNT=$(git rev-list --count HEAD)
-          echo "REV_COUNT=$COUNT" >> $GITHUB_OUTPUT
-          echo "Detected Revision: $COUNT"   
-
   build-windows:
     name: "Windows ${{ matrix.platform }}"
-    needs: get-revision
     runs-on: windows-latest
     strategy:
       fail-fast: false
@@ -64,7 +48,7 @@ jobs:
               throw "ISCC.exe not found!"
           }
 
-          $outputFileName = "UltimateDoomBuilder-Setup-R${{ needs.get-revision.outputs.revision }}-${{ matrix.platform }}"
+          $outputFileName = "UltimateDoomBuilder-Setup-R${{ inputs.revision }}-${{ matrix.platform }}"
 
           & $isccPath /DUDB_arch=${{ matrix.platform }} "Setup\UDBuilder_setup.iss" "-f$outputFileName" "/ORelease"
           if (-not $?) { throw "Building installer failed" }
@@ -74,14 +58,14 @@ jobs:
 
       - name: Create 7-Zip Archive
         run: |
-          $outputFileName = "UltimateDoomBuilder-R${{ needs.get-revision.outputs.revision }}-${{ matrix.platform }}.7z"
+          $outputFileName = "UltimateDoomBuilder-R${{ inputs.revision }}-${{ matrix.platform }}.7z"
           & 7z a Release\$outputFileName .\Build\* "-xr!*.xml" "-x!.gitignore"
           if (-not $?) { throw "Zipping files failed" }
 
       - name: Upload Installer Artifact
         uses: actions/upload-artifact@v7
         with:
-          path: Release/UltimateDoomBuilder-Setup-R${{ needs.get-revision.outputs.revision }}-${{ matrix.platform }}.exe
+          path: Release/UltimateDoomBuilder-Setup-R${{ inputs.revision }}-${{ matrix.platform }}.exe
           archive: false
           if-no-files-found: error
           retention-days: 1
@@ -89,40 +73,8 @@ jobs:
       - name: Upload 7-Zip Archive Artifact
         uses: actions/upload-artifact@v7
         with:
-          path: Release/UltimateDoomBuilder-R${{ needs.get-revision.outputs.revision }}-${{ matrix.platform }}.7z
+          path: Release/UltimateDoomBuilder-R${{ inputs.revision }}-${{ matrix.platform }}.7z
           archive: false
           if-no-files-found: error
           retention-days: 1
 
-  create-release:
-    name: Create GitHub Release
-    needs: [get-revision, build-windows]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    steps:
-      - name: Download Artifacts
-        uses: actions/download-artifact@v8
-        with:
-          path: artifacts
-          merge-multiple: true
-
-      - name: Check If Artifacts Exist
-        run: |
-          if [ -z "$(ls -A artifacts)" ]; then
-            echo "Error: No artifacts found after download"
-            exit 1
-          else
-            echo "Success: Artifacts found after download"
-          fi
-
-      - name: "Create Release R${{ needs.get-revision.outputs.revision }}"
-        uses: softprops/action-gh-release@v3
-        with:
-          tag_name: R${{ needs.get-revision.outputs.revision }}
-          name: "Ultimate Doom Builder R${{ needs.get-revision.outputs.revision }}"
-          body: "Automated builds for Ultimate Doom Builder R${{ needs.get-revision.outputs.revision }}."
-          files: artifacts/*
-          prerelease: false
-          make_latest: true
