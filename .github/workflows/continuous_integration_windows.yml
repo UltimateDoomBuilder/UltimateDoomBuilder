@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       revision: ${{ steps.vars.outputs.REV_COUNT }}
-      
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
@@ -125,23 +125,22 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-#  create-release:
-#    name: Create GitHub Release
-#    needs: [build-windows]
-#    runs-on: ubuntu-latest
-#    permissions:
-#      contents: write
-#
-#    steps:
-#      - name: Download Artifacts
-#        uses: actions/download-artifact@v4
-#        with:
-#          path: ./artifacts
-#
-#      - name: Create Release
-#        uses: softprops/action-gh-release@v3
-#        name: "Build R${{ needs.get-revision.outputs.revision }}"
-#        with:
-#          body: "Automated builds for Ultimate Doom Builder R${{ needs.get-revision.outputs.revision }}."
-#          files: ./artifacts/*
+  create-release:
+    name: Create GitHub Release
+    needs: [build-windows]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v3
+        name: "Build R${{ needs.get-revision.outputs.revision }}"
+        with:
+          body: "Automated builds for Ultimate Doom Builder R${{ needs.get-revision.outputs.revision }}."
+          files: ./artifacts/*
