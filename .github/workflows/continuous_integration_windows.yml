@@ -74,7 +74,7 @@ jobs:
 
       - name: Build Installer
         run: |
-          $isccPath = "${{ env.ProgramFiles(x86) }}\Inno Setup 6\ISCC.exe"
+          $isccPath = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
           
           if (-not (Test-Path $isccPath)) {
               $isccPath = "$env:ProgramFiles\Inno Setup 6\ISCC.exe"
