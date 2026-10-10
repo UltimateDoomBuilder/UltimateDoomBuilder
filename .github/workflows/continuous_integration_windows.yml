@@ -92,7 +92,7 @@ jobs:
       - name: Zip files
         run: |
           $outputFileName = "UltimateDoomBuilder-R${{ env.REV_COUNT }}-${{ matrix.platform }}.7z"
-          & 7z a Release\$outputFileName .\Build\* -xr!*.xml -x!.gitignore
+          & 7z a Release\$outputFileName .\Build\* "-xr!*.xml" "-x!.gitignore"
           if (-not $?) { throw "Zipping files failed" }
 
       - name: Upload Installer
