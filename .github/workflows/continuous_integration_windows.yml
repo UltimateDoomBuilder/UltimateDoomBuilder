@@ -108,7 +108,7 @@ jobs:
 
     steps:
       - name: Download Windows Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern:: windows-*
           merge-multiple: true
