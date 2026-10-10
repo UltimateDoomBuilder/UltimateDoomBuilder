@@ -24,7 +24,7 @@ jobs:
           echo "Detected Revision: $COUNT"   
 
   build-windows:
-    name: "Visual Studio ${{ matrix.platform }} ${{ matrix.configuration }}"
+    name: "Windows ${{ matrix.platform }} ${{ matrix.configuration }}"
     needs: get-revision
     runs-on: windows-latest
     strategy:
@@ -118,5 +118,8 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: R${{ needs.get-revision.outputs.revision }}
+          name: "Ultimate Doom Builder R${{ needs.get-revision.outputs.revision }}"
           body: "Automated builds for Ultimate Doom Builder R${{ needs.get-revision.outputs.revision }}."
           files: ./artifacts/windows/*
+          prerelease: false
+          make_latest: true
