@@ -1,0 +1,24 @@
+{
+  "solution": {
+    "path": "Builder.sln",
+    "projects": [
+      "Source\\Core\\Builder.csproj",
+      "Source\\Native\\BuilderNative.vcxproj",
+      "Source\\Plugins\\3DFloorMode\\ThreeDFloorMode.csproj",
+      "Source\\Plugins\\AutomapMode\\AutomapMode.csproj",
+      "Source\\Plugins\\BlockmapExplorer\\BlockmapExplorer.csproj",
+      "Source\\Plugins\\BuilderEffects\\BuilderEffects.csproj",
+      "Source\\Plugins\\BuilderModes\\BuilderModes.csproj",
+      "Source\\Plugins\\ColorPicker\\ColorPicker.csproj",
+      "Source\\Plugins\\CommentsPanel\\CommentsPanel.csproj",
+      "Source\\Plugins\\NodesViewer\\NodesViewer.csproj",
+      "Source\\Plugins\\RejectExplorer\\RejectExplorer.csproj",
+      "Source\\Plugins\\SoundPropagationMode\\SoundPropagation.csproj",
+      "Source\\Plugins\\StairSectorBuilder\\StairSectorBuilder.csproj",
+      "Source\\Plugins\\TagExplorer\\TagExplorer.csproj",
+      "Source\\Plugins\\TagRange\\TagRange.csproj",
+      "Source\\Plugins\\UDBScript\\UDBScript.csproj",
+      "Source\\Plugins\\VisplaneExplorer\\VisplaneExplorer.csproj",
+    ]
+  }
+}
