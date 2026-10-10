@@ -60,7 +60,7 @@ jobs:
             'Build\Plugins\TagExplorer.dll', `
             'Build\Plugins\TagRange.dll', `
             'Build\Plugins\ThreeDFloorMode.dll', `
-            'Build\Plugins\VisplaneExplorer.dll', `
+            'Build\Plugins\VisplaneExplorer.dll' `
           )
           foreach($file in $files)
           {
