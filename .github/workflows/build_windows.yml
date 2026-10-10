@@ -1,4 +1,4 @@
-name: Continuous Integration - Windows
+name: Build Windows
 
 on:
   workflow_call:
@@ -6,6 +6,7 @@ on:
       revision:
         required: true
         type: string
+  workflow_dispatch:
 
 jobs:
   build-windows:
