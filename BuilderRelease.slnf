@@ -19,6 +19,7 @@
       "Source\\Plugins\\TagRange\\TagRange.csproj",
       "Source\\Plugins\\UDBScript\\UDBScript.csproj",
       "Source\\Plugins\\VisplaneExplorer\\VisplaneExplorer.csproj",
+      "Source\\Tools\\Updater\\Updater.csproj",
     ]
   }
 }
