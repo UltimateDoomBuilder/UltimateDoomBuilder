@@ -28,9 +28,6 @@ jobs:
           "REV_COUNT=$COUNT" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Write-Output "Detected Revision: $COUNT"
 
-      - name: Restore NuGet packages
-        run: nuget restore Builder.sln
-
       - name: Build
         run: |
           $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
