@@ -8,7 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       revision: ${{ steps.vars.outputs.REV_COUNT }}
-    setps:
+      
+    steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
         with:
