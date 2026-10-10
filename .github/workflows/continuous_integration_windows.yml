@@ -72,8 +72,24 @@ jobs:
             }
           }
 
+      - name: Build Installer
+        run: |
+          $isccPath = "${{ env.ProgramFiles(x86) }}\Inno Setup 6\ISCC.exe"
+          
+          if (-not (Test-Path $isccPath)) {
+              $isccPath = "$env:ProgramFiles\Inno Setup 6\ISCC.exe"
+          }
+
+          if (-not (Test-Path $isccPath)) {
+              throw "ISCC.exe not found!"
+          }
+
+          & $isccPath /DUDB_arch=${{ matrix.platform }} "Setup\UDBuilder_setup.iss"
+          if (-not $?) { throw "Building installer failed" }
+
       - name: Upload Package
         uses: actions/upload-artifact@v7
         with:
-          path: Build
-          name: "vs_${{ matrix.platform }}_${{ matrix.configuration }}"
+          path: Release\Setup.exe
+          #name: "vs_${{ matrix.platform }}_${{ matrix.configuration }}.exe"
+          name: "UltimateDoomBuilder-Setup-R${env:REV_COUNT}-${{ matrix.platform }}.exe
