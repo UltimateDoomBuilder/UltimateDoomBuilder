@@ -105,10 +105,11 @@ jobs:
 
     steps:
       - name: Download Windows Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           merge-multiple: true
-          path: ./artifacts/files
+          pattern: windows-*
+          path: ./artifacts/windows
 
       - name: "Create Release R${{ needs.get-revision.outputs.revision }}"
         uses: softprops/action-gh-release@v3
