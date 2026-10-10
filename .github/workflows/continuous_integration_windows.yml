@@ -81,7 +81,6 @@ jobs:
       - name: Upload Installer
         uses: actions/upload-artifact@v7
         with:
-          name: windows-installer-${{ matrix.platform }}
           path: Release/UltimateDoomBuilder-Setup-R${{ needs.get-revision.outputs.revision }}-${{ matrix.platform }}.exe
           archive: false
           if-no-files-found: error
@@ -90,7 +89,6 @@ jobs:
       - name: Upload 7-Zip file
         uses: actions/upload-artifact@v7
         with:
-          name: windows-zip-${{ matrix.platform }}
           path: Release/UltimateDoomBuilder-R${{ needs.get-revision.outputs.revision }}-${{ matrix.platform }}.7z
           archive: false
           if-no-files-found: error
@@ -110,8 +108,14 @@ jobs:
           path: artifacts
           merge-multiple: true
 
-      - name: Display structure of downloaded files
-        run: ls -R artifacts
+      - name: Check if artifacts exist
+        run: |
+          if [ -z "$(ls -A artifacts)" ]; then
+            echo "Error: No artifacts found after download"
+            exit 1
+          else
+            echo "Success: Artifacts found after download"
+          fi
 
       - name: "Create Release R${{ needs.get-revision.outputs.revision }}"
         uses: softprops/action-gh-release@v3
