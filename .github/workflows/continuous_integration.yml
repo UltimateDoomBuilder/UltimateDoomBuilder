@@ -29,9 +29,15 @@ jobs:
     with:
       revision: ${{ needs.get-revision.outputs.revision }}
 
+  call-build-flatpak:
+    needs: get-revision
+    uses: ./.github/workflows/build_flatpak.yml
+    with:
+      revision: ${{ needs.get-revision.outputs.revision }}      
+
   create-release:
     name: Create GitHub Release
-    needs: [get-revision, call-build-windows]
+    needs: [get-revision, call-build-windows, call-build-flatpak]
     runs-on: ubuntu-latest
     permissions:
       contents: write
