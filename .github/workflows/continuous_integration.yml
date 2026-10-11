@@ -4,10 +4,11 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   get-revision:
-    name: Get Revision
+    name: Prepare Build
     runs-on: ubuntu-latest
     outputs:
       revision: ${{ steps.vars.outputs.REV_COUNT }}
+      xml_changelog: ${{ steps.vars.outputs.XML_CHANGELOG }}
 
     steps:
       - name: Checkout Repository
@@ -23,47 +24,59 @@ jobs:
           echo "REV_COUNT=$COUNT" >> $GITHUB_OUTPUT
           echo "Detected Revision: $COUNT"  
 
-  call-build-windows:
-    needs: get-revision
-    uses: ./.github/workflows/build_windows.yml
-    with:
-      revision: ${{ needs.get-revision.outputs.revision }}
-
-  call-build-flatpak:
-    needs: get-revision
-    uses: ./.github/workflows/build_flatpak.yml
-    with:
-      revision: ${{ needs.get-revision.outputs.revision }}      
-
-  create-release:
-    name: Create GitHub Release
-    needs: [get-revision, call-build-windows, call-build-flatpak]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    steps:
-      - name: Download Artifacts
-        uses: actions/download-artifact@v8
-        with:
-          path: artifacts
-          merge-multiple: true
-
-      - name: Check If Artifacts Exist
+      - name: Generate XML Changelog
         run: |
-          if [ -z "$(ls -A artifacts)" ]; then
-            echo "Error: No artifacts found after download"
-            exit 1
-          else
-            echo "Success: Artifacts found after download"
-          fi
+          XML_CHANGELOG=$(
+            echo '<?xml version="1.0" encoding="UTF-8"?>'
+            echo '<log>'
+            git log master --since=2012-04-17 --pretty=format:"  [OB]logentry commit=\"%h\"[CB]%n    [OB]author[CB]%an[OB]/author[CB]%n    [OB]date[CB]%aI[OB]/date[CB]%n    [OB]msg[CB]%B[OB]/msg[CB]%n  [OB]/logentry[CB]"
+            | sed -e 's/</\&lt;/g' -e 's/>/\&gt;/g' -e 's/\[OB\]/</g' -e 's/\[CB\]/>/g'
+            echo '</log>'
+          )
+          echo "$XML_CHANGELOG"
+          echo "XML_CHANGELOG='$XML_CHANGELOG'" >> $GITHUB_OUTPUT
 
-      - name: "Create Release R${{ needs.get-revision.outputs.revision }}"
-        uses: softprops/action-gh-release@v3
-        with:
-          tag_name: R${{ needs.get-revision.outputs.revision }}
-          name: "Ultimate Doom Builder R${{ needs.get-revision.outputs.revision }}"
-          body: "Automated builds for Ultimate Doom Builder R${{ needs.get-revision.outputs.revision }}."
-          files: artifacts/*
-          prerelease: false
-          make_latest: true
+#  call-build-windows:
+#    needs: get-revision
+#    uses: ./.github/workflows/build_windows.yml
+#    with:
+#      revision: ${{ needs.get-revision.outputs.revision }}
+
+#  call-build-flatpak:
+#    needs: get-revision
+#    uses: ./.github/workflows/build_flatpak.yml
+#    with:
+#      revision: ${{ needs.get-revision.outputs.revision }}      
+
+#  create-release:
+#    name: Create GitHub Release
+#    needs: [get-revision, call-build-windows, call-build-flatpak]
+#    runs-on: ubuntu-latest
+#    permissions:
+#      contents: write
+#
+#    steps:
+#      - name: Download Artifacts
+#        uses: actions/download-artifact@v8
+#        with:
+#          path: artifacts
+#          merge-multiple: true
+#
+#      - name: Check If Artifacts Exist
+#        run: |
+#          if [ -z "$(ls -A artifacts)" ]; then
+#            echo "Error: No artifacts found after download"
+#            exit 1
+#          else
+#            echo "Success: Artifacts found after download"
+#          fi
+#
+#      - name: "Create Release R${{ needs.get-revision.outputs.revision }}"
+#        uses: softprops/action-gh-release@v3
+#        with:
+#          tag_name: R${{ needs.get-revision.outputs.revision }}
+#          name: "Ultimate Doom Builder R${{ needs.get-revision.outputs.revision }}"
+#          body: "Automated builds for Ultimate Doom Builder R${{ needs.get-revision.outputs.revision }}."
+#          files: artifacts/*
+#          prerelease: false
+#          make_latest: true
