@@ -29,7 +29,7 @@ jobs:
           XML_CHANGELOG=$(
             echo '<?xml version="1.0" encoding="UTF-8"?>'
             echo '<log>'
-            git log master --since=2012-04-17 --pretty=format:"  [OB]logentry commit=\"%h\"[CB]%n    [OB]author[CB]%an[OB]/author[CB]%n    [OB]date[CB]%aI[OB]/date[CB]%n    [OB]msg[CB]%B[OB]/msg[CB]%n  [OB]/logentry[CB]" | sed -e 's/</\&lt;/g' -e 's/>/\&gt;/g' -e 's/\[OB\]/</g' -e 's/\[CB\]/>/g'
+            git log origin/master --since=2012-04-17 --pretty=format:"  [OB]logentry commit=\"%h\"[CB]%n    [OB]author[CB]%an[OB]/author[CB]%n    [OB]date[CB]%aI[OB]/date[CB]%n    [OB]msg[CB]%B[OB]/msg[CB]%n  [OB]/logentry[CB]" | sed -e 's/</\&lt;/g' -e 's/>/\&gt;/g' -e 's/\[OB\]/</g' -e 's/\[CB\]/>/g'
             echo '</log>'
           )
           echo "$XML_CHANGELOG"
