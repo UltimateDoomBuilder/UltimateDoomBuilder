@@ -1,6 +1,6 @@
 app-id: io.github.ultimatedoombuilder.ultimatedoombuilder
 runtime: org.freedesktop.Platform
-runtime-version: '24.08'
+runtime-version: '26.08'
 sdk: org.freedesktop.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.mono6
@@ -20,8 +20,8 @@ modules:
     buildsystem: autotools
     sources:
       - type: git
-        url: https://github.com/mono/libgdiplus.git
-        tag: '6.1'
+        url: https://gitlab.winehq.org/mono/libgdiplus
+        tag: '6.2'
 
   - name: builder-native
     buildsystem: simple
