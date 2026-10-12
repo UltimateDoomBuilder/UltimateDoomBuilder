@@ -42,8 +42,6 @@ jobs:
             echo "$TEXT_CHANGELOG"
             echo "EOF"
           } >> $GITHUB_OUTPUT
-          echo "Generated Text Changelog:" 
-          echo "$TEXT_CHANGELOG"
 
 #  call-build-windows:
 #    needs: get-revision

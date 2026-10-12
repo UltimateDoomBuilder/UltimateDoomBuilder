@@ -6,6 +6,9 @@ on:
       revision:
         required: true
         type: string
+      text_changelog:
+        required: true
+        type: string
   workflow_dispatch:
 
 jobs:
@@ -36,6 +39,12 @@ jobs:
           )
           & $msbuild BuilderRelease.slnf $options
           if (-not $?) { throw "Build failed" }
+
+      - name: Save Text Changelog
+        run: |
+          $env:TEXT_CHANGELOG > Changelog.txt
+        env:
+          TEXT_CHANGELOG: ${{ inputs.text_changelog }}
 
       - name: Create Installer
         run: |
