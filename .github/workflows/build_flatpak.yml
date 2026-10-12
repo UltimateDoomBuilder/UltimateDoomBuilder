@@ -44,7 +44,7 @@ jobs:
           cache-key: flatpak-builder-${{ hashFiles('flatpak/io.github.ultimatedoombuilder.ultimatedoombuilder.yml') }}
           upload-artifact: false
 
-      - name: Upload FlatpakArtifact
+      - name: Upload Flatpak Artifact
         uses: actions/upload-artifact@v7
         with:
           path: ultimatedoombuilder-R${{ inputs.revision }}.flatpak
