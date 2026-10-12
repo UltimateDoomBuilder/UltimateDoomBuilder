@@ -38,6 +38,7 @@ modules:
       - msbuild /p:Configuration=Release /p:TargetFrameworkVersion=v4.7.2 /p:RunCodeAnalysis=false /p:CodeAnalysisRuleSet="" BuilderMono.sln
       - mkdir -p /app/bin /app/lib/ultimatedoombuilder
       - cp -r Build/* /app/lib/ultimatedoombuilder/
+      - if test -f Changelog.txt; then cp Changelog.txt /app/lib/ultimatedoombuilder/; fi
       - mkdir -p /app/etc/mono/
       - |
         echo '<configuration>

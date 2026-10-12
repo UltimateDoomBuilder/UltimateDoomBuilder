@@ -6,9 +6,6 @@ on:
       revision:
         required: true
         type: string
-      text_changelog:
-        required: true
-        type: string
   workflow_dispatch:
 
 jobs:
@@ -30,11 +27,11 @@ jobs:
         run: |
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-      - name: Save Text Changelog
-        run: |
-          echo "$TEXT_CHANGELOG" > Build/Changelog.txt
-        env:
-          TEXT_CHANGELOG: ${{ inputs.text_changelog }}
+      - name: Download Text Changelog Artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: text-changelog
+          path: .
 
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6

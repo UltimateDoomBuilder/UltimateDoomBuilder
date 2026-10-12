@@ -50,11 +50,11 @@ jobs:
     with:
       revision: ${{ needs.prepare-build.outputs.revision }}
 
-#  call-build-flatpak:
-#    needs: prepare-build
-#    uses: ./.github/workflows/build_flatpak.yml
-#    with:
-#      revision: ${{ needs.prepare-build.outputs.revision }}      
+  call-build-flatpak:
+    needs: prepare-build
+    uses: ./.github/workflows/build_flatpak.yml
+    with:
+      revision: ${{ needs.prepare-build.outputs.revision }}      
 
 #  create-release:
 #    name: Create GitHub Release
