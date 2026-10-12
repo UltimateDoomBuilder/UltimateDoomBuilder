@@ -6,9 +6,6 @@ on:
       revision:
         required: true
         type: string
-      text_changelog:
-        required: true
-        type: string
   workflow_dispatch:
 
 jobs:
@@ -40,15 +37,12 @@ jobs:
           & $msbuild BuilderRelease.slnf $options
           if (-not $?) { throw "Build failed" }
 
-      - name: Save Text Changelog
-        run: |
-          $env:TEXT_CHANGELOG > Build/Changelog.txt
-          Write-Output "Text Changelog saved to Build/Changelog.txt:"
-          Write-Output $env:TEXT_CHANGELOG
-          Write-output "Content of Build:"
-          Get-ChildItem -Recurse .\Build
-        env:
-          TEXT_CHANGELOG: ${{ inputs.text_changelog }}
+      - name: Download Text Changelog Artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: text-changelog
+          path: Build/
+          if-no-files-found: error
 
       - name: Create Installer
         run: |

@@ -8,7 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       revision: ${{ steps.vars.outputs.REV_COUNT }}
-      text_changelog: ${{ steps.vars.outputs.TEXT_CHANGELOG }}
 
     steps:
       - name: Checkout Repository
@@ -36,14 +35,14 @@ jobs:
 
       - name: Generate Text Changelog
         run: |
-          TEXT_CHANGELOG=$(python generate-changelog.py --branch origin/master --format text)
-          {
-            echo "TEXT_CHANGELOG<<EOF"
-            echo "$TEXT_CHANGELOG"
-            echo "EOF"
-          } >> $GITHUB_OUTPUT
-          echo "Content of GITHUB_OUTPUT:"
-          cat $GITHUB_OUTPUT
+          python generate-changelog.py --branch origin/master --format text > Changelog.txt
+
+      - name: Upload Text Changelog Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: text-changelog
+          path: Changelog.txt
+          if-no-files-found: error
 
   call-build-windows:
     needs: prepare-build
