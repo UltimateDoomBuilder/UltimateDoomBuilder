@@ -3,7 +3,7 @@ name: Build And Create Release
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  get-revision:
+  prepare-build:
     name: Prepare Build
     runs-on: ubuntu-latest
     outputs:
@@ -43,21 +43,22 @@ jobs:
             echo "EOF"
           } >> $GITHUB_OUTPUT
 
-#  call-build-windows:
-#    needs: get-revision
-#    uses: ./.github/workflows/build_windows.yml
-#    with:
-#      revision: ${{ needs.get-revision.outputs.revision }}
+  call-build-windows:
+    needs: prepare-build
+    uses: ./.github/workflows/build_windows.yml
+    with:
+      revision: ${{ needs.prepare-build.outputs.revision }}
+      text_changelog: ${{ needs.prepare-build.outputs.text_changelog }}
 
 #  call-build-flatpak:
-#    needs: get-revision
+#    needs: prepare-build
 #    uses: ./.github/workflows/build_flatpak.yml
 #    with:
-#      revision: ${{ needs.get-revision.outputs.revision }}      
+#      revision: ${{ needs.prepare-build.outputs.revision }}      
 
 #  create-release:
 #    name: Create GitHub Release
-#    needs: [get-revision, call-build-windows, call-build-flatpak]
+#    needs: [prepare-build, call-build-windows, call-build-flatpak]
 #    runs-on: ubuntu-latest
 #    permissions:
 #      contents: write
@@ -78,12 +79,12 @@ jobs:
 #            echo "Success: Artifacts found after download"
 #          fi
 #
-#      - name: "Create Release R${{ needs.get-revision.outputs.revision }}"
+#      - name: "Create Release R${{ needs.prepare-build.outputs.revision }}"
 #        uses: softprops/action-gh-release@v3
 #        with:
-#          tag_name: R${{ needs.get-revision.outputs.revision }}
-#          name: "Ultimate Doom Builder R${{ needs.get-revision.outputs.revision }}"
-#          body: "Automated builds for Ultimate Doom Builder R${{ needs.get-revision.outputs.revision }}."
+#          tag_name: R${{ needs.prepare-build.outputs.revision }}
+#          name: "Ultimate Doom Builder R${{ needs.prepare-build.outputs.revision }}"
+#          body: "Automated builds for Ultimate Doom Builder R${{ needs.prepare-build.outputs.revision }}."
 #          files: artifacts/*
 #          prerelease: false
 #          make_latest: true
