@@ -42,7 +42,6 @@ jobs:
         with:
           name: text-changelog
           path: Build/
-          if-no-files-found: error
 
       - name: Create Installer
         run: |
