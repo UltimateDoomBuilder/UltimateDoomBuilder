@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       revision: ${{ steps.vars.outputs.REV_COUNT }}
-      xml_changelog: ${{ steps.vars.outputs.XML_CHANGELOG }}
+      text_changelog: ${{ steps.vars.outputs.TEXT_CHANGELOG }}
 
     steps:
       - name: Checkout Repository
@@ -24,16 +24,26 @@ jobs:
           echo "REV_COUNT=$COUNT" >> $GITHUB_OUTPUT
           echo "Detected Revision: $COUNT"  
 
-      - name: Generate XML Changelog
+      - name: Set Up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      
+      - name: Install Python Dependencies
         run: |
-          XML_CHANGELOG=$(
-            echo '<?xml version="1.0" encoding="UTF-8"?>'
-            echo '<log>'
-            git log origin/master --since=2012-04-17 --pretty=format:"  [OB]logentry commit=\"%h\"[CB]%n    [OB]author[CB]%an[OB]/author[CB]%n    [OB]date[CB]%aI[OB]/date[CB]%n    [OB]msg[CB]%B[OB]/msg[CB]%n  [OB]/logentry[CB]" | sed -e 's/</\&lt;/g' -e 's/>/\&gt;/g' -e 's/\[OB\]/</g' -e 's/\[CB\]/>/g'
-            echo '</log>'
-          )
-          echo "$XML_CHANGELOG"
-          echo "XML_CHANGELOG='$XML_CHANGELOG'" >> $GITHUB_OUTPUT
+          python -m pip install --upgrade pip
+          pip install GitPython
+
+      - name: Generate Text Changelog
+        run: |
+          TEXT_CHANGELOG=$(python generate-changelog.py --branch origin/master --format text)
+          {
+            echo "TEXT_CHANGELOG<<EOF"
+            echo "$TEXT_CHANGELOG"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+          echo "Generated Text Changelog:" 
+          echo "$TEXT_CHANGELOG"
 
 #  call-build-windows:
 #    needs: get-revision
