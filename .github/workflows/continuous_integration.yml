@@ -49,7 +49,6 @@ jobs:
     uses: ./.github/workflows/build_windows.yml
     with:
       revision: ${{ needs.prepare-build.outputs.revision }}
-      text_changelog: ${{ needs.prepare-build.outputs.text_changelog }}
 
 #  call-build-flatpak:
 #    needs: prepare-build
