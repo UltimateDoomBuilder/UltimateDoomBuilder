@@ -929,9 +929,8 @@ namespace CodeImp.DoomBuilder.Controls
 		// This updates the Value column width
 		private void UpdateValueColumn()
 		{
-			int fieldnamewidth = fieldname.Visible ? fieldname.Width : 0;
-			int fieldtypewidth = fieldtype.Visible ? fieldtype.Width : 0;
-			fieldvalue.Width = fieldslist.ClientRectangle.Width - fieldnamewidth - fieldtypewidth - SystemInformation.VerticalScrollBarWidth - 10;
+			fieldslist.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+			fieldslist.AllowUserToResizeColumns = true;
 		}
 
 		// This updates the button
