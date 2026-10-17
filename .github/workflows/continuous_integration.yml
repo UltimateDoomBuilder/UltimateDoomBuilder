@@ -1,0 +1,127 @@
+name: Build And Create Release
+
+on: [workflow_dispatch]
+
+jobs:
+  prepare-build:
+    name: Prepare Build
+    runs-on: ubuntu-latest
+    outputs:
+      revision: ${{ steps.vars.outputs.REV_COUNT }}
+      changelog_text: ${{ steps.changelog.outputs.CHANGELOG_TEXT }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+        with:
+          submodules: recursive
+          fetch-depth: 0 # Required to properly get the commit count      
+      
+      - name: Determine Revision
+        id: vars
+        run: |
+          COUNT=$(git rev-list --count HEAD)
+          echo "REV_COUNT=$COUNT" >> $GITHUB_OUTPUT
+          echo "Detected Revision: $COUNT"  
+
+      - name: Set Up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install GitPython
+
+      - name: Get Changes Since Last Release
+        id: changelog
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LATEST_TAG=$(gh release view --json tagName --jq '.tagName' 2>/dev/null || echo "")
+          if [ -z "$LATEST_TAG" ]; then
+            echo "No previous release found"
+            echo "CHANGELOG_TEXT=unknown" >> $GITHUB_OUTPUT
+          else
+            echo "Latest Tag: $LATEST_TAG"
+            COMMIT_SHA=$(gh api "repos/${{ github.repository }}/git/ref/tags/$LATEST_TAG" --jq '.object.sha')
+            echo "Commit SHA: $COMMIT_SHA"
+            CHANGELOG_TEXT=$(python generate-changelog.py --branch origin/master --format release --from-commit $COMMIT_SHA)
+            echo "$CHANGELOG_TEXT"
+            echo "CHANGELOG_TEXT<<EOF" >> $GITHUB_OUTPUT
+            echo "$CHANGELOG_TEXT" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate Text Changelog
+        run: |
+          python generate-changelog.py --branch origin/master --format text > Changelog.txt
+
+      - name: Generate XML Changelog
+        run: |
+          python generate-changelog.py --branch origin/master --format xml > Changelog.xml
+
+      - name: Upload Text Changelog Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: text-changelog
+          path: Changelog.txt
+          if-no-files-found: error
+
+      - name: Upload XML Changelog Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: xml-changelog
+          path: Changelog.xml
+          if-no-files-found: error
+
+  call-build-windows:
+    needs: prepare-build
+    uses: ./.github/workflows/build_windows.yml
+    with:
+      revision: ${{ needs.prepare-build.outputs.revision }}
+
+  call-build-flatpak:
+    needs: prepare-build
+    uses: ./.github/workflows/build_flatpak.yml
+    with:
+      revision: ${{ needs.prepare-build.outputs.revision }}      
+
+  create-release:
+    name: Create GitHub Release
+    needs: [prepare-build, call-build-windows, call-build-flatpak]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Check If Artifacts Exist
+        run: |
+          if [ -z "$(ls -A artifacts)" ]; then
+            echo "Error: No artifacts found after download"
+            exit 1
+          else
+            echo "Success: Artifacts found after download"
+          fi
+
+      - name: "Create Release R${{ needs.prepare-build.outputs.revision }}"
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: R${{ needs.prepare-build.outputs.revision }}
+          name: "Ultimate Doom Builder R${{ needs.prepare-build.outputs.revision }}"
+          body: |
+            Automated builds for Ultimate Doom Builder R${{ needs.prepare-build.outputs.revision }}.
+
+            Changes since last release:
+
+            ${{ needs.prepare-build.outputs.changelog_text }}
+          files: artifacts/*
+          prerelease: false
+          make_latest: true
