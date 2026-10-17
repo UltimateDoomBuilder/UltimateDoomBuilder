@@ -39,8 +39,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          LATEST_TAG=$(gh release view --json tagName --jq '.tagName')
-          if [ $? -ne 0 ]; then
+          LATEST_TAG=$(gh release view --json tagName --jq '.tagName' 2>/dev/null || echo "")
+          if [ -z "$LATEST_TAG" ]; then
             echo "No previous release found"
             echo "CHANGELOG_TEXT=unknown" >> $GITHUB_OUTPUT
           else
