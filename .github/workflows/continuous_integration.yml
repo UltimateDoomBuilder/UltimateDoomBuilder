@@ -34,6 +34,8 @@ jobs:
           pip install GitPython
 
       - name: Get Changes Since Last Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           LATEST_TAG=$(gh release view --json tagName --jq '.tagName')
           echo "Latest Tag: $LATEST_TAG"
