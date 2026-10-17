@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       revision: ${{ steps.vars.outputs.REV_COUNT }}
+      changelog_text: ${{ steps.vars.outputs.CHANGELOG_TEXT }}
 
     steps:
       - name: Checkout Repository
@@ -45,9 +46,9 @@ jobs:
           COMMIT_SHA=16048b0
           CHANGELOG_TEXT=$(python generate-changelog.py --branch origin/master --format release --from-commit $COMMIT_SHA)
           echo "$CHANGELOG_TEXT"
-          echo "CHANGELOG_TEXT<<EOF" >> $GITHUB_ENV
-          echo "$CHANGELOG_TEXT" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          echo "CHANGELOG_TEXT<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG_TEXT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Generate Text Changelog
         run: |
@@ -117,7 +118,7 @@ jobs:
 
             Changes since last release:
 
-            ${{ env.CHANGELOG_TEXT }}
+            ${{ needs.prepare-build.outputs.changelog_text }}
           files: artifacts/*
           prerelease: false
           make_latest: true
