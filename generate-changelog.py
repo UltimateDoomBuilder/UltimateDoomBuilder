@@ -3,9 +3,6 @@ import html
 from datetime import datetime
 from git import Repo, GitCommandError
 
-# This date was used in the old build script. This is when the GZDB branch was originally created
-from_date = int(datetime.timestamp(datetime(2012, 4, 17)))
-
 def generate_xml_changelog(commits):
     num_commits = len(commits)
 
@@ -13,9 +10,6 @@ def generate_xml_changelog(commits):
     text += "<log>\n"
 
     for index, commit in enumerate(commits):
-        if commit.committed_date < from_date:
-            break
-
         text += f'  <logentry commit="{commit.hexsha[:8]}" revision="{num_commits - index}">\n'
         text += f'    <author>{commit.author.name}</author>\n'
         text += f'    <date>{commit.committed_datetime.isoformat()}</date>\n'
@@ -30,9 +24,6 @@ def generate_text_changelog(commits):
 
     text = ""
     for index, commit in enumerate(commits):
-        if commit.committed_date < from_date:
-            break
-
         text += f'R{num_commits - index} | {commit.hexsha[:8]} | {commit.author.name} | {commit.committed_datetime.strftime("%Y-%m-%d, %H:%M")}\n'
         text += '-' * 80 + "\n"
         text += f'{commit.message.strip()}\n'
@@ -48,7 +39,8 @@ if __name__ == "__main__":
 
     try:
         repo = Repo(".")
-        commits = list(repo.iter_commits(args.branch))
+        # This date was used in the old build script. This is when the GZDB branch was originally created
+        commits = list(repo.iter_commits(args.branch, since='2012-04-17'))
     except GitCommandError as e:
         print(f"Error: {e}")
         exit(1)
