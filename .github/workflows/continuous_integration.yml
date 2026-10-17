@@ -40,14 +40,19 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           LATEST_TAG=$(gh release view --json tagName --jq '.tagName')
-          echo "Latest Tag: $LATEST_TAG"
-          COMMIT_SHA=$(gh api "repos/${{ github.repository }}/git/ref/tags/$LATEST_TAG" --jq '.object.sha')
-          echo "Commit SHA: $COMMIT_SHA"
-          CHANGELOG_TEXT=$(python generate-changelog.py --branch origin/master --format release --from-commit $COMMIT_SHA)
-          echo "$CHANGELOG_TEXT"
-          echo "CHANGELOG_TEXT<<EOF" >> $GITHUB_OUTPUT
-          echo "$CHANGELOG_TEXT" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          if [ $? -ne 0 ]; then
+            echo "No previous release found"
+            echo "CHANGELOG_TEXT=unknown" >> $GITHUB_OUTPUT
+          else
+            echo "Latest Tag: $LATEST_TAG"
+            COMMIT_SHA=$(gh api "repos/${{ github.repository }}/git/ref/tags/$LATEST_TAG" --jq '.object.sha')
+            echo "Commit SHA: $COMMIT_SHA"
+            CHANGELOG_TEXT=$(python generate-changelog.py --branch origin/master --format release --from-commit $COMMIT_SHA)
+            echo "$CHANGELOG_TEXT"
+            echo "CHANGELOG_TEXT<<EOF" >> $GITHUB_OUTPUT
+            echo "$CHANGELOG_TEXT" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
 
       - name: Generate Text Changelog
         run: |
