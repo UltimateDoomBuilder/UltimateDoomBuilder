@@ -69,7 +69,8 @@ jobs:
 
   create-release:
     name: Create GitHub Release
-    needs: [prepare-build, call-build-windows, call-build-flatpak]
+    #needs: [prepare-build, call-build-windows, call-build-flatpak]
+    needs: [prepare-build, call-build-windows]
     runs-on: ubuntu-latest
     permissions:
       contents: write
