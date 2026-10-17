@@ -37,11 +37,22 @@ jobs:
         run: |
           python generate-changelog.py --branch origin/master --format text > Changelog.txt
 
+      - name: Generate XML Changelog
+        run: |
+          python generate-changelog.py --branch origin/master --format xml > Changelog.xml
+
       - name: Upload Text Changelog Artifact
         uses: actions/upload-artifact@v7
         with:
           name: text-changelog
           path: Changelog.txt
+          if-no-files-found: error
+
+      - name: Upload XML Changelog Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: xml-changelog
+          path: Changelog.xml
           if-no-files-found: error
 
   call-build-windows:
@@ -50,41 +61,41 @@ jobs:
     with:
       revision: ${{ needs.prepare-build.outputs.revision }}
 
-  call-build-flatpak:
-    needs: prepare-build
-    uses: ./.github/workflows/build_flatpak.yml
-    with:
-      revision: ${{ needs.prepare-build.outputs.revision }}      
+#  call-build-flatpak:
+#    needs: prepare-build
+#    uses: ./.github/workflows/build_flatpak.yml
+#    with:
+#      revision: ${{ needs.prepare-build.outputs.revision }}      
 
-#  create-release:
-#    name: Create GitHub Release
-#    needs: [prepare-build, call-build-windows, call-build-flatpak]
-#    runs-on: ubuntu-latest
-#    permissions:
-#      contents: write
-#
-#    steps:
-#      - name: Download Artifacts
-#        uses: actions/download-artifact@v8
-#        with:
-#          path: artifacts
-#          merge-multiple: true
-#
-#      - name: Check If Artifacts Exist
-#        run: |
-#          if [ -z "$(ls -A artifacts)" ]; then
-#            echo "Error: No artifacts found after download"
-#            exit 1
-#          else
-#            echo "Success: Artifacts found after download"
-#          fi
-#
-#      - name: "Create Release R${{ needs.prepare-build.outputs.revision }}"
-#        uses: softprops/action-gh-release@v3
-#        with:
-#          tag_name: R${{ needs.prepare-build.outputs.revision }}
-#          name: "Ultimate Doom Builder R${{ needs.prepare-build.outputs.revision }}"
-#          body: "Automated builds for Ultimate Doom Builder R${{ needs.prepare-build.outputs.revision }}."
-#          files: artifacts/*
-#          prerelease: false
-#          make_latest: true
+  create-release:
+    name: Create GitHub Release
+    needs: [prepare-build, call-build-windows, call-build-flatpak]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Check If Artifacts Exist
+        run: |
+          if [ -z "$(ls -A artifacts)" ]; then
+            echo "Error: No artifacts found after download"
+            exit 1
+          else
+            echo "Success: Artifacts found after download"
+          fi
+
+      - name: "Create Release R${{ needs.prepare-build.outputs.revision }}"
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: R${{ needs.prepare-build.outputs.revision }}
+          name: "Ultimate Doom Builder R${{ needs.prepare-build.outputs.revision }}"
+          body: "Automated builds for Ultimate Doom Builder R${{ needs.prepare-build.outputs.revision }}."
+          files: artifacts/*
+          prerelease: false
+          make_latest: true
