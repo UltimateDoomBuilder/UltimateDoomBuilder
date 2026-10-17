@@ -20,7 +20,7 @@ modules:
     buildsystem: autotools
     sources:
       - type: git
-        url: https://gitlab.winehq.org/mono/libgdiplus.git
+        url: https://gitlab.winehq.org/mono/libgdiplus
         tag: '6.2'
 
   - name: builder-native
