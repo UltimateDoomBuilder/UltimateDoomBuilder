@@ -52,6 +52,8 @@ jobs:
             echo "CHANGELOG_TEXT<<EOF" >> $GITHUB_OUTPUT
             echo "$CHANGELOG_TEXT" >> $GITHUB_OUTPUT
             echo "EOF" >> $GITHUB_OUTPUT
+
+            echo "$CHANGELOG_TEXT" > changes-in-R${{ steps.vars.outputs.REV_COUNT }}.txt
           fi
 
       - name: Generate Text Changelog
@@ -74,6 +76,13 @@ jobs:
         with:
           name: xml-changelog
           path: Changelog.xml
+          if-no-files-found: error
+
+      - name: Upload Changes Since Last Release Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: changes-since-last-release
+          path: changes-in-*.txt
           if-no-files-found: error
 
   call-build-windows:
