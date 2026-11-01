@@ -53,7 +53,7 @@ jobs:
             echo "$CHANGELOG_TEXT" >> $GITHUB_OUTPUT
             echo "EOF" >> $GITHUB_OUTPUT
 
-            echo "$CHANGELOG_TEXT" > changes-in-$LATEST_TAG.txt
+            echo "$CHANGELOG_TEXT" > changes-in-R${{ steps.vars.outputs.REV_COUNT }}.txt
           fi
 
       - name: Generate Text Changelog
