@@ -502,7 +502,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					// Render lines for highlighted element
 					if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE)
 					{
-						if ((highlighted != null) && !highlighted.IsDisposed) highlightasso.Render(); //mxd
+						if ((highlighted != null) && !highlighted.IsDisposed && (General.Settings.GZShowEventLines == EventLinesRenderMode.HIGHLIGHT || !highlighted.Selected))
+							highlightasso.Render(selectionasso);
 					}
 				}
 				else
@@ -716,7 +717,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				}
 				if ((highlighted != null) && !highlighted.IsDisposed)
 				{
-					if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE)
+					if (General.Settings.GZShowEventLines == EventLinesRenderMode.HIGHLIGHT || (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION && !highlighted.Selected))
 						//BuilderPlug.PlotReverseAssociations(renderer, highlightasso, eventlines);
 						highlightasso.Plot();
 					renderer.PlotLinedef(highlighted, General.Colors.Highlight);

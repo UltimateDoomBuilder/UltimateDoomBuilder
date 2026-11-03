@@ -248,7 +248,8 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 					selectionasso.Render();
 				if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE)
 				{
-					if ((highlighted != null) && !highlighted.IsDisposed) highlightasso.Render();
+					if ((highlighted != null) && !highlighted.IsDisposed && (General.Settings.GZShowEventLines == EventLinesRenderMode.HIGHLIGHT || !highlighted.Selected))
+						highlightasso.Render(selectionasso);
 				}
 
 				renderer.Finish();
@@ -851,7 +852,7 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 				{
 					renderer.PlotSector(highlighted, General.Colors.Highlight);
 					// BuilderPlug.Me.PlotReverseAssociations(renderer, highlightasso);
-					if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE)
+					if (General.Settings.GZShowEventLines == EventLinesRenderMode.HIGHLIGHT || (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION && !highlighted.Selected))
 						highlightasso.Plot();
 				}
 				if (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION) //Updated to include Event Lines selection mode

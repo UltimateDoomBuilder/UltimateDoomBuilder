@@ -1085,16 +1085,22 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		/// Renders associated things and sectors in the indication color.
 		/// Also renders event lines, if that option is enabled
 		/// </summary>
-		public void Render()
+		public void Render(Association other = null)
 		{
 			bool showlabels = BuilderPlug.Me.EventLineLabelVisibility > 0; // Show labels at all?
 
 			foreach (Thing t in things)
+			{
+				if (t == null || t.IsDisposed) continue;
+				if (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION && ((!ReferenceEquals(other, null) && other.things != null && other.things.Contains(t)) || t.Selected)) continue;
 				renderer.RenderThing(t, General.Colors.Indication, General.Settings.ActiveThingsAlpha);
+			}
 
 			// There must be a better way to do this
 			foreach(Sector s in sectors)
 			{
+				if (s == null || s.IsDisposed || s.FlatVertices == null || s.FlatVertices.Length == 0) continue;
+				if (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION && ((!ReferenceEquals(other, null) && other.sectors != null && other.sectors.Contains(s)) || s.Selected)) continue;
 				int highlightedColor = General.Colors.Highlight.WithAlpha(128).ToInt();
 				FlatVertex[] verts = new FlatVertex[s.FlatVertices.Length];
 				s.FlatVertices.CopyTo(verts, 0);
@@ -1157,15 +1163,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// This compares an association
 		public static bool operator ==(Association a, Association b)
 		{
-			if(!(a is Association) || !(b is Association)) return false; //mxd
+			if (ReferenceEquals(a, b)) return true;
+			if (ReferenceEquals(a, null) || ReferenceEquals(b, null)) return false;
 			return (a.type == b.type) && a.tags.SetEquals(b.tags);
 		}
 
 		// This compares an association
 		public static bool operator !=(Association a, Association b)
 		{
-			if(!(a is Association) || !(b is Association)) return true; //mxd
-			return (a.type != b.type) || !a.tags.SetEquals(b.tags);
+			return !(a == b);
 		}
 
 		//mxd 

@@ -244,7 +244,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					selectionasso.Render();
 				if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE)
 				{
-					if (highlighted != null && !highlighted.IsDisposed) highlightasso.Render();
+					if ((highlighted != null) && !highlighted.IsDisposed && (General.Settings.GZShowEventLines == EventLinesRenderMode.HIGHLIGHT || !highlighted.Selected))
+						highlightasso.Render(selectionasso);
 				}
 
 				renderer.Finish();
@@ -978,7 +979,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if((highlighted != null) && !highlighted.IsDisposed)
 				{
 					renderer.PlotSector(highlighted, General.Colors.Highlight);
-					if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE)
+					if ((highlighted != null) && !highlighted.IsDisposed && (General.Settings.GZShowEventLines == EventLinesRenderMode.HIGHLIGHT || !highlighted.Selected))
 						highlightasso.Plot();
 				}
 				if (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION) //Added Event Line Selection mode
