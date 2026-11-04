@@ -269,18 +269,30 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					renderer.RenderThing(highlighted, General.Colors.Highlight, alpha);
 				}
 
+				//Pass 1: Run through both Selectionasso and Highlightasso and render the orange shading
 				if (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION && !selectionasso.IsEmpty)
 				{
-					selectionasso.Render(); 
+					selectionasso.RenderAssociationShading(); 
 				}
 				if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE)
 				{
 					if ((highlighted != null) && !highlighted.IsDisposed && (General.Settings.GZShowEventLines == EventLinesRenderMode.HIGHLIGHT || !highlighted.Selected))
-						highlightasso.Render(selectionasso);
+						highlightasso.RenderAssociationShading(selectionasso);
+				}
+
+				//Pass 2: Run through both Selectionasso and Highlightasso and render the event lines
+				if (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION && !selectionasso.IsEmpty)
+				{
+					selectionasso.RenderEventLines();
+				}
+				if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE)
+				{
+					if ((highlighted != null) && !highlighted.IsDisposed && (General.Settings.GZShowEventLines == EventLinesRenderMode.HIGHLIGHT || !highlighted.Selected))
+						highlightasso.RenderEventLines();
 				}
 
 				//mxd. Event lines
-				if(General.Settings.GZShowEventLines != EventLinesRenderMode.NONE) eventlines.AddRange(persistenteventlines); //Also updated here
+				if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE) eventlines.AddRange(persistenteventlines); //Also updated here
 
 				//mxd. Dynamic light radii
 				if(BuilderPlug.Me.ShowLightRadii)

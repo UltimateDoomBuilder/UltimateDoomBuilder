@@ -495,15 +495,28 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			{
 				if (!selecting) //mxd
 				{
+					//Pass 1: Run through both Selectionasso and Highlightasso and render the orange shading
 					// Render event lines for selected elements
 					if (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION && !selectionasso.IsEmpty)
-						selectionasso.Render();
+						selectionasso.RenderAssociationShading();
 
 					// Render lines for highlighted element
 					if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE)
 					{
 						if ((highlighted != null) && !highlighted.IsDisposed && (General.Settings.GZShowEventLines == EventLinesRenderMode.HIGHLIGHT || !highlighted.Selected))
-							highlightasso.Render(selectionasso);
+							highlightasso.RenderAssociationShading(selectionasso);
+					}
+
+					//Pass 2: Run through both Selectionasso and Highlightasso and render the event lines
+					// Render event lines for selected elements
+					if (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION && !selectionasso.IsEmpty)
+						selectionasso.RenderEventLines();
+
+					// Render lines for highlighted element
+					if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE)
+					{
+						if ((highlighted != null) && !highlighted.IsDisposed && (General.Settings.GZShowEventLines == EventLinesRenderMode.HIGHLIGHT || !highlighted.Selected))
+							highlightasso.RenderEventLines();
 					}
 				}
 				else

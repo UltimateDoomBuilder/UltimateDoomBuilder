@@ -240,12 +240,22 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				renderer.RenderText(torenderlabels);
 
 				//Moving the event lines render here as it was causing a bug where it was in OnRedrawDisplay.
+				//Pass 1: Run through both Selectionasso and Highlightasso and render the orange shading
 				if (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION && !selectionasso.IsEmpty)
-					selectionasso.Render();
+					selectionasso.RenderAssociationShading();
 				if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE)
 				{
 					if ((highlighted != null) && !highlighted.IsDisposed && (General.Settings.GZShowEventLines == EventLinesRenderMode.HIGHLIGHT || !highlighted.Selected))
-						highlightasso.Render(selectionasso);
+						highlightasso.RenderAssociationShading(selectionasso);
+				}
+
+				//Pass 2: Then run through both Selectionasso and Highlightasso and render the event lines
+				if (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION && !selectionasso.IsEmpty)
+					selectionasso.RenderEventLines();
+				if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE)
+				{
+					if ((highlighted != null) && !highlighted.IsDisposed && (General.Settings.GZShowEventLines == EventLinesRenderMode.HIGHLIGHT || !highlighted.Selected))
+						highlightasso.RenderEventLines();
 				}
 
 				renderer.Finish();

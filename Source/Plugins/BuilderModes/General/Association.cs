@@ -1085,10 +1085,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		/// Renders associated things and sectors in the indication color.
 		/// Also renders event lines, if that option is enabled
 		/// </summary>
-		public void Render(Association other = null)
+		public void RenderAssociationShading(Association other = null)
 		{
-			bool showlabels = BuilderPlug.Me.EventLineLabelVisibility > 0; // Show labels at all?
-
+			
 			foreach (Thing t in things)
 			{
 				if (t == null || t.IsDisposed) continue;
@@ -1097,7 +1096,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 
 			// There must be a better way to do this
-			foreach(Sector s in sectors)
+			foreach (Sector s in sectors)
 			{
 				if (s == null || s.IsDisposed || s.FlatVertices == null || s.FlatVertices.Length == 0) continue;
 				if (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION && ((!ReferenceEquals(other, null) && other.sectors != null && other.sectors.Contains(s)) || s.Selected)) continue;
@@ -1107,6 +1106,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				for (int i = 0; i < verts.Length; i++) verts[i].c = highlightedColor;
 				renderer.RenderGeometry(verts, null, true);
 			}
+		}
+
+		public void RenderEventLines()
+		{
+			bool showlabels = BuilderPlug.Me.EventLineLabelVisibility > 0; // Show labels at all?
 
 			if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE) //changed to kick in for either event line render modes (i.e. not "off")
 			{
@@ -1147,6 +1151,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					renderer.RenderText(labels);
 			}
 		}
+
+		public void Render(Association other = null)
+		{
+			RenderAssociationShading(other);
+			RenderEventLines();
+		}
+
 
 		/// <summary>
 		/// Plots associated linedefs and sectors

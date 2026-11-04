@@ -244,12 +244,23 @@ namespace CodeImp.DoomBuilder.ThreeDFloorMode
 				BuilderPlug.Me.ControlSectorArea.Draw(renderer, csahighlight);
 
 				// Also moving the Event Render lines here, to avoid the same drawing bug as in Sectors mode
+
+				//Pass 1: Run through both Selectionasso and Highlightasso and render the orange shading
 				if (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION && !selectionasso.IsEmpty)
-					selectionasso.Render();
+					selectionasso.RenderAssociationShading();
 				if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE)
 				{
 					if ((highlighted != null) && !highlighted.IsDisposed && (General.Settings.GZShowEventLines == EventLinesRenderMode.HIGHLIGHT || !highlighted.Selected))
-						highlightasso.Render(selectionasso);
+						highlightasso.RenderAssociationShading(selectionasso);
+				}
+
+				//Pass 2: Run through both Selectionasso and Highlightasso and render the event lines
+				if (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION && !selectionasso.IsEmpty)
+					selectionasso.RenderEventLines();
+				if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE)
+				{
+					if ((highlighted != null) && !highlighted.IsDisposed && (General.Settings.GZShowEventLines == EventLinesRenderMode.HIGHLIGHT || !highlighted.Selected))
+						highlightasso.RenderEventLines();
 				}
 
 				renderer.Finish();
