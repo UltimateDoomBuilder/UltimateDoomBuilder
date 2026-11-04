@@ -2371,11 +2371,16 @@ namespace CodeImp.DoomBuilder.Windows
 					item.Checked = ((LightRenderMode)item.Tag == General.Settings.GZDrawLightsMode);
 					if(item.Checked) dynamiclightmode.Image = item.Image;
 				}
-				
+
+				foreach (ToolStripMenuItem item in buttontoggleeventlines.DropDownItems)
+				{
+					item.Checked = ((EventLinesRenderMode)Convert.ToInt32(item.Tag) == General.Settings.GZShowEventLines);
+					if (item.Checked) buttontoggleeventlines.Image = item.Image;
+				}
+
 				buttontogglefog.Checked = General.Settings.GZDrawFog;
 				buttontogglesky.Checked = General.Settings.GZDrawSky;
 				buttontoggleclassicrendering.Checked = General.Settings.ClassicRendering;
-				buttontoggleeventlines.Checked = (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE); //Updated so the tool bar button is highlighted whenever either event line mode is active
 				buttontogglevisualvertices.Visible = General.Map.UDMF;
 				buttontogglevisualvertices.Checked = General.Settings.GZShowVisualVertices;
 			} 
@@ -3239,7 +3244,8 @@ namespace CodeImp.DoomBuilder.Windows
 			itemtoggleclassicrendering.Checked = General.Settings.ClassicRendering;
 			foreach (ToolStripMenuItem item in itemtoggleeventlines.DropDownItems) //Check mark to show which Event Lines mode is currently active
 				{
-					item.Checked = ((EventLinesRenderMode)(int)item.Tag == General.Settings.GZShowEventLines);
+					item.Checked = ((EventLinesRenderMode)Convert.ToInt32(item.Tag) == General.Settings.GZShowEventLines);
+					if(item.Checked) itemtoggleeventlines.Image = item.Image;
 				}
 			itemtogglevisualverts.Visible = (General.Map != null && General.Map.UDMF);
 			itemtogglevisualverts.Checked = General.Settings.GZShowVisualVertices;
@@ -3906,7 +3912,7 @@ namespace CodeImp.DoomBuilder.Windows
 		private void ChangeEventLinesMode(object sender, EventArgs e)
 		{
 			ToolStripMenuItem item = (ToolStripMenuItem)sender;
-			General.Settings.GZShowEventLines = (EventLinesRenderMode)(int)item.Tag;
+			General.Settings.GZShowEventLines = (EventLinesRenderMode)Convert.ToInt32(item.Tag);
 			UpdateViewMenu();
 			UpdateGZDoomPanel();
 			RedrawDisplay();

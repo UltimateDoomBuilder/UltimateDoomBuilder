@@ -1396,6 +1396,9 @@
     <None Include="Resources\fog.png" />
     <None Include="Resources\GZDB_Logo_small.png" />
     <None Include="Resources\InfoLine.png" />
+    <None Include="Resources\InfoLine_Highlight.png" />
+    <None Include="Resources\InfoLine_None.png" />
+    <None Include="Resources\InfoLine_Select.png" />
     <None Include="Resources\Keyboard.png" />
     <None Include="Resources\ImageStack.png" />
     <None Include="Resources\FolderExplore.png" />

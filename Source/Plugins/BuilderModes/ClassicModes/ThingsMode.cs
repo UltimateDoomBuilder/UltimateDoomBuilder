@@ -271,7 +271,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 				if (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION && !selectionasso.IsEmpty)
 				{
-					selectionasso.Render(); //Event Lines rendered if Selection mode is active
+					selectionasso.Render(); 
 				}
 				if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE)
 				{
