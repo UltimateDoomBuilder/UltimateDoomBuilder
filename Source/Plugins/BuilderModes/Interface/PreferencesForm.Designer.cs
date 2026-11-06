@@ -31,6 +31,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			this.tabs = new System.Windows.Forms.TabControl();
 			this.taboptions = new System.Windows.Forms.TabPage();
 			this.groupBox5 = new System.Windows.Forms.GroupBox();
+			this.label20 = new System.Windows.Forms.Label();
+			this.label19 = new System.Windows.Forms.Label();
+			this.maxeventlines = new CodeImp.DoomBuilder.Controls.ButtonsNumericTextbox();
 			this.eventlinelabelstyle = new System.Windows.Forms.ComboBox();
 			this.eventlinelabelvisibility = new System.Windows.Forms.ComboBox();
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -122,14 +125,53 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// 
 			// groupBox5
 			// 
+			this.groupBox5.Controls.Add(this.label20);
+			this.groupBox5.Controls.Add(this.label19);
+			this.groupBox5.Controls.Add(this.maxeventlines);
 			this.groupBox5.Controls.Add(this.eventlinelabelstyle);
 			this.groupBox5.Controls.Add(this.eventlinelabelvisibility);
 			this.groupBox5.Location = new System.Drawing.Point(6, 445);
 			this.groupBox5.Name = "groupBox5";
-			this.groupBox5.Size = new System.Drawing.Size(272, 54);
+			this.groupBox5.Size = new System.Drawing.Size(272, 80);
 			this.groupBox5.TabIndex = 4;
 			this.groupBox5.TabStop = false;
-			this.groupBox5.Text = "Event line labels";
+			this.groupBox5.Text = "Event lines rendering";
+			// 
+			// label20
+			// 
+			this.label20.AutoSize = true;
+			this.label20.Location = new System.Drawing.Point(221, 54);
+			this.label20.Name = "label20";
+			this.label20.Size = new System.Drawing.Size(29, 13);
+			this.label20.TabIndex = 28;
+			this.label20.Text = "lines";
+			// 
+			// label19
+			// 
+			this.label19.Location = new System.Drawing.Point(15, 54);
+			this.label19.Name = "label19";
+			this.label19.Size = new System.Drawing.Size(136, 15);
+			this.label19.TabIndex = 27;
+			this.label19.Text = "Selection render limit:";
+			this.label19.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// maxeventlines
+			// 
+			this.maxeventlines.AllowDecimal = false;
+			this.maxeventlines.AllowExpressions = false;
+			this.maxeventlines.AllowNegative = false;
+			this.maxeventlines.AllowRelative = false;
+			this.maxeventlines.ButtonStep = 500;
+			this.maxeventlines.ButtonStepBig = 1000F;
+			this.maxeventlines.ButtonStepFloat = 1F;
+			this.maxeventlines.ButtonStepSmall = 0.1F;
+			this.maxeventlines.ButtonStepsUseModifierKeys = false;
+			this.maxeventlines.ButtonStepsWrapAround = false;
+			this.maxeventlines.Location = new System.Drawing.Point(156, 50);
+			this.maxeventlines.Name = "maxeventlines";
+			this.maxeventlines.Size = new System.Drawing.Size(59, 24);
+			this.maxeventlines.StepValues = null;
+			this.maxeventlines.TabIndex = 27;
 			// 
 			// eventlinelabelstyle
 			// 
@@ -759,6 +801,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			this.tabs.ResumeLayout(false);
 			this.taboptions.ResumeLayout(false);
 			this.groupBox5.ResumeLayout(false);
+			this.groupBox5.PerformLayout();
 			this.groupBox4.ResumeLayout(false);
 			this.groupBox4.PerformLayout();
 			this.groupBox3.ResumeLayout(false);
@@ -826,5 +869,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private System.Windows.Forms.CheckBox useoppositesmartpivothandle;
 		private System.Windows.Forms.CheckBox selectafterundoredo;
 		private System.Windows.Forms.CheckBox usebuggyfloodselect;
+		private Controls.ButtonsNumericTextbox maxeventlines;
+		private System.Windows.Forms.Label label19;
+		private System.Windows.Forms.Label label20;
 	}
 }

@@ -1,7 +1,8 @@
-using System;
-using System.Windows.Forms;
 using CodeImp.DoomBuilder.Controls;
+using CodeImp.DoomBuilder.Rendering;
+using System;
 using System.Reflection;
+using System.Windows.Forms;
 
 namespace CodeImp.DoomBuilder.Windows
 {
@@ -226,7 +227,10 @@ namespace CodeImp.DoomBuilder.Windows
 			this.buttontogglefog = new CodeImp.DoomBuilder.Controls.ToolStripActionButton();
 			this.buttontogglesky = new CodeImp.DoomBuilder.Controls.ToolStripActionButton();
 			this.buttontoggleclassicrendering = new CodeImp.DoomBuilder.Controls.ToolStripActionButton();
-			this.buttontoggleeventlines = new CodeImp.DoomBuilder.Controls.ToolStripActionButton();
+			this.buttontoggleeventlines = new System.Windows.Forms.ToolStripSplitButton();
+			this.buttoneventlinesnone = new System.Windows.Forms.ToolStripMenuItem();
+			this.buttoneventlineshighlight = new System.Windows.Forms.ToolStripMenuItem();
+			this.buttoneventlinesselection = new System.Windows.Forms.ToolStripMenuItem();
 			this.buttontogglevisualvertices = new CodeImp.DoomBuilder.Controls.ToolStripActionButton();
 			this.separatorgzmodes = new System.Windows.Forms.ToolStripSeparator();
 			this.buttontest = new System.Windows.Forms.ToolStripSplitButton();
@@ -306,6 +310,9 @@ namespace CodeImp.DoomBuilder.Windows
 			this.panelinfo.SuspendLayout();
 			this.flowLayoutPanel.SuspendLayout();
 			this.SuspendLayout();
+			this.itemeventlinesnone = new System.Windows.Forms.ToolStripMenuItem(); //Oct 19th 2026 (Bauul): Event Lines render options
+			this.itemeventlineshighlight = new System.Windows.Forms.ToolStripMenuItem(); //Oct 19th 2026 (Bauul): Event Lines render options
+			this.itemeventlinesselection = new System.Windows.Forms.ToolStripMenuItem(); //Oct 19th 2026 (Bauul): Event Lines render options
 			// 
 			// toolStripSeparator1
 			// 
@@ -1813,15 +1820,47 @@ namespace CodeImp.DoomBuilder.Windows
 			this.itemtoggleclassicrendering.Text = "Classic rendering (Visual mode)";
 			this.itemtoggleclassicrendering.Click += new System.EventHandler(this.InvokeTaggedAction);
 			// 
-			// itemeventlines
+			// itemtoggleeventlines
 			// 
-			this.itemtoggleeventlines.CheckOnClick = true;
-			this.itemtoggleeventlines.Image = global::CodeImp.DoomBuilder.Properties.Resources.InfoLine;
+			this.itemtoggleeventlines.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			this.itemeventlinesnone,
+			this.itemeventlineshighlight,
+			this.itemeventlinesselection});
+			this.itemtoggleeventlines.Image = global::CodeImp.DoomBuilder.Properties.Resources.InfoLine_None;
 			this.itemtoggleeventlines.Name = "itemtoggleeventlines";
 			this.itemtoggleeventlines.Size = new System.Drawing.Size(273, 22);
-			this.itemtoggleeventlines.Tag = "builder_gztoggleeventlines";
-			this.itemtoggleeventlines.Text = "Show Event Lines";
-			this.itemtoggleeventlines.Click += new System.EventHandler(this.InvokeTaggedAction);
+			this.itemtoggleeventlines.Text = "Event lines mode";
+			// 
+			// itemeventlinesnone
+			// 
+			this.itemeventlinesnone.CheckOnClick = true;
+			this.itemeventlinesnone.Name = "itemeventlinesnone";
+			this.itemeventlinesnone.Size = new System.Drawing.Size(180, 22);
+			this.itemeventlinesnone.Tag = 0;
+			this.itemeventlinesnone.Image = global::CodeImp.DoomBuilder.Properties.Resources.InfoLine_None;
+			this.itemeventlinesnone.Text = "Don\'t show event lines";
+			this.itemeventlinesnone.Click += new System.EventHandler(this.ChangeEventLinesMode);
+			// 
+			// itemeventlineshighlight
+			// 
+			this.itemeventlineshighlight.CheckOnClick = true;
+			this.itemeventlineshighlight.Name = "itemeventlineshighlight";
+			this.itemeventlineshighlight.Size = new System.Drawing.Size(180, 22);
+			this.itemeventlineshighlight.Tag = 1;
+			this.itemeventlineshighlight.Image = global::CodeImp.DoomBuilder.Properties.Resources.InfoLine_Highlight;
+			this.itemeventlineshighlight.Text = "Show event lines on Highlight";
+			this.itemeventlineshighlight.Click += new System.EventHandler(this.ChangeEventLinesMode);
+			// 
+			// itemeventlinesselection
+			// 
+			this.itemeventlinesselection.CheckOnClick = true;
+			this.itemeventlinesselection.Name = "itemeventlinesselection";
+			this.itemeventlinesselection.Size = new System.Drawing.Size(180, 22);
+			this.itemeventlinesselection.Tag = 2;
+			this.itemeventlinesselection.Image = global::CodeImp.DoomBuilder.Properties.Resources.InfoLine_Select;
+			this.itemeventlinesselection.Text = "Show event lines on Selection";
+			this.itemeventlinesselection.Click += new System.EventHandler(this.ChangeEventLinesMode);
+
 			// 
 			// itemvisualverts
 			// 
@@ -2201,13 +2240,47 @@ namespace CodeImp.DoomBuilder.Windows
 			// buttontoggleeventlines
 			// 
 			this.buttontoggleeventlines.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttontoggleeventlines.Image = global::CodeImp.DoomBuilder.Properties.Resources.InfoLine;
+			this.buttontoggleeventlines.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			this.buttoneventlinesnone,
+			this.buttoneventlineshighlight,
+			this.buttoneventlinesselection});
+			this.buttontoggleeventlines.Image = global::CodeImp.DoomBuilder.Properties.Resources.InfoLine_None;
 			this.buttontoggleeventlines.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttontoggleeventlines.Name = "buttontoggleeventlines";
-			this.buttontoggleeventlines.Size = new System.Drawing.Size(23, 20);
+			this.buttontoggleeventlines.Size = new System.Drawing.Size(35, 20);
 			this.buttontoggleeventlines.Tag = "builder_gztoggleeventlines";
-			this.buttontoggleeventlines.Text = "Show Event Lines";
-			this.buttontoggleeventlines.Click += new System.EventHandler(this.InvokeTaggedAction);
+			this.buttontoggleeventlines.Text = "Event lines mode";
+			this.buttontoggleeventlines.ButtonClick += new System.EventHandler(this.InvokeTaggedAction);
+			// 
+			// buttoneventlinesnone
+			// 
+			this.buttoneventlinesnone.CheckOnClick = true;
+			this.buttoneventlinesnone.Image = global::CodeImp.DoomBuilder.Properties.Resources.InfoLine_None;
+			this.buttoneventlinesnone.Name = "buttoneventlinesnone";
+			this.buttoneventlinesnone.Size = new System.Drawing.Size(235, 22);
+			this.buttoneventlinesnone.Tag = 0;
+			this.buttoneventlinesnone.Text = "Don\'t show event lines";
+			this.buttoneventlinesnone.Click += new System.EventHandler(this.ChangeEventLinesMode);
+			// 
+			// buttoneventlineshighlight
+			// 
+			this.buttoneventlineshighlight.CheckOnClick = true;
+			this.buttoneventlineshighlight.Image = global::CodeImp.DoomBuilder.Properties.Resources.InfoLine_Highlight;
+			this.buttoneventlineshighlight.Name = "buttoneventlineshighlight";
+			this.buttoneventlineshighlight.Size = new System.Drawing.Size(235, 22);
+			this.buttoneventlineshighlight.Tag = 1;
+			this.buttoneventlineshighlight.Text = "Show event lines on Highlight";
+			this.buttoneventlineshighlight.Click += new System.EventHandler(this.ChangeEventLinesMode);
+			// 
+			// buttoneventlinesselection
+			// 
+			this.buttoneventlinesselection.CheckOnClick = true;
+			this.buttoneventlinesselection.Image = global::CodeImp.DoomBuilder.Properties.Resources.InfoLine_Select;
+			this.buttoneventlinesselection.Name = "buttoneventlinesselection";
+			this.buttoneventlinesselection.Size = new System.Drawing.Size(235, 22);
+			this.buttoneventlinesselection.Tag = 2;
+			this.buttoneventlinesselection.Text = "Show event lines on Selection";
+			this.buttoneventlinesselection.Click += new System.EventHandler(this.ChangeEventLinesMode);
 			// 
 			// buttontogglevisualvertices
 			// 
@@ -3057,7 +3130,10 @@ namespace CodeImp.DoomBuilder.Windows
 		private System.Windows.Forms.ToolStripMenuItem itemReloadModedef;
 		private System.Windows.Forms.ToolStripMenuItem itemReloadGldefs;
 		private System.Windows.Forms.ToolStripSeparator separatorDrawModes;
-		private CodeImp.DoomBuilder.Controls.ToolStripActionButton buttontoggleeventlines;
+		private System.Windows.Forms.ToolStripSplitButton buttontoggleeventlines;
+		private System.Windows.Forms.ToolStripMenuItem buttoneventlinesnone;
+		private System.Windows.Forms.ToolStripMenuItem buttoneventlineshighlight;
+		private System.Windows.Forms.ToolStripMenuItem buttoneventlinesselection;
 		private CodeImp.DoomBuilder.Controls.ToolStripActionButton buttontogglevisualvertices;
 		private System.Windows.Forms.ToolStripMenuItem itemviewusedtags;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
@@ -3150,5 +3226,8 @@ namespace CodeImp.DoomBuilder.Windows
 		private ToolStripMenuItem itemtogglecomments;
 		private ToolStripMenuItem itemtogglefixedthingsscale;
 		private ToolStripMenuItem itemtogglealwaysshowvertices;
+		private System.Windows.Forms.ToolStripMenuItem itemeventlinesnone; 
+		private System.Windows.Forms.ToolStripMenuItem itemeventlineshighlight; 
+		private System.Windows.Forms.ToolStripMenuItem itemeventlinesselection; 
 	}
 }

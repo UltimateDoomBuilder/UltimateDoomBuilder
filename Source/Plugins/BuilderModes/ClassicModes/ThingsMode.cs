@@ -56,6 +56,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// Highlighted item
 		private Thing highlighted;
 		private readonly Association highlightasso;
+		private readonly Association selectionasso; //New Event Lines on Select render
 
 		// Interface
 		new private bool editpressed;
@@ -95,7 +96,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			//mxd. Associations now requre initializing...
 			highlightasso = new Association(renderer);
-
+			selectionasso = new Association(renderer); //New Event Lines on Select render
 			textlabelsizecache = new Dictionary<string, float>();
 		}
 
@@ -243,8 +244,16 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				renderer.PlotLinedefSet(General.Map.Map.Linedefs);
 				renderer.PlotVerticesSet(General.Map.Map.Vertices);
 
-				if (highlighted != null && !highlighted.IsDisposed) highlightasso.Plot();
-				
+				if (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION) 
+				{
+					selectionasso.Plot(); //Event Lines rendered if Selection mode is active
+				}
+				if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE)
+				{
+					if (highlighted != null && !highlighted.IsDisposed && (General.Settings.GZShowEventLines == EventLinesRenderMode.HIGHLIGHT || !highlighted.Selected))
+						highlightasso.Plot();
+				}
+
 				renderer.Finish();
 			}
 
@@ -258,11 +267,32 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(highlighted != null && !highlighted.IsDisposed)
 				{
 					renderer.RenderThing(highlighted, General.Colors.Highlight, alpha);
-					highlightasso.Render();
+				}
+
+				//Pass 1: Run through both Selectionasso and Highlightasso and render the orange shading
+				if (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION && !selectionasso.IsEmpty)
+				{
+					selectionasso.RenderAssociationShading(); 
+				}
+				if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE)
+				{
+					if ((highlighted != null) && !highlighted.IsDisposed && (General.Settings.GZShowEventLines == EventLinesRenderMode.HIGHLIGHT || !highlighted.Selected))
+						highlightasso.RenderAssociationShading(selectionasso);
+				}
+
+				//Pass 2: Run through both Selectionasso and Highlightasso and render the event lines
+				if (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION && !selectionasso.IsEmpty)
+				{
+					selectionasso.RenderEventLines();
+				}
+				if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE)
+				{
+					if ((highlighted != null) && !highlighted.IsDisposed && (General.Settings.GZShowEventLines == EventLinesRenderMode.HIGHLIGHT || !highlighted.Selected))
+						highlightasso.RenderEventLines();
 				}
 
 				//mxd. Event lines
-				if(General.Settings.GZShowEventLines) eventlines.AddRange(persistenteventlines);
+				if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE) eventlines.AddRange(persistenteventlines); //Also updated here
 
 				//mxd. Dynamic light radii
 				if(BuilderPlug.Me.ShowLightRadii)
@@ -456,7 +486,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					UpdateSelectionInfo(); //mxd
 
 					//mxd. Full redraw when labels were changed
-					if(BuilderPlug.Me.ViewSelectionNumbers)
+					if(BuilderPlug.Me.ViewSelectionNumbers || General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION) //Updated to include Selection Event Lines mode
 					{
 						General.Interface.RedrawDisplay();
 					}
@@ -637,7 +667,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		protected override void EndViewPan()
 		{
 			base.EndViewPan();
-			if(General.Settings.GZShowEventLines) General.Interface.RedrawDisplay(); 
+			if(General.Settings.GZShowEventLines != EventLinesRenderMode.NONE) General.Interface.RedrawDisplay(); 
 		}
 
 		//mxd
@@ -1090,6 +1120,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Make text labels for selected linedefs
 			ICollection<Thing> orderedselection = General.Map.Map.GetSelectedThings(true);
 			labels = new Dictionary<Thing, TextLabel>(orderedselection.Count);
+			if (orderedselection.Count > 0)
+				selectionasso.Set(orderedselection);
+			else
+				selectionasso.Clear();
 
 			// Otherwise significant delays will occure.
 			// Also we probably won't care about selection ordering when selecting this many anyway
@@ -1259,6 +1293,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			//mxd. Clear selection info
 			General.Interface.DisplayStatus(StatusType.Selection, string.Empty);
+
+			// Clear visible event lines on ClearSelection (like the others, credit to Boris!)
+			selectionasso.Clear();
 
 			//mxd. Clear selection labels
 			foreach(TextLabel l in labels.Values) l.Dispose();

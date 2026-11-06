@@ -16,6 +16,7 @@
 
 #region ================== Namespaces
 
+using System;
 using System.Windows.Forms;
 using CodeImp.DoomBuilder.Map;
 using CodeImp.DoomBuilder.Windows;
@@ -67,6 +68,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			scaletexturesonslopes.SelectedIndex = General.Settings.ReadPluginSetting("scaletexturesonslopes", 0);
 			eventlinelabelvisibility.SelectedIndex = General.Settings.ReadPluginSetting("eventlinelabelvisibility", 3);
 			eventlinelabelstyle.SelectedIndex = General.Settings.ReadPluginSetting("eventlinelabelstyle", 2);
+			maxeventlines.Text = General.Settings.ReadPluginSetting("maxeventlines", 5000).ToString(); //Maximum number of event lines
 			useoppositesmartpivothandle.Checked = General.Settings.ReadPluginSetting("useoppositesmartpivothandle", true);
 			selectafterundoredo.Checked = General.Settings.ReadPluginSetting("selectchangedafterundoredo", false);
 			usebuggyfloodselect.Checked = General.Settings.ReadPluginSetting("usebuggyfloodselect", false);
@@ -116,6 +118,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			General.Settings.DefaultCeilingHeight = ceilHeight;
 			General.Settings.DefaultFloorHeight = floorHeight;
+
+			//New event lines control, falls back to 5000
+			int maxlines = Math.Max(0, maxeventlines.GetResult(5000));
+			General.Settings.WritePluginSetting("maxeventlines", maxlines);
+			BuilderPlug.Me.MaxEventLines = maxlines;
 		}
 		
 		// When Cancel is pressed on the preferences dialog
@@ -142,6 +149,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		}
 
 		#endregion
+
 
 	}
 }
