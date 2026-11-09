@@ -348,6 +348,7 @@ namespace CodeImp.DoomBuilder.Map
 
 			//mxd. Save selection groups
 			General.Map.Map.WriteSelectionGroups(mapconfig);
+			General.Map.Map.WriteGroups3D(mapconfig);
 
 			//mxd. Save Tag Labels
 			if(tagLabels.Count > 0) 
@@ -588,6 +589,11 @@ namespace CodeImp.DoomBuilder.Map
 			General.Map.Map.ReadSelectionGroups(mapconfig);
 		}
 		
+		internal void ReadGroups3D()
+		{
+			General.Map.Map.ReadGroups3D(mapconfig);
+		}
+
 		// This displays the current map name
 		public override string ToString()
 		{

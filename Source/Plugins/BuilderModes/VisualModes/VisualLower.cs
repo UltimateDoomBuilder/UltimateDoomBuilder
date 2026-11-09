@@ -38,10 +38,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		#endregion
 
 		#region ================== Variables
-		
+
 		#endregion
 
 		#region ================== Properties
+
+		public override MapElement3D AsMapElement3D { get => new Lower3D(Sidedef); }
 
 		#endregion
 

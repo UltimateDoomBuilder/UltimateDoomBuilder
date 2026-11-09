@@ -36,21 +36,21 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(!xislight && ! yislight && x.lighttype == LightLevelType.UNKNOWN && y.lighttype == LightLevelType.UNKNOWN)
 				{
 					// Both are 3d floors. Push extrafloors above extraceilings
-					if(x.extrafloor && y.extrafloor)
+					if(x.extrafloor != null && y.extrafloor != null)
 					{
 						if(x.type == SectorLevelType.Floor) return (y.type == SectorLevelType.Ceiling ? 1 : 0);
 						return (y.type == SectorLevelType.Floor ? -1 : 0);
 					}
 
 					// None is 3d floor. Push ceilings above floors
-					if(!x.extrafloor && !y.extrafloor)
+					if(x.extrafloor == null && y.extrafloor == null)
 					{
 						if(x.type == SectorLevelType.Floor) return (y.type == SectorLevelType.Ceiling ? -1 : 0);
 						return (y.type == SectorLevelType.Floor ? 1 : 0);
 					}
 
 					// One is 3d floor. Push it below the regular surface if it has "disablelighting" flag, and above otherwise
-					return ((x.extrafloor && x.disablelighting) || (y.extrafloor && !y.disablelighting) ? -1 : 1);
+					return ((x.extrafloor != null && x.disablelighting) || (y.extrafloor != null && !y.disablelighting) ? -1 : 1);
 				}
 				
 				// Push light levels above floor and ceiling levels when height is the same

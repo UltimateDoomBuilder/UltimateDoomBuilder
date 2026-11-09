@@ -43,6 +43,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 		#region ================== Properties
 
+		public override MapElement3D AsMapElement3D { get => new Upper3D(Sidedef); }
+
 		#endregion
 
 		#region ================== Constructor / Setup

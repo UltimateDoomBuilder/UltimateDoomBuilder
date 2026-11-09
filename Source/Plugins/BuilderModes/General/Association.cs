@@ -44,6 +44,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private Font font;
 		private Dictionary<string, Vector2D> textwidths;
 		private Dictionary<string, List<TextLabel>> textlabels;
+		private int eventlinecount; //Holds the current number of rendered event lines
+		private bool limitlines; //Bool to let the original Highlight function skip the render limit
 
 		// Map elements that are associated
 		private List<Thing> things;
@@ -57,7 +59,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public List<Thing> Things { get { return things; } }
 		public List<Sector> Sectors { get { return sectors; } }
 		public List<Linedef> Linedefs { get { return linedefs; } }
-		public bool IsEmpty { get { return things.Count == 0 && sectors.Count == 0 && linedefs.Count == 0; } }
+		public bool IsEmpty { get { return things.Count == 0 && sectors.Count == 0 && linedefs.Count == 0 && eventlines.Count == 0; } } //Updated to consider event lines
 
 		//mxd. This sets up the association
 		public Association(IRenderer2D renderer)
@@ -110,18 +112,57 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		}
 
 		/// <summary>
-		/// Sets the association to a map element. Only works with an instance of Thing, Sector, or Linedef.
-		/// Also gets the forward and reverse associations
+		/// Updated version to maintain the original Highlight functionality
+		/// Sets the association for a single map element (Thing, Sector, or Linedef)
 		/// </summary>
 		/// <param name="element">An instance of Thing, Sector, or Linedef</param>
 		public void Set(SelectableElement element)
 		{
-			this.element = element;
-			things = new List<Thing>();
-			sectors = new List<Sector>();
-			linedefs = new List<Linedef>();
-			eventlines = new Dictionary<string, List<Line3D>>();
+			if (element == null || element.IsDisposed)
+			{
+				Clear();
+				return;
+			}
+			Set(new[] { element }, false); //ensure highlight isn't limited by event line limit
+		}
+		/// <summary>
+		/// New inclusion for event lines on Selection
+		/// Sets the association for multiple map elements (e.g. selected linedefs, sectors, or things)
+		/// </summary>
+		public void Set(IEnumerable<SelectableElement> elements, bool limit = true)
+		{
+			Clear();
+			this.limitlines = limit; 
+			if (elements == null)
+				return;
 
+			foreach (SelectableElement element in elements)
+			{
+				if (element == null || element.IsDisposed)
+					continue;
+				// Stop processing more elements once the maximum event lines are reached
+				if (limitlines && eventlinecount >= BuilderPlug.Me.MaxEventLines)
+					break;
+				// Fast pre-filter: skip inert elements that have no actions or tags
+				if (!ElementCanHaveAssociations(element))
+					continue;
+				AddAssociationsForElement(element);
+			}
+			if (eventlines.Count == 0)
+				return;
+			// Deduplicate associated elements so overlapping targets aren't drawn multiple times
+			sectors = sectors.Distinct().ToList();
+			linedefs = linedefs.Distinct().ToList();
+			things = things.Distinct().ToList();
+			BuildLabelsAndColors();
+		}
+		/// <summary>
+		/// Gathers forward and reverse associations for a single element and adds them to the existing lists
+		/// Breaking these out for the Event Lines Selection mode
+		/// </summary>
+		private void AddAssociationsForElement(SelectableElement element)
+		{
+			this.element = element;
 			if (element is Sector)
 			{
 				Sector s = element as Sector;
@@ -144,7 +185,6 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				center = t.Position;
 
 				ThingTypeInfo ti = General.Map.Data.GetThingInfoEx(t.Type);
-
 				if (ti != null)
 					directlinktype = ti.ThingLink;
 				else
@@ -159,8 +199,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			// Get forward and reverse associations
 			GetAssociations();
+		}
 
 			// Cache width of label text and generate the labels
+			private void BuildLabelsAndColors()
+			{
 			textwidths = new Dictionary<string, Vector2D>(eventlines.Count);
 			textlabels = new Dictionary<string, List<TextLabel>>(eventlines.Count);
 
@@ -201,6 +244,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			sectors = new List<Sector>();
 			linedefs = new List<Linedef>();
 			eventlines = new Dictionary<string, List<Line3D>>();
+			textlabels = new Dictionary<string, List<TextLabel>>();
+			textwidths = new Dictionary<string, Vector2D>();
+			eventlinecount = 0; //Clears out the selected event line count
+			limitlines = false;
 		}
 
 		/// <summary>
@@ -774,10 +821,60 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if (action == null)
 				return;
 
+			// Cap the number of event lines rendered in Selection mode
+			if (limitlines && eventlinecount >= BuilderPlug.Me.MaxEventLines)
+				return;
 			if (!eventlines.ContainsKey(action))
 				eventlines[action] = new List<Line3D>();
 
 			eventlines[action].Add(new Line3D(start, end, true));
+			eventlinecount++;
+		}
+
+		/// <summary>
+		/// Check to skip elements that can't have any associations 
+		/// </summary>
+		private static bool ElementCanHaveAssociations(SelectableElement element)
+		{
+			if (element is Linedef)
+			{
+				Linedef ld = (Linedef)element;
+				if (ld.Action > 0) return true;
+				foreach (int tag in ld.Tags)
+					if (tag != 0) return true;
+				return ElementHasUDMFFieldAssociations(ld);
+			}
+			else if (element is Sector)
+			{
+				Sector s = (Sector)element;
+				foreach (int tag in s.Tags)
+					if (tag != 0) return true;
+				return ElementHasUDMFFieldAssociations(s);
+			}
+			else if (element is Thing)
+			{
+				Thing t = (Thing)element;
+				if (t.Action > 0 || t.Tag != 0) return true;
+				ThingTypeInfo ti = General.Map.Data.GetThingInfoEx(t.Type);
+				if (ti != null && ti.ThingLink != 0) return true;
+				return ElementHasUDMFFieldAssociations(t);
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Checks if the given map element has UDMF fields with associations, and skips rendering any event lines if so
+		/// </summary>
+		private static bool ElementHasUDMFFieldAssociations(SelectableElement element)
+		{
+			if (element == null || element.IsDisposed || element.Fields == null)
+				return false;
+			foreach (UniversalFieldInfo ufi in General.Map.Config.SectorFields)
+			{
+				if (ufi.Associations.Count > 0 && element.Fields.ContainsKey(ufi.Name))
+					return true;
+			}
+			return false;
 		}
 
 		/// <summary>
@@ -988,24 +1085,34 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		/// Renders associated things and sectors in the indication color.
 		/// Also renders event lines, if that option is enabled
 		/// </summary>
-		public void Render()
+		public void RenderAssociationShading(Association other = null)
 		{
-			bool showlabels = BuilderPlug.Me.EventLineLabelVisibility > 0; // Show labels at all?
-
+			
 			foreach (Thing t in things)
+			{
+				if (t == null || t.IsDisposed) continue;
+				if (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION && ((!ReferenceEquals(other, null) && other.things != null && other.things.Contains(t)) || t.Selected)) continue;
 				renderer.RenderThing(t, General.Colors.Indication, General.Settings.ActiveThingsAlpha);
+			}
 
 			// There must be a better way to do this
-			foreach(Sector s in sectors)
+			foreach (Sector s in sectors)
 			{
+				if (s == null || s.IsDisposed || s.FlatVertices == null || s.FlatVertices.Length == 0) continue;
+				if (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION && ((!ReferenceEquals(other, null) && other.sectors != null && other.sectors.Contains(s)) || s.Selected)) continue;
 				int highlightedColor = General.Colors.Highlight.WithAlpha(128).ToInt();
 				FlatVertex[] verts = new FlatVertex[s.FlatVertices.Length];
 				s.FlatVertices.CopyTo(verts, 0);
 				for (int i = 0; i < verts.Length; i++) verts[i].c = highlightedColor;
 				renderer.RenderGeometry(verts, null, true);
 			}
+		}
 
-			if (General.Settings.GZShowEventLines)
+		public void RenderEventLines()
+		{
+			bool showlabels = BuilderPlug.Me.EventLineLabelVisibility > 0; // Show labels at all?
+
+			if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE) //changed to kick in for either event line render modes (i.e. not "off")
 			{
 				List<Line3D> lines = new List<Line3D>(eventlines.Count);
 				List<ITextLabel> labels = new List<ITextLabel>(eventlines.Count);
@@ -1045,6 +1152,13 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 		}
 
+		public void Render(Association other = null)
+		{
+			RenderAssociationShading(other);
+			RenderEventLines();
+		}
+
+
 		/// <summary>
 		/// Plots associated linedefs and sectors
 		/// </summary>
@@ -1060,15 +1174,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// This compares an association
 		public static bool operator ==(Association a, Association b)
 		{
-			if(!(a is Association) || !(b is Association)) return false; //mxd
+			if (ReferenceEquals(a, b)) return true;
+			if (ReferenceEquals(a, null) || ReferenceEquals(b, null)) return false;
 			return (a.type == b.type) && a.tags.SetEquals(b.tags);
 		}
 
 		// This compares an association
 		public static bool operator !=(Association a, Association b)
 		{
-			if(!(a is Association) || !(b is Association)) return true; //mxd
-			return (a.type != b.type) || !a.tags.SetEquals(b.tags);
+			return !(a == b);
 		}
 
 		//mxd 

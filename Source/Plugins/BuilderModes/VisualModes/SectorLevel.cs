@@ -38,7 +38,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public bool restrictlighting; //mxd
 		public bool resetlighting; //mxd
 		public bool affectedbyglow; //mxd
-		public bool extrafloor; //mxd
+		public Effect3DFloor extrafloor; //mxd
 		public bool splitsides; //mxd
 		
 		// Constructor
@@ -90,8 +90,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		{
 			switch(type)
 			{
-				case SectorLevelType.Ceiling: return (extrafloor ? "ExtraCeiling" : "Ceiling");
-				case SectorLevelType.Floor: return (extrafloor ? "ExtraFloor" : "Floor");
+				case SectorLevelType.Ceiling: return (extrafloor != null ? "ExtraCeiling" : "Ceiling");
+				case SectorLevelType.Floor: return (extrafloor != null ? "ExtraFloor" : "Floor");
 				case SectorLevelType.Glow: return "Glow Level";
 				case SectorLevelType.Light: return "Light Level (" + GetLightType() + ")";
 				default: return "Unknown Level Type!!!";

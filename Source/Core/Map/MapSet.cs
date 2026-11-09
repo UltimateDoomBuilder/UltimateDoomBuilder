@@ -58,6 +58,8 @@ namespace CodeImp.DoomBuilder.Map
 		//mxd
 		private const string SELECTION_GROUPS_PATH = "selectiongroups";
 		
+		private const string GROUPS3D_PATH = "groups3d";
+
 		// Handler for tag fields
 		public delegate void TagHandler<T>(MapElement element, bool actionargument, UniversalType type, ref int value, T obj);
 		
@@ -178,6 +180,10 @@ namespace CodeImp.DoomBuilder.Map
 		/// this setting to avoid exceptions
 		/// </summary>
 		public bool IsSafeToAccess { get { return issafetoaccess; } set { issafetoaccess = value; } }
+
+		public List<Group3D> Groups3D { get; set; } = new List<Group3D>();
+
+		public MultiDictionary<MapElement3D, Group3D> GroupsByMapElement3D { get; set; } = new MultiDictionary<MapElement3D, Group3D>();
 
 		#endregion
 
@@ -1608,6 +1614,103 @@ namespace CodeImp.DoomBuilder.Map
 			return result;
 		}
 		
+		internal void WriteGroups3D(Configuration cfg)
+		{
+			if (!Groups3D.Any()) return;
+
+			IDictionary groupscfg = new ListDictionary();
+
+			// Fill structure
+			for (int i = 0; i < Groups3D.Count; i++)
+			{
+				Group3D group = Groups3D[i];
+
+				List<string> elementstrings = new List<string>();
+				foreach (MapElement3D e in group)
+				{
+					var s = MapElement3D.Serialize(e);
+					if (s != null)
+						elementstrings.Add(s);
+				}
+
+				IDictionary groupcfg = new ListDictionary();
+				groupcfg.Add("elements", string.Join(" ", elementstrings.ToArray()));
+				groupscfg.Add(i, groupcfg);
+			}
+
+			// Write to config
+			cfg.WriteSetting(GROUPS3D_PATH, groupscfg);
+		}
+
+		internal void ReadGroups3D(Configuration cfg)
+		{
+			IDictionary groupscfg = cfg.ReadSetting(GROUPS3D_PATH, new Hashtable());
+
+			foreach (DictionaryEntry groupscfgentry in groupscfg)
+			{
+				// Item is a structure?
+				if (groupscfgentry.Value is IDictionary)
+				{
+					int groupnum;
+					if (!int.TryParse(groupscfgentry.Key as string, out groupnum)) continue;
+
+					IDictionary groupcfg = (IDictionary)groupscfgentry.Value;
+
+					if (groupcfg.Contains("elements"))
+					{
+						string s = groupcfg["elements"] as string;
+						if (!string.IsNullOrEmpty(s))
+						{
+							Group3D group = DeserializeGroup3D(s);
+							if (group != null)
+							{
+								Groups3D.Add(group);
+								foreach (var e in group)
+									GroupsByMapElement3D.Add(e, group);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		private Group3D DeserializeGroup3D(string input)
+		{
+			string[] parts = input.Split(new[] { ')' }, StringSplitOptions.RemoveEmptyEntries);
+			Group3D group = new Group3D();
+
+			foreach (string part in parts)
+			{
+				MapElement3D element = MapElement3D.Deserialize(part, this);
+				if (element != null)
+					group.Add(element);
+			}
+
+			return group;
+		}
+
+		public bool CleanupGroup3D(Group3D group)
+		{
+			group.RemoveAll(e => {
+				if (e.IsDisposed)
+				{
+					General.Map.Map.GroupsByMapElement3D.Remove(e, group);
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			});
+
+			return !group.Any();
+		}
+
+		public void CleanupGroups3D()
+		{
+			Groups3D.RemoveAll(g => CleanupGroup3D(g));
+		}
+
 		#endregion
 
 		#region ================== Marking

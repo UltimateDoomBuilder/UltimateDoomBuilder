@@ -465,6 +465,8 @@ namespace CodeImp.DoomBuilder
 			//mxd. Restore selection groups
 			options.ReadSelectionGroups();
 
+			options.ReadGroups3D();
+
 			// Bind any methods
 			General.Actions.BindMethods(this);
 
@@ -559,6 +561,8 @@ namespace CodeImp.DoomBuilder
 
 			// Restore selection groups
 			options.ReadSelectionGroups();
+
+			options.ReadGroups3D();
 
 			if(General.Editing.Mode != null)
 			{

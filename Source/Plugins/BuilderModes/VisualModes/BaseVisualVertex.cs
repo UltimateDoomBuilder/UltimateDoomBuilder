@@ -28,6 +28,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 		#endregion
 
+		#region ================== Properties
+
+		public virtual MapElement3D AsMapElement3D { get => new Vertex3D(vertex, ceilingVertex); }
+
+		#endregion
+
 		// Constructor
 		public BaseVisualVertex(BaseVisualMode mode, Vertex v, bool ceilingVertex)
 			: base(v, ceilingVertex) 

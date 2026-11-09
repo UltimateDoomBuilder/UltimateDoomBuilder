@@ -1,6 +1,6 @@
 app-id: io.github.ultimatedoombuilder.ultimatedoombuilder
 runtime: org.freedesktop.Platform
-runtime-version: '24.08'
+runtime-version: '26.08'
 sdk: org.freedesktop.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.mono6
@@ -20,14 +20,14 @@ modules:
     buildsystem: autotools
     sources:
       - type: git
-        url: https://github.com/mono/libgdiplus.git
-        tag: '6.1'
+        url: https://gitlab.winehq.org/mono/libgdiplus
+        tag: '6.2'
 
   - name: builder-native
     buildsystem: simple
     build-commands:
       - mkdir -p /app/lib
-      - g++ -std=c++14 -O2 --shared -g3 -o /app/lib/libBuilderNative.so -fPIC -I Source/Native Source/Native/*.cpp Source/Native/OpenGL/*.cpp Source/Native/OpenGL/gl_load/*.c -DUDB_LINUX=1 -lX11 -lXfixes -ldl
+      - g++ -std=c++14 -O2 --shared -g3 -o /app/lib/libBuilderNative.so -fPIC -I Source/Native Source/Native/*.cpp Source/Native/OpenGL/*.cpp Source/Native/OpenGL/gl_load/*.c Source/Native/VPO/*.cpp -DUDB_LINUX=1 -lX11 -lXfixes -ldl
     sources:
       - type: dir
         path: ..
@@ -38,6 +38,7 @@ modules:
       - msbuild /p:Configuration=Release /p:TargetFrameworkVersion=v4.7.2 /p:RunCodeAnalysis=false /p:CodeAnalysisRuleSet="" BuilderMono.sln
       - mkdir -p /app/bin /app/lib/ultimatedoombuilder
       - cp -r Build/* /app/lib/ultimatedoombuilder/
+      - if test -f Changelog.txt; then cp Changelog.txt /app/lib/ultimatedoombuilder/; fi
       - mkdir -p /app/etc/mono/
       - |
         echo '<configuration>

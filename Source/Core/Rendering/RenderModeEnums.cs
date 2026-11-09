@@ -23,4 +23,11 @@
 		WALLSPRITE,
 		FLATSPRITE,
 	}
+
+	public enum EventLinesRenderMode //Adding new enum to define the three states for showing event lines
+	{
+		NONE = 0,
+		HIGHLIGHT = 1,
+		SELECTION = 2,
+	}
 }

@@ -46,7 +46,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 		private const double MOVE_SPEED_MULTIPLIER = 0.001;
 		protected const float PICK_RANGE = 0.98f;
-		private const float MOVE_CAMERA_DISTANCE = 64.0f;
+		private const double MOVE_CAMERA_RATIO = 0.25;
 		
 		#endregion
 
@@ -554,7 +554,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		{
 			if (orbit)
 			{
-				orbitRadius = MOVE_CAMERA_DISTANCE;
+				orbitRadius *= MOVE_CAMERA_RATIO;
 			}
 			else
 			{
@@ -566,7 +566,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 				Vector3D start = General.Map.VisualCamera.Position;
 				Vector3D delta = start - hitPosition;
-				General.Map.VisualCamera.Position = hitPosition + delta.GetFixedLength(MOVE_CAMERA_DISTANCE);
+				General.Map.VisualCamera.Position = hitPosition + delta.GetScaled(MOVE_CAMERA_RATIO);
 			}
 		}
 

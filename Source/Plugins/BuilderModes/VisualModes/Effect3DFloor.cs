@@ -158,8 +158,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 
 			//mxd
-			floor.extrafloor = true;
-			ceiling.extrafloor = true;
+			floor.extrafloor = this;
+			ceiling.extrafloor = this;
 			floor.splitsides = !clipsides;
 			ceiling.splitsides = (!clipsides && !ignorebottomheight); // if "ignorebottomheight" flag is set, both ceiling and floor will be at the same level and sidedef clipping with floor level will fail resulting in incorrect light props transfer in some cases
 
