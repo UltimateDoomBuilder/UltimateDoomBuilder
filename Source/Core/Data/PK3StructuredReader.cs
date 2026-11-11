@@ -715,9 +715,10 @@ namespace CodeImp.DoomBuilder.Data
 			// Mapinfo should be in root folder
 			List<TextResourceData> result = new List<TextResourceData>();
 
-			// Try to find (z)mapinfo
+			// Try to find zmapinfo, if not umapinfo, if not mapinfo
 			string[] files = GetAllFilesWithTitle("", "ZMAPINFO", false);
-			if(files.Length == 0) files = GetAllFilesWithTitle("", "MAPINFO", false);
+			if (files.Length == 0) files = GetAllFilesWithTitle("", "UMAPINFO", false);
+			if (files.Length == 0) files = GetAllFilesWithTitle("", "MAPINFO", false);
 
 			// Add to collection
 			foreach(string s in files)

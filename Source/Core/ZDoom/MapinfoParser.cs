@@ -138,7 +138,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 						// Try to get map name
 						SkipWhitespace(true);
 						token = ReadToken();
-						if(token.ToLowerInvariant() == "lookup")
+						if (token.ToLowerInvariant() == "lookup")
 						{
 							// No dice...
 							SkipWhitespace(true);
@@ -146,7 +146,14 @@ namespace CodeImp.DoomBuilder.ZDoom
 						}
 						else
 						{
-							mapinfo.Title = StripQuotes(token);
+							if (token == "{") // If the next token is a {, we can assume it's UMAPINFO format
+							{ 
+								datastream.Seek(-token.Length - 1, SeekOrigin.Current); // Rewind the seeker back to the end of the level number
+							} 
+							else // If the next token is not a {, we can assume it's (Z)MAPINFO format, and can assign the token as the map name
+							{ 
+								mapinfo.Title = StripQuotes(token); 
+							}
 						}
 
 						// Parse properties
@@ -437,8 +444,13 @@ namespace CodeImp.DoomBuilder.ZDoom
 							ReportError("Unexpected token \"" + token + "\"");
 							return false;
 						}
+
+					case "levelname":
+						if (!ParseLevelName()) return false;
+						break;
+
 					
-					case "sky2": case "sky1":
+					case "sky2": case "sky1": case "skytexture": //Checks for SKY1 and SKY2 from (Z)MAPINFO and SKYTEXTURE from UMAPINFO
 						if(!ParseSky(token)) return false;
 						break;
 
@@ -510,6 +522,27 @@ namespace CodeImp.DoomBuilder.ZDoom
 			return true;
 		}
 
+		private bool ParseLevelName()
+		{
+			// UMAPINFO format (i.e. new format) only
+			if (!NextTokenIs("=")) return false;
+
+			SkipWhitespace(true);
+			string token = StripQuotes(ReadToken());
+
+			if (string.IsNullOrEmpty(token))
+			{
+				ReportError("Expected levelname");
+				return false;
+			}
+			
+			mapinfo.Title = token;
+
+			return true;
+
+
+		}
+
 		private bool ParseSky(string skytype)
 		{
 			SkipWhitespace(true);
@@ -532,7 +565,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 					return false;
 				}
 
-				if(skytype == "sky1")
+				if(skytype == "sky1" || skytype == "skytexture") //SKY1 from (Z)MAPINFO or SKYTEXTURE from UMAPINFO
 					mapinfo.Sky1 = skytexture;
 				else
 					mapinfo.Sky2 = skytexture;

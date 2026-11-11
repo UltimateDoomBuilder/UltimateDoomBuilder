@@ -1101,6 +1101,7 @@ namespace CodeImp.DoomBuilder.Data
         }
 
         //mxd. Should be only one entry per wad
+		//A WAD can have multiple lumps, but only one will be read by a single source port
         public override IEnumerable<TextResourceData> GetMapinfoData() 
 		{
 			if(issuspended) throw new Exception("Data reader is suspended");
@@ -1109,8 +1110,11 @@ namespace CodeImp.DoomBuilder.Data
 			List<TextResourceData> result = new List<TextResourceData>();
 			result.AddRange(GetLastLumpData("ZMAPINFO"));
 
+			// Then for UMAPINFO
+			if (result.Count == 0) result.AddRange(GetLastLumpData("UMAPINFO"));
+
 			// Then for MAPINFO
-			if(result.Count == 0) result.AddRange(GetLastLumpData("MAPINFO"));
+			if (result.Count == 0) result.AddRange(GetLastLumpData("MAPINFO"));
 			return result;
 		}
 
