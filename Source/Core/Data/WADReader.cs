@@ -1110,11 +1110,11 @@ namespace CodeImp.DoomBuilder.Data
 			List<TextResourceData> result = new List<TextResourceData>();
 			result.AddRange(GetLastLumpData("ZMAPINFO"));
 
-			// Then for UMAPINFO
-			if (result.Count == 0) result.AddRange(GetLastLumpData("UMAPINFO"));
-
 			// Then for MAPINFO
-			if (result.Count == 0) result.AddRange(GetLastLumpData("MAPINFO"));
+			if(result.Count == 0) result.AddRange(GetLastLumpData("MAPINFO"));
+
+			// Then for UMAPINFO
+			if(result.Count == 0) result.AddRange(GetLastLumpData("UMAPINFO"));
 			return result;
 		}
 
