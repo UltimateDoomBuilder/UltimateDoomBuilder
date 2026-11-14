@@ -49,7 +49,54 @@ Ranked by how much they seem worth doing in ULDB (value for effort, and whether 
 - Dark theme (#1154, "not feasible with WinForms"): **ULDB already follows the system light/dark theme.** Worth mentioning in release notes.
 - High contrast (#933), 3D-mode rendering requests (sector effects, shadows, 3D floors in 2D #688), model formats (IQM #818): rendering features, not UI.
 
-## 3. Practical next steps
-1. Make the big edit dialogs fit small screens (scroll body, pinned buttons): the one real UI bug carried over from upstream.
-2. Check on the user's machine: Slope Arch mouse release, Escape in 3D-view dialogs, the Find dialog's Enter/Escape, a Wayland scaling check at 150%.
-3. Take the six "Do" items; open each as a GitHub issue on the fork first so the user can reorder them.
+## 3. Status (branch `phase-3/upstream-fixes`, 14 Nov 2026, no screen)
+
+Done in the container (built, tested, most captured; see `docs/ux-changes.md` and `docs/upstream-edits.md`):
+
+| Item | Upstream | State |
+|---|---|---|
+| Dialogs and main window fit small screens, buttons pinned | #1051 | Done; checked at 1366x768 and 1280x720 captures |
+| Dead "Select Things in Selected Sectors" menu item hidden | #1315 | Done |
+| OBJ export flat extension case | #1394 | Done |
+| Escape closes Find/Replace | #972 | Done (Enter was already handled) |
+| Autosave of a never-saved map | #1355 | Done; tested rotation and recovery file |
+| Filter box in long grids (Filter Selected Things) | #1138 | Done (the Thing browser already had one) |
+| Browser background (theme / black / greys / chequerboard) | #1216 | Done; captured |
+| Texture browser remembers "Show:" | #652 | Already upstream behaviour; not changed. **Verify on the machine** |
+| Interface scale 50-400 % | #1146 | Done (restart needed); Preferences → Interface → ULDB |
+| Select Connected Linedefs action | #1227, #1301 | Done; unit test `SelectConnectedLinedefsSelectsTheWholeChain` |
+| Thing rotation step | #1191 | Done (preference) |
+| Prefab tag handling | #1335 | Done (preference) |
+| Selection threshold default 4 | #1219 | Done |
+| Dark theme | #1154 | Already provided: follows the system theme |
+| Preset launch options | #792, #646 | Covered by the engine presets (22 Oct) |
+
+Not done and not needed: #1114 (Custom tab keywords refresh; minor), #1365 environment variables for the engine and #1376 node builder command lines (extend the engine card later), #1180 finer rotation control beyond the step.
+
+## 4. Not in scope for now (kept for future consideration)
+
+These were the "Probably not" items. They are **not planned**, but worth revisiting if users ask:
+
+- **Split or side-by-side 2D/3D views (#764).** The maintainer called it "rather unlikely"; modes are event-driven and independent, so it means reworking Visual mode and its input. A real feature, not a fix.
+- **High-contrast theme support (#933).** We follow the system light/dark variant only. Needs a look at how Avalonia handles forced-colours on Linux (KDE has no real equivalent).
+- **Rendering requests**: sector effects, shadows and 3D floors drawn in the 2D view (#688), more model formats such as IQM (#818), and similar renderer work (#128, #62). These live in the native renderer and are a separate project.
+- **Environment variables / node builder line editing** (#1365, #1376): small, but not requested by ULDB users yet.
+
+## 5. Needs doing on the user's machine
+
+Nothing below could be checked in the container (no real screen, one scale factor, no real engines). Tick off and report anything odd as a GitHub issue.
+
+1. **Small screens and scaling:** open Edit Linedef / Edit Sector / Edit Thing, Preferences and Game Configurations on a small or second monitor and on Wayland at 125-150 %. The buttons must stay visible and the tabs scroll. Check the main window opens fully on screen.
+2. **Interface scale** (Preferences → Interface → ULDB): choose 125 % and 150 %, press Apply, restart; the whole UI scales. Choose Automatic afterwards to undo. (Wayland: the value is read from the program config before the window opens.)
+3. **Slope Arch mode and Escape in 3D-view dialogs (#1331, #902):** the mouse must be released when a dialog opens and Escape must close it.
+4. **Find / Replace in the script editor:** Enter finds the next match, Escape closes the window.
+5. **Browser background:** open the texture, flat and sprite browsers with each background choice; dark textures must be visible, and the chequerboard must show through transparent pictures.
+6. **Filter Selected Things** on a map with more than 12 thing types: the filter box appears, selection survives a change of filter.
+7. **Thing rotation step:** change it to 15 and use the wheel on things in a UDMF map. **Prefab tags:** insert a prefab with tags using each option.
+8. **Selection threshold** default 4: does clicking with a slight drag still feel right? (The setting is in Preferences → Classic Modes.)
+9. **Select Connected Linedefs:** bind a shortcut (Preferences → Controls → Linedefs) and try it from Linedefs mode and from the command palette.
+10. **Unsaved map autosave:** make a new map, wait for the autosave (or lower the interval), look in `~/.config/UltimateLinuxDoomBuilder/Autosaves/` (path may differ in the Flatpak) and open the file.
+11. **Texture browser "Show:" memory** (#652): pick Flats, close, reopen.
+12. **OBJ export** on the real file system with textures that have upper-case names.
+13. **Test Map from the Flatpak** against real GZDoom/UZDoom, native and Flatpak (from the 22 Oct work; still unconfirmed on the machine).
+14. **Flatpak build:** build and run the Flatpak to confirm all of the above work inside the sandbox.

@@ -1396,6 +1396,39 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 		}
 
+#if ULDB
+		// ULDB: adds every linedef that is connected to the selection (through shared vertices, however far) to the selection.
+		// Upstream declined it as "do it with UDBScript" (issue #1227); ULDB doesn't ship UDBScript.
+		[BeginAction("selectconnectedlinedefs")]
+		public void SelectConnectedLinedefs()
+		{
+			Queue<Linedef> pending = new Queue<Linedef>(General.Map.Map.GetSelectedLinedefs(true));
+			if(pending.Count == 0 && highlighted != null && !highlighted.IsDisposed)
+			{
+				highlighted.Selected = true;
+				pending.Enqueue(highlighted);
+			}
+			if(pending.Count == 0)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "This action requires a selection or a highlighted linedef!");
+				return;
+			}
+
+			int added = 0;
+			while(pending.Count > 0)
+			{
+				Linedef ld = pending.Dequeue();
+				foreach(Vertex v in new[] { ld.Start, ld.End })
+					foreach(Linedef other in v.Linedefs)
+						if(!other.Selected) { other.Selected = true; pending.Enqueue(other); added++; }
+			}
+
+			UpdateSelectionInfo();
+			General.Interface.DisplayStatus(StatusType.Action, "Selected " + added + " connected linedefs");
+			General.Interface.RedrawDisplay();
+		}
+#endif
+
 		// This keeps only the single-sided lines selected
 		[BeginAction("selectsinglesided")]
 		public void SelectSingleSided()

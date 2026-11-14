@@ -310,7 +310,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			highlightrange = General.Settings.ReadPluginSetting("highlightrange", 20);
 			highlightthingsrange = General.Settings.ReadPluginSetting("highlightthingsrange", 10);
 			splitlinedefsrange = General.Settings.ReadPluginSetting("splitlinedefsrange", 10);
+#if ULDB
+			// ULDB: a 4 pixel default (upstream's 2 turns many plain clicks into box selections that clear the selection, issue #1219)
+			mouseselectionthreshold = General.Settings.ReadPluginSetting("mouseselectionthreshold", 4);
+#else
 			mouseselectionthreshold = General.Settings.ReadPluginSetting("mouseselectionthreshold", 2);
+#endif
 			autodragonpaste = General.Settings.ReadPluginSetting("autodragonpaste", false);
 			autoDrawOnEdit = General.Settings.ReadPluginSetting("autodrawonedit", true); //mxd
 			autoAlignTextureOffsetsOnCreate = General.Settings.ReadPluginSetting("autoaligntextureoffsetsoncreate", false); //mxd

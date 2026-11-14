@@ -48,6 +48,12 @@ Genuine upstream bugs found while porting. They aren't Linux-specific, so they'r
 | `Source/Core/Windows/ConfigForm.cs` | engines given as `flatpak:`/`host:` pseudo paths are named by `Engines.DisplayName` (`#if ULDB`) | otherwise the name came from the pseudo path's text |
 | `Source/Core/General/General.cs` | at startup the previous log is copied to `UDBuilder.previous.log` before it's deleted (`#if ULDB`) | A crash is usually reported after a restart, which deleted the log of the crashed session |
 | `Source/Core/Windows/PreferencesForm.cs` | script editor colour presets: extra names added to the combo, a `default:` case in `scriptcolorpresets_SelectedIndexChanged` applies them (`#if ULDB`, `ULDB.Scripting.ScriptColorPresets`) | Issue #20: common editor palettes (Monokai, Dracula, One Dark, Nord, Gruvbox, Solarized, GitHub Light) as choices |
+| `Source/Core/General/MapManager.cs` | `AutoSave()` writes a never-saved map to `<settings>/Autosaves/Untitled.<map>.autosaveN` (same rotation) instead of failing with a warning (`#if ULDB`) | Upstream issue #1355 |
+| `Source/Plugins/BuilderModes/IO/WavefrontExporter.cs` | flat textures are saved as `.png`, not `.PNG` (`#if ULDB`) | Case-sensitive file system (#1394) |
+| `Source/Plugins/BuilderModes/ClassicModes/ThingsMode.cs` | the rotation step of the mouse wheel on things (non-Doom-rotation configs) comes from `UiOptions.ThingRotationStep` (`#if ULDB`) | #1191 |
+| `Source/Core/Editing/CopyPasteManager.cs` | `InsertPrefabFile` / `InsertPreviousPrefab` apply `UiOptions.ApplyPrefabTags` to the paste options (`#if ULDB`) | #1335: choice of how tags are treated |
+| `Source/Plugins/BuilderModes/General/BuilderPlug.cs`, `Interface/PreferencesForm.cs` | default `mouseselectionthreshold` 4 instead of 2 (`#if ULDB`) | #1219 |
+| `Source/Plugins/BuilderModes/ClassicModes/LinedefsMode.cs`, `Resources/Actions.cfg` | new action `selectconnectedlinedefs` (`#if ULDB`; the Actions.cfg block is new text) | #1227 / #1301 |
 
 ## Native stand-ins (not edits)
 

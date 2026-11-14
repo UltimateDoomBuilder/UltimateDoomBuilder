@@ -225,6 +225,66 @@ namespace ULDB.Tests
 			finally { SynchronizationContext.SetSynchronizationContext(oldcontext); }
 		}
 
+		// "Select Connected Linedefs" (ULDB): from one linedef, everything reachable through shared vertices.
+		[SkippableFact]
+		public void SelectConnectedLinedefsSelectsTheWholeChain()
+		{
+			string iwad = TestResources.FreedoomIwad;
+			Skip.If(iwad == null, "Freedoom 2 IWAD not found; install the freedoom package or set ULDB_TEST_IWAD");
+			UIThread ui = new UIThread();
+			SynchronizationContext oldcontext = SynchronizationContext.Current;
+			SynchronizationContext.SetSynchronizationContext(ui);
+			try
+			{
+				WithPlugins(plugins =>
+				{
+					string source = Path.Combine(HeadlessEditor.TempDir, "selconn-" + Guid.NewGuid().ToString("N") + ".wad");
+					File.Copy(HeadlessEditor.TestMap("small.wad"), source);
+					using(OffscreenGL gl = new OffscreenGL())
+					{
+						MapOptions options = new MapOptions { ConfigFile = "UZDoom_DoomUDMF.cfg", CurrentName = "MAP01", ScriptCompiler = "zdoom_acs.cfg" };
+						options.Resources.Add(new DataLocation(DataLocation.RESOURCE_WAD, iwad, false, false, false, null));
+						MapManager manager = new MapManager();
+						HeadlessEditor.SetGeneralField("map", manager);
+						try
+						{
+							Assert.True(manager.InitializeOpenMap(source, options), "InitializeOpenMap failed");
+							plugins.OnMapOpenEnd();
+							General.Editing.ChangeMode("LinedefsMode");
+							Assert.Equal("LinedefsMode", General.Editing.Mode?.GetType().Name);
+
+							Linedef start = manager.Map.Linedefs.First();
+							manager.Map.ClearAllSelected();
+							start.Selected = true;
+							Assert.True(General.Actions.Exists("buildermodes_selectconnectedlinedefs"));
+							General.Actions.InvokeAction("buildermodes_selectconnectedlinedefs");
+
+							HashSet<Linedef> expected = new HashSet<Linedef> { start };
+							Queue<Linedef> queue = new Queue<Linedef>();
+							queue.Enqueue(start);
+							while(queue.Count > 0)
+							{
+								Linedef l = queue.Dequeue();
+								foreach(Vertex v in new[] { l.Start, l.End })
+									foreach(Linedef o in v.Linedefs)
+										if(expected.Add(o)) queue.Enqueue(o);
+							}
+							HashSet<Linedef> selected = new HashSet<Linedef>(manager.Map.Linedefs.Where(l => l.Selected));
+							Assert.True(expected.Count > 1);
+							Assert.True(expected.SetEquals(selected), expected.Count + " expected, " + selected.Count + " selected");
+						}
+						finally
+						{
+							try { General.Editing.ChangeMode((EditMode)null); } catch(Exception) { }
+							try { manager.Dispose(); } catch(Exception e) { output.WriteLine("Dispose: " + e); }
+							HeadlessEditor.SetGeneralField("map", null);
+						}
+					}
+				});
+			}
+			finally { SynchronizationContext.SetSynchronizationContext(oldcontext); }
+		}
+
 		/// <summary>Stands in for the UI thread: posted callbacks queue up and run on the caller's thread.</summary>
 		private sealed class UIThread : SynchronizationContext
 		{

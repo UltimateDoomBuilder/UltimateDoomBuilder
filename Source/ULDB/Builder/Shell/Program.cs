@@ -42,6 +42,14 @@ namespace ULDB.Shell
 			// Windows code pages (upstream's script editor reads scripts as Windows-1251, as UDB did).
 			System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
+			// The interface scale chosen in Preferences (upstream issue #1146: too small on a 2K Linux display). Avalonia reads
+			// its global scale from the environment when it starts, before the program configuration is loaded.
+			if(string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AVALONIA_GLOBAL_SCALE_FACTOR")))
+			{
+				int percent = ULDB.Platform.UiOptions.ScaleFromFile(Path.Combine(ULDB.Platform.Paths.SettingsDirectory, "UDBuilder.cfg"));
+				if(percent > 0) Environment.SetEnvironmentVariable("AVALONIA_GLOBAL_SCALE_FACTOR", (percent / 100.0).ToString(System.Globalization.CultureInfo.InvariantCulture));
+			}
+
 			BuildAvaloniaApp().SetupWithoutStarting();
 			AvaloniaHost.Install();
 

@@ -21,6 +21,8 @@ namespace ULDB.Controls
 		private readonly WF.DataGridView grid;
 		private readonly ListBox list;
 		private readonly Grid header;
+		private readonly TextBox filterbox;
+		private List<int> shown = new List<int>(); // the grid row behind each list row (a text filter hides rows)
 		private bool updating, pending;
 
 		public DataGridRowsView(WF.DataGridView grid)
@@ -32,10 +34,16 @@ namespace ULDB.Controls
 			list.SelectionChanged += (s, e) =>
 			{
 				if(updating) return;
-				for(int i = 0; i < grid.Rows.Count; i++) grid.Rows[i].SetSelectedFromView(list.Selection.IsSelected(i));
+				// Rows the filter hides keep the selection they had
+				for(int i = 0; i < shown.Count; i++) grid.Rows[shown[i]].SetSelectedFromView(list.Selection.IsSelected(i));
 			};
+			// A long list (the thing types of a big map) can be narrowed by typing part of any column (upstream issue #1138)
+			filterbox = new TextBox { Watermark = "Type to filter the list", Margin = new Thickness(0, 0, 0, 6), IsVisible = false };
+			filterbox.TextChanged += (s, e) => Schedule();
 
 			DockPanel panel = new DockPanel();
+			DockPanel.SetDock(filterbox, Dock.Top);
+			panel.Children.Add(filterbox);
 			DockPanel.SetDock(header, Dock.Top);
 			panel.Children.Add(header);
 			panel.Children.Add(list);
@@ -67,11 +75,17 @@ namespace ULDB.Controls
 			}
 			header.IsVisible = grid.ColumnHeadersVisible;
 
-			updating = true;
-			list.ItemsSource = Enumerable.Range(0, grid.Rows.Count)
+			List<List<string>> all = Enumerable.Range(0, grid.Rows.Count)
 				.Select(r => columns.Select(c => grid.Rows[r].Cells[c.Index].Value?.ToString() ?? "").ToList()).ToList();
+			filterbox.IsVisible = grid.Rows.Count > 12;
+			string filter = (filterbox.IsVisible ? filterbox.Text : null)?.Trim() ?? "";
+			shown = Enumerable.Range(0, all.Count)
+				.Where(r => filter.Length == 0 || all[r].Any(cell => cell.IndexOf(filter, StringComparison.CurrentCultureIgnoreCase) >= 0)).ToList();
+
+			updating = true;
+			list.ItemsSource = shown.Select(r => all[r]).ToList();
 			list.Selection.Clear();
-			for(int i = 0; i < grid.Rows.Count; i++) if(grid.Rows[i].Selected) list.Selection.Select(i);
+			for(int i = 0; i < shown.Count; i++) if(grid.Rows[shown[i]].Selected) list.Selection.Select(i);
 			updating = false;
 		}
 
