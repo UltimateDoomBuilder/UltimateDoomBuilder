@@ -93,6 +93,9 @@ namespace ULDB.Shell
 			source.Changed += (s, e) => Post(Rebuild);
 		}
 
+		/// <summary>Menu items whose action no longer exists upstream (clicking them does nothing; upstream issue #1315).</summary>
+		private static readonly HashSet<string> DeadActions = new HashSet<string> { "thingsselectinsectors" };
+
 		private static Control CreateMenuEntry(WF.ToolStripItem item)
 		{
 			if(item is WF.ToolStripSeparator)
@@ -139,7 +142,7 @@ namespace ULDB.Shell
 		private static void UpdateMenuItem(MenuItem mi, WF.ToolStripItem item)
 		{
 			mi.Header = MenuText(item.Text);
-			mi.IsVisible = item.Available;
+			mi.IsVisible = item.Available && !(item.Tag is string tag && DeadActions.Contains(tag));
 			mi.IsEnabled = item.Enabled;
 			mi.Icon = IconFor(item);
 			ToolTip.SetTip(mi, string.IsNullOrEmpty(item.ToolTipText) || item.ToolTipText == item.Text ? null : item.ToolTipText);

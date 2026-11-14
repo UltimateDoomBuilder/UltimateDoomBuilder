@@ -15,6 +15,11 @@ namespace CodeImp.DoomBuilder.Windows
 		internal ScriptFindReplaceFormView(ScriptFindReplaceForm form) : this()
 		{
 			new ModelBinder(form).BindByName(this).UpdateNow();
+			// Upstream closes the dialog on Escape from the form's ProcessCmdKey (upstream issue #972); keys here go to the view
+			AddHandler(KeyDownEvent, (s, e) =>
+			{
+				if(e.Key == Avalonia.Input.Key.Escape && e.KeyModifiers == Avalonia.Input.KeyModifiers.None) { e.Handled = true; form.Close(); }
+			}, Avalonia.Interactivity.RoutingStrategies.Tunnel);
 		}
 	}
 }

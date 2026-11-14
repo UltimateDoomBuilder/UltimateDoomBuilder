@@ -195,7 +195,12 @@ namespace CodeImp.DoomBuilder.BuilderModes.IO
 
                             lock (bmp)
                             {
+#if ULDB
+                                // ULDB: the material file refers to ".png"; a case-sensitive file system needs the same spelling (upstream issue #1394)
+                                bmp.Save(Path.Combine(settings.ObjPath, Path.GetFileNameWithoutExtension(flatname) + ".png"), ImageFormat.Png);
+#else
                                 bmp.Save(Path.Combine(settings.ObjPath, Path.GetFileNameWithoutExtension(flatname) + ".PNG"), ImageFormat.Png);
+#endif
                             }
 
 						} 

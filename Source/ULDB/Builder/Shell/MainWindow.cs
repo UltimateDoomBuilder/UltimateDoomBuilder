@@ -640,6 +640,10 @@ namespace ULDB.Shell
 							General.Map.ConfigSettings.TestProgram = string.Join(":", p.Skip(1));
 							General.Map.Launcher.Test();
 							break;
+						case "unsavedautosave": // makes the map look never-saved and autosaves it once (prints the result)
+							typeof(MapManager).GetField("filepathname", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(General.Map, "");
+							Console.WriteLine("[devstep] unsaved autosave: " + typeof(MapManager).GetMethod("AutoSave", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(General.Map, null));
+							break;
 						case "reportwindow":
 							Console.WriteLine($"[devstep] window {Width}x{Height} at {Position.X},{Position.Y} state {WindowState}");
 							break;

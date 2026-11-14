@@ -696,6 +696,22 @@ namespace CodeImp.DoomBuilder
 		/// <returns>The result of the autosave</returns>
 		internal AutosaveResult AutoSave()
 		{
+#if ULDB
+			// ULDB: a map that has never been saved is autosaved into the settings folder (Autosaves/Untitled.<map>.autosaveN),
+			// silently, instead of failing with a warning every few minutes (upstream issue #1355)
+			string autosavefilename;
+			if (string.IsNullOrWhiteSpace(filepathname))
+			{
+				try
+				{
+					string dir = Path.Combine(General.SettingsPath, "Autosaves");
+					Directory.CreateDirectory(dir);
+					autosavefilename = Path.Combine(dir, "Untitled." + options.CurrentName);
+				}
+				catch(Exception e) { General.WriteLogLine("Autosave of an unsaved map failed: " + e.Message); return AutosaveResult.NoFileName; }
+			}
+			else autosavefilename = filepathname + "." + options.CurrentName;
+#else
 			// If the map doesn't exist on a medium we can't make autosaves
 			if (string.IsNullOrWhiteSpace(filepathname))
 				return AutosaveResult.NoFileName;
@@ -704,6 +720,7 @@ namespace CodeImp.DoomBuilder
 			// cacowardwinner.wad.MAP01
 			// the SaveMap method will add an ".autosaveX" due to the save purpose being Autosave
 			string autosavefilename = filepathname + "." + options.CurrentName;
+#endif
 			General.Plugins.OnMapSaveBegin(SavePurpose.Autosave);
 			bool result = SaveMap(autosavefilename, SavePurpose.Autosave);
 			General.Plugins.OnMapSaveEnd(SavePurpose.Autosave);
