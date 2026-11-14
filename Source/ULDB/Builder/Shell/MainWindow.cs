@@ -725,6 +725,7 @@ namespace ULDB.Shell
 			{
 				try { await ViewportContext.InitializeAsync(viewport); }
 				catch(Exception) { } // Reported by the viewport; the editor runs without a map view
+				ClampToScreen();
 				form.RaiseShown();
 				input.Focus();
 				ShowFormForDevelopment();
@@ -758,6 +759,23 @@ namespace ULDB.Shell
 			Resized += (s, e) => { SyncFormGeometry(); geometrytimer.Stop(); geometrytimer.Start(); };
 			PositionChanged += (s, e) => { SyncFormGeometry(); geometrytimer.Stop(); geometrytimer.Start(); };
 			PropertyChanged += (s, e) => { if(e.Property == WindowStateProperty) SyncFormGeometry(); };
+		}
+
+		// A window bigger than the screen (the 1280x860 default on a 1366x768 laptop) has its top and bottom out of reach:
+		// cut it to the working area and move it into view. The screen is only known once the window is open.
+		private void ClampToScreen()
+		{
+			Avalonia.Platform.Screen screen = Screens.ScreenFromVisual(this) ?? Screens.Primary;
+			if(screen == null || WindowState != WindowState.Normal) return;
+			PixelRect work = screen.WorkingArea;
+			double scale = screen.Scaling;
+			double maxw = work.Width / scale, maxh = work.Height / scale - 32; // title bar and frame
+			if(Width > maxw) Width = maxw;
+			if(Height > maxh) Height = Math.Max(MinHeight, maxh);
+			PixelPoint at = Position;
+			int x = Math.Max(work.X, Math.Min(at.X, work.Right - (int)(Width * scale)));
+			int y = Math.Max(work.Y, Math.Min(at.Y, work.Bottom - (int)((Height + 32) * scale)));
+			if(x != at.X || y != at.Y) Position = new PixelPoint(x, y);
 		}
 
 		/// <summary>Runs before the window is shown, as WinForms raises Load.</summary>

@@ -102,6 +102,36 @@ namespace ULDB.Shell
 
 		private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<Window, object> hooked = new System.Runtime.CompilerServices.ConditionalWeakTable<Window, object>();
 
+		/// <summary>
+		/// A dialog taller than the screen leaves its OK/Cancel buttons out of reach (upstream issue #1051: the Linedef dialog
+		/// at 1280x720). Sizes and minimum sizes are cut to the screen's working area, and the pages of a tabbed dialog
+		/// scroll, while the buttons stay pinned below them.
+		/// </summary>
+		private static void FitToScreen(Window window, Window owner)
+		{
+			Avalonia.Platform.Screen screen = null;
+			try { screen = (owner ?? window).Screens?.ScreenFromVisual(owner ?? window) ?? (owner ?? window).Screens?.Primary; }
+			catch(Exception) { }
+			if(screen != null)
+			{
+				double maxw = Math.Max(400, screen.WorkingArea.Width / screen.Scaling - 24);
+				double maxh = Math.Max(300, screen.WorkingArea.Height / screen.Scaling - 56);
+				if(!double.IsNaN(window.MinHeight) && window.MinHeight > maxh) window.MinHeight = maxh;
+				if(!double.IsNaN(window.MinWidth) && window.MinWidth > maxw) window.MinWidth = maxw;
+				if(!double.IsNaN(window.Height) && window.Height > maxh) window.Height = maxh;
+				if(!double.IsNaN(window.Width) && window.Width > maxw) window.Width = maxw;
+				window.MaxHeight = maxh;
+				window.MaxWidth = maxw;
+			}
+			foreach(Avalonia.Controls.TabControl tabs in Avalonia.LogicalTree.LogicalExtensions.GetLogicalDescendants(window).OfType<Avalonia.Controls.TabControl>().ToList())
+				foreach(Avalonia.Controls.TabItem item in tabs.Items.OfType<Avalonia.Controls.TabItem>())
+					if(item.Content is Avalonia.Controls.Control content && !(content is Avalonia.Controls.ScrollViewer))
+					{
+						item.Content = null; // free the page before it goes into the ScrollViewer
+						item.Content = new Avalonia.Controls.ScrollViewer { Content = content, HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled };
+					}
+		}
+
 		public void ShowForm(Form form, object view, IWin32Window owner, bool modal)
 		{
 			OnUIThread(() =>
@@ -136,6 +166,7 @@ namespace ULDB.Shell
 				}
 				window.CanResize = window.CanResize && sizable;
 				window.CanMinimize = false; // a minimised dialog leaves the main window blocked and looking frozen (issue #17)
+				FitToScreen(window, ownerwindow);
 				// A dialog that has never had a saved position opens centred on the main window: upstream's
 				// DelayedForm works out "centred" from the form's size, which isn't the window's size here.
 				bool savedposition = CodeImp.DoomBuilder.General.Settings.ReadSetting("windows." + form.GetType().Name.ToLowerInvariant() + ".positionx", int.MaxValue) != int.MaxValue;
