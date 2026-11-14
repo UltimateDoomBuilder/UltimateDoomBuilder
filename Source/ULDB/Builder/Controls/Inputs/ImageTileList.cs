@@ -180,7 +180,7 @@ namespace ULDB.Controls
 
 		private IBrush Fore()
 		{
-			if(General.Settings != null && General.Settings.BlackBrowsers) return Brushes.White;
+			if(FlatBackground() != null) return Brushes.White;
 			return TextElement.GetForeground(this) ?? Brushes.Black;
 		}
 
@@ -190,12 +190,49 @@ namespace ULDB.Controls
 				bold ? new Typeface(Face.FontFamily, FontStyle.Normal, FontWeight.Bold) : Face, size, brush);
 		}
 
+		/// <summary>
+		/// ULDB's browser background choice (Preferences, "Texture browser background"; upstream issue #1216: white or black only
+		/// hid dark textures): 0 follows the theme (and upstream's black option), 1 black, 2 dark grey, 3 grey, 4 checkerboard
+		/// behind the pictures so transparent and black areas can be told apart.
+		/// </summary>
+		public static int BackgroundChoice => General.Settings != null ? General.Settings.ReadSetting("uldb.browserbackground", 0) : 0;
+
+		/// <summary>The solid colour behind everything, or null to follow the theme.</summary>
+		private static IBrush FlatBackground()
+		{
+			if(General.Settings != null && General.Settings.BlackBrowsers) return Brushes.Black;
+			switch(BackgroundChoice)
+			{
+				case 1: return Brushes.Black;
+				case 2: return new SolidColorBrush(Color.FromRgb(0x30, 0x30, 0x30));
+				case 3: return new SolidColorBrush(Color.FromRgb(0x80, 0x80, 0x80));
+				default: return null;
+			}
+		}
+
+		private static readonly IBrush checklight = new SolidColorBrush(Color.FromRgb(0x9A, 0x9A, 0x9A));
+		private static readonly IBrush checkdark = new SolidColorBrush(Color.FromRgb(0x6A, 0x6A, 0x6A));
+
+		private static void DrawCheckerboard(DrawingContext context, Rect area)
+		{
+			const double cell = 8;
+			using(context.PushClip(area))
+			{
+				context.FillRectangle(checklight, area);
+				for(double y = 0; y < area.Height; y += cell)
+					for(double x = ((int)(y / cell) % 2) * cell; x < area.Width; x += cell * 2)
+						context.FillRectangle(checkdark, new Rect(area.X + x, area.Y + y, cell, cell));
+			}
+		}
+
 		public override void Render(DrawingContext context)
 		{
 			if(!layoutvalid) Layout(layoutwidth > 0 ? layoutwidth : Bounds.Width);
-			bool black = General.Settings != null && General.Settings.BlackBrowsers;
+			IBrush flat = FlatBackground();
+			bool black = flat != null;
 			bool dark = black || ActualThemeVariant == ThemeVariant.Dark;
-			context.FillRectangle(black ? Brushes.Black : Brushes.Transparent, new Rect(Bounds.Size));
+			context.FillRectangle(flat ?? Brushes.Transparent, new Rect(Bounds.Size));
+			bool checkerboard = BackgroundChoice == 4 && flat == null;
 
 			double top = scroller?.Offset.Y ?? 0;
 			double height = scroller?.Viewport.Height ?? Bounds.Height;
@@ -240,6 +277,7 @@ namespace ULDB.Controls
 				bool folder = item.ItemType != ImageBrowserItemType.IMAGE;
 				if(folder) DrawFolder(context, pic, item.ItemType == ImageBrowserItemType.FOLDER_UP, accent);
 				Bitmap bmp = folder ? null : AvaloniaImages.From(item.Icon.GetPreview());
+				if(checkerboard && !folder) DrawCheckerboard(context, pic);
 				if(bmp != null)
 				{
 					double scale = Math.Min(pic.Width / bmp.Size.Width, pic.Height / bmp.Size.Height);

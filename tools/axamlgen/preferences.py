@@ -65,6 +65,12 @@ interface = cols(
             (None, stack(chk('scriptontop'), chk('showtexturesizes'), chk('texturesizesbelow'), chk('locatetexturegroup'),
                          chk('blackbrowsers'), chk('cbSynchCameras'), chk('cbStoreEditTab'), chk('checkforupdates'), chk('autolaunchontest'))),
         ])),
+        card('ULDB', rows([
+            ('Interface scale:', '<StackPanel Orientation="Horizontal" Spacing="8"><ComboBox x:Name="uldb_scale" Width="140"/><TextBlock Text="restart to apply" Opacity="0.7" FontSize="12" VerticalAlignment="Center"/></StackPanel>'),
+            ('Texture browser background:', combo('uldb_browserbg', 200)),
+            ('Thing rotation per step:', '<StackPanel Orientation="Horizontal" Spacing="8"><ComboBox x:Name="uldb_rotation" Width="100"/><TextBlock Text="degrees (mouse wheel)" Classes="uldb-field"/></StackPanel>'),
+            ('Tags when inserting prefabs:', combo('uldb_prefabtags', 240)),
+        ], 'lbl0')),
         card('Side Panels', '<StackPanel Orientation="Horizontal" Spacing="10"><TextBlock Text="Position:" Classes="uldb-field"/><ComboBox x:Name="dockersposition" Width="110"/><CheckBox x:Name="collapsedockers"/></StackPanel>'),
     ),
     stack(

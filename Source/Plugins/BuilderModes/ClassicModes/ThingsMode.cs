@@ -1526,14 +1526,22 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		[BeginAction("rotateclockwise")]
 		public void RotateCW() 
 		{
+#if ULDB
+			RotateThings(General.Map.Config.DoomThingRotationAngles ? -45 : -ULDB.Platform.UiOptions.ThingRotationStep); // ULDB: the step is a preference (upstream issue #1191)
+#else
 			RotateThings(General.Map.Config.DoomThingRotationAngles ? -45 : -5);
+#endif
 		}
 
 		//mxd. rotate counterclockwise
 		[BeginAction("rotatecounterclockwise")]
 		public void RotateCCW() 
 		{
+#if ULDB
+			RotateThings(General.Map.Config.DoomThingRotationAngles ? 45 : ULDB.Platform.UiOptions.ThingRotationStep);
+#else
 			RotateThings(General.Map.Config.DoomThingRotationAngles ? 45 : 5);
+#endif
 		}
 
 		//mxd

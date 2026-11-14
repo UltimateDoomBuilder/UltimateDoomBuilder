@@ -51,7 +51,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			highlightrange.Text = General.Settings.ReadPluginSetting("highlightrange", 20).ToString();
 			highlightthingsrange.Text = General.Settings.ReadPluginSetting("highlightthingsrange", 10).ToString();
 			splitlinedefsrange.Text = General.Settings.ReadPluginSetting("splitlinedefsrange", 10).ToString();
+#if ULDB
+			// ULDB: a 4 pixel default (upstream's 2 turns many plain clicks into box selections that clear the selection, issue #1219)
+			mouseselectionthreshold.Text = General.Settings.ReadPluginSetting("mouseselectionthreshold", 4).ToString();
+#else
 			mouseselectionthreshold.Text = General.Settings.ReadPluginSetting("mouseselectionthreshold", 2).ToString();
+#endif
 			splitbehavior.SelectedIndex = (int)General.Settings.SplitLineBehavior; //mxd
 			autoclearselection.Checked = BuilderPlug.Me.AutoClearSelection;
 			visualmodeclearselection.Checked = BuilderPlug.Me.VisualModeClearSelection;

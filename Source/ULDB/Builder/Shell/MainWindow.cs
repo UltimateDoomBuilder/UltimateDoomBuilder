@@ -644,6 +644,9 @@ namespace ULDB.Shell
 							typeof(MapManager).GetField("filepathname", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(General.Map, "");
 							Console.WriteLine("[devstep] unsaved autosave: " + typeof(MapManager).GetMethod("AutoSave", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(General.Map, null));
 							break;
+						case "setting": // setting:<key>:<number>, writes a program setting (for checking options without the dialog)
+							General.Settings.WriteSetting(p[1], int.Parse(p[2]));
+							break;
 						case "reportwindow":
 							Console.WriteLine($"[devstep] window {Width}x{Height} at {Position.X},{Position.Y} state {WindowState}");
 							break;

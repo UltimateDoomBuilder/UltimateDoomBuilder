@@ -555,6 +555,9 @@ namespace CodeImp.DoomBuilder.Editing
 			if(General.Editing.Mode.Attributes.AllowCopyPaste)
 			{
 				PasteOptions options = General.Settings.PasteOptions.Copy();
+#if ULDB
+				ULDB.Platform.UiOptions.ApplyPrefabTags(options); // ULDB: prefabs can renumber tags differently from pasting (upstream issue #1335)
+#endif
 
 				// Cancel volatile mode
 				General.Editing.DisengageVolatileMode();
@@ -619,6 +622,9 @@ namespace CodeImp.DoomBuilder.Editing
 			if(General.Editing.Mode.Attributes.AllowCopyPaste)
 			{
 				PasteOptions options = General.Settings.PasteOptions.Copy();
+#if ULDB
+				ULDB.Platform.UiOptions.ApplyPrefabTags(options); // ULDB: prefabs can renumber tags differently from pasting (upstream issue #1335)
+#endif
 
 				// Is there a previously inserted prefab?
 				if(IsPreviousPrefabAvailable)
