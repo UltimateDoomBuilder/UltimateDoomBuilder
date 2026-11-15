@@ -67,7 +67,21 @@ namespace CodeImp.DoomBuilder.ZDoom
 			return Parse(data, mapname, clearerrors);
 		}
 
-		public bool Parse(TextResourceData data, string mapname, bool clearerrors) 
+		public bool Parse(TextResourceData data, string mapname, bool clearerrors)
+		{
+			
+			if (Path.GetFileNameWithoutExtension(data.Filename).Equals("UMAPINFO", StringComparison.OrdinalIgnoreCase)) // Check if the parsed file is named UMAPINFO, and if so, divert to ParseUMAPINFO
+			{
+				return ParseUMAPINFO(data, mapname, clearerrors);
+			}
+			else
+			{
+				return ParseZDoomMAPINFO(data, mapname, clearerrors); // If not UMAPINFO, assume ZMAPINFO/MAPINFO
+			}
+		}
+
+
+		private bool ParseZDoomMAPINFO(TextResourceData data, string mapname, bool clearerrors) 
 		{
 			this.mapname = mapname.ToLowerInvariant();
 
@@ -81,11 +95,7 @@ namespace CodeImp.DoomBuilder.ZDoom
 			// Cannot process?
 			if(!base.Parse(data, clearerrors)) return false;
 
-			// Check if the parsed file is named UMAPINFO, and if so, divert to ParseUMAPINFO
-			if (Path.GetFileNameWithoutExtension(data.Filename).Equals("UMAPINFO", StringComparison.OrdinalIgnoreCase))
-			{
-				return ParseUMAPINFO();
-			}
+			
 
 			// Keep local data
 			Stream localstream = datastream;
@@ -786,8 +796,19 @@ namespace CodeImp.DoomBuilder.ZDoom
 
 		#region ================== UMAPINFO Parsing
 
-		private bool ParseUMAPINFO()
+		private bool ParseUMAPINFO(TextResourceData data, string mapname, bool clearerrors)
 		{
+			this.mapname = mapname.ToLowerInvariant();
+
+			//mxd. Already parsed?
+			if (!base.AddTextResource(data))
+			{
+				if (clearerrors) ClearError();
+				return true;
+			}
+
+			// Cannot process?
+			if (!base.Parse(data, clearerrors)) return false;
 
 			// Classic format skip stoppers...
 			HashSet<string> breakat = new HashSet<string> { "map" };
