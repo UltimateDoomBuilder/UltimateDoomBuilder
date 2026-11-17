@@ -4,6 +4,26 @@ An **unofficial** native Linux fork of [Ultimate Doom Builder](https://github.co
 
 This is the first **beta**: every window the editor opens is ported, and the work has moved from porting to fixing and polishing. It has still had little real-world use, so **back up your maps and save often.**
 
+## Why use ULDB instead of UDB on Linux
+
+UDB is a Windows program; on Linux it runs on Mono's WinForms. ULDB is the same editor (UDB's own map, mode and plugin code, unchanged where possible) with a new native front end. What that gets you:
+
+- **A native Linux application.** .NET 10 and Avalonia, no Mono or Wine. Settings live in `~/.config`, it installs as a Flatpak or an Arch package, and the compilers (ACC, ZDBSP, ZT-BCC, BCC) are built from source and included.
+- **It looks like it belongs on your desktop.** It follows the system's light or dark theme, has Breeze-style icons, scales cleanly on high-resolution displays, and has its own interface scale option.
+- **A real script editor.** Syntax colours, folding, autocompletion, call tips, a find bar, hover help, error underlines, zoom, and line editing shortcuts (comment, move, duplicate, delete lines).
+- **Testing maps without typing command lines.** ULDB finds the GZDoom and UZDoom you have installed, natively or as Flatpaks, and offers their launch options as tick boxes. It works from inside ULDB's own Flatpak too.
+- **Dialogs that fit your screen.** The big edit dialogs scroll and keep OK and Cancel in reach on small screens; upstream's are cut off at 1280x720.
+- **Long-standing UDB requests, done:**
+  - new maps are autosaved before their first save;
+  - Select Connected Linedefs;
+  - a choice of background in the texture browser, including a chequerboard for transparency;
+  - an adjustable thing rotation step;
+  - a choice of how tags are treated when inserting prefabs;
+  - a filter box in long lists.
+- **Your UDB setup carries over.** ULDB can import the settings of an existing UDB installation on first start.
+
+**What you give up:** ULDB only edits for GZDoom and UZDoom (other game configurations are hidden), it doesn't include UDBScript or the update window, and it is new, so it has had far less use than UDB. On Windows, use UDB.
+
 ## New since v0.5.0-preview
 
 **Script editor**
