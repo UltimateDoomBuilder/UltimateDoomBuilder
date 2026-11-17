@@ -218,11 +218,14 @@ A read through the recent code with captures of every tabbed dialog (29, no exce
 - Resizable dialogs no longer get a `MaxWidth/MaxHeight` (it stopped the script editor and browsers from being maximised).
 - Preferences → Controls: the action list had a different order on every start; sorted by category, then title (`#if ULDB` in `PreferencesForm.cs`).
 - Preferences opens at 1040x1030 (cut to the screen), so pages show whole on a 1080p or larger screen; the Editing page still scrolls a little at 1080p.
-- **Copy/paste of map geometry with a clipboard manager:** copying geometry clears the desktop clipboard; KDE's Klipper puts the previous text back ("prevent empty clipboard"), and `GetClipboard` then took that text for something newer, so Paste found no geometry. The text that was there before the clear no longer counts as newer. **Needs trying on the user's machine** (copy text somewhere, copy sectors in ULDB, paste).
+- **Clipboard:** when UDB data without text replaces the desktop clipboard and a clipboard manager puts the old text back (KDE's Klipper), that text no longer counts as newer than our data. Note: map geometry is not affected either way. This build defines `MONO_WINFORMS`, so upstream copies geometry as text (`GZDOOM_BUILDER_GEOMETRY` + base64), and **pasting between two ULDB windows already works** (checked with two instances under Xvfb: 2 sectors became 4).
 - ULDB options in Preferences no longer overwrite values set by hand in the file that aren't in the lists; `Engines.Capture` no longer reads a buffer another thread may still write.
 - `tools/capture/capture.sh`: `ULDB_SCREEN=1280x720` sets the headless screen size.
 
-Ideas not done (for the user to pick from): see the list in the PR for this branch.
+Follow-ups (same branch):
+- **Flatpak engine and files in the system's folders:** an IWAD under `/usr` (the distribution's Freedoom package) is passed to a Flatpak engine as `/run/host/usr/...` with `--filesystem=host-os:ro` (`/etc` likewise with `host-etc`). Files in folders Flatpak can't share at all (`/tmp`, `/run`...) give a warning in the Errors and Warnings window when the test starts. Unit-tested (`FlatpakEngineGetsSystemFilesThroughHostOs`); **needs a real Flatpak GZDoom/UZDoom on the user's machine.**
+- **Interface scale in portable mode:** the scale is read from the program folder's `UDBuilder.cfg` when `-portable` is given and the folder is writable (as `General` decides).
+- Dev steps: `reportmap` (map size), `reportclip` (clipboard formats); `action:` says when the action doesn't exist.
 
 ## Early preview release (20 Oct 2026)
 

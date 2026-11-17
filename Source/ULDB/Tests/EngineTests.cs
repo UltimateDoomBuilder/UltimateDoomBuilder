@@ -62,6 +62,18 @@ namespace ULDB.Tests
 		}
 
 		[Fact]
+		public void FlatpakEngineGetsSystemFilesThroughHostOs()
+		{
+			List<string> command = Engines.BuildCommand("flatpak:org.zdoom.GZDoom", new[] { "-iwad", "/usr/share/games/doom/freedoom2.wad", "+map", "MAP01" }, "", false);
+			Assert.Equal(new[] { "flatpak", "run", "--filesystem=host-os:ro", "org.zdoom.GZDoom", "-iwad", "/run/host/usr/share/games/doom/freedoom2.wad", "+map", "MAP01" }, command);
+			// A native engine reads the file where it is
+			Assert.Equal(new[] { "/usr/bin/gzdoom", "-iwad", "/usr/share/games/doom/freedoom2.wad" },
+				Engines.BuildCommand("/usr/bin/gzdoom", new[] { "-iwad", "/usr/share/games/doom/freedoom2.wad" }, "", false));
+			Assert.Equal(new[] { "/tmp/x/test.wad" }, Engines.Unreachable("flatpak:org.zdoom.GZDoom", new[] { "-file", "/tmp/x/test.wad", "/usr/share/a.wad", "/home/u/b.wad" }));
+			Assert.Empty(Engines.Unreachable("/usr/bin/gzdoom", new[] { "/tmp/x/test.wad" }));
+		}
+
+		[Fact]
 		public void InsideFlatpakEverythingGoesThroughTheHost()
 		{
 			Assert.Equal(new[] { "flatpak-spawn", "--host", "--directory=/opt/uz", "/opt/uz/uzdoom", "+map", "MAP01" },

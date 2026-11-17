@@ -46,7 +46,10 @@ namespace ULDB.Shell
 			// its global scale from the environment when it starts, before the program configuration is loaded.
 			if(string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AVALONIA_GLOBAL_SCALE_FACTOR")))
 			{
-				int percent = ULDB.Platform.UiOptions.ScaleFromFile(Path.Combine(ULDB.Platform.Paths.SettingsDirectory, "UDBuilder.cfg"));
+				// As General does: with -portable the settings are next to the program, when that folder can be written to
+				string programdir = AppContext.BaseDirectory;
+				bool portable = Array.Exists(args, x => string.Equals(x, "-portable", StringComparison.OrdinalIgnoreCase)) && ULDB.Platform.Paths.IsDirectoryWritable(programdir);
+				int percent = ULDB.Platform.UiOptions.ScaleFromFile(Path.Combine(portable ? programdir : ULDB.Platform.Paths.SettingsDirectory, "UDBuilder.cfg"));
 				if(percent > 0) Environment.SetEnvironmentVariable("AVALONIA_GLOBAL_SCALE_FACTOR", (percent / 100.0).ToString(System.Globalization.CultureInfo.InvariantCulture));
 			}
 

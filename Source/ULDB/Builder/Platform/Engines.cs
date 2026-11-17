@@ -78,6 +78,8 @@ namespace ULDB.Platform
 			if(plain && !inflatpak) return;
 
 			string workdir = Directory.Exists(info.WorkingDirectory) ? info.WorkingDirectory : "";
+			foreach(string path in Unreachable(program, SplitArguments(info.Arguments)))
+				CodeImp.DoomBuilder.General.ErrorLogger?.Add(CodeImp.DoomBuilder.ErrorType.Warning, "The test engine is a Flatpak application and can't read \"" + path + "\" (Flatpak applications get no access to that folder). Move the file to your home folder.");
 			List<string> command = BuildCommand(program, SplitArguments(info.Arguments), workdir, inflatpak);
 
 			info.FileName = command[0];
@@ -89,14 +91,25 @@ namespace ULDB.Platform
 		}
 
 		/// <summary>The command line that starts the program (first item) with its arguments.</summary>
-		public static List<string> BuildCommand(string program, IList<string> arguments, string workingdirectory, bool inflatpak)
+		public static List<string> BuildCommand(string program, IEnumerable<string> argumentlist, string workingdirectory, bool inflatpak)
 		{
 			List<string> command = new List<string>();
+			IList<string> arguments = argumentlist.ToList();
 			if(program.StartsWith(FLATPAK_PREFIX, StringComparison.Ordinal))
 			{
 				command.Add("flatpak");
 				command.Add("run");
 				foreach(string dir in FolderPermissions(arguments)) command.Add("--filesystem=" + dir + ":ro");
+				// Files in the system's own folders (an IWAD of the distribution's Freedoom package in /usr/share/games/doom):
+				// a Flatpak sees its runtime's /usr, not the system's. "host-os" shows the system's under /run/host, and the
+				// arguments are rewritten to point there.
+				List<string> rewritten = arguments.Select(HostOsPath).ToList();
+				if(!rewritten.SequenceEqual(arguments))
+				{
+					if(arguments.Any(a => IsUnder(a, HOST_OS))) command.Add("--filesystem=host-os:ro");
+					if(arguments.Any(a => IsUnder(a, HOST_ETC))) command.Add("--filesystem=host-etc:ro");
+					arguments = rewritten;
+				}
 				command.Add(program.Substring(FLATPAK_PREFIX.Length));
 			}
 			else if(program.StartsWith(HOST_PREFIX, StringComparison.Ordinal))
@@ -134,9 +147,25 @@ namespace ULDB.Platform
 
 		// Flatpak refuses --filesystem for the runtime's own folders (and /tmp is the engine's private one).
 		private static readonly string[] RESERVED = { "/usr", "/etc", "/app", "/bin", "/sbin", "/lib", "/lib32", "/lib64", "/boot", "/dev", "/proc", "/sys", "/run", "/tmp" };
+		// The ones Flatpak can show under /run/host instead ("host-os" and "host-etc").
+		private static readonly string[] HOST_OS = { "/usr", "/bin", "/sbin", "/lib", "/lib32", "/lib64" };
+		private static readonly string[] HOST_ETC = { "/etc" };
 
-		private static bool IsReserved(string dir) =>
-			RESERVED.Any(r => dir == r || dir.StartsWith(r + "/", StringComparison.Ordinal));
+		private static bool IsUnder(string path, string[] roots) =>
+			!string.IsNullOrEmpty(path) && roots.Any(r => path == r || path.StartsWith(r + "/", StringComparison.Ordinal));
+
+		private static bool IsReserved(string dir) => IsUnder(dir, RESERVED);
+
+		/// <summary>Where a Flatpak application finds a file of the system's own folders (with host-os / host-etc access).</summary>
+		public static string HostOsPath(string argument) =>
+			IsUnder(argument, HOST_OS) || IsUnder(argument, HOST_ETC) ? "/run/host" + argument : argument;
+
+		/// <summary>The arguments naming files a Flatpak engine can't be given access to (/tmp, /run and the like).</summary>
+		public static List<string> Unreachable(string program, IEnumerable<string> arguments)
+		{
+			if(program == null || !program.StartsWith(FLATPAK_PREFIX, StringComparison.Ordinal)) return new List<string>();
+			return arguments.Where(a => IsReserved(a) && !IsUnder(a, HOST_OS) && !IsUnder(a, HOST_ETC)).Distinct().ToList();
+		}
 
 		/// <summary>Splits a command line the way a program's arguments are quoted: double quotes group, \" is a quote.</summary>
 		public static List<string> SplitArguments(string line)
