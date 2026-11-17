@@ -1273,7 +1273,10 @@ namespace CodeImp.DoomBuilder
 			OpenFileDialog openfile = new OpenFileDialog();
 			openfile.Title = "Open Map";
 
-#if NO_WIN32
+#if ULDB
+			// ULDB: autosaves and backups (map.wad.MAP01.autosave1, map.wad.backup1) are WADs without a .wad extension, so offer them
+			openfile.Filter = "Doom WAD Files (*.wad)|*.wad;*.Wad;*.wAd;*.WAd;*.waD;*.WaD;*.wAD;*.WAD|Autosaves and backups|*.autosave*;*.backup*|All files (*.*)|*";
+#elif NO_WIN32
 			// No easy way to have case-insesitivity for non-Windows platforms
 			openfile.Filter = "Doom WAD Files (*.wad)|*.wad;*.Wad;*.wAd;*.WAd;*.waD;*.WaD;*.wAD;*.WAD";
 #else
