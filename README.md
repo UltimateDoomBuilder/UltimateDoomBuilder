@@ -7,7 +7,7 @@
 > ULDB is not affiliated with or endorsed by the Ultimate Doom Builder team. **Please report ULDB problems [here](https://github.com/theoriginalzads/UltimateLinuxDoomBuilder/issues), not to the UDB team.**
 
 > [!WARNING]
-> **Beta (v0.6.0-beta): keep backups of your maps.** The editor, 2D/3D views, editing modes, saving, the dialogs, the script editor and the bundled plugins are all in place, but it has had little real-world use yet. See [Status](#status).
+> **Beta (v0.6.1-beta): keep backups of your maps.** The editor, 2D/3D views, editing modes, saving, the dialogs, the script editor and the bundled plugins are all in place, but it has had little real-world use yet. See [Status](#status).
 
 Ultimate Linux Doom Builder (ULDB) is a **native Linux** map editor for **GZDoom and UZDoom**, based on Ultimate Doom Builder.
 <img width="1655" height="1180" alt="image" src="https://github.com/user-attachments/assets/aaf30540-6980-46c8-96d4-7b61d39cba94" />

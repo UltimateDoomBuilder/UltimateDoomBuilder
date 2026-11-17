@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: 'Attach the bundle to this release tag (e.g. v0.6.0-beta); blank = artifact only'
+        description: 'Attach the bundle to this release tag (e.g. v0.6.1-beta); blank = artifact only'
         required: false
   push:
     tags:

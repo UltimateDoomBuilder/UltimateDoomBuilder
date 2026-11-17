@@ -14,7 +14,7 @@ namespace ULDB
 		public const string EXECUTABLE = "uldb";
 
 		/// <summary>The release this is (also the assembly's informational version; see Properties/Version.cs).</summary>
-		public const string VERSION = "0.6.0-beta";
+		public const string VERSION = "0.6.1-beta";
 
 		/// <summary>The cacodemon on the app icon (Assets/Icons).</summary>
 		public const string MASCOT = "Cacky, the ULDB Cacodemon";
