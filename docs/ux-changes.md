@@ -50,3 +50,5 @@ A user-facing list of every intentional UI or behaviour difference between ULDB 
 - **Map loading progress (#13):** the "Opening map..." cover now shows the current load step ("Loading data resources", ...) and repaints during the load, so the window no longer looks frozen. Timers are suspended while the cover is up (`Timer.Suspended`), because a redraw tick on a half-built map crashed. The load itself still runs on the UI thread: moving it off needs GL and WinForms-compat objects that are UI-thread bound.
 
 - **Open Map offers autosaves and backups:** two extra file types in the dialog ("Autosaves and backups", "All files"). The first is still Doom WAD files. **Check on the real machine** that the portal dialog lists `.autosave1`/`.backup1` files.
+
+- **Main window, info panel (first modernisation pass):** the map statistics (vertices, linedefs, sidedefs, sectors, things) are one row of count-over-label tiles, vertically centred, instead of a five-line list. Same numbers, same place.

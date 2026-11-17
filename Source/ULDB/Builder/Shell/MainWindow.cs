@@ -259,7 +259,7 @@ namespace ULDB.Shell
 
 			// Nothing highlighted: the mode name, and the map statistics on the right.
 			TextBlock title = new TextBlock { FontSize = 30, FontWeight = FontWeight.SemiBold, Opacity = 0.3, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(10, 0) };
-			StatisticsView stats = new StatisticsView(statsmodel) { HorizontalAlignment = HorizontalAlignment.Right };
+			StatisticsView stats = new StatisticsView(statsmodel) { HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center };
 			Grid moderow = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
 			Grid.SetColumn(stats, 1);
 			moderow.Children.Add(title);
