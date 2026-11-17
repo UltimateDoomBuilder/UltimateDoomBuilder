@@ -2362,6 +2362,9 @@ namespace CodeImp.DoomBuilder.Windows
 		// This removes the config-specific editing mode buttons
 		internal void RemoveEditModeButtons()
 		{
+#if ULDB
+			SavePluginModeItems();
+#endif
 			// Go for all items
 			//foreach(ToolStripItem item in editmodeitems)
 			int itemCount = editmodeitems.Count;
@@ -2396,9 +2399,60 @@ namespace CodeImp.DoomBuilder.Windows
 			item.Margin = new Padding(0, 3, 0, 3);
 			menumode.DropDownItems.Insert(index, item);
 			editmodeitems.Add(item);
+#if ULDB
+			RestorePluginModeItems(group);
+#endif
 			
 			UpdateSeparators();
 		}
+
+#if ULDB
+		// ULDB: plugins add their own buttons and menu items to the editing modes toolbar and Mode menu, after
+		// a mode group's separator (AddModesButton, AddModesMenu). Upstream rebuilds that toolbar and menu whenever the
+		// game configuration changes (UpdateCurrentEditModes) and loses the toolbar buttons and leaves the menu
+		// items at the top, so they are taken out before the rebuild and put back after their group's separator.
+		private readonly List<KeyValuePair<ToolStripItem, string>> pendingplugintools = new List<KeyValuePair<ToolStripItem, string>>();
+		private readonly List<KeyValuePair<ToolStripItem, string>> pendingpluginmenus = new List<KeyValuePair<ToolStripItem, string>>();
+
+		private void SavePluginModeItems()
+		{
+			pendingplugintools.Clear();
+			pendingpluginmenus.Clear();
+			CollectPluginModeItems(modestoolbar.Items, pendingplugintools);
+			CollectPluginModeItems(menumode.DropDownItems, pendingpluginmenus);
+			foreach(KeyValuePair<ToolStripItem, string> pair in pendingplugintools) modestoolbar.Items.Remove(pair.Key);
+			foreach(KeyValuePair<ToolStripItem, string> pair in pendingpluginmenus) menumode.DropDownItems.Remove(pair.Key);
+		}
+
+		private void CollectPluginModeItems(ToolStripItemCollection items, List<KeyValuePair<ToolStripItem, string>> result)
+		{
+			string group = null;
+			foreach(ToolStripItem item in items)
+			{
+				if(item is ToolStripSeparator) group = string.IsNullOrEmpty(item.Text) ? null : item.Text;
+				else if(group != null && !editmodeitems.Contains(item)) result.Add(new KeyValuePair<ToolStripItem, string>(item, group));
+			}
+		}
+
+		private void RestorePluginModeItems(string group)
+		{
+			RestorePluginModeItems(modestoolbar.Items, pendingplugintools, group);
+			RestorePluginModeItems(menumode.DropDownItems, pendingpluginmenus, group);
+		}
+
+		private static void RestorePluginModeItems(ToolStripItemCollection items, List<KeyValuePair<ToolStripItem, string>> pending, string group)
+		{
+			int at = -1;
+			for(int i = items.Count - 1; i >= 0; i--)
+				if(items[i] is ToolStripSeparator && items[i].Text == group) { at = i + 1; break; }
+			if(at < 0) return;
+			foreach(KeyValuePair<ToolStripItem, string> pair in pending.Where(p => p.Value == group).ToList())
+			{
+				items.Insert(at++, pair.Key);
+				pending.Remove(pair);
+			}
+		}
+#endif
 		
 		// This adds an editing mode button to the toolbar and edit menu
 		internal void AddEditModeButton(EditModeInfo modeinfo)

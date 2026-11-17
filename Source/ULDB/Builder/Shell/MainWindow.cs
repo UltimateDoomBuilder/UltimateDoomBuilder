@@ -580,6 +580,17 @@ namespace ULDB.Shell
 							exdlg.Setup();
 							exdlg.ShowDialog(form);
 							break;
+						case "reconfigure": // what Game Configurations does after OK (without opening it)
+							form.SetupInterface(); form.UpdateInterface(); General.Editing.UpdateCurrentEditModes(); General.Plugins.ProgramReconfigure(); form.RedrawDisplay();
+							break;
+						case "menustate": // menustate:<menu field>, lists the menu's items with whether they're available
+							foreach(WF.ToolStripItem it in Field<WF.ToolStripDropDownItem>(p[1]).DropDownItems)
+								Console.WriteLine("menustate: " + (it is WF.ToolStripSeparator ? "---" + (it.Available ? "" : " (hidden)") : it.Text + (it.Available ? "" : " (hidden)") + (it.Enabled ? "" : " (disabled)")));
+							break;
+						case "stripstate": // stripstate:<toolstrip field>, lists the strip's items with whether they're available
+							foreach(WF.ToolStripItem it in Field<WF.ToolStrip>(p[1]).Items)
+								Console.WriteLine("stripstate: " + (it is WF.ToolStripSeparator ? "---" : (string.IsNullOrEmpty(it.Text) ? it.ToolTipText : it.Text)) + (it.Available ? "" : " (hidden)"));
+							break;
 						case "testmenu": // testmenu[:<text of an item to click>], lists the Test button's drop-down (and clicks one)
 						{
 							WF.ToolStripDropDownItem test = Field<WF.ToolStripDropDownItem>("buttontest");
