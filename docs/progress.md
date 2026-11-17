@@ -211,6 +211,22 @@ Source: the review in `docs/upstream-issues.md` (what is in it, what was done, w
 - Not in scope, kept for later: split 2D/3D views, high contrast, renderer feature requests (section 4 of `docs/upstream-issues.md`).
 - Tests: new `SelectConnectedLinedefsSelectsTheWholeChain` (PluginTests). Nothing here has been seen on a real screen: see the checklist.
 
+## Review pass (branch `phase-3/review-17nov`, 17 Nov 2026, no screen)
+
+A read through the recent code with captures of every tabbed dialog (29, no exceptions). Fixed:
+- **Regression from the small-screen fix (14 Nov):** every tab page was put in a ScrollViewer, which offers endless height, so pages with a list (Preferences → Controls, edit dialogs' Custom tab, Game Configurations lists) grew to the whole list: the list stopped scrolling and virtualising and the controls beside/below it scrolled away. `AvaloniaHost.FitPage` now offers the page the height that is there; only a page that can't shrink that far scrolls.
+- Resizable dialogs no longer get a `MaxWidth/MaxHeight` (it stopped the script editor and browsers from being maximised).
+- Preferences → Controls: the action list had a different order on every start; sorted by category, then title (`#if ULDB` in `PreferencesForm.cs`).
+- Preferences opens at 1040x1030 (cut to the screen), so pages show whole on a 1080p or larger screen; the Editing page still scrolls a little at 1080p.
+- **Clipboard:** when UDB data without text replaces the desktop clipboard and a clipboard manager puts the old text back (KDE's Klipper), that text no longer counts as newer than our data. Note: map geometry is not affected either way. This build defines `MONO_WINFORMS`, so upstream copies geometry as text (`GZDOOM_BUILDER_GEOMETRY` + base64), and **pasting between two ULDB windows already works** (checked with two instances under Xvfb: 2 sectors became 4).
+- ULDB options in Preferences no longer overwrite values set by hand in the file that aren't in the lists; `Engines.Capture` no longer reads a buffer another thread may still write.
+- `tools/capture/capture.sh`: `ULDB_SCREEN=1280x720` sets the headless screen size.
+
+Follow-ups (same branch):
+- **Flatpak engine and files in the system's folders:** an IWAD under `/usr` (the distribution's Freedoom package) is passed to a Flatpak engine as `/run/host/usr/...` with `--filesystem=host-os:ro` (`/etc` likewise with `host-etc`). Files in folders Flatpak can't share at all (`/tmp`, `/run`...) give a warning in the Errors and Warnings window when the test starts. Unit-tested (`FlatpakEngineGetsSystemFilesThroughHostOs`); **needs a real Flatpak GZDoom/UZDoom on the user's machine.**
+- **Interface scale in portable mode:** the scale is read from the program folder's `UDBuilder.cfg` when `-portable` is given and the folder is writable (as `General` decides).
+- Dev steps: `reportmap` (map size), `reportclip` (clipboard formats); `action:` says when the action doesn't exist.
+
 ## Early preview release (20 Oct 2026)
 
 - `phase-3/shell` merged into `master` (PR #2); CI green on `master`.

@@ -107,7 +107,7 @@ namespace ULDB.Shell
 		/// at 1280x720). Sizes and minimum sizes are cut to the screen's working area, and the pages of a tabbed dialog
 		/// scroll, while the buttons stay pinned below them.
 		/// </summary>
-		private static void FitToScreen(Window window, Window owner)
+		private static void FitToScreen(Window window, Window owner, bool sizable)
 		{
 			Avalonia.Platform.Screen screen = null;
 			try { screen = (owner ?? window).Screens?.ScreenFromVisual(owner ?? window) ?? (owner ?? window).Screens?.Primary; }
@@ -120,16 +120,56 @@ namespace ULDB.Shell
 				if(!double.IsNaN(window.MinWidth) && window.MinWidth > maxw) window.MinWidth = maxw;
 				if(!double.IsNaN(window.Height) && window.Height > maxh) window.Height = maxh;
 				if(!double.IsNaN(window.Width) && window.Width > maxw) window.Width = maxw;
-				window.MaxHeight = maxh;
-				window.MaxWidth = maxw;
+				// A window the user can resize keeps no maximum (it would stop it being maximised, or moved to a larger
+				// screen and enlarged there); one that sizes itself to its content needs the limit.
+				if(!sizable || !window.CanResize)
+				{
+					window.MaxHeight = maxh;
+					window.MaxWidth = maxw;
+				}
 			}
 			foreach(Avalonia.Controls.TabControl tabs in Avalonia.LogicalTree.LogicalExtensions.GetLogicalDescendants(window).OfType<Avalonia.Controls.TabControl>().ToList())
 				foreach(Avalonia.Controls.TabItem item in tabs.Items.OfType<Avalonia.Controls.TabItem>())
 					if(item.Content is Avalonia.Controls.Control content && !(content is Avalonia.Controls.ScrollViewer))
 					{
 						item.Content = null; // free the page before it goes into the ScrollViewer
-						item.Content = new Avalonia.Controls.ScrollViewer { Content = content, HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled };
+						Avalonia.Controls.ScrollViewer scroller = new Avalonia.Controls.ScrollViewer { HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled };
+						scroller.Content = new FitPage(scroller, content);
+						item.Content = scroller;
 					}
+		}
+
+		/// <summary>
+		/// A tab page inside the ScrollViewer FitToScreen adds. A ScrollViewer offers its content endless height, which
+		/// makes a page with a list in it as tall as the whole list (the list stops scrolling and virtualising, and what
+		/// is below it moves out of sight). This offers the page the height that is really there: a page that fits is laid
+		/// out exactly as it was without the ScrollViewer, and only a page that can't shrink that far scrolls.
+		/// </summary>
+		private sealed class FitPage : Avalonia.Controls.Decorator
+		{
+			private readonly Avalonia.Controls.ScrollViewer scroller;
+
+			public FitPage(Avalonia.Controls.ScrollViewer scroller, Avalonia.Controls.Control page)
+			{
+				this.scroller = scroller;
+				Child = page;
+				scroller.SizeChanged += (s, e) => InvalidateMeasure();
+			}
+
+			protected override Avalonia.Size MeasureOverride(Avalonia.Size availableSize)
+			{
+				if(Child == null) return default;
+				double height = scroller.Bounds.Height;
+				if(height <= 0 || double.IsNaN(height)) height = 480; // not laid out yet: SizeChanged measures again
+				Child.Measure(new Avalonia.Size(availableSize.Width, height));
+				return Child.DesiredSize;
+			}
+
+			protected override Avalonia.Size ArrangeOverride(Avalonia.Size finalSize)
+			{
+				Child?.Arrange(new Avalonia.Rect(finalSize));
+				return finalSize;
+			}
 		}
 
 		public void ShowForm(Form form, object view, IWin32Window owner, bool modal)
@@ -166,7 +206,7 @@ namespace ULDB.Shell
 				}
 				window.CanResize = window.CanResize && sizable;
 				window.CanMinimize = false; // a minimised dialog leaves the main window blocked and looking frozen (issue #17)
-				FitToScreen(window, ownerwindow);
+				FitToScreen(window, ownerwindow, sizable);
 				// A dialog that has never had a saved position opens centred on the main window: upstream's
 				// DelayedForm works out "centred" from the form's size, which isn't the window's size here.
 				bool savedposition = CodeImp.DoomBuilder.General.Settings.ReadSetting("windows." + form.GetType().Name.ToLowerInvariant() + ".positionx", int.MaxValue) != int.MaxValue;
@@ -393,10 +433,27 @@ namespace ULDB.Shell
 			OnUIThread(() =>
 			{
 				IClipboard system = FormWindows.Active?.Clipboard;
+				textbeforeclear = null;
 				if(system == null) return;
 				if(text != null) system.SetTextAsync(text);
-				else system.ClearAsync();
+				else _ = ClearSystemClipboard(system);
 			});
+		}
+
+		// The text the desktop clipboard held when UDB data replaced it. A clipboard manager may put it back after the
+		// clear (KDE's Klipper does by default, "prevent empty clipboard"); it must not then count as something newer.
+		private string textbeforeclear;
+
+		private async Task ClearSystemClipboard(IClipboard system)
+		{
+			try
+			{
+				DataObject mine = clipboard;
+				string before = await system.TryGetTextAsync();
+				if(ReferenceEquals(mine, clipboard)) textbeforeclear = before;
+				await system.ClearAsync();
+			}
+			catch(Exception e) { Trace.WriteLine("Clipboard: " + e.Message); }
 		}
 
 		public DataObject GetClipboard()
@@ -408,7 +465,7 @@ namespace ULDB.Shell
 
 				string systemtext = Modal.Wait(system.TryGetTextAsync());
 				string owntext = clipboard.GetData(DataFormats.Text) as string;
-				if(systemtext == null || systemtext == owntext) return clipboard;
+				if(systemtext == null || systemtext == owntext || (owntext == null && systemtext == textbeforeclear)) return clipboard;
 
 				// Something else was copied since: that's what pasting should use.
 				return new DataObject(DataFormats.Text, systemtext);

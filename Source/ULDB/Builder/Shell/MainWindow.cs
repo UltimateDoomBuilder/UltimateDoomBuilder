@@ -524,7 +524,7 @@ namespace ULDB.Shell
 							break;
 						case "effectbrowser": CodeImp.DoomBuilder.Windows.EffectBrowserForm.BrowseEffect(form, 0); break;
 						case "thingbrowser": CodeImp.DoomBuilder.Windows.ThingBrowserForm.BrowseThing(form, 1); break;
-						case "action": General.Actions.InvokeAction(p[1]); break; // e.g. action:buildermodes_sectorsmode
+						case "action": if(!General.Actions.InvokeAction(p[1])) Console.WriteLine("action: no action named " + p[1]); break; // e.g. action:buildermodes_sectorsmode
 						case "docker": // docker:<short name>, e.g. docker:tagexplorerdockerpanel
 							// The panel itself: MainForm.SelectDocker expects to be called from the docker's plugin.
 							CodeImp.DoomBuilder.Controls.DockersControl dockers = Field<CodeImp.DoomBuilder.Controls.DockersControl>("dockerspanel");
@@ -610,6 +610,8 @@ namespace ULDB.Shell
 									Console.WriteLine($"[devstep] open window '{w.Title}' visible={w.IsVisible} {w.Bounds.Width}x{w.Bounds.Height} at {w.Position.X},{w.Position.Y}");
 							}, TimeSpan.FromMilliseconds(int.Parse(p[1])));
 							break;
+						case "reportmap": Console.WriteLine("reportmap: " + General.Map.Map.Sectors.Count + " sectors, " + General.Map.Map.Linedefs.Count + " linedefs"); break; // the map's size (to check a paste)
+						case "reportclip": Console.WriteLine("reportclip: " + string.Join(", ", WF.WinFormsHost.Current.GetClipboard().GetFormats())); break; // what the clipboard holds
 						case "markchanged": General.Map.IsChanged = true; break; // makes the map count as edited (autosave only saves edited maps)
 						case "mapbackup": General.Map.SaveMapBackup(); break; // what Quit in the error dialog does
 						case "closetop": // closes the newest open window other than the main one, as the title bar's close button does

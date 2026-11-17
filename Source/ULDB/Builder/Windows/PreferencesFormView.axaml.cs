@@ -38,15 +38,16 @@ namespace CodeImp.DoomBuilder.Windows
 			int percent = settings.ReadSetting(UiOptions.UI_SCALE_KEY, 0);
 			uldb_scale.SelectedIndex = System.Math.Max(0, System.Array.IndexOf(ScalePercent, percent));
 			uldb_browserbg.SelectedIndex = System.Math.Clamp(settings.ReadSetting(UiOptions.BROWSER_BACKGROUND, 0), 0, Backgrounds.Length - 1);
-			uldb_rotation.SelectedIndex = System.Math.Max(0, System.Array.IndexOf(Rotations, UiOptions.ThingRotationStep));
+			int rotation = System.Array.IndexOf(Rotations, UiOptions.ThingRotationStep);
+			uldb_rotation.SelectedIndex = rotation >= 0 ? rotation : System.Array.IndexOf(Rotations, 5);
 			uldb_prefabtags.SelectedIndex = System.Math.Clamp(settings.ReadSetting(UiOptions.PREFAB_TAGS, 0), 0, PrefabTags.Length - 1);
 
 			// Upstream's OK handler (the model's) saves its settings; these go along with it
 			apply.Click += (s, e) =>
 			{
-				settings.WriteSetting(UiOptions.UI_SCALE_KEY, ScalePercent[System.Math.Max(0, uldb_scale.SelectedIndex)]);
+				if(System.Array.IndexOf(ScalePercent, percent) >= 0 || uldb_scale.SelectedIndex > 0) settings.WriteSetting(UiOptions.UI_SCALE_KEY, ScalePercent[System.Math.Max(0, uldb_scale.SelectedIndex)]);
 				settings.WriteSetting(UiOptions.BROWSER_BACKGROUND, System.Math.Max(0, uldb_browserbg.SelectedIndex));
-				settings.WriteSetting(UiOptions.THING_ROTATION, Rotations[System.Math.Max(0, uldb_rotation.SelectedIndex)]);
+				if(rotation >= 0 || uldb_rotation.SelectedIndex != System.Array.IndexOf(Rotations, 5)) settings.WriteSetting(UiOptions.THING_ROTATION, Rotations[System.Math.Max(0, uldb_rotation.SelectedIndex)]);
 				settings.WriteSetting(UiOptions.PREFAB_TAGS, System.Math.Max(0, uldb_prefabtags.SelectedIndex));
 			};
 		}

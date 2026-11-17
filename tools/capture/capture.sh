@@ -26,7 +26,7 @@ cp "$MAP" "$WORK/map.wad"
 mkdir -p "$WORK/config"
 
 ULDB_RENDERING=egl ULDB_CAPTURE="$OUT" ULDB_CAPTURE_EXIT=1 ULDB_SHOW_FORM="$FORM" XDG_CONFIG_HOME="$WORK/config" \
-	timeout 90 xvfb-run -a -s "-screen 0 1600x1000x24" \
+	timeout 90 xvfb-run -a -s "-screen 0 ${ULDB_SCREEN:-1600x1000}x24" \
 	"$APP" -nosettings "$WORK/map.wad" -map MAP01 -cfg "$CFG" -resource wad "$IWAD" > "$WORK/log.txt" 2>&1 || true
 
 # ULDB_KEEP_LOG=path keeps ULDB's console output (e.g. the ULDB_DUMP_TOOLBARS listing).

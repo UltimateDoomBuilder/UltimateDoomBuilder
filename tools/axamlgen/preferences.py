@@ -178,7 +178,7 @@ xaml = '''<!-- ULDB: the window of upstream's PreferencesForm (model-ported: ups
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:shell="using:ULDB.Shell"
         x:Class="CodeImp.DoomBuilder.Windows.PreferencesFormView"
-        Title="Preferences" Width="1040" Height="760" MinWidth="880" MinHeight="620" ShowInTaskbar="False">
+        Title="Preferences" Width="1040" Height="1030" MinWidth="880" MinHeight="620" ShowInTaskbar="False">
   <DockPanel Margin="14">
     <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,12,0,0">
       <Button x:Name="apply" IsDefault="True" MinWidth="100" HorizontalContentAlignment="Center" Classes="accent"/>

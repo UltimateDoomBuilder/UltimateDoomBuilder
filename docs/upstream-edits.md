@@ -54,6 +54,7 @@ Genuine upstream bugs found while porting. They aren't Linux-specific, so they'r
 | `Source/Core/Editing/CopyPasteManager.cs` | `InsertPrefabFile` / `InsertPreviousPrefab` apply `UiOptions.ApplyPrefabTags` to the paste options (`#if ULDB`) | #1335: choice of how tags are treated |
 | `Source/Plugins/BuilderModes/General/BuilderPlug.cs`, `Interface/PreferencesForm.cs` | default `mouseselectionthreshold` 4 instead of 2 (`#if ULDB`) | #1219 |
 | `Source/Plugins/BuilderModes/ClassicModes/LinedefsMode.cs`, `Resources/Actions.cfg` | new action `selectconnectedlinedefs` (`#if ULDB`; the Actions.cfg block is new text) | #1227 / #1301 |
+| `Source/Core/Windows/PreferencesForm.cs` | the action list is sorted by category, then title, before it is filled (`#if ULDB`) | The view shows one flat list; the order was the action dictionary's (it changed from run to run) |
 
 ## Native stand-ins (not edits)
 
