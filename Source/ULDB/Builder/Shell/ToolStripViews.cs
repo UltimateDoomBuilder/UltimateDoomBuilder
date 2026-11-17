@@ -290,7 +290,8 @@ namespace ULDB.Shell
 					{
 						Width = orientation == Orientation.Horizontal ? 1 : double.NaN,
 						Height = orientation == Orientation.Vertical ? 1 : double.NaN,
-						Margin = orientation == Orientation.Horizontal ? new Thickness(4, 4) : new Thickness(4, 4),
+						// Wider gaps and inset ends, so groups of buttons read as groups
+						Margin = orientation == Orientation.Horizontal ? new Thickness(5, 6) : new Thickness(6, 2),
 					};
 					sep.Classes.Add("uldb-separator");
 					Follow(item, () => sep.IsVisible = item.Available);

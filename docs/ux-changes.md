@@ -52,3 +52,5 @@ A user-facing list of every intentional UI or behaviour difference between ULDB 
 - **Open Map offers autosaves and backups:** two extra file types in the dialog ("Autosaves and backups", "All files"). The first is still Doom WAD files. **Check on the real machine** that the portal dialog lists `.autosave1`/`.backup1` files.
 
 - **Main window, info panel (first modernisation pass):** the map statistics (vertices, linedefs, sidedefs, sectors, things) are one row of count-over-label tiles, vertically centred, instead of a five-line list. Same numbers, same place.
+
+- **Main window, toolbar and mode strip separators:** group separators in every toolbar are more visible (new `UldbSeparatorBrush`, lighter than the panel lines in both themes) with more room around them, so the draw, edit, transform and plugin mode groups read as groups. Button order and tooltips (which already carry the shortcut) are unchanged.

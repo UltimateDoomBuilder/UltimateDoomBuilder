@@ -9,6 +9,7 @@
           <SolidColorBrush x:Key="UldbWindowBrush" Color="#FFFFFF"/>
           <SolidColorBrush x:Key="UldbBarBrush" Color="#F0F0F0"/>
           <SolidColorBrush x:Key="UldbLineBrush" Color="#D0D0D0"/>
+          <SolidColorBrush x:Key="UldbSeparatorBrush" Color="#B8B8B8"/>
           <SolidColorBrush x:Key="UldbHoverBrush" Color="#1A000000"/>
           <SolidColorBrush x:Key="UldbPressedBrush" Color="#2E000000"/>
           <SolidColorBrush x:Key="UldbCheckedBrush" Color="#33116EBF"/>
@@ -22,6 +23,7 @@
           <SolidColorBrush x:Key="UldbWindowBrush" Color="#1E1E1E"/>
           <SolidColorBrush x:Key="UldbBarBrush" Color="#2A2A2A"/>
           <SolidColorBrush x:Key="UldbLineBrush" Color="#404040"/>
+          <SolidColorBrush x:Key="UldbSeparatorBrush" Color="#5C5C5C"/>
           <SolidColorBrush x:Key="UldbHoverBrush" Color="#22FFFFFF"/>
           <SolidColorBrush x:Key="UldbPressedBrush" Color="#33FFFFFF"/>
           <SolidColorBrush x:Key="UldbCheckedBrush" Color="#444C9BE8"/>
@@ -72,7 +74,8 @@
     <Setter Property="BorderBrush" Value="{DynamicResource UldbLineBrush}"/>
   </Style>
   <Style Selector="Border.uldb-separator">
-    <Setter Property="Background" Value="{DynamicResource UldbLineBrush}"/>
+    <Setter Property="Background" Value="{DynamicResource UldbSeparatorBrush}"/>
+    <Setter Property="CornerRadius" Value="1"/>
   </Style>
   <Style Selector="Menu">
     <Setter Property="Background" Value="Transparent"/>
