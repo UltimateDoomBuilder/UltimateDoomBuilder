@@ -327,3 +327,9 @@ Work the user approved doing without their machine. All on `phase-3/shell`.
   - PR bodies end with the 🤖 line and the session URL; commits carry the `Co-Authored-By: Claude` trailer.
 - **User preferences seen so far:** the UI should stay familiar to UDB users but look modern (Breeze icons, compact rows, no touch-sized spacing); ask for sign-off (with a screenshot) before layout changes to the main window; the user watches usage limits, so keep notes current as you go and wrap up when asked; non-critical bugs go in the GitHub issue tracker.
 - **Open decisions:** none. Everything is in `docs/ULDB-Plan.md` sections 0 and 7.
+
+## 17 Nov 2026: map load progress (#13)
+
+Branch `phase-3/async-load`. Measured: a Debug-build load is about 1.2 s with no single long step (upstream already loads resources on a background thread). So instead of a risky off-thread load, the cover shows the load step and repaints (`Busy.Update`, `Timer.Suspended`; see `ux-changes.md`). 223 tests pass; the cover text itself was not captured mid-load. **Check on the real machine:** open a second map while one is open and watch the cover. Still open: start-up parsing of all 51 game configs, Open Map not offering `.autosave` files.
+
+Also on `phase-3/async-load`: Open Map lists autosaves/backups (see `ux-changes.md`). Start-up game-config parsing measured at ~0.23 s of a 0.83 s start-up (Debug), so hiding/skipping hidden configs wasn't worth changing what the lump-list scan and Game Configurations window see; left as is.

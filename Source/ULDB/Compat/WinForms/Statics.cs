@@ -288,10 +288,13 @@ namespace System.Windows.Forms
 
 		public object Tag { get; set; }
 
+		/// <summary>While true no timer ticks (set during a map load that repaints the UI for progress: WinForms never ran timers inside a blocking call).</summary>
+		public static bool Suspended;
+
 		public void Start()
 		{
 			if(running != null) return;
-			running = WinFormsHost.Current.StartTimer(interval, () => Tick?.Invoke(this, EventArgs.Empty));
+			running = WinFormsHost.Current.StartTimer(interval, () => { if(!Suspended) Tick?.Invoke(this, EventArgs.Empty); });
 		}
 
 		public void Stop()
