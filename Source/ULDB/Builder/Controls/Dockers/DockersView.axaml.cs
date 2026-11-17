@@ -133,7 +133,7 @@ namespace CodeImp.DoomBuilder.Controls
 			for(int i = 0; i < tabsmodel.TabPages.Count; i++)
 			{
 				int index = i;
-				TextBlock text = new TextBlock { Text = tabsmodel.TabPages[i].Text, FontSize = 12 };
+				TextBlock text = new TextBlock { Text = tabsmodel.TabPages[i].Text, FontSize = 12, FontWeight = i == tabsmodel.SelectedIndex ? FontWeight.SemiBold : FontWeight.Normal };
 				LayoutTransformControl rotated = new LayoutTransformControl
 				{
 					Child = text,
@@ -144,8 +144,11 @@ namespace CodeImp.DoomBuilder.Controls
 					Content = rotated,
 					HorizontalAlignment = HorizontalAlignment.Stretch,
 					HorizontalContentAlignment = HorizontalAlignment.Center,
-					Padding = new Thickness(0, 10),
-					Margin = new Thickness(2, 0),
+					Padding = new Thickness(0, 9),
+					Margin = new Thickness(1, 0),
+					CornerRadius = new CornerRadius(5),
+					// An accent bar on the outer edge marks the selected tab (see Styles.axaml)
+					BorderThickness = RightAlign ? new Thickness(0, 0, 2, 0) : new Thickness(2, 0, 0, 0),
 				};
 				tab.Classes.Add("uldb-tool");
 				tab.Classes.Add("uldb-docker-tab");

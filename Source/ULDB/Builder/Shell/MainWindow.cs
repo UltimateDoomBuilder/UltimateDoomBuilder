@@ -258,11 +258,15 @@ namespace ULDB.Shell
 			AddCard(Field<VertexInfoPanel>("vertexinfo"), new VertexInfoView(Field<VertexInfoPanel>("vertexinfo")));
 
 			// Nothing highlighted: the mode name, and the map statistics on the right.
-			TextBlock title = new TextBlock { FontSize = 30, FontWeight = FontWeight.SemiBold, Opacity = 0.3, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(10, 0) };
+			TextBlock title = new TextBlock { FontSize = 28, FontWeight = FontWeight.SemiBold, Opacity = 0.55, VerticalAlignment = VerticalAlignment.Center };
+			// A thin accent bar beside the mode name ties it to the selected mode button
+			Border titlebar = new Border { Width = 3, Height = 30, CornerRadius = new CornerRadius(2), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 10, 0) };
+			titlebar[!Border.BackgroundProperty] = titlebar.GetResourceObservable("UldbHotTextBrush").ToBinding();
+			StackPanel titlerow = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(12, 0), Children = { titlebar, title } };
 			StatisticsView stats = new StatisticsView(statsmodel) { HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center };
 			Grid moderow = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
 			Grid.SetColumn(stats, 1);
-			moderow.Children.Add(title);
+			moderow.Children.Add(titlerow);
 			moderow.Children.Add(stats);
 			cards.Children.Add(moderow);
 
@@ -299,7 +303,7 @@ namespace ULDB.Shell
 				cards.IsVisible = expanded;
 				bool showname = modename.Visible || console.Visible;
 				moderow.IsVisible = showname || statsmodel.Visible;
-				title.IsVisible = showname;
+				titlerow.IsVisible = showname;
 				title.Text = modename.Text;
 				stats.IsVisible = statsmodel.Visible;
 				collapsedtext.IsVisible = collapsed.Visible && !expanded;

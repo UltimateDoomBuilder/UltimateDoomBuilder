@@ -54,3 +54,7 @@ A user-facing list of every intentional UI or behaviour difference between ULDB 
 - **Main window, info panel (first modernisation pass):** the map statistics (vertices, linedefs, sidedefs, sectors, things) are one row of count-over-label tiles, vertically centred, instead of a five-line list. Same numbers, same place.
 
 - **Main window, toolbar and mode strip separators:** group separators in every toolbar are more visible (new `UldbSeparatorBrush`, lighter than the panel lines in both themes) with more room around them, so the draw, edit, transform and plugin mode groups read as groups. Button order and tooltips (which already carry the shortcut) are unchanged.
+
+- **Main window, dockers tabs:** rounded tabs, a bold label and an accent bar on the outer edge for the selected tab.
+- **Main window, status bar:** the coordinate and zoom readouts have a fixed width, right-aligned with even-width digits, so the bar stops shifting as the mouse moves.
+- **Main window, info panel:** with nothing highlighted, the mode name is brighter (55% instead of 30%) with a thin accent bar beside it.

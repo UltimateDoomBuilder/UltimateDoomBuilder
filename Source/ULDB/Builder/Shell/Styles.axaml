@@ -193,7 +193,10 @@
   <Style Selector="Button.uldb-docker-tab.selected">
     <Setter Property="Opacity" Value="1"/>
     <Setter Property="Background" Value="{DynamicResource UldbCheckedBrush}"/>
-    <Setter Property="BorderBrush" Value="{DynamicResource UldbCheckedLineBrush}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource UldbHotTextBrush}"/>
+  </Style>
+  <Style Selector="Button.uldb-docker-tab.selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="BorderBrush" Value="{DynamicResource UldbHotTextBrush}"/>
   </Style>
   <Style Selector="Button.uldb-docker-tab.notify">
     <Setter Property="Opacity" Value="1"/>
