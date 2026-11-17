@@ -256,6 +256,10 @@ All seven ideas from the audit, at the user's request (details in `docs/ux-chang
 
 **To release (user):** merge the PR, tag `v0.6.0-beta` on `master`; the Flatpak workflow builds and creates the pre-release with the notes.
 
+## v0.6.1-beta (branch `phase-3/test-menu`, 17 Nov 2026)
+
+Contains `phase-3/async-load` (PR #41: load progress cover, Open Map autosaves, main window polish) plus: clearer Test menu, AppImage engine detection, Game Configurations check boxes, plugin tools kept after Game Configurations OK, Help docker key caps and mouse icons (all in `ux-changes.md` and `upstream-edits.md`). Version in `Branding.VERSION`, `Properties/Version.cs`, README, metainfo and `packaging/RELEASE_NOTES.md`. **To release (user):** merge the PR (PR #41 becomes redundant), tag `v0.6.1-beta` on `master`. **To check on the real machine:** the Test menu and extra parameters reaching the engine, the AppImage showing under Testing, the load cover text, the Open Map autosave filter, status bar numbers while moving the mouse, Game Configurations OK keeping the plugin tools. Dev steps added: `testmenu`, `menustate`, `stripstate`, `reconfigure`.
+
 ## Early preview release (20 Oct 2026)
 
 - `phase-3/shell` merged into `master` (PR #2); CI green on `master`.

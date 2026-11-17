@@ -99,6 +99,15 @@ namespace ULDB.Tests
 		}
 
 		[Fact]
+		public void AnAppImageEngineIsFoundByItsName()
+		{
+			List<EngineInstall> found = new List<EngineInstall>();
+			Engines.ParseDetected("/home/me/Linux-UZDoom-Release-x86_64.AppImage\n", true, found);
+			Assert.Equal("host:/home/me/Linux-UZDoom-Release-x86_64.AppImage", found.Single().Path);
+			Assert.Equal("UZDoom", found.Single().Family);
+		}
+
+		[Fact]
 		public void ALaunchedEngineRunsWithTheArgumentsItWasGiven()
 		{
 			string dir = Path.Combine(Path.GetTempPath(), "uldb-engine-" + Guid.NewGuid().ToString("N"));

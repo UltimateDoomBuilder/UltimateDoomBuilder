@@ -1,8 +1,8 @@
-# Ultimate Linux Doom Builder v0.6.0-beta
+# Ultimate Linux Doom Builder v0.6.1-beta
 
 An **unofficial** native Linux fork of [Ultimate Doom Builder](https://github.com/UltimateDoomBuilder/UltimateDoomBuilder), built on .NET 10 and Avalonia instead of Mono and WinForms. It targets **GZDoom / UZDoom** maps only. The port is **AI-coded** (Claude), and that is disclosed publicly. It isn't endorsed by the UDB team.
 
-This is the first **beta**: every window the editor opens is ported, and the work has moved from porting to fixing and polishing. It has still had little real-world use, so **back up your maps and save often.**
+This is a **beta**: every window the editor opens is ported, and the work is fixing and polishing. It has had little real-world use, so **back up your maps and save often.** v0.6.1 is a small update on v0.6.0: a clearer Test menu, better engine detection, a tidier main window and a few bug fixes.
 
 ## Why use ULDB instead of UDB on Linux
 
@@ -24,29 +24,26 @@ UDB is a Windows program; on Linux it runs on Mono's WinForms. ULDB is the same 
 
 **What you give up:** ULDB only edits for GZDoom and UZDoom (other game configurations are hidden), it doesn't include UDBScript or the update window, and it is new, so it has had far less use than UDB. On Windows, use UDB.
 
-## New since v0.5.0-preview
-
-**Script editor**
-- A find bar inside the editor: **Ctrl+F** to find, **Ctrl+H** to replace, F3 / Shift+F3 for next and previous, with match case, whole word and regular expressions. The Find and Replace window (all open scripts) is still in the toolbar and on Ctrl+Shift+F. The toolbar's old quick-search box is gone.
-- Rest the pointer on a function name to see its signature; the completion list shows it too.
-- Compile errors are underlined in the text, and one click (or Enter) on an error in the list shows its line.
-- Tabs: middle-click closes a tab, dragging reorders them.
-- Zoom (Ctrl+Plus / Minus / 0) now stays, is the same in every open script, and is remembered between sessions.
-- Folded blocks are saved with the map again, stay folded when you type above them, and open when you jump to an error or a search result inside one. Error markers and highlighted words follow the text when lines are added or removed.
-- Faster on long scripts: only the changed part is coloured again, and moving the caret no longer redraws the whole editor.
-- A new option for comments in italics (Preferences → Interface → ULDB).
-
-**Dialogs and Preferences**
-- Preferences opens large enough to show its pages without scrolling, and shrinks only on a small screen.
-- Preferences → Controls: the action list scrolls by itself, the Action control panel stays in place, and actions are listed by category and name.
-- Dialogs that can be resized can be maximised again.
+## New since v0.6.0-beta
 
 **Testing maps**
-- A Flatpak GZDoom or UZDoom can now read IWADs in the system's folders (for example the distribution's Freedoom package under `/usr/share`).
-- The interface scale option also works in portable mode.
+- **A clearer Test menu** (the arrow beside the Test button). Upstream listed the five skill levels twice, once with monsters and once without. Now there is one **Skill level** list with the current one ticked, a single **Spawn monsters** switch (off adds `-nomonsters`), **Test with engine** (only when more than one engine is set up), **Extra parameters...** (command-line switches for this map's configuration, such as `+god`; upstream's text box in the menu, which didn't work here) and **Test engine settings...**, which opens Game Configurations on the Testing tab.
+- **GZDoom and UZDoom AppImages are found.** The Testing tab's quick setup now also looks for `*zdoom*.AppImage` files (executable) in your home folder, Downloads, `~/Applications`, `~/AppImages`, `~/Games`, `~/.local/bin`, `~/.local/share/AppImages` and `/opt`, as well as programs on the PATH and Flatpaks.
 
-**Other**
-- The window title no longer shows a revision number; the version is in Help → About.
+**Main window**
+- Map statistics (vertices, linedefs, sidedefs, sectors, things) are a row of tiles in the info panel; with nothing highlighted, the mode name is brighter and has an accent bar.
+- Clearer separators between groups of buttons in the toolbar and the edit modes strip.
+- Docker tabs are rounded, and the selected tab is bold with an accent bar.
+- The coordinate and zoom readouts in the status bar keep a fixed width, so the bar no longer shifts as you move the mouse.
+- **Help docker:** shortcuts are drawn as key caps and a small mouse with the pressed button lit (left, right, middle, wheel), instead of bold text.
+
+**Opening maps**
+- The "Opening map..." cover shows what the editor is doing ("Loading data resources", and so on) and keeps repainting, so the window no longer looks frozen. The load itself still runs on the main thread (issue #13 stays open for a full fix).
+- The Open Map dialog offers "Autosaves and backups" and "All files", so `map.wad.MAP01.autosave1` and `.backup1` files can be opened.
+
+**Fixes**
+- After pressing OK in **Game Configurations**, the plugins' buttons in the edit modes strip (Apply Directional Shading, Randomize, Pick Sector/Light Color) disappeared and their Mode menu items jumped to the top. They keep their place now (the same bug exists in UDB).
+- The check boxes in the Game Configurations list are no longer clipped.
 
 ## What works
 
@@ -59,17 +56,17 @@ UDB is a Windows program; on Linux it runs on Mono's WinForms. ULDB is the same 
 
 ## Known limits
 
-- Much of this release was checked in a headless test environment and not yet by eye on a real desktop. In particular: the script editor changes above, Test Map with a Flatpak engine, dialogs on small or scaled screens, and the interface scale option. Reports on these are especially welcome.
+- Much of this release was checked in a headless test environment and not yet by eye on a real desktop. In particular: the new Test menu and its extra parameters, finding an AppImage engine, Test Map with a Flatpak engine, the script editor, dialogs on small or scaled screens, and the interface scale option. Reports on these are especially welcome.
 - Only GZDoom and UZDoom game configurations are shown, on purpose.
 - The update window is not included: update through Flatpak or your package manager.
 - The splash picture is a placeholder, and the Help menu has no manual yet.
 
 ## Install (Flatpak)
 
-Download `ultimate-linux-doom-builder-v0.6.0-beta.flatpak` below (it appears once the build finishes), then:
+Download `ultimate-linux-doom-builder-v0.6.1-beta.flatpak` below (it appears once the build finishes), then:
 
 ```sh
-flatpak install --user ./ultimate-linux-doom-builder-v0.6.0-beta.flatpak
+flatpak install --user ./ultimate-linux-doom-builder-v0.6.1-beta.flatpak
 flatpak run io.github.theoriginalzads.UltimateLinuxDoomBuilder
 ```
 

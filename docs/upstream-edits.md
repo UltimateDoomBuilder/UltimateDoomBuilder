@@ -59,5 +59,8 @@ Genuine upstream bugs found while porting. They aren't Linux-specific, so they'r
 ## Native stand-ins (not edits)
 
 - `Source/ULDB/Native/User32Stubs.c` → `libuser32.so`: no-op `SendMessage`, `PostMessage`, `LockWindowUpdate`, `GetWindowLong`, `SetWindowLong`, `MessageBeep` for upstream's direct `user32.dll` P/Invokes (e.g. `ArgumentsControl.BeginUpdate`), which Mono used to emulate. Upstream files are unchanged.
+| `Source/Core/Windows/MainForm.cs` | `UpdateSkills` | `#if ULDB`: a clearer Test menu (see `ux-changes.md`); the original builds the doubled skill list and the extra-parameters text box |
 | `Source/Core/General/General.cs` | `WriteLogLine` | `#if ULDB`: passes each log line to `ULDB.Platform.Busy.Update`, which shows the current load step on the "Opening map..." cover |
 | `Source/Core/General/General.cs` | `OpenMapFile` (dialog filter) | `#if ULDB`: the Open Map dialog also offers "Autosaves and backups" (`*.autosave*`, `*.backup*`) and "All files" |
+| `Source/Core/Windows/MainForm.cs` | `RemoveEditModeButtons`, `AddEditModeSeperator` | `#if ULDB`: plugins' buttons and menu items in the edit modes toolbar and Mode menu (Apply Directional Shading, Randomize, Pick Sector/Light Color) are taken out before the toolbar is rebuilt and put back after their group's separator. Upstream lost the buttons and moved the menu items to the top whenever the game configuration changed |
+| `Source/Core/Actions/HintsManager.cs` | hint `<k>` replacement | `#if ULDB`: shortcut keys in the hints are marked (`\uldbkey`) so the Help docker can draw them as key caps and mouse icons; the original line is kept in the `#else` |
