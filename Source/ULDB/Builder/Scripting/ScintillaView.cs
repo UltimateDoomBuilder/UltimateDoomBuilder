@@ -44,10 +44,17 @@ namespace ULDB.Scripting
 		private readonly Popup calltip;
 		private readonly TextBlock calltiptext = new TextBlock { FontFamily = new FontFamily(FontUri), FontSize = 12, TextWrapping = TextWrapping.NoWrap };
 		private bool updatepending, foldpending;
+		private readonly AvaloniaEdit.Search.SearchPanel searchpanel;
 		private int lastcaret = -1;
 
 		/// <summary>Offers shortcut keys (F3, Ctrl+F, Ctrl+S...) to the owning control; true when it used the key.</summary>
 		public Func<WF.Keys, bool> CommandKey { get; set; }
+
+		/// <summary>What to show for a word the pointer rests on, or in the completion list (a function's signature); null for nothing.</summary>
+		public Func<string, string> WordInfo { get; set; }
+
+		/// <summary>False for the preview in Preferences, which shows the settings' size.</summary>
+		public bool UseSharedZoom { get; set; } = true;
 
 		public TextEditor Editor { get { return editor; } }
 
@@ -110,10 +117,51 @@ namespace ULDB.Scripting
 
 			// The dark scheme depends on the theme, known once the control is in the window
 			ActualThemeVariantChanged += (s, e) => ApplyAppearance();
-			AttachedToVisualTree += (s, e) => ApplyAppearance();
+			AttachedToVisualTree += (s, e) =>
+			{
+				model.Host = this; // the view on screen is the one the model talks to
+				SchedulePrimary(); // the status bar shows this script's caret position, not the previous tab's
+				if(UseSharedZoom) zoom = ULDB.Platform.UiOptions.ScriptZoom;
+				ULDB.Platform.UiOptions.ScriptViewChanged += OnSharedViewChanged;
+				ApplyAppearance();
+			};
+			DetachedFromVisualTree += (s, e) => ULDB.Platform.UiOptions.ScriptViewChanged -= OnSharedViewChanged;
+
+			// Resting the pointer on a function name shows its signature
+			editor.TextArea.TextView.PointerHover += OnPointerHover;
+			editor.TextArea.TextView.PointerHoverStopped += (s, e) => ToolTip.SetIsOpen(editor, false);
+
+			// The find bar inside the editor (Ctrl+F, Ctrl+H to replace); upstream's Find and Replace window stays on
+			// Ctrl+Shift+F and in the menu, for searching all open scripts
+			searchpanel = AvaloniaEdit.Search.SearchPanel.Install(editor);
 
 			ApplyAppearance();
 			InstallFolding();
+		}
+
+		private void OnPointerHover(object sender, PointerEventArgs e)
+		{
+			if(WordInfo == null) return;
+			TextViewPosition? pos = editor.TextArea.TextView.GetPositionFloor(e.GetPosition(editor.TextArea.TextView) + editor.TextArea.TextView.ScrollOffset);
+			if(!pos.HasValue) return;
+			int offset = editor.Document.GetOffset(pos.Value.Location);
+			int style = model.GetStyleAt(offset);
+			if(style == ScriptLexer.BlockComment || style == ScriptLexer.LineComment || style == ScriptLexer.String) return;
+			string word = model.GetWordFromPosition(offset);
+			string info = string.IsNullOrEmpty(word) ? null : WordInfo(word);
+			if(string.IsNullOrEmpty(info)) return;
+			ToolTip.SetTip(editor, new TextBlock { Text = info, FontFamily = new FontFamily(FontUri), FontSize = 12 });
+			ToolTip.SetPlacement(editor, PlacementMode.Pointer);
+			ToolTip.SetIsOpen(editor, true);
+		}
+
+		private void OpenFindBar(bool replace)
+		{
+			string selected = editor.SelectionLength > 0 && !editor.SelectedText.Contains('\n') ? editor.SelectedText : null;
+			searchpanel.IsReplaceMode = replace && !model.ReadOnly;
+			if(selected != null) searchpanel.SearchPattern = selected;
+			searchpanel.Open();
+			searchpanel.Reactivate();
 		}
 
 		#region ================== Appearance (from the model's styles)
@@ -126,8 +174,11 @@ namespace ULDB.Scripting
 		{
 			Style def = model.Styles[Style.Default];
 			if(!string.IsNullOrEmpty(def.Font)) editor.FontFamily = new FontFamily(ResolveFont(def.Font));
-			if(def.Size > 0) editor.FontSize = def.Size * 96.0 / 72.0;
+			if(def.Size > 0) basefontsize = def.Size * 96.0 / 72.0;
+			editor.FontSize = Math.Max(7, Math.Min(48, basefontsize + zoom));
 			editor.FontWeight = def.Bold ? FontWeight.Bold : FontWeight.Normal;
+			editor.FontStyle = def.Italic ? FontStyle.Italic : FontStyle.Normal;
+			colorizer.ItalicComments = ULDB.Platform.UiOptions.ScriptItalicComments;
 			// UDB's default script colours are dark text on white. With the desktop in dark mode and those
 			// defaults still in place, the editor uses a dark scheme instead; colours the user changed stay.
 			bool defaultcolors = !IsSet(def.BackColor) || (def.BackColor.R == 255 && def.BackColor.G == 255 && def.BackColor.B == 255);
@@ -234,9 +285,11 @@ namespace ULDB.Scripting
 
 			// Remember what's folded (by line of the fold's start), including the user's clicks
 			HashSet<int> wasfolded = new HashSet<int>(model.FoldedLines);
+			HashSet<int> known = new HashSet<int>();
 			foreach(FoldingSection section in folding.AllFoldings)
 			{
 				int line = model.Document.GetLineByOffset(section.StartOffset).LineNumber - 1;
+				known.Add(line);
 				if(section.IsFolded) wasfolded.Add(line); else wasfolded.Remove(line);
 			}
 
@@ -248,6 +301,12 @@ namespace ULDB.Scripting
 			}
 			foldings.Sort((a, b) => a.StartOffset.CompareTo(b.StartOffset));
 			folding.UpdateFoldings(foldings, -1);
+			// DefaultClosed only counts for new sections; a fold asked for on a line whose section moved is closed here
+			foreach(FoldingSection section in folding.AllFoldings)
+			{
+				int line = model.Document.GetLineByOffset(section.StartOffset).LineNumber - 1;
+				if(!section.IsFolded && wasfolded.Contains(line) && !known.Contains(line)) section.IsFolded = true;
+			}
 
 			model.FoldedLines.Clear();
 			foreach(int l in wasfolded) model.FoldedLines.Add(l);
@@ -275,6 +334,22 @@ namespace ULDB.Scripting
 		private void OnKeyDown(object sender, KeyEventArgs e)
 		{
 			WF.Keys keys = KeyMapping.ToKeys(e.Key, e.KeyModifiers);
+
+			// The find bar
+			bool ctrlonly = e.KeyModifiers == KeyModifiers.Control;
+			if(ctrlonly && e.Key == Key.F) { OpenFindBar(false); e.Handled = true; return; }
+			if(ctrlonly && e.Key == Key.H) { OpenFindBar(true); e.Handled = true; return; }
+			if(e.KeyModifiers == (KeyModifiers.Control | KeyModifiers.Shift) && e.Key == Key.F && CommandKey != null)
+			{
+				// Upstream's window (it opens on Ctrl+F there)
+				if(CommandKey(WF.Keys.Control | WF.Keys.F)) { e.Handled = true; return; }
+			}
+			if(searchpanel.IsOpened)
+			{
+				if(e.Key == Key.F3 && e.KeyModifiers == KeyModifiers.None) { searchpanel.FindNext(); e.Handled = true; return; }
+				if(e.Key == Key.F3 && e.KeyModifiers == KeyModifiers.Shift) { searchpanel.FindPrevious(); e.Handled = true; return; }
+				if(e.Key == Key.Escape && e.KeyModifiers == KeyModifiers.None && !(completion != null && completion.IsOpen)) { searchpanel.Close(); e.Handled = true; return; }
+			}
 
 			// Shortcuts of the editor (F3, Ctrl+F, Ctrl+S, Ctrl+Space, snippets on Tab, ...)
 			if(CommandKey != null && keys != WF.Keys.None && !IsPlainTyping(e))
@@ -331,7 +406,7 @@ namespace ULDB.Scripting
 
 			if(ctrl && !alt && !shift && (e.Key == Key.OemPlus || e.Key == Key.Add)) { Zoom(1); return true; }
 			if(ctrl && !alt && !shift && (e.Key == Key.OemMinus || e.Key == Key.Subtract)) { Zoom(-1); return true; }
-			if(ctrl && !alt && !shift && (e.Key == Key.D0 || e.Key == Key.NumPad0)) { editor.FontSize = baseFontSize; return true; }
+			if(ctrl && !alt && !shift && (e.Key == Key.D0 || e.Key == Key.NumPad0)) { SetZoom(0); return true; }
 
 			if(model.ReadOnly) return false;
 
@@ -343,12 +418,25 @@ namespace ULDB.Scripting
 			return false;
 		}
 
-		private double baseFontSize = 14;
+		// The size from the settings and the user's zoom on top of it (kept apart: the settings' size is applied
+		// again whenever the appearance is)
+		private double basefontsize = 14;
+		private double zoom;
 
-		private void Zoom(int step)
+		private void Zoom(int step) { SetZoom(zoom + step); }
+
+		private void SetZoom(double value)
 		{
-			if(baseFontSize == 14 && editor.FontSize > 0) baseFontSize = editor.FontSize;
-			editor.FontSize = Math.Max(7, Math.Min(40, editor.FontSize + step));
+			zoom = Math.Max(7 - basefontsize, Math.Min(48 - basefontsize, value));
+			editor.FontSize = basefontsize + zoom;
+			// Remembered, and the same in every open script
+			if(UseSharedZoom) ULDB.Platform.UiOptions.ScriptZoom = (int)Math.Round(zoom);
+		}
+
+		private void OnSharedViewChanged()
+		{
+			if(UseSharedZoom) zoom = ULDB.Platform.UiOptions.ScriptZoom;
+			ApplyAppearance();
 		}
 
 		private void SelectedLines(out DocumentLine first, out DocumentLine last)
@@ -453,10 +541,10 @@ namespace ULDB.Scripting
 
 		private string DominantNewline()
 		{
-			string text = model.Document.Text;
-			int i = text.IndexOf('\n');
-			if(i < 0) return Environment.NewLine == "\r\n" ? "\r\n" : "\n";
-			return i > 0 && text[i - 1] == '\r' ? "\r\n" : "\n";
+			// The document's first line break (a script from Windows keeps its CR LF)
+			DocumentLine first = model.Document.GetLineByNumber(1);
+			if(first.DelimiterLength == 0) return "\n";
+			return first.DelimiterLength == 2 ? "\r\n" : model.Document.GetText(first.EndOffset, 1);
 		}
 
 		#endregion
@@ -533,11 +621,45 @@ namespace ULDB.Scripting
 			editor.ScrollTo(loc.Line, loc.Column);
 		}
 
+		// Braces, highlighted words and error lines are drawn on a layer behind the text: only that is drawn again
+		// (this runs on every caret move).
 		void IScintillaHost.Refresh()
 		{
-			editor.TextArea.TextView.Redraw();
+			editor.TextArea.TextView.InvalidateLayer(KnownLayer.Selection);
+			editor.TextArea.TextView.InvalidateLayer(KnownLayer.Background);
 			markermargin.InvalidateVisual();
-			// Appearance can change underneath (fonts and colours set after the first layout)
+		}
+
+		void IScintillaHost.Restyle()
+		{
+			editor.TextArea.TextView.Redraw();
+		}
+
+		private FoldingSection FoldAt(int line)
+		{
+			if(folding == null || line < 0 || line >= model.Document.LineCount) return null;
+			int offset = model.Document.GetLineByNumber(line + 1).EndOffset;
+			foreach(FoldingSection section in folding.GetFoldingsAt(offset)) return section;
+			return null;
+		}
+
+		bool? IScintillaHost.IsFolded(int line) { return FoldAt(line)?.IsFolded; }
+
+		bool IScintillaHost.SetFolded(int line, bool folded)
+		{
+			FoldingSection section = FoldAt(line);
+			if(section == null) { ScheduleFolds(); return false; } // closed when the sections are built
+			section.IsFolded = folded;
+			return true;
+		}
+
+		void IScintillaHost.Unfold(int firstline, int lastline)
+		{
+			if(folding == null || model.Document.LineCount == 0) return;
+			int from = model.Document.GetLineByNumber(Math.Max(1, Math.Min(firstline + 1, model.Document.LineCount))).Offset;
+			int to = model.Document.GetLineByNumber(Math.Max(1, Math.Min(lastline + 1, model.Document.LineCount))).EndOffset;
+			foreach(FoldingSection section in folding.AllFoldings)
+				if(section.IsFolded && section.StartOffset < to && section.EndOffset > from) section.IsFolded = false;
 		}
 
 		private int Clamp(int position) { return Math.Max(0, Math.Min(position, editor.Document.TextLength)); }
@@ -566,7 +688,7 @@ namespace ULDB.Scripting
 				int image = -1;
 				int q = item.IndexOf('?');
 				if(q > 0 && int.TryParse(item.Substring(q + 1), out int index)) { name = item.Substring(0, q); image = index; }
-				completion.CompletionList.CompletionData.Add(new ScriptCompletion(name, image >= 0 && model.AutoCompleteImages.TryGetValue(image, out SD.Bitmap bmp) ? Convert(bmp) : null, model));
+				completion.CompletionList.CompletionData.Add(new ScriptCompletion(name, image >= 0 && model.AutoCompleteImages.TryGetValue(image, out SD.Bitmap bmp) ? Convert(bmp) : null, model, WordInfo));
 			}
 			if(completion.CompletionList.CompletionData.Count == 0) { completion = null; return; }
 			completion.Closed += (s, e) => completion = null;
@@ -578,11 +700,12 @@ namespace ULDB.Scripting
 		private sealed class ScriptCompletion : ICompletionData
 		{
 			private readonly Scintilla owner;
-			public ScriptCompletion(string text, Bitmap image, Scintilla owner) { Text = text; Image = image; this.owner = owner; }
+			private readonly Func<string, string> info;
+			public ScriptCompletion(string text, Bitmap image, Scintilla owner, Func<string, string> info) { Text = text; Image = image; this.owner = owner; this.info = info; }
 			public IImage Image { get; }
 			public string Text { get; }
 			public object Content { get { return Text; } }
-			public object Description { get { return null; } }
+			public object Description { get { string d = info?.Invoke(Text); return string.IsNullOrEmpty(d) ? null : d; } }
 			public double Priority { get { return 0; } }
 			public void Complete(TextArea textArea, ISegment completionSegment, EventArgs insertionRequestEventArgs)
 			{
@@ -636,6 +759,9 @@ namespace ULDB.Scripting
 		/// <summary>Colours by style number overriding the model's styles (the dark default scheme), or null.</summary>
 		public Dictionary<int, IBrush> Palette { get; set; }
 
+		/// <summary>Comments in italics (a ULDB preference).</summary>
+		public bool ItalicComments { get; set; } = true;
+
 		private IBrush BrushFor(int style)
 		{
 			if(Palette != null) return Palette.TryGetValue(style, out IBrush p) ? p : null;
@@ -661,7 +787,7 @@ namespace ULDB.Scripting
 				int runend = runstart + 1;
 				while(runend < end && (runend < styles.Length ? styles[runend] : 0) == style) runend++;
 				IBrush brush = BrushFor(style);
-				bool italic = style == ScriptLexer.BlockComment || style == ScriptLexer.LineComment;
+				bool italic = ItalicComments && (style == ScriptLexer.BlockComment || style == ScriptLexer.LineComment);
 				if(brush != null || italic)
 				{
 					ChangeLinePart(runstart, runend, element =>
@@ -694,8 +820,10 @@ namespace ULDB.Scripting
 			SD.Color ic = ind.ForeColor.IsEmpty ? SD.Color.Orange : ind.ForeColor;
 			IBrush fill = new SolidColorBrush(Color.FromArgb((byte)Math.Max(40, ind.Alpha * 3), ic.R, ic.G, ic.B));
 			Pen outline = new Pen(new SolidColorBrush(Color.FromArgb(160, ic.R, ic.G, ic.B)), 1);
+			int visiblestart = textView.VisualLines.Count > 0 ? textView.VisualLines[0].FirstDocumentLine.Offset : 0;
+			int visibleend = textView.VisualLines.Count > 0 ? textView.VisualLines[textView.VisualLines.Count - 1].LastDocumentLine.EndOffset : 0;
 			foreach(int[] r in model.IndicatorRanges(8).ToList())
-				DrawRange(textView, drawingContext, r[0], r[1], fill, outline);
+				if(r[1] >= visiblestart && r[0] <= visibleend) DrawRange(textView, drawingContext, r[0], r[1], fill, outline);
 
 			// Braces
 			if(model.BraceHighlight1 != Scintilla.InvalidPosition)
@@ -713,6 +841,30 @@ namespace ULDB.Scripting
 				if(!m.Value.Contains(2) || m.Key >= textView.Document.LineCount) continue;
 				DocumentLine line = textView.Document.GetLineByNumber(m.Key + 1);
 				DrawRange(textView, drawingContext, line.Offset, Math.Max(line.EndOffset, line.Offset + 1), new SolidColorBrush(Color.FromArgb(46, 232, 60, 60)), null, true);
+				DrawErrorUnderline(textView, drawingContext, line);
+			}
+		}
+
+		// A red zigzag under the text of a line with a compile error
+		private static void DrawErrorUnderline(TextView textView, DrawingContext dc, DocumentLine line)
+		{
+			string text = textView.Document.GetText(line.Offset, line.Length);
+			int first = text.Length - text.TrimStart().Length, last = text.TrimEnd().Length;
+			if(last <= first) return;
+			TextSegment segment = new TextSegment { StartOffset = line.Offset + first, EndOffset = line.Offset + last };
+			Pen pen = new Pen(new SolidColorBrush(Color.FromRgb(232, 60, 60)), 1);
+			foreach(Rect r in BackgroundGeometryBuilder.GetRectsForSegment(textView, segment))
+			{
+				StreamGeometry zigzag = new StreamGeometry();
+				using(StreamGeometryContext ctx = zigzag.Open())
+				{
+					double y = r.Bottom - 1;
+					ctx.BeginFigure(new Point(r.Left, y), false);
+					bool up = true;
+					for(double x = r.Left + 2; x <= r.Right; x += 2) { ctx.LineTo(new Point(x, up ? y - 2 : y)); up = !up; }
+					ctx.EndFigure(false);
+				}
+				dc.DrawGeometry(null, pen, zigzag);
 			}
 		}
 

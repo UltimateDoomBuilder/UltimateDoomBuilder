@@ -80,6 +80,7 @@
 <RowDefinition Height="Auto"/>
 <RowDefinition Height="Auto"/>
 <RowDefinition Height="Auto"/>
+<RowDefinition Height="Auto"/>
 <RowDefinition Height="Auto"/></Grid.RowDefinitions>
 <TextBlock Grid.Row="0" Text="Interface scale:" Classes="uldb-field" HorizontalAlignment="Right"/>
 <ContentPresenter Grid.Row="0" Grid.Column="1">
@@ -96,7 +97,9 @@
 <TextBlock Text="degrees (mouse wheel)" Classes="uldb-field"/></StackPanel></ContentPresenter>
 <TextBlock Grid.Row="3" Text="Tags when inserting prefabs:" Classes="uldb-field" HorizontalAlignment="Right"/>
 <ContentPresenter Grid.Row="3" Grid.Column="1">
-<ComboBox x:Name="uldb_prefabtags" Width="240"/></ContentPresenter></Grid></StackPanel></Border>
+<ComboBox x:Name="uldb_prefabtags" Width="240"/></ContentPresenter>
+<ContentPresenter Grid.Row="4" Grid.ColumnSpan="2">
+<CheckBox x:Name="uldb_italiccomments" Content="Comments in italics in the script editor"/></ContentPresenter></Grid></StackPanel></Border>
 <Border Classes="uldb-group">
 <StackPanel Spacing="6">
 <TextBlock Text="Side Panels" Classes="uldb-group-title"/>

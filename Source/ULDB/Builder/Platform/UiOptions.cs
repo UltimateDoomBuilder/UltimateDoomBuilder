@@ -16,6 +16,8 @@ namespace ULDB.Platform
 		public const string THING_ROTATION = "uldb.thingrotationstep";
 		public const string PREFAB_TAGS = "uldb.prefabtags";
 		public const string UI_SCALE_KEY = "uldb.uiscalepercent";
+		public const string SCRIPT_ZOOM = "uldb.scriptzoom";
+		public const string SCRIPT_ITALIC_COMMENTS = "uldb.scriptitaliccomments";
 		private const string UI_SCALE = "uiscalepercent"; // its name in the file, where ScaleFromFile finds it before the UI exists
 
 		/// <summary>Degrees a Things-mode rotate action (mouse wheel) turns by; 5 by default.</summary>
@@ -25,6 +27,37 @@ namespace ULDB.Platform
 			{
 				int step = General.Settings != null ? General.Settings.ReadSetting(THING_ROTATION, 5) : 5;
 				return step >= 1 && step <= 90 ? step : 5;
+			}
+		}
+
+		/// <summary>Raised when the script editor's zoom or comment style changed, so every open editor follows.</summary>
+		public static event Action ScriptViewChanged;
+
+		/// <summary>The script editor's zoom (points added to the font size of the settings; Ctrl+Plus/Minus), kept between sessions.</summary>
+		public static int ScriptZoom
+		{
+			get
+			{
+				int zoom = General.Settings != null ? General.Settings.ReadSetting(SCRIPT_ZOOM, 0) : 0;
+				return Math.Max(-8, Math.Min(34, zoom));
+			}
+			set
+			{
+				if(General.Settings == null || value == ScriptZoom) return;
+				General.Settings.WriteSetting(SCRIPT_ZOOM, value);
+				ScriptViewChanged?.Invoke();
+			}
+		}
+
+		/// <summary>Whether comments are drawn in italics in the script editor (on by default).</summary>
+		public static bool ScriptItalicComments
+		{
+			get { return General.Settings == null || General.Settings.ReadSetting(SCRIPT_ITALIC_COMMENTS, true); }
+			set
+			{
+				if(General.Settings == null || value == ScriptItalicComments) return;
+				General.Settings.WriteSetting(SCRIPT_ITALIC_COMMENTS, value);
+				ScriptViewChanged?.Invoke();
 			}
 		}
 

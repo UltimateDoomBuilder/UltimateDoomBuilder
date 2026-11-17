@@ -70,6 +70,7 @@ interface = cols(
             ('Texture browser background:', combo('uldb_browserbg', 200)),
             ('Thing rotation per step:', '<StackPanel Orientation="Horizontal" Spacing="8"><ComboBox x:Name="uldb_rotation" Width="100"/><TextBlock Text="degrees (mouse wheel)" Classes="uldb-field"/></StackPanel>'),
             ('Tags when inserting prefabs:', combo('uldb_prefabtags', 240)),
+            (None, '<CheckBox x:Name="uldb_italiccomments" Content="Comments in italics in the script editor"/>'),
         ], 'lbl0')),
         card('Side Panels', '<StackPanel Orientation="Horizontal" Spacing="10"><TextBlock Text="Position:" Classes="uldb-field"/><ComboBox x:Name="dockersposition" Width="110"/><CheckBox x:Name="collapsedockers"/></StackPanel>'),
     ),

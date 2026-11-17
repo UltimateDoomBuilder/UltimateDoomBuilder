@@ -40,7 +40,7 @@ Genuine upstream bugs found while porting. They aren't Linux-specific, so they'r
 | File | Fix | Symptom |
 |---|---|---|
 | `Source/Core/GZBuilder/Data/EngineInfo.cs` | `Dispose()`: `icon?.Dispose()` | The icon is created lazily. Disposing an `EngineInfo` whose icon was never requested threw `NullReferenceException`. Disposal runs from `ConfigurationInfo`'s finalizer, so this crashes the process (likely the "can't reproduce" crash reports referenced in `ConfigurationInfo.~ConfigurationInfo`) |
-| `Source/Core/Windows/MainForm.cs` | window title: no "(64-bit)"/"(32-bit)" (`#if ULDB`) | User request: there's one build, so it isn't needed |
+| `Source/Core/Windows/MainForm.cs` | window title: no "(64-bit)"/"(32-bit)" and no "R<revision>" (`#if ULDB`) | User request: there's one build, so it isn't needed |
 | `Source/Core/Windows/MainForm.cs` | `itemhelpissues_Click` opens ULDB's repository (`Branding.REPOSITORY_URL`) (`#if ULDB`) | The item pointed at upstream's bug tracker; ULDB problems go to the fork |
 | `Source/Core/Windows/RunExternalCommandForm.cs` | `KillProcessAndChildren` uses `Process.Kill(true)`; no `System.Management` (`#if ULDB`) | WMI is Windows-only |
 | `Source/Core/General/General.cs` | the temporary folder is `ULDB.Platform.Paths.TempDirectory` (`~/.cache/UltimateLinuxDoomBuilder/tmp`) instead of `/tmp` (`#if ULDB`) | The test map must be readable by an engine that runs outside ULDB's sandbox or in its own Flatpak (private `/tmp`) |

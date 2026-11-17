@@ -13,6 +13,9 @@ namespace ULDB
 		public const string APP_ID = "io.github.theoriginalzads.UltimateLinuxDoomBuilder";
 		public const string EXECUTABLE = "uldb";
 
+		/// <summary>The release this is (also the assembly's informational version; see Properties/Version.cs).</summary>
+		public const string VERSION = "0.6.0-beta";
+
 		/// <summary>The cacodemon on the app icon (Assets/Icons).</summary>
 		public const string MASCOT = "Cacky, the ULDB Cacodemon";
 

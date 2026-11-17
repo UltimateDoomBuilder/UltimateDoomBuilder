@@ -62,6 +62,11 @@
   <content_rating type="oars-1.1" />
 
   <releases>
+    <release version="0.6.0~beta" date="2026-11-17" type="development">
+      <description>
+        <p>First beta. Every window of the editor is ported. New in this release: a find bar, hover help, error underlines and remembered zoom in the script editor; dialogs that fit small screens; test engine setup for GZDoom and UZDoom, also as Flatpaks; an interface scale option.</p>
+      </description>
+    </release>
     <release version="0.2.0" date="2026-10-20" type="development">
       <description>
         <p>Texture browser, Map Options, Preferences and a new script editor are in. Toast notifications and a round of bug fixes.</p>

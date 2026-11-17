@@ -139,5 +139,75 @@ namespace ULDB.Tests
 			s.Lines[1].FoldLine(FoldAction.Contract);
 			Assert.False(s.Lines[1].Expanded);
 		}
+
+		[Fact]
+		public void ErrorMarkersAndHighlightsFollowEdits()
+		{
+			Scintilla s = Make("a\nb\nword c\nd");
+			s.Lines[2].MarkerAdd(2);
+			s.IndicatorCurrent = 8;
+			s.IndicatorFillRange(4, 4); // "word"
+
+			s.InsertText(0, "new\nlines\n"); // two lines above
+			Assert.Contains(s.LineMarkers, m => m.Key == 4 && m.Value.Contains(2));
+			Assert.DoesNotContain(s.LineMarkers, m => m.Key == 2 && m.Value.Contains(2));
+			int[] range = System.Linq.Enumerable.Single(s.IndicatorRanges(8));
+			Assert.Equal("word", s.GetTextRange(range[0], range[1] - range[0]));
+
+			s.DeleteRange(0, 4); // one line gone
+			Assert.Contains(s.LineMarkers, m => m.Key == 3 && m.Value.Contains(2));
+			range = System.Linq.Enumerable.Single(s.IndicatorRanges(8));
+			Assert.Equal("word", s.GetTextRange(range[0], range[1] - range[0]));
+
+			// Text after the marks leaves them alone; deleting the highlighted text removes the highlight
+			s.InsertText(s.TextLength, "\nend");
+			Assert.Contains(s.LineMarkers, m => m.Key == 3 && m.Value.Contains(2));
+			s.DeleteRange(range[0], 4);
+			Assert.Empty(s.IndicatorRanges(8));
+		}
+
+		// Only the changed part of a script is styled again; the result has to be what styling everything gives.
+		[Fact]
+		public void RestylingAfterEditsMatchesStylingEverything()
+		{
+			string[] pieces = { "/*", "*/", "//", "\n", "\r\n", "\"", "'", "#include", " ", "script", "int", "x", "1", "0x1F", "{", "}", "(", ")", ";", "\\", "word", "\t", "Print", "*", "/" };
+			Dictionary<int, HashSet<string>> keywords = new Dictionary<int, HashSet<string>> { [0] = new HashSet<string> { "script", "int" }, [1] = new HashSet<string> { "Print" } };
+			System.Random random = new System.Random(12345);
+			foreach(Lexer lexer in new[] { Lexer.Cpp, Lexer.Perl })
+			{
+				Scintilla s = new Scintilla();
+				s.Lexer = lexer;
+				s.SetKeywords(0, "script int");
+				s.SetKeywords(1, "Print");
+				System.Text.StringBuilder start = new System.Text.StringBuilder();
+				for(int i = 0; i < 200; i++) start.Append(pieces[random.Next(pieces.Length)]);
+				s.Text = start.ToString();
+				s.GetStyleAt(0);
+
+				int partial = 0, small = 0;
+				for(int round = 0; round < 1500; round++)
+				{
+					// One to three edits between two stylings
+					for(int edits = random.Next(1, 4); edits > 0; edits--)
+					{
+						int at = random.Next(s.TextLength + 1);
+						if(random.Next(3) == 0 && s.TextLength > 0) s.DeleteRange(at, random.Next(1, 12));
+						else
+						{
+							System.Text.StringBuilder insert = new System.Text.StringBuilder();
+							for(int i = random.Next(1, 4); i > 0; i--) insert.Append(pieces[random.Next(pieces.Length)]);
+							s.InsertText(at, insert.ToString());
+						}
+					}
+					byte[] expected = ScriptLexer.Style(s.Text, lexer, keywords, true, "");
+					ScriptLexer.LastRestyledLength = -1;
+					byte[] actual = (byte[])s.Styled().Clone();
+					if(ScriptLexer.LastRestyledLength >= 0) { partial++; if(ScriptLexer.LastRestyledLength < s.TextLength / 2) small++; }
+					Assert.True(System.Linq.Enumerable.SequenceEqual(expected, actual), "round " + round + " (" + lexer + "): " + s.Text.Replace("\r", "\\r").Replace("\n", "\\n"));
+				}
+				Assert.Equal(1500, partial); // every styling after an edit took the partial path
+				Assert.True(small > 300, small + " of 1500 stylings went over less than half the text");
+			}
+		}
 	}
 }

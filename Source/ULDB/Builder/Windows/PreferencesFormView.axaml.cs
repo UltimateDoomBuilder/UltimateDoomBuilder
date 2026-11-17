@@ -42,6 +42,8 @@ namespace CodeImp.DoomBuilder.Windows
 			uldb_rotation.SelectedIndex = rotation >= 0 ? rotation : System.Array.IndexOf(Rotations, 5);
 			uldb_prefabtags.SelectedIndex = System.Math.Clamp(settings.ReadSetting(UiOptions.PREFAB_TAGS, 0), 0, PrefabTags.Length - 1);
 
+			uldb_italiccomments.IsChecked = UiOptions.ScriptItalicComments;
+
 			// Upstream's OK handler (the model's) saves its settings; these go along with it
 			apply.Click += (s, e) =>
 			{
@@ -49,6 +51,7 @@ namespace CodeImp.DoomBuilder.Windows
 				settings.WriteSetting(UiOptions.BROWSER_BACKGROUND, System.Math.Max(0, uldb_browserbg.SelectedIndex));
 				if(rotation >= 0 || uldb_rotation.SelectedIndex != System.Array.IndexOf(Rotations, 5)) settings.WriteSetting(UiOptions.THING_ROTATION, Rotations[System.Math.Max(0, uldb_rotation.SelectedIndex)]);
 				settings.WriteSetting(UiOptions.PREFAB_TAGS, System.Math.Max(0, uldb_prefabtags.SelectedIndex));
+				UiOptions.ScriptItalicComments = uldb_italiccomments.IsChecked == true;
 			};
 		}
 	}

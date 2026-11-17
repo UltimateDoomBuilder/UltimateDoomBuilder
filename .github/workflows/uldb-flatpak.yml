@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: 'Attach the bundle to this release tag (e.g. v0.1.0-preview); blank = artifact only'
+        description: 'Attach the bundle to this release tag (e.g. v0.6.0-beta); blank = artifact only'
         required: false
   push:
     tags:
@@ -112,6 +112,6 @@ jobs:
             gh release upload "$TAG" "ultimate-linux-doom-builder-${TAG}.flatpak" --clobber --repo "$GITHUB_REPOSITORY"
           else
             gh release create "$TAG" "ultimate-linux-doom-builder-${TAG}.flatpak" \
-              --repo "$GITHUB_REPOSITORY" --prerelease --title "Ultimate Linux Doom Builder ${TAG} (early preview)" \
+              --repo "$GITHUB_REPOSITORY" --prerelease --title "Ultimate Linux Doom Builder ${TAG}" \
               --notes-file packaging/RELEASE_NOTES.md
           fi

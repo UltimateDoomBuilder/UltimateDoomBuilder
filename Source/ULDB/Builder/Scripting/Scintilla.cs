@@ -34,8 +34,16 @@ namespace ScintillaNET
 		void GetSelection(out int anchor, out int caret);
 		void SetSelection(int anchor, int caret);
 		void ScrollToPosition(int position);
-		/// <summary>Something the view draws changed (styles, colours, indicators, markers, braces, folds).</summary>
+		/// <summary>Marks drawn behind or beside the text changed (indicators, markers, braces): a cheap redraw.</summary>
 		void Refresh();
+		/// <summary>The text's colours changed (lexer, keywords): the lines are built again.</summary>
+		void Restyle();
+		/// <summary>Whether the fold starting on the line is closed; null when the view has no fold there (yet).</summary>
+		bool? IsFolded(int line);
+		/// <summary>Closes or opens the fold starting on the line; false when the view has no fold there (yet).</summary>
+		bool SetFolded(int line, bool folded);
+		/// <summary>Opens every fold that hides one of the lines.</summary>
+		void Unfold(int firstline, int lastline);
 	}
 
 	public class Scintilla : UserControl
@@ -57,6 +65,9 @@ namespace ScintillaNET
 		private bool casesensitive = true;
 		private byte[] stylecache;
 		private int stylecacheversion = -1, docversion;
+		// The part of the text changed since the styles were made (so only that is styled again); dirtystart < 0
+		// when everything has to be
+		private int dirtystart = -1, dirtyend, dirtydelta, dirtyversion = -1;
 		private string wordchars = "";
 
 		// Marks
@@ -74,6 +85,7 @@ namespace ScintillaNET
 			Styles = new StyleCollection();
 			Styles.StyleChanged += ScheduleChanged;
 			Margins = new MarginCollection();
+			Margins.Changed += ScheduleChanged;
 			Markers = new MarkerCollection();
 			Indicators = new IndicatorCollection();
 			Document.Changed += OnDocumentChanged;
@@ -91,19 +103,18 @@ namespace ScintillaNET
 
 		private bool changedscheduled;
 
-		// Style changes arrive one property at a time (a colour preset sets dozens): the view redraws once after them.
+		// Styles and options (fonts, colours, tabs, wrapping, margins) arrive one property at a time (a colour preset sets
+		// dozens): the view takes them over once, after them. This is the expensive path; marks that change while the
+		// caret moves (braces, highlighted words) go through MarksChanged instead.
 		private void ScheduleChanged()
 		{
 			if(changedscheduled) return;
 			changedscheduled = true;
-			Avalonia.Threading.Dispatcher.UIThread.Post(() => { changedscheduled = false; Changed(); }, Avalonia.Threading.DispatcherPriority.Background);
+			Avalonia.Threading.Dispatcher.UIThread.Post(() => { changedscheduled = false; AppearanceChanged?.Invoke(); }, Avalonia.Threading.DispatcherPriority.Background);
 		}
 
-		internal void Changed()
-		{
-			AppearanceChanged?.Invoke();
-			host?.Refresh();
-		}
+		private void MarksChanged() { host?.Refresh(); }
+		private void TextStyleChanged() { host?.Restyle(); }
 
 		internal IDictionary<int, Bitmap> AutoCompleteImages { get { return autocompleteimages; } }
 		internal IEnumerable<KeyValuePair<int, HashSet<int>>> LineMarkers { get { return markers; } }
@@ -137,15 +148,95 @@ namespace ScintillaNET
 
 		private void OnDocumentChanged(object sender, DocumentChangeEventArgs e)
 		{
+			NoteEdit(e);
 			docversion++;
-			// Folds and marks below an edit shift; keep it simple and clear what can't follow.
-			if(e.InsertionLength != e.RemovalLength) { folded.Clear(); }
+			// Without a view nothing tracks the folds (the view's fold sections follow edits by themselves)
+			if(host == null && e.InsertionLength != e.RemovalLength) folded.Clear();
+			ShiftMarks(e);
 			// Keep the stored selection valid when there's no view
 			if(host == null)
 			{
 				anchor = AdjustOffset(anchor, e);
 				caret = AdjustOffset(caret, e);
 			}
+		}
+
+		// Like Scintilla: line markers (compile errors) and indicator ranges (highlighted words) stay on their text
+		private void ShiftMarks(DocumentChangeEventArgs e)
+		{
+			foreach(List<int[]> ranges in indicatorranges.Values)
+			{
+				for(int i = ranges.Count - 1; i >= 0; i--)
+				{
+					int[] r = ranges[i];
+					if(r[1] <= e.Offset) continue;
+					r[0] = AdjustOffset(r[0], e);
+					r[1] = r[1] >= e.Offset + e.RemovalLength ? r[1] - e.RemovalLength + e.InsertionLength : e.Offset;
+					if(r[1] <= r[0]) ranges.RemoveAt(i);
+				}
+			}
+
+			if(markers.Count == 0 && folded.Count == 0) return;
+			int delta = CountLineBreaks(e.InsertedText?.Text) - CountLineBreaks(e.RemovedText?.Text);
+			if(delta == 0) return;
+			// The change began on this line (as it is now, when lines were added: the first of them)
+			int changeline = Document.GetLineByOffset(Math.Min(e.Offset, Document.TextLength)).LineNumber - 1;
+			// A change at the very start of a line moves that line too
+			bool atlinestart = Document.GetLineByOffset(Math.Min(e.Offset, Document.TextLength)).Offset == e.Offset;
+			int Moved(int line)
+			{
+				if(line > changeline || (line == changeline && atlinestart && delta > 0)) return Math.Max(changeline, line + delta);
+				return line;
+			}
+
+			Dictionary<int, HashSet<int>> moved = new Dictionary<int, HashSet<int>>();
+			foreach(KeyValuePair<int, HashSet<int>> m in markers)
+			{
+				int target = Moved(m.Key);
+				if(moved.TryGetValue(target, out HashSet<int> existing)) existing.UnionWith(m.Value); else moved[target] = m.Value;
+			}
+			markers.Clear();
+			foreach(KeyValuePair<int, HashSet<int>> m in moved) markers[m.Key] = m.Value;
+
+			// Folds asked for that the view hasn't made sections for yet
+			if(folded.Count > 0)
+			{
+				List<int> lines = new List<int>(folded);
+				folded.Clear();
+				foreach(int line in lines) folded.Add(Moved(line));
+			}
+		}
+
+		private static int CountLineBreaks(string text)
+		{
+			if(string.IsNullOrEmpty(text)) return 0;
+			int count = 0;
+			for(int i = 0; i < text.Length; i++)
+			{
+				if(text[i] == '\n') count++;
+				else if(text[i] == '\r' && (i + 1 >= text.Length || text[i + 1] != '\n')) count++;
+			}
+			return count;
+		}
+
+		// Edits since the last styling are kept as one range that covers them all
+		private void NoteEdit(DocumentChangeEventArgs e)
+		{
+			if(stylecache == null) return;
+			if(stylecacheversion == docversion)
+			{
+				// The first edit since the styles were made
+				dirtystart = e.Offset; dirtyend = e.Offset + e.InsertionLength; dirtydelta = e.InsertionLength - e.RemovalLength;
+			}
+			else if(dirtyversion == docversion && dirtystart >= 0)
+			{
+				int end = dirtyend > e.Offset + e.RemovalLength ? dirtyend + e.InsertionLength - e.RemovalLength : e.Offset + e.InsertionLength;
+				dirtystart = Math.Min(dirtystart, e.Offset);
+				dirtyend = Math.Max(end, e.Offset + e.InsertionLength);
+				dirtydelta += e.InsertionLength - e.RemovalLength;
+			}
+			else dirtystart = -1; // something else changed in between (keywords, lexer): style everything
+			dirtyversion = docversion + 1;
 		}
 
 		private static int AdjustOffset(int offset, DocumentChangeEventArgs e)
@@ -243,8 +334,10 @@ namespace ScintillaNET
 			return GetTextRange(start, end - start);
 		}
 
-		public int TabWidth { get; set; } = 4;
-		public bool UseTabs { get; set; } = true;
+		private int tabwidthvalue = 4;
+		public int TabWidth { get { return tabwidthvalue; } set { if(!Equals(tabwidthvalue, value)) { tabwidthvalue = value; ScheduleChanged(); } } }
+		private bool usetabsvalue = true;
+		public bool UseTabs { get { return usetabsvalue; } set { if(!Equals(usetabsvalue, value)) { usetabsvalue = value; ScheduleChanged(); } } }
 
 		internal int GetIndentation(int line)
 		{
@@ -368,23 +461,28 @@ namespace ScintillaNET
 			{
 				if(GetFoldEnd(start, out int end) && start < lineEnd && end >= lineStart) folded.Remove(start);
 			}
-			Changed();
+			host?.Unfold(lineStart, lineEnd);
 		}
 
 		public new bool Focus() { host?.Focus(); return host != null; }
 
-		public bool ReadOnly { get; set; }
+		private bool readonlyvalue;
+		public bool ReadOnly { get { return readonlyvalue; } set { if(!Equals(readonlyvalue, value)) { readonlyvalue = value; ScheduleChanged(); } } }
 		public int CaretWidth { get; set; } = 1;
 		public int ExtraAscent { get; set; }
 		public int ExtraDescent { get; set; }
 		public FontQuality FontQuality { get; set; }
 		public int ScrollWidth { get; set; } = 2000;
 		public int WhitespaceSize { get; set; } = 1;
-		public Color CaretForeColor { get; set; }
+		private Color caretforecolorvalue;
+		public Color CaretForeColor { get { return caretforecolorvalue; } set { if(!Equals(caretforecolorvalue, value)) { caretforecolorvalue = value; ScheduleChanged(); } } }
 		public int CaretPeriod { get; set; }
-		public WhitespaceMode ViewWhitespace { get; set; }
-		public WrapMode WrapMode { get; set; }
-		public AutomaticFold AutomaticFold { get; set; }
+		private WhitespaceMode viewwhitespacevalue;
+		public WhitespaceMode ViewWhitespace { get { return viewwhitespacevalue; } set { if(!Equals(viewwhitespacevalue, value)) { viewwhitespacevalue = value; ScheduleChanged(); } } }
+		private WrapMode wrapmodevalue;
+		public WrapMode WrapMode { get { return wrapmodevalue; } set { if(!Equals(wrapmodevalue, value)) { wrapmodevalue = value; ScheduleChanged(); } } }
+		private AutomaticFold automaticfoldvalue;
+		public AutomaticFold AutomaticFold { get { return automaticfoldvalue; } set { if(!Equals(automaticfoldvalue, value)) { automaticfoldvalue = value; ScheduleChanged(); } } }
 		public SearchFlags SearchFlags { get; set; }
 		public new BorderStyle BorderStyle { get; set; }
 		public StyleCollection Styles { get; private set; }
@@ -400,7 +498,7 @@ namespace ScintillaNET
 		public bool CanUndo { get { return Document.UndoStack.CanUndo; } }
 		public bool CanRedo { get { return Document.UndoStack.CanRedo; } }
 		public bool CanPaste { get { return host == null || host.CanPaste; } }
-		public void SetSavePoint() { Document.UndoStack.MarkAsOriginalFile(); Changed(); }
+		public void SetSavePoint() { Document.UndoStack.MarkAsOriginalFile(); }
 		public void EmptyUndoBuffer() { Document.UndoStack.ClearAll(); Document.UndoStack.MarkAsOriginalFile(); }
 		public void Undo() { if(Document.UndoStack.CanUndo) Document.UndoStack.Undo(); }
 		public void Redo() { if(Document.UndoStack.CanRedo) Document.UndoStack.Redo(); }
@@ -467,13 +565,13 @@ namespace ScintillaNET
 		{
 			if(!markers.TryGetValue(line, out HashSet<int> set)) markers[line] = set = new HashSet<int>();
 			set.Add(marker);
-			Changed();
+			MarksChanged();
 		}
 
 		public void MarkerDeleteAll(int marker)
 		{
 			foreach(HashSet<int> set in markers.Values) set.Remove(marker);
-			Changed();
+			MarksChanged();
 		}
 
 		public int IndicatorCurrent { get; set; }
@@ -483,18 +581,18 @@ namespace ScintillaNET
 			if(!indicatorranges.TryGetValue(IndicatorCurrent, out List<int[]> ranges)) return;
 			if(position <= 0 && length >= Document.TextLength) ranges.Clear();
 			else ranges.RemoveAll(r => r[0] < position + length && r[1] > position);
-			Changed();
+			MarksChanged();
 		}
 
 		public void IndicatorFillRange(int position, int length)
 		{
 			if(!indicatorranges.TryGetValue(IndicatorCurrent, out List<int[]> ranges)) indicatorranges[IndicatorCurrent] = ranges = new List<int[]>();
 			ranges.Add(new[] { position, position + length });
-			Changed();
+			MarksChanged();
 		}
 
-		public void BraceHighlight(int position1, int position2) { bracehighlight1 = position1; bracehighlight2 = position2; bracebad = false; Changed(); }
-		public void BraceBadLight(int position) { bracehighlight1 = position; bracehighlight2 = InvalidPosition; bracebad = true; Changed(); }
+		public void BraceHighlight(int position1, int position2) { bracehighlight1 = position1; bracehighlight2 = position2; bracebad = false; MarksChanged(); }
+		public void BraceBadLight(int position) { bracehighlight1 = position; bracehighlight2 = InvalidPosition; bracebad = true; MarksChanged(); }
 
 		/// <summary>The position of the brace matching the one at <paramref name="position"/>, or InvalidPosition.</summary>
 		public int BraceMatch(int position)
@@ -567,29 +665,31 @@ namespace ScintillaNET
 			return false;
 		}
 
-		internal bool IsFolded(int line) { return folded.Contains(line); }
+		// The view's fold sections are what counts once they exist (the user folds by clicking there, and they follow
+		// edits). The set here holds folds asked for before that: the view closes them when it builds its sections.
+		internal bool IsFolded(int line) { return host?.IsFolded(line) ?? folded.Contains(line); }
 
 		internal void SetFolded(int line, bool fold)
 		{
 			if(fold && GetFoldEnd(line, out _)) folded.Add(line);
 			else folded.Remove(line);
-			Changed();
+			host?.SetFolded(line, fold);
 		}
 
 		#endregion
 
 		#region ================== Styles and keywords
 
-		public Lexer Lexer { get { return lexer; } set { lexer = value; docversion++; Changed(); } }
+		public Lexer Lexer { get { return lexer; } set { lexer = value; docversion++; TextStyleChanged(); } }
 
 		public void ClearDocumentStyle() { docversion++; }
 		public void StyleResetDefault() { }
-		public void StyleClearAll() { Changed(); }
+		public void StyleClearAll() { ScheduleChanged(); }
 		public void SetProperty(string name, string value) { }
 		public void SetWhitespaceBackColor(bool use, Color color) { }
-		public void SetWhitespaceForeColor(bool use, Color color) { WhitespaceColor = color; }
-		public void SetSelectionBackColor(bool use, Color color) { SelectionBackColor = color; }
-		public void SetSelectionForeColor(bool use, Color color) { SelectionForeColor = color; }
+		public void SetWhitespaceForeColor(bool use, Color color) { WhitespaceColor = color; ScheduleChanged(); }
+		public void SetSelectionBackColor(bool use, Color color) { SelectionBackColor = color; ScheduleChanged(); }
+		public void SetSelectionForeColor(bool use, Color color) { SelectionForeColor = color; ScheduleChanged(); }
 		public void SetFoldMarginColor(bool use, Color color) { }
 		public void SetFoldMarginHighlightColor(bool use, Color color) { }
 		public void SetFoldFlags(FoldFlags flags) { }
@@ -615,7 +715,7 @@ namespace ScintillaNET
 				keywordsets[set] = words;
 			}
 			docversion++;
-			Changed();
+			TextStyleChanged();
 		}
 
 		/// <summary>Whether keywords match without regard to case (upstream lowercases the lists then).</summary>
@@ -625,8 +725,13 @@ namespace ScintillaNET
 		{
 			if(stylecache == null || stylecacheversion != docversion)
 			{
-				stylecache = ScriptLexer.Style(Document.Text, lexer, keywordsets, casesensitive, wordchars);
+				string text = Document.Text;
+				if(stylecache != null && dirtystart >= 0 && dirtyversion == docversion)
+					stylecache = ScriptLexer.Restyle(text, stylecache, dirtystart, dirtyend, dirtydelta, lexer, keywordsets, casesensitive, wordchars);
+				else
+					stylecache = ScriptLexer.Style(text, lexer, keywordsets, casesensitive, wordchars);
 				stylecacheversion = docversion;
+				dirtystart = -1;
 			}
 			return stylecache;
 		}

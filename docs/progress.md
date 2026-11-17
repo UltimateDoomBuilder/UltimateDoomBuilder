@@ -227,6 +227,35 @@ Follow-ups (same branch):
 - **Interface scale in portable mode:** the scale is read from the program folder's `UDBuilder.cfg` when `-portable` is given and the folder is writable (as `General` decides).
 - Dev steps: `reportmap` (map size), `reportclip` (clipboard formats); `action:` says when the action doesn't exist.
 
+## Script editor audit (branch `phase-3/script-editor-audit`, 17 Nov 2026, no screen)
+
+Read through `Scripting/Scintilla.cs` (the model), `ScintillaView.cs` (AvaloniaEdit view), the lexer, the panel and Find views, against what upstream's `ScriptEditorControl`/`ScriptDocumentTab` call. Fixed:
+- **Every caret move restyled the whole editor.** Upstream updates the brace highlight on each caret move; the model answered every mark change with the full appearance update (fonts, colours, a rebuild of all visible lines, folding check). One effect: **Ctrl+Plus/Minus zoom was undone by the next caret move.** Marks (braces, highlighted words, error lines) now only redraw their layer; styles and options (tabs, wrapping, read-only, margins, colours) notify by themselves; zoom is kept apart from the settings' font size.
+- **Folding state was not shared with upstream's code.** Folds made by clicking were not seen by `Line.Expanded` (upstream saves the folds with the script's settings and restores them, also around "remove trailing whitespace" on save), folds asked for by upstream were not applied to an editor already showing, and `ShowLines` (jump to an error or a search result inside a fold) did not open the fold. The view's fold sections are now the state; folds asked for before they exist are applied when they are built and follow edits until then.
+- **Error markers and word highlights stayed at their old line/offset** when text was added or removed above them; they follow edits now (as Scintilla's do). Test: `ErrorMarkersAndHighlightsFollowEdits`.
+- Word highlights are only drawn for the visible part; Enter no longer copies the whole document to find its line-break style.
+- Dev steps: `scriptkey:<Key>[:ctrl|alt|shift]`, `scriptcaret:<offset>`, `scriptfold:<line>`, `scriptreport`; `ULDB_CAPTURE_DELAY=<ms>` delays the capture so steps can run after a window opened.
+
+Checked live (headless): zoom survives caret moves; folds at lines 4 and 9 report as 5 and 10 after a line is inserted above. **To try on the user's machine:** zoom, fold a block then type above it, save and reopen a map with folded scripts, jump to a compile error inside a folded block, error marker after adding lines above it.
+
+Ideas not done (user to choose): see the PR text.
+
+## Script editor improvements and v0.6.0-beta (branch `phase-3/script-editor-audit`, 17 Nov 2026, no screen)
+
+All seven ideas from the audit, at the user's request (details in `docs/ux-changes.md`):
+- Find bar: AvaloniaEdit's `SearchPanel`, installed by `ScintillaView`; the toolbar's quick search items are hidden in `ScriptEditorPanelView` (`Available = false`).
+- Hover help and completion descriptions: `ScintillaView.WordInfo`, answered from the control's `scriptconfig` (`GetFunctionDefinition`).
+- Error underline (`HighlightRenderer.DrawErrorUnderline`), single click / Enter in the error list.
+- Tabs: middle click closes; dragging reorders through the new compat `TabPageCollection.Move`.
+- Zoom and italic comments are `uldb.scriptzoom` / `uldb.scriptitaliccomments` (`UiOptions`, with `ScriptViewChanged` so every open editor follows). UDB has no per-style bold/italic setting; the font's bold and italic are honoured, and comments in italics became an option.
+- Lexing: `ScriptLexer.Restyle` styles from the changed line to the first later line start where the old styling was outside a block comment; `Scintilla` keeps the edits since the last styling as one range. Test `RestylingAfterEditsMatchesStylingEverything` (3000 rounds of random edits, both lexers).
+- A view sets `model.Host` when it is attached, and raises UpdateUI then (the status bar showed the previous tab's caret position).
+- Dev tools: `scripterror:<line>`; the capture tool closes the Errors window also when `ULDB_CAPTURE_TITLE` is set (it blocked the steps).
+
+**Version:** `Branding.VERSION` ("0.6.0-beta") and `Source/ULDB/Builder/Properties/Version.cs` (assembly 0.6.0.0; the project had no assembly version at all before). About shows it; the title bar has no revision number. `packaging/RELEASE_NOTES.md` is written for v0.6.0-beta, the metainfo file has the release, the workflow's release title no longer says "early preview". **For the next release change:** `Branding.VERSION`, `Version.cs`, `RELEASE_NOTES.md`, the metainfo `<release>`, the README banner.
+
+**To release (user):** merge the PR, tag `v0.6.0-beta` on `master`; the Flatpak workflow builds and creates the pre-release with the notes.
+
 ## Early preview release (20 Oct 2026)
 
 - `phase-3/shell` merged into `master` (PR #2); CI green on `master`.

@@ -29,6 +29,14 @@ namespace ULDB.Controls
 
 			Scintilla scintilla = binder.Field<Scintilla>("scriptedit");
 			ScintillaView view = new ScintillaView(scintilla) { CommandKey = keys => model.RaiseProcessCmdKey(keys) };
+			// A function's signature, from the script configuration in use (it changes with the script type)
+			view.WordInfo = word =>
+			{
+				CodeImp.DoomBuilder.Config.ScriptConfiguration config = binder.Field<CodeImp.DoomBuilder.Config.ScriptConfiguration>("scriptconfig");
+				if(config == null || string.IsNullOrEmpty(word) || word.StartsWith("$")) return null;
+				string definition = config.GetFunctionDefinition(config.GetKeywordCase(word));
+				return string.IsNullOrWhiteSpace(definition) ? null : definition.Replace("[EP]", "").Trim();
+			};
 			WF.ContextMenuStrip menu = binder.Field<WF.ContextMenuStrip>("contextmenu");
 			if(menu != null) view.ContextMenu = ToolStripViews.CreateContextMenu(menu);
 			host.Content = view;
