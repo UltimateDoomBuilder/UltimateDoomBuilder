@@ -139,5 +139,31 @@ namespace ULDB.Tests
 			s.Lines[1].FoldLine(FoldAction.Contract);
 			Assert.False(s.Lines[1].Expanded);
 		}
+
+		[Fact]
+		public void ErrorMarkersAndHighlightsFollowEdits()
+		{
+			Scintilla s = Make("a\nb\nword c\nd");
+			s.Lines[2].MarkerAdd(2);
+			s.IndicatorCurrent = 8;
+			s.IndicatorFillRange(4, 4); // "word"
+
+			s.InsertText(0, "new\nlines\n"); // two lines above
+			Assert.Contains(s.LineMarkers, m => m.Key == 4 && m.Value.Contains(2));
+			Assert.DoesNotContain(s.LineMarkers, m => m.Key == 2 && m.Value.Contains(2));
+			int[] range = System.Linq.Enumerable.Single(s.IndicatorRanges(8));
+			Assert.Equal("word", s.GetTextRange(range[0], range[1] - range[0]));
+
+			s.DeleteRange(0, 4); // one line gone
+			Assert.Contains(s.LineMarkers, m => m.Key == 3 && m.Value.Contains(2));
+			range = System.Linq.Enumerable.Single(s.IndicatorRanges(8));
+			Assert.Equal("word", s.GetTextRange(range[0], range[1] - range[0]));
+
+			// Text after the marks leaves them alone; deleting the highlighted text removes the highlight
+			s.InsertText(s.TextLength, "\nend");
+			Assert.Contains(s.LineMarkers, m => m.Key == 3 && m.Value.Contains(2));
+			s.DeleteRange(range[0], 4);
+			Assert.Empty(s.IndicatorRanges(8));
+		}
 	}
 }

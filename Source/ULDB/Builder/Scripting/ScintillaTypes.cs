@@ -114,8 +114,11 @@ namespace ScintillaNET
 
 	public class Margin
 	{
-		public MarginType Type { get; set; }
-		public int Width { get; set; }
+		private MarginType type;
+		private int width;
+		internal event System.Action Changed;
+		public MarginType Type { get { return type; } set { if(type != value) { type = value; Changed?.Invoke(); } } }
+		public int Width { get { return width; } set { if(width != value) { width = value; Changed?.Invoke(); } } }
 		public uint Mask { get; set; }
 		public MarginCursor Cursor { get; set; }
 		public bool Sensitive { get; set; }
@@ -124,7 +127,8 @@ namespace ScintillaNET
 	public class MarginCollection
 	{
 		private readonly Margin[] margins = new Margin[5];
-		public MarginCollection() { for(int i = 0; i < margins.Length; i++) margins[i] = new Margin(); }
+		internal event System.Action Changed;
+		public MarginCollection() { for(int i = 0; i < margins.Length; i++) { margins[i] = new Margin(); margins[i].Changed += () => Changed?.Invoke(); } }
 		public int Count { get { return margins.Length; } }
 		public Margin this[int index] { get { return margins[index]; } }
 	}

@@ -519,6 +519,27 @@ namespace ULDB.Shell
 						case "typeinscript": // typeinscript:<text>, inserts text at the start of the script editor's active script
 							General.Map.ScriptEditor.Editor.ActiveTab.Editor.Scintilla.InsertText(0, p[1] + "\r\n"); Console.WriteLine("[devstep] changed=" + General.Map.ScriptEditor.Editor.ActiveTab.IsChanged + " title=" + General.Map.ScriptEditor.Editor.ActiveTab.Text + " undo=" + General.Map.ScriptEditor.Editor.ActiveTab.Editor.Scintilla.CanUndo);
 							break;
+						case "scriptkey": // scriptkey:<Avalonia Key>[:ctrl|alt|shift], a key press in the script editor's text
+						{
+							var win = FormWindows.WindowFor(General.Map.ScriptEditor);
+							var area = System.Linq.Enumerable.FirstOrDefault(System.Linq.Enumerable.OfType<AvaloniaEdit.Editing.TextArea>(Avalonia.VisualTree.VisualExtensions.GetVisualDescendants(win)));
+							var mods = p.Length > 2 ? (p[2] == "ctrl" ? Avalonia.Input.KeyModifiers.Control : p[2] == "alt" ? Avalonia.Input.KeyModifiers.Alt : Avalonia.Input.KeyModifiers.Shift) : Avalonia.Input.KeyModifiers.None;
+							area.RaiseEvent(new Avalonia.Input.KeyEventArgs { RoutedEvent = Avalonia.Input.InputElement.KeyDownEvent, Key = Enum.Parse<Avalonia.Input.Key>(p[1]), KeyModifiers = mods });
+							break;
+						}
+						case "scriptcaret": // scriptcaret:<offset>, moves the caret; scriptfold:<line> folds; scriptreport prints the state
+							General.Map.ScriptEditor.Editor.ActiveTab.Editor.Scintilla.GotoPosition(int.Parse(p[1])); break;
+						case "scriptfold": General.Map.ScriptEditor.Editor.ActiveTab.Editor.Scintilla.Lines[int.Parse(p[1])].FoldLine(ScintillaNET.FoldAction.Contract); break;
+						case "scriptreport":
+						{
+							var sci = General.Map.ScriptEditor.Editor.ActiveTab.Editor.Scintilla;
+							var win = FormWindows.WindowFor(General.Map.ScriptEditor);
+							var ed = System.Linq.Enumerable.FirstOrDefault(System.Linq.Enumerable.OfType<AvaloniaEdit.TextEditor>(Avalonia.VisualTree.VisualExtensions.GetVisualDescendants(win)));
+							var foldedlines = new System.Collections.Generic.List<int>();
+							for(int i = 0; i < sci.Lines.Count; i++) if(!sci.Lines[i].Expanded) foldedlines.Add(i);
+							Console.WriteLine("[devstep] script: fontsize=" + ed?.FontSize + " lines=" + sci.Lines.Count + " caret=" + sci.CurrentPosition + " folded=[" + string.Join(",", foldedlines) + "]");
+							break;
+						}
 						case "toast": // toast:info|warning|error, shows a toast
 							General.ToastManager.ShowToast(p[1] == "error" ? CodeImp.DoomBuilder.ToastType.ERROR : p[1] == "warning" ? CodeImp.DoomBuilder.ToastType.WARNING : CodeImp.DoomBuilder.ToastType.INFO, "Information", "Example toast: a message that is long enough to wrap onto a second line in the card.", "short");
 							break;

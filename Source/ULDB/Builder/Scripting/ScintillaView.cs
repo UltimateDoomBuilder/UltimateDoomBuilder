@@ -126,7 +126,8 @@ namespace ULDB.Scripting
 		{
 			Style def = model.Styles[Style.Default];
 			if(!string.IsNullOrEmpty(def.Font)) editor.FontFamily = new FontFamily(ResolveFont(def.Font));
-			if(def.Size > 0) editor.FontSize = def.Size * 96.0 / 72.0;
+			if(def.Size > 0) basefontsize = def.Size * 96.0 / 72.0;
+			editor.FontSize = Math.Max(7, Math.Min(48, basefontsize + zoom));
 			editor.FontWeight = def.Bold ? FontWeight.Bold : FontWeight.Normal;
 			// UDB's default script colours are dark text on white. With the desktop in dark mode and those
 			// defaults still in place, the editor uses a dark scheme instead; colours the user changed stay.
@@ -234,9 +235,11 @@ namespace ULDB.Scripting
 
 			// Remember what's folded (by line of the fold's start), including the user's clicks
 			HashSet<int> wasfolded = new HashSet<int>(model.FoldedLines);
+			HashSet<int> known = new HashSet<int>();
 			foreach(FoldingSection section in folding.AllFoldings)
 			{
 				int line = model.Document.GetLineByOffset(section.StartOffset).LineNumber - 1;
+				known.Add(line);
 				if(section.IsFolded) wasfolded.Add(line); else wasfolded.Remove(line);
 			}
 
@@ -248,6 +251,12 @@ namespace ULDB.Scripting
 			}
 			foldings.Sort((a, b) => a.StartOffset.CompareTo(b.StartOffset));
 			folding.UpdateFoldings(foldings, -1);
+			// DefaultClosed only counts for new sections; a fold asked for on a line whose section moved is closed here
+			foreach(FoldingSection section in folding.AllFoldings)
+			{
+				int line = model.Document.GetLineByOffset(section.StartOffset).LineNumber - 1;
+				if(!section.IsFolded && wasfolded.Contains(line) && !known.Contains(line)) section.IsFolded = true;
+			}
 
 			model.FoldedLines.Clear();
 			foreach(int l in wasfolded) model.FoldedLines.Add(l);
@@ -331,7 +340,7 @@ namespace ULDB.Scripting
 
 			if(ctrl && !alt && !shift && (e.Key == Key.OemPlus || e.Key == Key.Add)) { Zoom(1); return true; }
 			if(ctrl && !alt && !shift && (e.Key == Key.OemMinus || e.Key == Key.Subtract)) { Zoom(-1); return true; }
-			if(ctrl && !alt && !shift && (e.Key == Key.D0 || e.Key == Key.NumPad0)) { editor.FontSize = baseFontSize; return true; }
+			if(ctrl && !alt && !shift && (e.Key == Key.D0 || e.Key == Key.NumPad0)) { zoom = 0; editor.FontSize = basefontsize; return true; }
 
 			if(model.ReadOnly) return false;
 
@@ -343,12 +352,15 @@ namespace ULDB.Scripting
 			return false;
 		}
 
-		private double baseFontSize = 14;
+		// The size from the settings and the user's zoom on top of it (kept apart: the settings' size is applied
+		// again whenever the appearance is)
+		private double basefontsize = 14;
+		private double zoom;
 
 		private void Zoom(int step)
 		{
-			if(baseFontSize == 14 && editor.FontSize > 0) baseFontSize = editor.FontSize;
-			editor.FontSize = Math.Max(7, Math.Min(40, editor.FontSize + step));
+			zoom = Math.Max(7 - basefontsize, Math.Min(48 - basefontsize, zoom + step));
+			editor.FontSize = basefontsize + zoom;
 		}
 
 		private void SelectedLines(out DocumentLine first, out DocumentLine last)
@@ -453,10 +465,10 @@ namespace ULDB.Scripting
 
 		private string DominantNewline()
 		{
-			string text = model.Document.Text;
-			int i = text.IndexOf('\n');
-			if(i < 0) return Environment.NewLine == "\r\n" ? "\r\n" : "\n";
-			return i > 0 && text[i - 1] == '\r' ? "\r\n" : "\n";
+			// The document's first line break (a script from Windows keeps its CR LF)
+			DocumentLine first = model.Document.GetLineByNumber(1);
+			if(first.DelimiterLength == 0) return "\n";
+			return first.DelimiterLength == 2 ? "\r\n" : model.Document.GetText(first.EndOffset, 1);
 		}
 
 		#endregion
@@ -533,11 +545,44 @@ namespace ULDB.Scripting
 			editor.ScrollTo(loc.Line, loc.Column);
 		}
 
+		// Braces, highlighted words and error lines are drawn on a layer behind the text: only that is drawn again
+		// (this runs on every caret move).
 		void IScintillaHost.Refresh()
 		{
-			editor.TextArea.TextView.Redraw();
+			editor.TextArea.TextView.InvalidateLayer(KnownLayer.Selection);
 			markermargin.InvalidateVisual();
-			// Appearance can change underneath (fonts and colours set after the first layout)
+		}
+
+		void IScintillaHost.Restyle()
+		{
+			editor.TextArea.TextView.Redraw();
+		}
+
+		private FoldingSection FoldAt(int line)
+		{
+			if(folding == null || line < 0 || line >= model.Document.LineCount) return null;
+			int offset = model.Document.GetLineByNumber(line + 1).EndOffset;
+			foreach(FoldingSection section in folding.GetFoldingsAt(offset)) return section;
+			return null;
+		}
+
+		bool? IScintillaHost.IsFolded(int line) { return FoldAt(line)?.IsFolded; }
+
+		bool IScintillaHost.SetFolded(int line, bool folded)
+		{
+			FoldingSection section = FoldAt(line);
+			if(section == null) { ScheduleFolds(); return false; } // closed when the sections are built
+			section.IsFolded = folded;
+			return true;
+		}
+
+		void IScintillaHost.Unfold(int firstline, int lastline)
+		{
+			if(folding == null || model.Document.LineCount == 0) return;
+			int from = model.Document.GetLineByNumber(Math.Max(1, Math.Min(firstline + 1, model.Document.LineCount))).Offset;
+			int to = model.Document.GetLineByNumber(Math.Max(1, Math.Min(lastline + 1, model.Document.LineCount))).EndOffset;
+			foreach(FoldingSection section in folding.AllFoldings)
+				if(section.IsFolded && section.StartOffset < to && section.EndOffset > from) section.IsFolded = false;
 		}
 
 		private int Clamp(int position) { return Math.Max(0, Math.Min(position, editor.Document.TextLength)); }
@@ -694,8 +739,10 @@ namespace ULDB.Scripting
 			SD.Color ic = ind.ForeColor.IsEmpty ? SD.Color.Orange : ind.ForeColor;
 			IBrush fill = new SolidColorBrush(Color.FromArgb((byte)Math.Max(40, ind.Alpha * 3), ic.R, ic.G, ic.B));
 			Pen outline = new Pen(new SolidColorBrush(Color.FromArgb(160, ic.R, ic.G, ic.B)), 1);
+			int visiblestart = textView.VisualLines.Count > 0 ? textView.VisualLines[0].FirstDocumentLine.Offset : 0;
+			int visibleend = textView.VisualLines.Count > 0 ? textView.VisualLines[textView.VisualLines.Count - 1].LastDocumentLine.EndOffset : 0;
 			foreach(int[] r in model.IndicatorRanges(8).ToList())
-				DrawRange(textView, drawingContext, r[0], r[1], fill, outline);
+				if(r[1] >= visiblestart && r[0] <= visibleend) DrawRange(textView, drawingContext, r[0], r[1], fill, outline);
 
 			// Braces
 			if(model.BraceHighlight1 != Scintilla.InvalidPosition)

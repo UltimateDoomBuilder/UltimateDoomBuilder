@@ -227,6 +227,19 @@ Follow-ups (same branch):
 - **Interface scale in portable mode:** the scale is read from the program folder's `UDBuilder.cfg` when `-portable` is given and the folder is writable (as `General` decides).
 - Dev steps: `reportmap` (map size), `reportclip` (clipboard formats); `action:` says when the action doesn't exist.
 
+## Script editor audit (branch `phase-3/script-editor-audit`, 17 Nov 2026, no screen)
+
+Read through `Scripting/Scintilla.cs` (the model), `ScintillaView.cs` (AvaloniaEdit view), the lexer, the panel and Find views, against what upstream's `ScriptEditorControl`/`ScriptDocumentTab` call. Fixed:
+- **Every caret move restyled the whole editor.** Upstream updates the brace highlight on each caret move; the model answered every mark change with the full appearance update (fonts, colours, a rebuild of all visible lines, folding check). One effect: **Ctrl+Plus/Minus zoom was undone by the next caret move.** Marks (braces, highlighted words, error lines) now only redraw their layer; styles and options (tabs, wrapping, read-only, margins, colours) notify by themselves; zoom is kept apart from the settings' font size.
+- **Folding state was not shared with upstream's code.** Folds made by clicking were not seen by `Line.Expanded` (upstream saves the folds with the script's settings and restores them, also around "remove trailing whitespace" on save), folds asked for by upstream were not applied to an editor already showing, and `ShowLines` (jump to an error or a search result inside a fold) did not open the fold. The view's fold sections are now the state; folds asked for before they exist are applied when they are built and follow edits until then.
+- **Error markers and word highlights stayed at their old line/offset** when text was added or removed above them; they follow edits now (as Scintilla's do). Test: `ErrorMarkersAndHighlightsFollowEdits`.
+- Word highlights are only drawn for the visible part; Enter no longer copies the whole document to find its line-break style.
+- Dev steps: `scriptkey:<Key>[:ctrl|alt|shift]`, `scriptcaret:<offset>`, `scriptfold:<line>`, `scriptreport`; `ULDB_CAPTURE_DELAY=<ms>` delays the capture so steps can run after a window opened.
+
+Checked live (headless): zoom survives caret moves; folds at lines 4 and 9 report as 5 and 10 after a line is inserted above. **To try on the user's machine:** zoom, fold a block then type above it, save and reopen a map with folded scripts, jump to a compile error inside a folded block, error marker after adding lines above it.
+
+Ideas not done (user to choose): see the PR text.
+
 ## Early preview release (20 Oct 2026)
 
 - `phase-3/shell` merged into `master` (PR #2); CI green on `master`.
