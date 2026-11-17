@@ -124,6 +124,7 @@ namespace ULDB.Shell
 
 		private Border busyoverlay;
 		private TextBlock busytext;
+		private string busymessage = "";
 
 		/// <summary>A dimmed "Loading…" cover shown while the UI thread is blocked (see ULDB.Platform.Busy).</summary>
 		private Control CreateBusyOverlay()
@@ -132,7 +133,9 @@ namespace ULDB.Shell
 			busyoverlay = new Border { Background = new SolidColorBrush(Color.FromArgb(110, 0, 0, 0)), IsVisible = false, Child = busytext };
 			ULDB.Platform.Busy.Show = message =>
 			{
+				busymessage = message;
 				busytext.Text = message;
+				busytext.TextAlignment = TextAlignment.Center;
 				busytext.Foreground = Brushes.White;
 				busyoverlay.IsVisible = true;
 				// Lay out and paint one frame now; the work that follows won't return to the loop.
@@ -140,6 +143,17 @@ namespace ULDB.Shell
 				Dispatcher.UIThread.RunJobs();
 			};
 			ULDB.Platform.Busy.Hide = () => busyoverlay.IsVisible = false;
+			// Progress: the load's log lines become the cover's second line (UI thread only; the
+			// background resource loader logs from its own thread).
+			System.Diagnostics.Stopwatch since = System.Diagnostics.Stopwatch.StartNew();
+			ULDB.Platform.Busy.Step = step =>
+			{
+				if(!busyoverlay.IsVisible || !Dispatcher.UIThread.CheckAccess() || since.ElapsedMilliseconds < 40) return;
+				since.Restart();
+				string line = step.Trim().TrimEnd('.');
+				busytext.Text = busymessage + "\n" + (line.Length > 80 ? line.Substring(0, 80) + "…" : line);
+				Dispatcher.UIThread.RunJobs(DispatcherPriority.Render);
+			};
 			return busyoverlay;
 		}
 
@@ -244,11 +258,15 @@ namespace ULDB.Shell
 			AddCard(Field<VertexInfoPanel>("vertexinfo"), new VertexInfoView(Field<VertexInfoPanel>("vertexinfo")));
 
 			// Nothing highlighted: the mode name, and the map statistics on the right.
-			TextBlock title = new TextBlock { FontSize = 30, FontWeight = FontWeight.SemiBold, Opacity = 0.3, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(10, 0) };
-			StatisticsView stats = new StatisticsView(statsmodel) { HorizontalAlignment = HorizontalAlignment.Right };
+			TextBlock title = new TextBlock { FontSize = 28, FontWeight = FontWeight.SemiBold, Opacity = 0.55, VerticalAlignment = VerticalAlignment.Center };
+			// A thin accent bar beside the mode name ties it to the selected mode button
+			Border titlebar = new Border { Width = 3, Height = 30, CornerRadius = new CornerRadius(2), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 10, 0) };
+			titlebar[!Border.BackgroundProperty] = titlebar.GetResourceObservable("UldbHotTextBrush").ToBinding();
+			StackPanel titlerow = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(12, 0), Children = { titlebar, title } };
+			StatisticsView stats = new StatisticsView(statsmodel) { HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center };
 			Grid moderow = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
 			Grid.SetColumn(stats, 1);
-			moderow.Children.Add(title);
+			moderow.Children.Add(titlerow);
 			moderow.Children.Add(stats);
 			cards.Children.Add(moderow);
 
@@ -285,7 +303,7 @@ namespace ULDB.Shell
 				cards.IsVisible = expanded;
 				bool showname = modename.Visible || console.Visible;
 				moderow.IsVisible = showname || statsmodel.Visible;
-				title.IsVisible = showname;
+				titlerow.IsVisible = showname;
 				title.Text = modename.Text;
 				stats.IsVisible = statsmodel.Visible;
 				collapsedtext.IsVisible = collapsed.Visible && !expanded;

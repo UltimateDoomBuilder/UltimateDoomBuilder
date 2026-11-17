@@ -46,3 +46,15 @@ A user-facing list of every intentional UI or behaviour difference between ULDB 
 | Script editor, 17 Nov 2026 | **Find bar in the editor** (Ctrl+F find, Ctrl+H replace, F3/Shift+F3, Escape closes; match case, whole word, regular expressions). Upstream's Find and Replace window stays in the toolbar and menu and moves from Ctrl+F to **Ctrl+Shift+F**. **The toolbar's quick-search box and its previous/next/match case/whole word buttons are hidden** (the find bar replaces them). Hover on a function name shows its signature, also in the completion list. Compile errors are underlined; one click or Enter on an error shows its line (was double click only). Tabs: middle click closes, dragging reorders. Zoom is shared by all scripts and remembered. New option *Comments in italics in the script editor* (Preferences → Interface → ULDB). | User request after the script editor audit |
 | Version shown, 17 Nov 2026 | The window title is "Ultimate Linux Doom Builder" without "R0"; Help → About shows the release ("0.6.0-beta") | User request |
 | *(More entries are added as UI work continues in Phase 3.)* | | |
+
+- **Map loading progress (#13):** the "Opening map..." cover now shows the current load step ("Loading data resources", ...) and repaints during the load, so the window no longer looks frozen. Timers are suspended while the cover is up (`Timer.Suspended`), because a redraw tick on a half-built map crashed. The load itself still runs on the UI thread: moving it off needs GL and WinForms-compat objects that are UI-thread bound.
+
+- **Open Map offers autosaves and backups:** two extra file types in the dialog ("Autosaves and backups", "All files"). The first is still Doom WAD files. **Check on the real machine** that the portal dialog lists `.autosave1`/`.backup1` files.
+
+- **Main window, info panel (first modernisation pass):** the map statistics (vertices, linedefs, sidedefs, sectors, things) are one row of count-over-label tiles, vertically centred, instead of a five-line list. Same numbers, same place.
+
+- **Main window, toolbar and mode strip separators:** group separators in every toolbar are more visible (new `UldbSeparatorBrush`, lighter than the panel lines in both themes) with more room around them, so the draw, edit, transform and plugin mode groups read as groups. Button order and tooltips (which already carry the shortcut) are unchanged.
+
+- **Main window, dockers tabs:** rounded tabs, a bold label and an accent bar on the outer edge for the selected tab.
+- **Main window, status bar:** the coordinate and zoom readouts have a fixed width, right-aligned with even-width digits, so the bar stops shifting as the mouse moves.
+- **Main window, info panel:** with nothing highlighted, the mode name is brighter (55% instead of 30%) with a thin accent bar beside it.

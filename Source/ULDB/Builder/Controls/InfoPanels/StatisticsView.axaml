@@ -1,22 +1,32 @@
 <!-- ULDB: the view of upstream's StatisticsControl (Controls/StatisticsControl.cs, model-ported).
-     Controls named like upstream's fields are bound to them by ModelBinder.BindByName. Order and
-     grouping follow upstream's designer; the look is ULDB's (cards, texture tiles). -->
+     Controls named like upstream's fields are bound to them by ModelBinder.BindByName. Order follows
+     upstream's designer; the look is ULDB's: one row of count-over-label tiles instead of a five-line list. -->
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:uldb="clr-namespace:ULDB.Controls"
              x:Class="CodeImp.DoomBuilder.Controls.StatisticsView">
-  <Border Classes="uldb-card" Margin="0">
-    <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="16,16,16,16,16" VerticalAlignment="Center">
-      <TextBlock x:Name="verticescount" Grid.Row="0" HorizontalAlignment="Right" Margin="0,0,6,0" FontWeight="SemiBold"/>
-      <TextBlock x:Name="verticeslabel" Grid.Row="0" Grid.Column="1" Opacity="0.6"/>
-      <TextBlock x:Name="linedefscount" Grid.Row="1" HorizontalAlignment="Right" Margin="0,0,6,0" FontWeight="SemiBold"/>
-      <TextBlock x:Name="linedefslabel" Grid.Row="1" Grid.Column="1" Opacity="0.6"/>
-      <TextBlock x:Name="sidedefscount" Grid.Row="2" HorizontalAlignment="Right" Margin="0,0,6,0" FontWeight="SemiBold"/>
-      <TextBlock x:Name="sidedefslabel" Grid.Row="2" Grid.Column="1" Opacity="0.6"/>
-      <TextBlock x:Name="sectorscount" Grid.Row="3" HorizontalAlignment="Right" Margin="0,0,6,0" FontWeight="SemiBold"/>
-      <TextBlock x:Name="sectorslabel" Grid.Row="3" Grid.Column="1" Opacity="0.6"/>
-      <TextBlock x:Name="thingscount" Grid.Row="4" HorizontalAlignment="Right" Margin="0,0,6,0" FontWeight="SemiBold"/>
-      <TextBlock x:Name="thingslabel" Grid.Row="4" Grid.Column="1" Opacity="0.6"/>
+  <Border Classes="uldb-card" Margin="0" Padding="8,6">
+    <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto" VerticalAlignment="Center">
+      <StackPanel Grid.Column="0" MinWidth="76" Margin="0,0,4,0" VerticalAlignment="Center">
+        <TextBlock x:Name="verticescount" HorizontalAlignment="Center" FontSize="18" LineHeight="24" FontWeight="SemiBold"/>
+        <TextBlock x:Name="verticeslabel" HorizontalAlignment="Center" FontSize="11" LineHeight="14" Opacity="0.6"/>
+      </StackPanel>
+      <StackPanel Grid.Column="1" MinWidth="76" Margin="0,0,4,0" VerticalAlignment="Center">
+        <TextBlock x:Name="linedefscount" HorizontalAlignment="Center" FontSize="18" LineHeight="24" FontWeight="SemiBold"/>
+        <TextBlock x:Name="linedefslabel" HorizontalAlignment="Center" FontSize="11" LineHeight="14" Opacity="0.6"/>
+      </StackPanel>
+      <StackPanel Grid.Column="2" MinWidth="76" Margin="0,0,4,0" VerticalAlignment="Center">
+        <TextBlock x:Name="sidedefscount" HorizontalAlignment="Center" FontSize="18" LineHeight="24" FontWeight="SemiBold"/>
+        <TextBlock x:Name="sidedefslabel" HorizontalAlignment="Center" FontSize="11" LineHeight="14" Opacity="0.6"/>
+      </StackPanel>
+      <StackPanel Grid.Column="3" MinWidth="76" Margin="0,0,4,0" VerticalAlignment="Center">
+        <TextBlock x:Name="sectorscount" HorizontalAlignment="Center" FontSize="18" LineHeight="24" FontWeight="SemiBold"/>
+        <TextBlock x:Name="sectorslabel" HorizontalAlignment="Center" FontSize="11" LineHeight="14" Opacity="0.6"/>
+      </StackPanel>
+      <StackPanel Grid.Column="4" MinWidth="76" Margin="0,0,0,0" VerticalAlignment="Center">
+        <TextBlock x:Name="thingscount" HorizontalAlignment="Center" FontSize="18" LineHeight="24" FontWeight="SemiBold"/>
+        <TextBlock x:Name="thingslabel" HorizontalAlignment="Center" FontSize="11" LineHeight="14" Opacity="0.6"/>
+      </StackPanel>
     </Grid>
   </Border>
 </UserControl>

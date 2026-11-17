@@ -59,3 +59,5 @@ Genuine upstream bugs found while porting. They aren't Linux-specific, so they'r
 ## Native stand-ins (not edits)
 
 - `Source/ULDB/Native/User32Stubs.c` → `libuser32.so`: no-op `SendMessage`, `PostMessage`, `LockWindowUpdate`, `GetWindowLong`, `SetWindowLong`, `MessageBeep` for upstream's direct `user32.dll` P/Invokes (e.g. `ArgumentsControl.BeginUpdate`), which Mono used to emulate. Upstream files are unchanged.
+| `Source/Core/General/General.cs` | `WriteLogLine` | `#if ULDB`: passes each log line to `ULDB.Platform.Busy.Update`, which shows the current load step on the "Opening map..." cover |
+| `Source/Core/General/General.cs` | `OpenMapFile` (dialog filter) | `#if ULDB`: the Open Map dialog also offers "Autosaves and backups" (`*.autosave*`, `*.backup*`) and "All files" |

@@ -290,7 +290,8 @@ namespace ULDB.Shell
 					{
 						Width = orientation == Orientation.Horizontal ? 1 : double.NaN,
 						Height = orientation == Orientation.Vertical ? 1 : double.NaN,
-						Margin = orientation == Orientation.Horizontal ? new Thickness(4, 4) : new Thickness(4, 4),
+						// Wider gaps and inset ends, so groups of buttons read as groups
+						Margin = orientation == Orientation.Horizontal ? new Thickness(5, 6) : new Thickness(6, 2),
 					};
 					sep.Classes.Add("uldb-separator");
 					Follow(item, () => sep.IsVisible = item.Available);
@@ -394,6 +395,14 @@ namespace ULDB.Shell
 					p.Classes.Add("uldb-label");
 					ContentControl img = new ContentControl { Width = ICON_SIZE, Height = ICON_SIZE };
 					TextBlock tb = new TextBlock { VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis };
+					// Numbers that change while the mouse moves (coordinates, zoom) keep a fixed width and
+					// even digit widths, so the status bar doesn't jitter
+					if(item.Name == "xposlabel" || item.Name == "yposlabel" || item.Name == "zoomlabel")
+					{
+						tb.MinWidth = item.Name == "zoomlabel" ? 34 : 46;
+						tb.TextAlignment = TextAlignment.Right;
+						tb.FontFeatures = FontFeatureCollection.Parse("tnum");
+					}
 					p.Children.Add(img);
 					p.Children.Add(tb);
 					p.PointerPressed += (s, e) => item.PerformClick();
