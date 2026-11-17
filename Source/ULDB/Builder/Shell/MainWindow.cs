@@ -562,6 +562,14 @@ namespace ULDB.Shell
 							exdlg.Setup();
 							exdlg.ShowDialog(form);
 							break;
+						case "testmenu": // testmenu[:<text of an item to click>], lists the Test button's drop-down (and clicks one)
+						{
+							WF.ToolStripDropDownItem test = Field<WF.ToolStripDropDownItem>("buttontest");
+							foreach(WF.ToolStripItem it in test.DropDownItems)
+								Console.WriteLine("testmenu: " + (it is WF.ToolStripSeparator ? "---" : it.Text + (it is WF.ToolStripMenuItem mi && mi.Checked ? " [x]" : "") + (it.Enabled ? "" : " (header)")));
+							if(p.Length > 1) foreach(WF.ToolStripItem it in test.DropDownItems) if(it.Text == p[1]) { it.PerformClick(); break; }
+							break;
+						}
 						case "click": Field<WF.ToolStripItem>(p[1]).PerformClick(); break;
 						case "wait": await System.Threading.Tasks.Task.Delay(int.Parse(p[1])); break; // wait:<ms>
 						case "tree": // tree:<row>[:expander|text][:dbl] clicks a row of the first visible tree; tree:report prints its state

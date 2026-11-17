@@ -193,7 +193,7 @@ namespace ULDB.Platform
 
 		#region ================== Finding installed engines
 
-		/// <summary>GZDoom and UZDoom installs: programs on the PATH and Flatpak applications. Slow (starts programs): call from a background thread.</summary>
+		/// <summary>GZDoom and UZDoom installs: programs on the PATH, AppImages in the usual folders and Flatpak applications. Slow (starts programs): call from a background thread.</summary>
 		public static List<EngineInstall> Detect()
 		{
 			List<EngineInstall> found = new List<EngineInstall>();
@@ -201,7 +201,9 @@ namespace ULDB.Platform
 			string output;
 			if(inflatpak)
 			{
-				output = Capture("flatpak-spawn", new[] { "--host", "sh", "-c", "for c in " + string.Join(" ", ENGINE_COMMANDS) + "; do command -v \"$c\"; done; flatpak list --app --columns=application 2>/dev/null" });
+				output = Capture("flatpak-spawn", new[] { "--host", "sh", "-c", "for c in " + string.Join(" ", ENGINE_COMMANDS) + "; do command -v \"$c\"; done; "
+					+ "find " + string.Join(" ", APPIMAGE_FOLDERS.Select(f => "\"" + f + "\"")) + " -maxdepth 1 -type f -executable -iname '*zdoom*.appimage' 2>/dev/null; "
+					+ "flatpak list --app --columns=application 2>/dev/null" });
 			}
 			else
 			{
@@ -212,11 +214,37 @@ namespace ULDB.Platform
 						string candidate = System.IO.Path.Combine(dir, command);
 						if(File.Exists(candidate)) { lines.AppendLine(candidate); break; }
 					}
+				foreach(string line in FindAppImages()) lines.AppendLine(line);
 				lines.Append(Capture("flatpak", new[] { "list", "--app", "--columns=application" }));
 				output = lines.ToString();
 			}
 			ParseDetected(output, inflatpak, found);
 			return found;
+		}
+
+		// Where people keep an engine AppImage (UZDoom's releases come as one); the same list as a shell would expand, with $HOME.
+		private static readonly string[] APPIMAGE_FOLDERS = { "$HOME", "$HOME/Downloads", "$HOME/Applications", "$HOME/AppImages", "$HOME/Games", "$HOME/.local/bin", "$HOME/.local/share/AppImages", "/opt" };
+
+		/// <summary>Executable GZDoom/UZDoom AppImages in those folders (top level only).</summary>
+		public static List<string> FindAppImages()
+		{
+			string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+			List<string> result = new List<string>();
+			foreach(string folder in APPIMAGE_FOLDERS)
+			{
+				string dir = folder.Replace("$HOME", home);
+				try
+				{
+					if(!Directory.Exists(dir)) continue;
+					foreach(string file in Directory.EnumerateFiles(dir))
+					{
+						string name = System.IO.Path.GetFileName(file).ToLowerInvariant();
+						if(name.Contains("zdoom") && name.EndsWith(".appimage") && (File.GetUnixFileMode(file) & UnixFileMode.UserExecute) != 0) result.Add(file);
+					}
+				}
+				catch(Exception) { } // unreadable folder
+			}
+			return result;
 		}
 
 		/// <summary>Turns the lines Detect collects (paths, then Flatpak application ids) into installs.</summary>

@@ -59,3 +59,4 @@ Genuine upstream bugs found while porting. They aren't Linux-specific, so they'r
 ## Native stand-ins (not edits)
 
 - `Source/ULDB/Native/User32Stubs.c` → `libuser32.so`: no-op `SendMessage`, `PostMessage`, `LockWindowUpdate`, `GetWindowLong`, `SetWindowLong`, `MessageBeep` for upstream's direct `user32.dll` P/Invokes (e.g. `ArgumentsControl.BeginUpdate`), which Mono used to emulate. Upstream files are unchanged.
+| `Source/Core/Windows/MainForm.cs` | `UpdateSkills` | `#if ULDB`: a clearer Test menu (see `ux-changes.md`); the original builds the doubled skill list and the extra-parameters text box |

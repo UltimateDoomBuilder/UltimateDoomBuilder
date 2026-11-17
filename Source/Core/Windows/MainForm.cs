@@ -1584,6 +1584,81 @@ namespace CodeImp.DoomBuilder.Windows
 			}
 			buttontest.DropDownItems.Clear();
 
+#if ULDB
+			// ULDB: the Test menu, made clearer. Skill levels with a tick on the current one, one "Spawn monsters" switch
+			// (upstream listed all skills twice, with and without monsters), the test engines when there are several,
+			// a way to the engine settings, and the extra command-line parameters (upstream's text box in the menu).
+			if(General.Map != null)
+			{
+				List<ToolStripItem> items = new List<ToolStripItem>();
+				Action<int> launchskill = skill =>
+				{
+					General.Map.ConfigSettings.TestSkill = skill;
+					if(General.Settings.AutoLaunchOnTest) General.Map.Launcher.TestAtSkill(skill);
+					UpdateSkills();
+				};
+
+				items.Add(new ToolStripMenuItem("Skill level") { Enabled = false });
+				foreach(SkillInfo si in General.Map.Config.Skills)
+				{
+					SkillInfo skill = si;
+					ToolStripMenuItem menuitem = new ToolStripMenuItem(si.ToString());
+					menuitem.Checked = (General.Map.ConfigSettings.TestSkill == si.Index);
+					menuitem.Click += (sender, e) => launchskill(skill.Index);
+					items.Add(menuitem);
+				}
+
+				items.Add(new ToolStripSeparator { Padding = new Padding(0, 3, 0, 3) });
+				ToolStripMenuItem monsters = new ToolStripMenuItem("Spawn monsters");
+				monsters.Checked = General.Settings.TestMonsters;
+				monsters.ToolTipText = "Off starts the engine with -nomonsters, to walk around the map in peace.";
+				monsters.Click += (sender, e) =>
+				{
+					General.Settings.TestMonsters = !General.Settings.TestMonsters;
+					if(General.Settings.AutoLaunchOnTest) General.Map.Launcher.TestAtSkill(General.Map.ConfigSettings.TestSkill);
+					UpdateSkills();
+				};
+				items.Add(monsters);
+
+				// Test engines (the ones set up in Game Configurations → Testing); a single engine needs no list
+				List<int> engines = new List<int>();
+				for(int i = 0; i < General.Map.ConfigSettings.TestEngines.Count; i++)
+					if(General.Map.ConfigSettings.TestEngines[i].TestProgramName != EngineInfo.DEFAULT_ENGINE_NAME) engines.Add(i);
+				if(engines.Count > 1)
+				{
+					items.Add(new ToolStripSeparator { Padding = new Padding(0, 3, 0, 3) });
+					items.Add(new ToolStripMenuItem("Test with engine") { Enabled = false });
+					foreach(int i in engines)
+					{
+						ToolStripMenuItem menuitem = new ToolStripMenuItem(General.Map.ConfigSettings.TestEngines[i].TestProgramName);
+						menuitem.Image = General.Map.ConfigSettings.TestEngines[i].TestProgramIcon;
+						menuitem.Click += TestEngine_Click;
+						menuitem.Tag = i;
+						menuitem.Checked = (i == General.Map.ConfigSettings.CurrentEngineIndex);
+						items.Add(menuitem);
+					}
+				}
+
+				items.Add(new ToolStripSeparator { Padding = new Padding(0, 3, 0, 3) });
+				string extra = General.Map.ConfigSettings.TestAdditionalParameters;
+				ToolStripMenuItem extraitem = new ToolStripMenuItem(string.IsNullOrWhiteSpace(extra) ? "Extra parameters..." : "Extra parameters: " + extra.Trim() + "...");
+				extraitem.ToolTipText = "Command-line switches added to the engine's command line for this map's game configuration, for example +god or +sv_cheats 1.";
+				extraitem.Click += (sender, e) =>
+				{
+					string value = ULDB.Shell.TextPromptWindow.Ask("Extra parameters", "Command-line switches added when testing this map (for example \"+god\" or \"+sv_cheats 1\"):", "No extra parameters", General.Map.ConfigSettings.TestAdditionalParameters);
+					if(value == null) return;
+					General.Map.ConfigSettings.TestAdditionalParameters = value.Trim();
+					General.Map.ConfigSettings.Changed = true;
+					UpdateSkills();
+				};
+				items.Add(extraitem);
+				ToolStripMenuItem enginesettings = new ToolStripMenuItem("Test engine settings...");
+				enginesettings.Click += (sender, e) => ShowConfigurationPage(2);
+				items.Add(enginesettings);
+
+				buttontest.DropDownItems.AddRange(items.ToArray());
+			}
+#else
 			// Map loaded?
 			if (General.Map != null)
 			{
@@ -1661,6 +1736,7 @@ namespace CodeImp.DoomBuilder.Windows
 				// Add to list
 				buttontest.DropDownItems.AddRange(items.ToArray());
 			}
+#endif
 		}
 
 		//mxd
