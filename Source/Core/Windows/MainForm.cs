@@ -434,8 +434,8 @@ namespace CodeImp.DoomBuilder.Windows
 		private void UpdateTitle()
 		{
 #if ULDB
-			// ULDB: no bitness in the title (there is one build, 64-bit).
-			string programname = this.Text = Application.ProductName + " R" + General.ThisAssembly.GetName().Version.Revision;
+			// ULDB: no bitness in the title (there is one build, 64-bit) and no revision number (the version is in Help → About).
+			string programname = this.Text = Application.ProductName;
 #else
 			string programname = this.Text = Application.ProductName + " R" + General.ThisAssembly.GetName().Version.Revision;
             if (Environment.Is64BitProcess)

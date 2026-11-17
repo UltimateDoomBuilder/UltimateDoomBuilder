@@ -240,6 +240,22 @@ Checked live (headless): zoom survives caret moves; folds at lines 4 and 9 repor
 
 Ideas not done (user to choose): see the PR text.
 
+## Script editor improvements and v0.6.0-beta (branch `phase-3/script-editor-audit`, 17 Nov 2026, no screen)
+
+All seven ideas from the audit, at the user's request (details in `docs/ux-changes.md`):
+- Find bar: AvaloniaEdit's `SearchPanel`, installed by `ScintillaView`; the toolbar's quick search items are hidden in `ScriptEditorPanelView` (`Available = false`).
+- Hover help and completion descriptions: `ScintillaView.WordInfo`, answered from the control's `scriptconfig` (`GetFunctionDefinition`).
+- Error underline (`HighlightRenderer.DrawErrorUnderline`), single click / Enter in the error list.
+- Tabs: middle click closes; dragging reorders through the new compat `TabPageCollection.Move`.
+- Zoom and italic comments are `uldb.scriptzoom` / `uldb.scriptitaliccomments` (`UiOptions`, with `ScriptViewChanged` so every open editor follows). UDB has no per-style bold/italic setting; the font's bold and italic are honoured, and comments in italics became an option.
+- Lexing: `ScriptLexer.Restyle` styles from the changed line to the first later line start where the old styling was outside a block comment; `Scintilla` keeps the edits since the last styling as one range. Test `RestylingAfterEditsMatchesStylingEverything` (3000 rounds of random edits, both lexers).
+- A view sets `model.Host` when it is attached, and raises UpdateUI then (the status bar showed the previous tab's caret position).
+- Dev tools: `scripterror:<line>`; the capture tool closes the Errors window also when `ULDB_CAPTURE_TITLE` is set (it blocked the steps).
+
+**Version:** `Branding.VERSION` ("0.6.0-beta") and `Source/ULDB/Builder/Properties/Version.cs` (assembly 0.6.0.0; the project had no assembly version at all before). About shows it; the title bar has no revision number. `packaging/RELEASE_NOTES.md` is written for v0.6.0-beta, the metainfo file has the release, the workflow's release title no longer says "early preview". **For the next release change:** `Branding.VERSION`, `Version.cs`, `RELEASE_NOTES.md`, the metainfo `<release>`, the README banner.
+
+**To release (user):** merge the PR, tag `v0.6.0-beta` on `master`; the Flatpak workflow builds and creates the pre-release with the notes.
+
 ## Early preview release (20 Oct 2026)
 
 - `phase-3/shell` merged into `master` (PR #2); CI green on `master`.

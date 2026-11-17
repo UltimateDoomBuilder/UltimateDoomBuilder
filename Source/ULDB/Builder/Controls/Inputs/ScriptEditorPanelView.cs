@@ -33,6 +33,14 @@ namespace ULDB.Controls
 			ModelBinder binder = new ModelBinder(model);
 			tabsmodel = binder.Field<VSTabControl>("tabs");
 
+			// The toolbar's quick search (box, previous/next, match case, whole word) is hidden: the find bar inside the
+			// editor (Ctrl+F) does the same with the same options, next to the text. Find and Replace stays in the toolbar.
+			foreach(string name in new[] { "searchbox", "searchprev", "searchnext", "searchmatchcase", "searchwholeword", "toolStripSeparator5" })
+			{
+				WF.ToolStripItem item = binder.Field<WF.ToolStripItem>(name);
+				if(item != null) item.Available = false;
+			}
+
 			Menu menu = ToolStripViews.CreateMenuBar(binder.Field<WF.MenuStrip>("menustrip"));
 			Control toolbar = ToolStripViews.CreateToolBar(binder.Field<WF.ToolStrip>("toolbar"), Orientation.Horizontal);
 			Control status = ToolStripViews.CreateToolBar(binder.Field<WF.StatusStrip>("statusbar"), Orientation.Horizontal);
@@ -59,7 +67,16 @@ namespace ULDB.Controls
 			}, true);
 			WF.ListView errorlist = binder.Field<WF.ListView>("errorlist");
 			binder.Items(errors, errorlist);
-			errors.DoubleTapped += (s, e) => GoToError(errors.SelectedItem as ModelBinder.ListItem);
+			// A click on an error (or Enter) shows its line; the list keeps the focus so the arrow keys walk the errors
+			errors.AddHandler(Avalonia.Input.InputElement.PointerReleasedEvent, (s, e) =>
+			{
+				if(e.InitialPressMouseButton == Avalonia.Input.MouseButton.Left) GoToError(errors.SelectedItem as ModelBinder.ListItem, false);
+			}, Avalonia.Interactivity.RoutingStrategies.Bubble, true);
+			errors.KeyDown += (s, e) =>
+			{
+				if(e.Key == Avalonia.Input.Key.Enter) { GoToError(errors.SelectedItem as ModelBinder.ListItem, true); e.Handled = true; }
+			};
+			errors.DoubleTapped += (s, e) => GoToError(errors.SelectedItem as ModelBinder.ListItem, true);
 			Border errorsborder = new Border { Child = errors, BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(3), ClipToBounds = true, Height = 170 };
 			errorsborder.Classes.Add("uldb-grid");
 			Grid errorspanel = new Grid { RowDefinitions = new RowDefinitions("Auto,*") };
@@ -90,6 +107,7 @@ namespace ULDB.Controls
 			tabsmodel.TabPagesChanged += (s, e) => Dispatcher.UIThread.Post(RebuildTabs);
 			tabsmodel.SelectedIndexChanged += (s, e) => SyncSelection();
 			tabs.SelectionChanged += OnViewSelectionChanged;
+			InstallTabDragging();
 			RebuildTabs();
 
 			// The close button: upstream's handler (not wired by its designer: the control drew the buttons itself)
@@ -154,7 +172,66 @@ namespace ULDB.Controls
 				close.Click += (s, e) => tabsmodel.RaiseCloseTabClicked(page);
 				header.Children.Add(close);
 			}
+			// Middle click closes the tab
+			header.Background = Brushes.Transparent; // so clicks beside the text count
+			header.PointerPressed += (s, e) =>
+			{
+				if(e.GetCurrentPoint(header).Properties.IsMiddleButtonPressed && tabsmodel.ShowClosingButton && closable)
+				{
+					e.Handled = true;
+					tabsmodel.RaiseCloseTabClicked(page);
+				}
+			};
 			item.Header = header;
+		}
+
+		// Dragging a tab sideways moves it past its neighbours
+		private WF.TabPage dragged;
+		private Point dragstart;
+		private bool dragging;
+
+		private void InstallTabDragging()
+		{
+			tabs.AddHandler(Avalonia.Input.InputElement.PointerPressedEvent, (s, e) =>
+			{
+				dragged = null; dragging = false;
+				if(!e.GetCurrentPoint(tabs).Properties.IsLeftButtonPressed) return;
+				TabItem item = ItemAt(e.GetPosition(tabs));
+				if(item?.Tag is WF.TabPage page) { dragged = page; dragstart = e.GetPosition(tabs); }
+			}, Avalonia.Interactivity.RoutingStrategies.Tunnel, true);
+			tabs.AddHandler(Avalonia.Input.InputElement.PointerReleasedEvent, (s, e) => { dragged = null; dragging = false; }, Avalonia.Interactivity.RoutingStrategies.Tunnel, true);
+			tabs.AddHandler(Avalonia.Input.InputElement.PointerMovedEvent, (s, e) =>
+			{
+				if(dragged == null || !e.GetCurrentPoint(tabs).Properties.IsLeftButtonPressed) { dragged = null; return; }
+				Point at = e.GetPosition(tabs);
+				if(!dragging && Math.Abs(at.X - dragstart.X) < 10) return;
+				dragging = true;
+				TabItem over = ItemAt(at);
+				if(!(over?.Tag is WF.TabPage target) || target == dragged) return;
+				int from = tabsmodel.TabPages.IndexOf(dragged), to = tabsmodel.TabPages.IndexOf(target);
+				if(from < 0 || to < 0) return;
+				// Only once the pointer is past the neighbour's middle, so tabs of different widths don't swap back and forth
+				Point? origin = over.TranslatePoint(new Point(0, 0), tabs);
+				if(origin == null) return;
+				double middle = origin.Value.X + over.Bounds.Width / 2;
+				if((to > from && at.X > middle) || (to < from && at.X < middle))
+				{
+					tabsmodel.TabPages.Move(from, to);
+					RebuildTabs();
+				}
+			}, Avalonia.Interactivity.RoutingStrategies.Tunnel, true);
+		}
+
+		// The tab (header) under a point of the tab control
+		private TabItem ItemAt(Point point)
+		{
+			foreach(TabItem item in items.Values)
+			{
+				if(!item.IsVisible || Avalonia.VisualTree.VisualExtensions.GetVisualParent(item) == null) continue;
+				Point? origin = item.TranslatePoint(new Point(0, 0), tabs);
+				if(origin != null && new Rect(origin.Value, item.Bounds.Size).Contains(point)) return item;
+			}
+			return null;
 		}
 
 		private void EnsureContent(TabItem item)
@@ -206,7 +283,7 @@ namespace ULDB.Controls
 
 		#region ================== Errors
 
-		private void GoToError(ModelBinder.ListItem item)
+		private void GoToError(ModelBinder.ListItem item, bool focuseditor)
 		{
 			if(!(item?.Tag is CompilerError error)) return;
 			foreach(WF.TabPage page in tabsmodel.TabPages)
@@ -215,6 +292,7 @@ namespace ULDB.Controls
 				{
 					tabsmodel.SelectedTab = tab;
 					if(error.linenumber != CompilerError.NO_LINE_NUMBER) tab.MoveToLine(error.linenumber);
+					if(focuseditor && tabs.SelectedItem is TabItem sel && sel.Content is Control c) Dispatcher.UIThread.Post(() => FocusEditor(c), DispatcherPriority.Input);
 					return;
 				}
 			}

@@ -449,6 +449,18 @@ namespace System.Windows.Forms
 			public new void RemoveAt(int index) => Remove(this[index]);
 			public new void Insert(int index, TabPage page) { page.Parent = owner; base.Insert(index, page); owner.OnTabPagesChanged(); }
 			public new void Clear() { base.Clear(); owner.selectedindex = -1; owner.OnTabPagesChanged(); }
+
+			/// <summary>ULDB: moves a page to another place (the user dragged its tab); the selected page stays selected.</summary>
+			public void Move(int from, int to)
+			{
+				if(from < 0 || from >= Count || to < 0 || to >= Count || from == to) return;
+				TabPage selected = owner.selectedindex >= 0 && owner.selectedindex < Count ? this[owner.selectedindex] : null;
+				TabPage page = this[from];
+				base.RemoveAt(from);
+				base.Insert(to, page);
+				if(selected != null) owner.selectedindex = IndexOf(selected);
+				owner.OnTabPagesChanged();
+			}
 		}
 	}
 

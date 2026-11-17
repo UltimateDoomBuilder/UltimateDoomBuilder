@@ -27,14 +27,14 @@ namespace ULDB.Shell
 			// ULDB_CAPTURE_DELAY=<ms> waits longer (for steps that go on after a window opened)
 			if(int.TryParse(Environment.GetEnvironmentVariable("ULDB_CAPTURE_DELAY"), out int extra) && extra > 0) delay = TimeSpan.FromMilliseconds(extra);
 			if(!Enabled) return;
-			// ULDB_CAPTURE_TITLE=<text>: only the window whose title contains it (modeless windows open later than the main one)
-			string only = Environment.GetEnvironmentVariable("ULDB_CAPTURE_TITLE");
-			if(!string.IsNullOrEmpty(only) && !(window.Title ?? "").Contains(only)) return;
 			if(form is CodeImp.DoomBuilder.Windows.ErrorsForm)
 			{
 				Dispatcher.UIThread.Post(() => form.Close(), DispatcherPriority.Background);
 				return;
 			}
+			// ULDB_CAPTURE_TITLE=<text>: only the window whose title contains it (modeless windows open later than the main one)
+			string only = Environment.GetEnvironmentVariable("ULDB_CAPTURE_TITLE");
+			if(!string.IsNullOrEmpty(only) && !(window.Title ?? "").Contains(only)) return;
 			DispatcherTimer.RunOnce(() =>
 			{
 				if(done) return;

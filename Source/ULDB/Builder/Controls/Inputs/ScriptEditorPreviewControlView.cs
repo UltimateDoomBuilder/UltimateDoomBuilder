@@ -14,7 +14,7 @@ namespace ULDB.Controls
 		public ScriptEditorPreviewControlView(ScriptEditorPreviewControl model)
 		{
 			ModelBinder binder = new ModelBinder(model);
-			Content = new ScintillaView(binder.Field<Scintilla>("scriptedit"));
+			Content = new ScintillaView(binder.Field<Scintilla>("scriptedit")) { UseSharedZoom = false };
 		}
 	}
 }

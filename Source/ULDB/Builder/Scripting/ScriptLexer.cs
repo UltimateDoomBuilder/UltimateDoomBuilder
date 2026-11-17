@@ -26,10 +26,58 @@ namespace ULDB.Scripting
 		{
 			byte[] styles = new byte[text.Length];
 			if(lexer == Lexer.Null || lexer == Lexer.Container || text.Length == 0) return styles;
+			StyleRange(text, styles, 0, null, lexer, keywords, casesensitive, extrawordchars);
+			return styles;
+		}
 
+		/// <summary>
+		/// Styles the text after an edit, reusing the styles from before it. Only a block comment carries over a line
+		/// break, so styling starts at the changed line (or at the comment it is in) and stops at the first line start
+		/// after the change where the old styling was outside a comment too: from there on nothing can differ.
+		/// </summary>
+		/// <param name="old">The styles of the text before the edit.</param>
+		/// <param name="start">Where the changed text begins.</param>
+		/// <param name="newend">Where the changed text ends, in the new text.</param>
+		/// <param name="delta">New length minus old length.</param>
+		public static byte[] Restyle(string text, byte[] old, int start, int newend, int delta, Lexer lexer, IReadOnlyDictionary<int, HashSet<string>> keywords, bool casesensitive, string extrawordchars)
+		{
+			if(lexer == Lexer.Null || lexer == Lexer.Container || text.Length == 0) return new byte[text.Length];
+			if(old == null || old.Length + delta != text.Length || start < 0 || start > text.Length || newend < start)
+				return Style(text, lexer, keywords, casesensitive, extrawordchars);
+
+			// Back to the start of the line, and out of a block comment that began before it
+			int from = Math.Min(start, old.Length);
+			while(true)
+			{
+				while(from > 0 && text[from - 1] != '\n' && text[from - 1] != '\r') from--;
+				if(from == 0 || old[from - 1] != BlockComment) break; // a line start outside a comment
+				while(from > 0 && old[from - 1] == BlockComment) from--;
+			}
+
+			byte[] styles = new byte[text.Length];
+			Array.Copy(old, 0, styles, 0, from);
+			int stopped = StyleRange(text, styles, from, linestart =>
+			{
+				// The line break before it has to be text from before the edit
+				if(linestart - 1 < newend || linestart >= text.Length) return false;
+				int oldbreak = linestart - delta - 1; // the line break before it, as it was styled
+				return oldbreak >= 0 && oldbreak < old.Length && old[oldbreak] != BlockComment;
+			}, lexer, keywords, casesensitive, extrawordchars);
+			if(stopped < text.Length) Array.Copy(old, stopped - delta, styles, stopped, text.Length - stopped);
+			LastRestyledLength = stopped - from;
+			return styles;
+		}
+
+		/// <summary>How many characters the last Restyle went over (for tests).</summary>
+		internal static int LastRestyledLength;
+
+		// Styles from a line start (or the start of a block comment) on; canstop is asked at every later line start
+		// reached outside a comment. Returns where it stopped.
+		private static int StyleRange(string text, byte[] styles, int from, Func<int, bool> canstop, Lexer lexer, IReadOnlyDictionary<int, HashSet<string>> keywords, bool casesensitive, string extrawordchars)
+		{
 			bool perl = lexer == Lexer.Perl;
 			int n = text.Length;
-			int i = 0;
+			int i = from;
 			bool linestart = true;
 
 			while(i < n)
@@ -39,7 +87,11 @@ namespace ULDB.Scripting
 				if(c == '\n' || c == '\r')
 				{
 					styles[i++] = Default;
-					if(c == '\n' || (c == '\r' && (i >= n || text[i] != '\n'))) linestart = true;
+					if(c == '\n' || (c == '\r' && (i >= n || text[i] != '\n')))
+					{
+						linestart = true;
+						if(canstop != null && canstop(i)) return i;
+					}
 					continue;
 				}
 
@@ -140,7 +192,7 @@ namespace ULDB.Scripting
 				styles[i++] = Operator;
 			}
 
-			return styles;
+			return n;
 		}
 
 		public static bool IsWordChar(char c, string extra)

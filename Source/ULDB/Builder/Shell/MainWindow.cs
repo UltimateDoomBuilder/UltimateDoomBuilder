@@ -505,8 +505,6 @@ namespace ULDB.Shell
 							Console.WriteLine("[devstep] HasScriptLumps=" + General.Map.Config.HasScriptLumps());
 							try { General.Map.ShowScriptEditor(); Console.WriteLine("[devstep] script editor shown: " + (General.Map.ScriptEditor != null && General.Map.ScriptEditor.Visible)); }
 							catch(Exception ex) { Console.WriteLine("[devstep] script editor failed: " + ex); }
-							try { Console.WriteLine("[devstep] view: " + FormViews.Create(General.Map.ScriptEditor)); }
-							catch(Exception ex) { Console.WriteLine("[devstep] view failed: " + ex); }
 							Console.WriteLine("[devstep] script editor window: " + (FormWindows.WindowFor(General.Map.ScriptEditor)?.ToString() ?? "none") + " visible=" + FormWindows.WindowFor(General.Map.ScriptEditor)?.IsVisible);
 							break;
 						case "quicksearch": // quicksearch:<text>, types into the script editor's quick search box
@@ -529,6 +527,7 @@ namespace ULDB.Shell
 						}
 						case "scriptcaret": // scriptcaret:<offset>, moves the caret; scriptfold:<line> folds; scriptreport prints the state
 							General.Map.ScriptEditor.Editor.ActiveTab.Editor.Scintilla.GotoPosition(int.Parse(p[1])); break;
+						case "scripterror": General.Map.ScriptEditor.Editor.ActiveTab.Editor.Scintilla.Lines[int.Parse(p[1])].MarkerAdd(2); break; // scripterror:<line>, marks a line as a compile error
 						case "scriptfold": General.Map.ScriptEditor.Editor.ActiveTab.Editor.Scintilla.Lines[int.Parse(p[1])].FoldLine(ScintillaNET.FoldAction.Contract); break;
 						case "scriptreport":
 						{
@@ -537,6 +536,8 @@ namespace ULDB.Shell
 							var ed = System.Linq.Enumerable.FirstOrDefault(System.Linq.Enumerable.OfType<AvaloniaEdit.TextEditor>(Avalonia.VisualTree.VisualExtensions.GetVisualDescendants(win)));
 							var foldedlines = new System.Collections.Generic.List<int>();
 							for(int i = 0; i < sci.Lines.Count; i++) if(!sci.Lines[i].Expanded) foldedlines.Add(i);
+							var fm = ed == null ? null : ed.TextArea.GetService(typeof(AvaloniaEdit.Folding.FoldingManager)) as AvaloniaEdit.Folding.FoldingManager;
+							if(fm != null) Console.WriteLine("[devstep] sections: " + string.Join(" ", System.Linq.Enumerable.Select(fm.AllFoldings, f => f.StartOffset + "-" + f.EndOffset + (f.IsFolded ? "F" : ""))) + " line4end=" + ed.Document.GetLineByNumber(5).EndOffset);
 							Console.WriteLine("[devstep] script: fontsize=" + ed?.FontSize + " lines=" + sci.Lines.Count + " caret=" + sci.CurrentPosition + " folded=[" + string.Join(",", foldedlines) + "]");
 							break;
 						}

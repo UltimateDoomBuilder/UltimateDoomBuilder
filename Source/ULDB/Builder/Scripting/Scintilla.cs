@@ -65,6 +65,9 @@ namespace ScintillaNET
 		private bool casesensitive = true;
 		private byte[] stylecache;
 		private int stylecacheversion = -1, docversion;
+		// The part of the text changed since the styles were made (so only that is styled again); dirtystart < 0
+		// when everything has to be
+		private int dirtystart = -1, dirtyend, dirtydelta, dirtyversion = -1;
 		private string wordchars = "";
 
 		// Marks
@@ -145,6 +148,7 @@ namespace ScintillaNET
 
 		private void OnDocumentChanged(object sender, DocumentChangeEventArgs e)
 		{
+			NoteEdit(e);
 			docversion++;
 			// Without a view nothing tracks the folds (the view's fold sections follow edits by themselves)
 			if(host == null && e.InsertionLength != e.RemovalLength) folded.Clear();
@@ -213,6 +217,26 @@ namespace ScintillaNET
 				else if(text[i] == '\r' && (i + 1 >= text.Length || text[i + 1] != '\n')) count++;
 			}
 			return count;
+		}
+
+		// Edits since the last styling are kept as one range that covers them all
+		private void NoteEdit(DocumentChangeEventArgs e)
+		{
+			if(stylecache == null) return;
+			if(stylecacheversion == docversion)
+			{
+				// The first edit since the styles were made
+				dirtystart = e.Offset; dirtyend = e.Offset + e.InsertionLength; dirtydelta = e.InsertionLength - e.RemovalLength;
+			}
+			else if(dirtyversion == docversion && dirtystart >= 0)
+			{
+				int end = dirtyend > e.Offset + e.RemovalLength ? dirtyend + e.InsertionLength - e.RemovalLength : e.Offset + e.InsertionLength;
+				dirtystart = Math.Min(dirtystart, e.Offset);
+				dirtyend = Math.Max(end, e.Offset + e.InsertionLength);
+				dirtydelta += e.InsertionLength - e.RemovalLength;
+			}
+			else dirtystart = -1; // something else changed in between (keywords, lexer): style everything
+			dirtyversion = docversion + 1;
 		}
 
 		private static int AdjustOffset(int offset, DocumentChangeEventArgs e)
@@ -701,8 +725,13 @@ namespace ScintillaNET
 		{
 			if(stylecache == null || stylecacheversion != docversion)
 			{
-				stylecache = ScriptLexer.Style(Document.Text, lexer, keywordsets, casesensitive, wordchars);
+				string text = Document.Text;
+				if(stylecache != null && dirtystart >= 0 && dirtyversion == docversion)
+					stylecache = ScriptLexer.Restyle(text, stylecache, dirtystart, dirtyend, dirtydelta, lexer, keywordsets, casesensitive, wordchars);
+				else
+					stylecache = ScriptLexer.Style(text, lexer, keywordsets, casesensitive, wordchars);
 				stylecacheversion = docversion;
+				dirtystart = -1;
 			}
 			return stylecache;
 		}

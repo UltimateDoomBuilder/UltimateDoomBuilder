@@ -29,10 +29,8 @@ namespace CodeImp.DoomBuilder.Windows
 			string path = Path.Combine(AppContext.BaseDirectory, "Icons", "uldb-256.png");
 			if(File.Exists(path)) cacky.Source = new Bitmap(path);
 
-			// No release version yet: say so rather than "0.0.0 (0000000)".
-			Version v = General.ThisAssembly.GetName().Version;
 			string hash = string.IsNullOrEmpty(General.CommitHash) || General.CommitHash.Trim('0').Length == 0 ? "" : General.CommitHash;
-			string versiontext = v.Major + v.Minor + v.Build == 0 ? "early preview" : v.Major + "." + v.Minor + "." + v.Build + " (early preview)";
+			string versiontext = Branding.VERSION;
 			if(hash.Length > 0) versiontext += ", " + hash;
 			version.Text = "Version: " + versiontext;
 			copyversion.Content = BreezeIcons.Create("builder_copyselection", 16);
