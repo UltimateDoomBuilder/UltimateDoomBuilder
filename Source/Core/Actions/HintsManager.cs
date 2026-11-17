@@ -109,7 +109,12 @@ namespace CodeImp.DoomBuilder.Actions
 						{
 							int end = line.IndexOf("</k>");
 							string key = line.Substring(start + 3, end - start - 3);
+#if ULDB
+							// ULDB: marks a key, so the Help docker can draw it as a key cap or a mouse button
+							line = line.Substring(0, start) + "{\\b\\uldbkey " + Action.GetShortcutKeyDesc(key) + "}" + line.Substring(end + 4, line.Length - end - 4);
+#else
 							line = line.Substring(0, start) + "{\\b " + Action.GetShortcutKeyDesc(key) + "}" + line.Substring(end + 4, line.Length - end - 4);
+#endif
 							start = line.IndexOf("<k>");
 						}
 

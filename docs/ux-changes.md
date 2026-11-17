@@ -63,3 +63,5 @@ A user-facing list of every intentional UI or behaviour difference between ULDB 
 - **Main window, info panel:** with nothing highlighted, the mode name is brighter (55% instead of 30%) with a thin accent bar beside it.
 
 - **Bug fix, plugin tools after Game Configurations:** pressing OK in Game Configurations rebuilt the edit modes toolbar and Mode menu, which dropped the plugins' buttons (Apply Directional Shading, Randomize, Pick Sector/Light Color) from the toolbar and moved their menu items to the top of the Mode menu. They now keep their place (same bug in upstream's code). New dev steps `reconfigure`, `menustate:<menu>`, `stripstate:<toolstrip>`.
+
+- **Help docker, key and mouse icons:** the shortcuts in the hints are drawn as key caps ("Ctrl" "D", "Space", "Del") and a small mouse with the pressed button lit (left, right, middle, wheel with an arrow for scroll direction) instead of bold text. Bold text that isn't a shortcut ("Colors (default):") stays bold. Line spacing is a little looser to fit the caps.

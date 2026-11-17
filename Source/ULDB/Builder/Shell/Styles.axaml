@@ -313,6 +313,18 @@
     <Setter Property="Padding" Value="0"/>
     <Setter Property="VerticalAlignment" Value="Center"/>
   </Style>
+  <!-- Key caps in the Help docker. -->
+  <Style Selector="Border.uldb-keycap">
+    <Setter Property="Background" Value="{DynamicResource UldbTileBrush}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource UldbSeparatorBrush}"/>
+  </Style>
+  <Style Selector="Path.uldb-mouse-lit">
+    <Setter Property="Fill" Value="{DynamicResource UldbHotTextBrush}"/>
+  </Style>
+  <Style Selector="Path.uldb-mouse-line">
+    <Setter Property="Stroke" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+    <Setter Property="Opacity" Value="0.85"/>
+  </Style>
   <!-- Flag lists (CheckboxArrayControl): compact rows, like UDB's. -->
   <Style Selector="CheckBox.uldb-flag">
     <Setter Property="MinHeight" Value="0"/>
