@@ -124,6 +124,7 @@ namespace ULDB.Shell
 
 		private Border busyoverlay;
 		private TextBlock busytext;
+		private string busymessage = "";
 
 		/// <summary>A dimmed "Loading…" cover shown while the UI thread is blocked (see ULDB.Platform.Busy).</summary>
 		private Control CreateBusyOverlay()
@@ -132,7 +133,9 @@ namespace ULDB.Shell
 			busyoverlay = new Border { Background = new SolidColorBrush(Color.FromArgb(110, 0, 0, 0)), IsVisible = false, Child = busytext };
 			ULDB.Platform.Busy.Show = message =>
 			{
+				busymessage = message;
 				busytext.Text = message;
+				busytext.TextAlignment = TextAlignment.Center;
 				busytext.Foreground = Brushes.White;
 				busyoverlay.IsVisible = true;
 				// Lay out and paint one frame now; the work that follows won't return to the loop.
@@ -140,6 +143,17 @@ namespace ULDB.Shell
 				Dispatcher.UIThread.RunJobs();
 			};
 			ULDB.Platform.Busy.Hide = () => busyoverlay.IsVisible = false;
+			// Progress: the load's log lines become the cover's second line (UI thread only; the
+			// background resource loader logs from its own thread).
+			System.Diagnostics.Stopwatch since = System.Diagnostics.Stopwatch.StartNew();
+			ULDB.Platform.Busy.Step = step =>
+			{
+				if(!busyoverlay.IsVisible || !Dispatcher.UIThread.CheckAccess() || since.ElapsedMilliseconds < 40) return;
+				since.Restart();
+				string line = step.Trim().TrimEnd('.');
+				busytext.Text = busymessage + "\n" + (line.Length > 80 ? line.Substring(0, 80) + "…" : line);
+				Dispatcher.UIThread.RunJobs(DispatcherPriority.Render);
+			};
 			return busyoverlay;
 		}
 

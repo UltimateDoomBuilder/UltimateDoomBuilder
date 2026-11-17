@@ -1808,6 +1808,9 @@ namespace CodeImp.DoomBuilder
 				Console.WriteLine(line);
 				DebugConsole.WriteLine(DebugMessageType.LOG, line); //mxd
 #endif
+#if ULDB
+				ULDB.Platform.Busy.Update(line); // shows the step on the "Opening map..." cover
+#endif
 				// Write to log file
 				try { File.AppendAllText(logfile, line + Environment.NewLine); }
 				catch (Exception) { }
