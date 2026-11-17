@@ -51,6 +51,9 @@ namespace CodeImp.DoomBuilder.Controls
 			}
 			StackPanel row = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 2 };
 			foreach(Control c in parts) row.Children.Add(c);
+			// Same height as a text line, nudged down onto the text's baseline
+			row.Height = 18;
+			row.RenderTransform = new TranslateTransform(0, 3);
 			target.Add(new InlineUIContainer { Child = row, BaselineAlignment = BaselineAlignment.Center });
 		}
 
@@ -59,8 +62,8 @@ namespace CodeImp.DoomBuilder.Controls
 			Border cap = new Border
 			{
 				BorderThickness = new Avalonia.Thickness(1, 1, 1, 2), CornerRadius = new Avalonia.CornerRadius(4),
-				Padding = new Avalonia.Thickness(5, 0), MinWidth = 18, Margin = new Avalonia.Thickness(1, 1),
-				Child = new TextBlock { Text = text, FontSize = 11, FontWeight = FontWeight.SemiBold, LineHeight = 15, HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center },
+				Padding = new Avalonia.Thickness(5, 0), MinWidth = 18, Height = 18, Margin = new Avalonia.Thickness(1, 0),
+				Child = new TextBlock { Text = text, FontSize = 11, FontWeight = FontWeight.SemiBold, LineHeight = 14, Margin = new Avalonia.Thickness(0, 0, 0, 3), VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center, HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center },
 			};
 			cap.Classes.Add("uldb-keycap");
 			return cap;
@@ -80,7 +83,7 @@ namespace CodeImp.DoomBuilder.Controls
 			if(lit == "right") body.Children.Add(Part("M7,2 A5,5 0 0 1 12,7 H7 Z", "uldb-mouse-lit", 0));
 			if(lit == "middle" || lit == "wheel") body.Children.Add(Part("M5.8,3 H8.2 V7 H5.8 Z", "uldb-mouse-lit", 0));
 			body.Children.Add(Part("M2,7 A5,5 0 0 1 7,2 A5,5 0 0 1 12,7 V11 A5,5 0 0 1 7,16 A5,5 0 0 1 2,11 Z M2,7 H12 M7,2 V7", "uldb-mouse-line", 1.2));
-			Control mouse = new Viewbox { Width = 17, Height = 22, Margin = new Avalonia.Thickness(2, 0), Child = body };
+			Control mouse = new Viewbox { Width = 13, Height = 17, Margin = new Avalonia.Thickness(2, 0), Child = body };
 			if(arrow == null) return mouse;
 			StackPanel withArrow = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 1 };
 			withArrow.Children.Add(mouse);
