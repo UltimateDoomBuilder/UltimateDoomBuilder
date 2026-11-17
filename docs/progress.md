@@ -211,6 +211,19 @@ Source: the review in `docs/upstream-issues.md` (what is in it, what was done, w
 - Not in scope, kept for later: split 2D/3D views, high contrast, renderer feature requests (section 4 of `docs/upstream-issues.md`).
 - Tests: new `SelectConnectedLinedefsSelectsTheWholeChain` (PluginTests). Nothing here has been seen on a real screen: see the checklist.
 
+## Review pass (branch `phase-3/review-17nov`, 17 Nov 2026, no screen)
+
+A read through the recent code with captures of every tabbed dialog (29, no exceptions). Fixed:
+- **Regression from the small-screen fix (14 Nov):** every tab page was put in a ScrollViewer, which offers endless height, so pages with a list (Preferences → Controls, edit dialogs' Custom tab, Game Configurations lists) grew to the whole list: the list stopped scrolling and virtualising and the controls beside/below it scrolled away. `AvaloniaHost.FitPage` now offers the page the height that is there; only a page that can't shrink that far scrolls.
+- Resizable dialogs no longer get a `MaxWidth/MaxHeight` (it stopped the script editor and browsers from being maximised).
+- Preferences → Controls: the action list had a different order on every start; sorted by category, then title (`#if ULDB` in `PreferencesForm.cs`).
+- Preferences opens at 1040x1030 (cut to the screen), so pages show whole on a 1080p or larger screen; the Editing page still scrolls a little at 1080p.
+- **Copy/paste of map geometry with a clipboard manager:** copying geometry clears the desktop clipboard; KDE's Klipper puts the previous text back ("prevent empty clipboard"), and `GetClipboard` then took that text for something newer, so Paste found no geometry. The text that was there before the clear no longer counts as newer. **Needs trying on the user's machine** (copy text somewhere, copy sectors in ULDB, paste).
+- ULDB options in Preferences no longer overwrite values set by hand in the file that aren't in the lists; `Engines.Capture` no longer reads a buffer another thread may still write.
+- `tools/capture/capture.sh`: `ULDB_SCREEN=1280x720` sets the headless screen size.
+
+Ideas not done (for the user to pick from): see the list in the PR for this branch.
+
 ## Early preview release (20 Oct 2026)
 
 - `phase-3/shell` merged into `master` (PR #2); CI green on `master`.

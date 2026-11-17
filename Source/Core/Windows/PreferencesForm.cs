@@ -196,6 +196,16 @@ namespace CodeImp.DoomBuilder.Windows
 			
 			// Fill list of actions
 			Action[] actions = General.Actions.GetAllActions();
+#if ULDB
+			// The view shows one flat list (the category under each title), so the order has to carry the grouping
+			Array.Sort(actions, (a, b) =>
+			{
+				General.Actions.Categories.TryGetValue(a.Category, out string ca);
+				General.Actions.Categories.TryGetValue(b.Category, out string cb);
+				int c = string.Compare(ca ?? "\uffff", cb ?? "\uffff", StringComparison.CurrentCultureIgnoreCase);
+				return c != 0 ? c : string.Compare(a.Title, b.Title, StringComparison.CurrentCultureIgnoreCase);
+			});
+#endif
 			allactionitems = new List<ListViewItem>(); //mxd
 			allactionitemsgroups = new List<int>(); //mxd
 

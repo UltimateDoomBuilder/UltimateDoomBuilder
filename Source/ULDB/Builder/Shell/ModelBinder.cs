@@ -252,10 +252,10 @@ namespace ULDB.Shell
 			string shown = null;
 			return Custom(() =>
 			{
-				List<ListItem> items = list.Items.Select(i => new ListItem
+				List<ListItem> items = list.Items.Select((i, index) => new ListItem
 				{
 					Text = i.Text,
-					Index = list.Items.IndexOf(i),
+					Index = index,
 					Group = i.Group?.Header,
 					Sub1 = i.SubItems.Count > 1 ? i.SubItems[1].Text : null,
 					Sub2 = i.SubItems.Count > 2 ? i.SubItems[2].Text : null,

@@ -232,11 +232,12 @@ namespace ULDB.Platform
 
 		private static void Task_Read(Process p, out string text)
 		{
-			StringBuilder sb = new StringBuilder();
-			System.Threading.Thread reader = new System.Threading.Thread(() => { try { sb.Append(p.StandardOutput.ReadToEnd()); } catch(Exception) { } }) { IsBackground = true };
+			// The reader may still be running after the wait: it hands over a finished string, never a buffer in use
+			string result = "";
+			System.Threading.Thread reader = new System.Threading.Thread(() => { try { result = p.StandardOutput.ReadToEnd(); } catch(Exception) { } }) { IsBackground = true };
 			reader.Start();
 			reader.Join(5000);
-			text = sb.ToString();
+			text = System.Threading.Volatile.Read(ref result);
 		}
 
 		#endregion
