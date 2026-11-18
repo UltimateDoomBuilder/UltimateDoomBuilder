@@ -1,3 +1,5 @@
+using System.Windows.Forms;
+
 namespace CodeImp.DoomBuilder.Controls
 {
 	partial class FieldsEditorControl
@@ -45,7 +47,6 @@ namespace CodeImp.DoomBuilder.Controls
 			// 
 			// fieldslist
 			// 
-			this.fieldslist.AllowUserToResizeColumns = false;
 			this.fieldslist.AllowUserToResizeRows = false;
 			this.fieldslist.BackgroundColor = System.Drawing.SystemColors.Window;
 			this.fieldslist.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -100,7 +101,8 @@ namespace CodeImp.DoomBuilder.Controls
 			this.fieldname.Frozen = true;
 			this.fieldname.HeaderText = "Property";
 			this.fieldname.Name = "fieldname";
-			this.fieldname.Width = 150;
+			this.fieldname.MinimumWidth = 150;
+			this.fieldname.Resizable = System.Windows.Forms.DataGridViewTriState.True;
 			// 
 			// fieldtype
 			// 
@@ -127,7 +129,8 @@ namespace CodeImp.DoomBuilder.Controls
 			this.fieldvalue.HeaderText = "Value";
 			this.fieldvalue.Name = "fieldvalue";
 			this.fieldvalue.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-			this.fieldvalue.Width = 120;
+			this.fieldvalue.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+			this.fieldvalue.MinimumWidth = 120;
 			// 
 			// deleterowstimer
 			// 
