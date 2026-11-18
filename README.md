@@ -84,6 +84,11 @@ You can also build the flatpak on Windows using WSL2.
   wsl --terminate udb-flatpak-builder
   ```
 
+### Docker build
+
+To build with Docker, run `./make-in-docker.sh` from the project directory.
+
+Params are passed through to Make transparently, i.e. `./make-in-docker.sh BUILDTYPE=Debug linux` maps to `make BUILDTYPE=Debug linux`.
 
 # Links
 - [Official thread link](https://forum.zdoom.org/viewtopic.php?f=232&t=66745)
