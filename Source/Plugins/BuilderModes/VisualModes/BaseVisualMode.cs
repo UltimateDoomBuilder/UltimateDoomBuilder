@@ -16,24 +16,22 @@
 
 #region ================== Namespaces
 
-using CodeImp.DoomBuilder.Actions;
-using CodeImp.DoomBuilder.BuilderModes.ClassicModes;
-using CodeImp.DoomBuilder.BuilderModes.Interface;
-using CodeImp.DoomBuilder.Config;
-using CodeImp.DoomBuilder.Data;
-using CodeImp.DoomBuilder.Editing;
-using CodeImp.DoomBuilder.Geometry;
-using CodeImp.DoomBuilder.GZBuilder.Data;
-using CodeImp.DoomBuilder.Map;
-using CodeImp.DoomBuilder.Rendering;
-using CodeImp.DoomBuilder.Types;
-using CodeImp.DoomBuilder.VisualModes;
-using CodeImp.DoomBuilder.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-
+using CodeImp.DoomBuilder.BuilderModes.Interface;
+using CodeImp.DoomBuilder.Windows;
+using CodeImp.DoomBuilder.Map;
+using CodeImp.DoomBuilder.Rendering;
+using CodeImp.DoomBuilder.Geometry;
+using CodeImp.DoomBuilder.Editing;
+using CodeImp.DoomBuilder.Actions;
+using CodeImp.DoomBuilder.VisualModes;
+using CodeImp.DoomBuilder.Config;
+using CodeImp.DoomBuilder.GZBuilder.Data;
+using CodeImp.DoomBuilder.Types;
+using CodeImp.DoomBuilder.Data;
 
 #endregion
 
