@@ -4056,7 +4056,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			General.Map.UndoRedo.ClearAllRedos();
 			General.Map.UndoRedo.CreateUndo("Split linedef (visual mode)");
 
-			//Split the vertex
+			//Insert the vertex
 			Vertex splitvertex;
 			splitvertex = General.Map.Map.CreateVertex(snappedPos);
 
@@ -4069,8 +4069,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Snap to map format accuracy
 			splitvertex.SnapToAccuracy();
 
-			// Split the line
+			// Split the line at the new vertex
 			Linedef sld = ld.Split(splitvertex);
+
 			if (sld == null)
 			{
 				General.Map.UndoRedo.WithdrawUndo();
