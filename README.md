@@ -66,3 +66,28 @@ dotnet test Builder.Linux.sln
 ULDB is built on the work of the Ultimate Doom Builder, GZDoom Builder and Doom Builder 2 authors and contributors. All credit for the editor itself goes to them. Upstream's original README is kept in [`docs/upstream-README.md`](docs/upstream-README.md).
 
 Licensed under the **GNU General Public License v3.0**, the same as upstream. See [`LICENSE.txt`](LICENSE.txt).
+
+## FAQ and stuff
+
+**But this is AI slop, why?**
+I'm not a dotnet developer. Even if I was, this is way too much of a project for me to take on using hand-crafted artisan code. I understand why people dislike AI code and that's fine. The underlying code that does all the heavy non-UI lifting is still Ultimate Doom Builder and everything underneath. The changes are mostly UI related with some bugfixes and changes to allow this to work on .net 10 instead of Mono. I am fully upfront about it being AI coded and you are more than welcome to make a choice whether to use it or not based on that alone. 
+
+**Couldn't a human do this port? Isn't there a Linux port already?**
+A human could do this port and there is already an official UDB port for Linux. Whilst Ultimate Doom Builder is an excellent (probably the best) map editor for Doom on Windows, the Linux port is not great. They admit it is a community maintained unofficial build with a few bugs, some pretty nasty. It also looks like crap since it is using Mono to convert the Winforms UI. I don't have any grudge about them not prioritising the Linux build. It is their project and they need to prioritise what they think is right. But it is still open-source software and means that I can come along and prioritise what I want. I wanted a better code editor (that doesn't crash), I wanted native dark mode support, I wanted Linux native and I wanted some gripes of mine fixed.
+
+So I used the tools I had to make it happen. I wholeheartedly hope that someone more skilled than me picks this up or redoes this work without AI or with limited AI tooling. Until that happens then this is what I could do. If you are interested in contributing feel free to reach out.
+
+**Is this going to be radically different to the original?**
+No. There are differences. The code editor is overhauled for example and the icons are all different (styled in Breeze). There are a lot of small documented changes that are all around improving or cleaning up the UI and fixing any bugs coming from the upstream project. If you are a heavy Ultimate Doom Builder user and move to this, you will find nothing that wrecks your muscle memory. This isn't a "I think the original developers were wrong in everyway so I changed everything" project. It is a better functioning UI with some polish for Linux users.
+
+**Why no support for anything except GZ and UZDoom?**
+I did drop support for this. It was mainly as the tools in the background were not all Linux native and because I never map in anything except UZDoom. If you do want to see that support then I'm happy to add it. Since I never map in these modes I'd be relying on others to report any bugs and issues. So if you want to do that, raise an issue asking for it and explaining which parts you'd be fine providing feedback on. 
+
+**Will you lodge any bugs the AI agent finds in the upstream code?**
+I will talk with the UDB team before I start doing that. If I do then I'd have to verify the bugs myself first and verify the changes actually fix issues. I'm not sure what UDB's stance on AI is. If they outright disallow it then I'm not going to violate that.
+
+**Should I use this fork?**
+I built it for myself because of problems I had. As with any software you should decide if this is right for you. I believe for Linux users this runs much better than the official Linux builds. But I'm 1 person testing this running it on 1 machine. It is code I don't entirely understand in a language I certainly don't. If you do use it and find a bug, or if you (or another AI) runs through it and finds any critical issues or vulnerabilities please do raise an issue.
+
+**Why's there reference to a CachoOS version?**
+I use CachyOS and had considered putting out a separate build that targets Zen 4. It is beyond unlikely it will make any substantial performance difference but I have a capable machine and there's nothing stopping me from doing it. 
