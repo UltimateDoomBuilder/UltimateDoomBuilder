@@ -4017,7 +4017,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			PostAction();
 		}
 
-		[BeginAction("splitlinedefs")] 
+		[BeginAction("splitlinedefsvisualmode")] 
 		public void SplitLinedefsVisualMode()
 		{
 			//Check if highlighted object is a sidedef, if not, abort
