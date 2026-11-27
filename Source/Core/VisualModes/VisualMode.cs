@@ -46,7 +46,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 		private const double MOVE_SPEED_MULTIPLIER = 0.001;
 		protected const float PICK_RANGE = 0.98f;
-		private const float MOVE_CAMERA_DISTANCE = 64.0f;
+		private const double MOVE_CAMERA_RATIO = 0.25;
 		private const long CURSOR_UNLOCK_HOLD_TIME = 300;
 		
 		#endregion
