@@ -617,7 +617,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 		{
 			if (orbit)
 			{
-				orbitRadius = MOVE_CAMERA_DISTANCE;
+				orbitRadius *= MOVE_CAMERA_RATIO;
 			}
 			else
 			{
@@ -629,7 +629,7 @@ namespace CodeImp.DoomBuilder.VisualModes
 
 				Vector3D start = General.Map.VisualCamera.Position;
 				Vector3D delta = start - hitPosition;
-				General.Map.VisualCamera.Position = hitPosition + delta.GetFixedLength(MOVE_CAMERA_DISTANCE);
+				General.Map.VisualCamera.Position = hitPosition + delta.GetScaled(MOVE_CAMERA_RATIO);
 			}
 		}
 
