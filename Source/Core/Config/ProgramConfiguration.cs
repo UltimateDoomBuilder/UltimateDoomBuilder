@@ -127,7 +127,7 @@ namespace CodeImp.DoomBuilder.Config
 		private bool gzDrawSky;
 		private bool gzToolbarGZDoom;
 		private bool gzSynchCameras;
-		private bool gzShowEventLines;
+		private EventLinesRenderMode gzShowEventLines; //Remove old Bool variable and replaced with a three-way int to track the three render lines states
 		private bool gzOldHighlightMode;
 		private int gzMaxDynamicLights;
 		private bool gzStretchView;
@@ -264,7 +264,7 @@ namespace CodeImp.DoomBuilder.Config
 		public bool GZDrawSky { get { return gzDrawSky; } internal set { gzDrawSky = value; } }
 		public bool GZToolbarGZDoom { get { return gzToolbarGZDoom; } internal set { gzToolbarGZDoom = value; } }
 		public bool GZSynchCameras { get { return gzSynchCameras; } internal set { gzSynchCameras = value; } }
-		public bool GZShowEventLines { get { return gzShowEventLines; } internal set { gzShowEventLines = value; } }
+		public EventLinesRenderMode GZShowEventLines { get { return gzShowEventLines; } internal set { gzShowEventLines = value; } } //Changing the property from Bool to capture the three-states of the new event lines render
 		public bool GZOldHighlightMode { get { return gzOldHighlightMode; } internal set { gzOldHighlightMode = value; } }
 		public int GZMaxDynamicLights { get { return gzMaxDynamicLights; } internal set { gzMaxDynamicLights = value; } }
 		public bool GZStretchView { get { return gzStretchView; } internal set { gzStretchView = value; } }
@@ -412,7 +412,7 @@ namespace CodeImp.DoomBuilder.Config
 				gzDrawSky = cfg.ReadSetting("gzdrawsky", true);
 				gzToolbarGZDoom = cfg.ReadSetting("gztoolbargzdoom", true);
 				gzSynchCameras = cfg.ReadSetting("gzsynchcameras", true);
-				gzShowEventLines = cfg.ReadSetting("gzshoweventlines", true);
+				gzShowEventLines = (EventLinesRenderMode)cfg.ReadSetting("gzshoweventlines", (int)EventLinesRenderMode.HIGHLIGHT); //Default to original Highlight render lines behaviour for fresh install, and also provide backwards compatibility for previous configs
 				gzOldHighlightMode = cfg.ReadSetting("gzoldhighlightmode", false);
 				gzMaxDynamicLights = cfg.ReadSetting("gzmaxdynamiclights", 16);
 				gzStretchView = cfg.ReadSetting("gzstretchview", true);
@@ -559,7 +559,7 @@ namespace CodeImp.DoomBuilder.Config
 			cfg.WriteSetting("gzdrawfog", gzDrawFog);
 			cfg.WriteSetting("gzdrawsky", gzDrawSky);
 			cfg.WriteSetting("gzsynchcameras", gzSynchCameras);
-			cfg.WriteSetting("gzshoweventlines", gzShowEventLines);
+			cfg.WriteSetting("gzshoweventlines", (int)gzShowEventLines); //Updated for new Event Lines config variable
 			cfg.WriteSetting("gzoldhighlightmode", gzOldHighlightMode);
 			cfg.WriteSetting("gztoolbargzdoom", gzToolbarGZDoom);
 			cfg.WriteSetting("gzmaxdynamiclights", gzMaxDynamicLights);

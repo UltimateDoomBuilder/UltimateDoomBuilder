@@ -2434,7 +2434,7 @@ namespace CodeImp.DoomBuilder.Geometry
 		{
 			//Side requires the flag?
 			if(side.Sector == null) return 0;
-			if(!side.Fields.ContainsKey("light")) 
+			if(!side.Fields.ContainsKey("light") && !side.Fields.ContainsKey("light_top") && !side.Fields.ContainsKey("light_mid") && !side.Fields.ContainsKey("light_bottom")) 
 			{
 				//Unset the flag
 				if(side.IsFlagSet("lightfog")) 

@@ -73,6 +73,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		
 		public bool IsDraggingUV { get { return uvdragging; } }
 		new public BaseVisualSector Sector { get { return (BaseVisualSector)base.Sector; } }
+		public abstract MapElement3D AsMapElement3D { get; }
 		
 		#endregion
 		
@@ -98,8 +99,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			if(!performautoselection) return;
 			if(Triangles > 0)
 			{
-				dragstartanglexy = General.Map.VisualCamera.AngleXY;
-				dragstartanglez = General.Map.VisualCamera.AngleZ;
+				dragstartanglexy = mode.PickingDir.GetAngleXY();
+				dragstartanglez = mode.PickingDir.GetAngleZ();
 				dragorigin = pickintersect;
 
 				Point texoffset = GetTextureOffset();
@@ -225,7 +226,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 									int lightlevel;
 
 									// Sidedef part is not affected by 3d floor brightness
-									if(l.type != SectorLevelType.Light && (l.disablelighting || !l.extrafloor))
+									if(l.type != SectorLevelType.Light && (l.disablelighting || l.extrafloor == null))
 										lightlevel = (lightabsolute ? lightvalue : l.brightnessbelow + lightvalue);
 									// 3d floors and light transfer effects transfers brightness below them ignoring sidedef's brightness
 									else
@@ -966,6 +967,11 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					if(!this.Sector.Floor.Changed) this.Sector.Floor.OnChangeTargetHeight(amount);
 					if(!this.Sector.Ceiling.Changed) this.Sector.Ceiling.OnChangeTargetHeight(amount);
 					break;
+
+				// Change texture offset
+				case 4:
+					OnChangeTextureOffset(0, -amount, true);
+					break;
 			}
 		}
 		
@@ -1383,8 +1389,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public virtual void OnSelectBegin()
 		{
 			mode.LockTarget();
-			dragstartanglexy = General.Map.VisualCamera.AngleXY;
-			dragstartanglez = General.Map.VisualCamera.AngleZ;
+			dragstartanglexy = mode.PickingDir.GetAngleXY();
+			dragstartanglez = mode.PickingDir.GetAngleZ();
 			dragorigin = pickintersect;
 
 			Point texoffset = GetTextureOffset(); //mxd
@@ -1508,8 +1514,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if(General.Actions.CheckActionActive(General.ThisAssembly, "visualselect"))
 				{
 					// Check if tolerance is exceeded to start UV dragging
-					double deltaxy = General.Map.VisualCamera.AngleXY - dragstartanglexy;
-					double deltaz = General.Map.VisualCamera.AngleZ - dragstartanglez;
+					double deltaxy = mode.PickingDir.GetAngleXY() - dragstartanglexy;
+					double deltaz = mode.PickingDir.GetAngleZ() - dragstartanglez;
 					if((Math.Abs(deltaxy) + Math.Abs(deltaz)) > DRAG_ANGLE_TOLERANCE)
 					{
 						mode.PreAction(UndoGroup.TextureOffsetChange);
@@ -1531,9 +1537,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			double u_ray;
 			
 			// Calculate intersection position
-			Line2D ray = new Line2D(General.Map.VisualCamera.Position, General.Map.VisualCamera.Target);
+			Line2D ray = new Line2D(General.Map.VisualCamera.Position, General.Map.VisualCamera.Position + mode.PickingDir);
 			Sidedef.Line.Line.GetIntersection(ray, out u_ray);
-			Vector3D intersect = General.Map.VisualCamera.Position + (General.Map.VisualCamera.Target - General.Map.VisualCamera.Position) * u_ray;
+			Vector3D intersect = General.Map.VisualCamera.Position + mode.PickingDir * u_ray;
 			
 			// Calculate offsets
 			Vector3D dragdelta = intersect - dragorigin;

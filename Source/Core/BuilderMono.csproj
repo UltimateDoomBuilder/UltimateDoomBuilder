@@ -238,6 +238,7 @@
     <Compile Include="Data\ImageLoadState.cs" />
     <Compile Include="General\AutoSaver.cs" />
     <Compile Include="General\Hasher.cs" />
+    <Compile Include="General\MultiDictionary.cs" />
     <Compile Include="General\SHA256Hash.cs" />
     <Compile Include="General\ToastManager.cs" />
     <Compile Include="GZBuilder\Models\GZModel.cs" />
@@ -361,6 +362,7 @@
     <Compile Include="IO\UniversalStreamReader.cs" />
     <Compile Include="IO\UniversalStreamWriter.cs" />
     <Compile Include="Map\MapElement.cs" />
+    <Compile Include="Map\MapElement3D.cs" />
     <Compile Include="Map\SelectableElement.cs" />
     <Compile Include="Map\UniFields.cs" />
     <Compile Include="Map\UniValue.cs" />
@@ -688,6 +690,7 @@
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="TabControlEX, Version=0.0.3271.41578, Culture=neutral, PublicKeyToken=1db242dc828e4b4e">

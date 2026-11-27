@@ -46,6 +46,17 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 		#region ================== Properties
 
+		public override MapElement3D AsMapElement3D
+		{
+			get
+			{
+				if (ExtraFloor == null)
+					return new Floor3D(Sector.Sector);
+				else
+					return new ThreeDFloorBottom3D(ExtraFloor.Linedef, Sector.Sector);
+			}
+		}
+
 		#endregion
 
 		#region ================== Constructor / Setup

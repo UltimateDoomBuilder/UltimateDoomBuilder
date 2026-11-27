@@ -347,7 +347,7 @@ namespace CodeImp.DoomBuilder.Controls
 			{
 				if(objectname.Text.Length > 0) objectname.Clear();
 			}
-			else if((e.KeyChar >= 'a' && e.KeyChar <= 'z') || (e.KeyChar >= '0' && e.KeyChar <= '9') || AllowedSpecialChars.Contains(e.KeyChar))
+			else if((e.KeyChar >= 'a' && e.KeyChar <= 'z') || (e.KeyChar >= 'A' && e.KeyChar <= 'Z') || (e.KeyChar >= '0' && e.KeyChar <= '9') || AllowedSpecialChars.Contains(e.KeyChar))
 			{
 				if(objectname.SelectionLength > 0)
 				{

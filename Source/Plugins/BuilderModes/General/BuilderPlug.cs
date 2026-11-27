@@ -142,6 +142,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		private int scaletexturesonslopes; // 0 = base scale of 1, 1 = use current scale as base, 2 = don't scale
 		private int eventlinelabelvisibility; // 0 = never show, 1 = forward only, 2 = reverse only, 3 = forward + reverse
 		private int eventlinelabelstyle; // 0 = Action only, 1 = Action + short arguments, 2 = action + full arguments
+		private int maxeventlines; // Controls maximum number of event lines rendered in the Selection mode
 		private bool eventlinedistinctcolors;
 		private bool useoppositesmartpivothandle;
 		private bool selectchangedafterundoredo;
@@ -204,6 +205,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public int ScaleTexturesOnSlopes { get { return scaletexturesonslopes; } internal set { scaletexturesonslopes = value; } }
 		public int EventLineLabelVisibility { get { return eventlinelabelvisibility; } internal set { eventlinelabelvisibility = value; } }
 		public int EventLineLabelStyle { get { return eventlinelabelstyle; } internal set { eventlinelabelstyle = value; } }
+		public int MaxEventLines { get { return maxeventlines; } internal set { maxeventlines = value; } } // Controls maxinum number of event lines
 		public bool EventLineDistinctColors { get { return eventlinedistinctcolors; } internal set { eventlinedistinctcolors = value; } }
 		public bool UseOppositeSmartPivotHandle { get { return useoppositesmartpivothandle; } internal set { useoppositesmartpivothandle = value; } }
 		public bool SelectChangedafterUndoRedo { get { return selectchangedafterundoredo; } internal set { selectchangedafterundoredo = value; } }
@@ -319,6 +321,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			scaletexturesonslopes = General.Settings.ReadPluginSetting("scaletexturesonslopes", 0);
 			eventlinelabelvisibility = General.Settings.ReadPluginSetting("eventlinelabelvisibility", 3);
 			eventlinelabelstyle = General.Settings.ReadPluginSetting("eventlinelabelstyle", 2);
+			maxeventlines = General.Settings.ReadPluginSetting("maxeventlines", 5000); // Default max number of event lines rendered in the Selection mode
 			eventlinedistinctcolors = General.Settings.ReadPluginSetting("eventlinedistinctcolors", true);
 			useoppositesmartpivothandle = General.Settings.ReadPluginSetting("useoppositesmartpivothandle", true);
 			selectchangedafterundoredo = General.Settings.ReadPluginSetting("selectchangedafterundoredo", false);

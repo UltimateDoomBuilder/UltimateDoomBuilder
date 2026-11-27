@@ -1,0 +1,87 @@
+name: Build Windows
+
+on:
+  workflow_call:
+    inputs:
+      revision:
+        required: true
+        type: string
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    name: "Windows ${{ matrix.platform }}"
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [x64, x86]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+        with:
+          submodules: recursive
+          fetch-depth: 0 # Required to properly get the commit count
+
+      - name: Build
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $msbuild = & "$vswhere" -latest -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe | select-object -first 1
+          $options = @( `
+            '-property:Configuration=Release', `
+            '-property:Platform=${{ matrix.platform }}', `
+            '-maxcpucount', `
+            '-verbosity:minimal' `
+          )
+          & $msbuild BuilderRelease.slnf $options
+          if (-not $?) { throw "Build failed" }
+
+      - name: Download Text Changelog Artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: text-changelog
+          path: Build/
+
+      - name: Create Installer
+        run: |
+          $isccPath = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          
+          if (-not (Test-Path $isccPath)) {
+              $isccPath = "$env:ProgramFiles\Inno Setup 6\ISCC.exe"
+          }
+
+          if (-not (Test-Path $isccPath)) {
+              throw "ISCC.exe not found!"
+          }
+
+          $outputFileName = "UltimateDoomBuilder-Setup-R${{ inputs.revision }}-${{ matrix.platform }}"
+
+          & $isccPath /DUDB_arch=${{ matrix.platform }} "Setup\UDBuilder_setup.iss" "-f$outputFileName" "/ORelease"
+          if (-not $?) { throw "Building installer failed" }
+
+      - name: Install 7-Zip
+        run: choco install 7zip -y
+
+      - name: Create 7-Zip Archive
+        run: |
+          $outputFileName = "UltimateDoomBuilder-R${{ inputs.revision }}-${{ matrix.platform }}.7z"
+          & 7z a Release\$outputFileName .\Build\* "-xr!*.xml" "-x!.gitignore"
+          if (-not $?) { throw "Zipping files failed" }
+
+      - name: Upload Installer Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          path: Release/UltimateDoomBuilder-Setup-R${{ inputs.revision }}-${{ matrix.platform }}.exe
+          archive: false
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Upload 7-Zip Archive Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          path: Release/UltimateDoomBuilder-R${{ inputs.revision }}-${{ matrix.platform }}.7z
+          archive: false
+          if-no-files-found: error
+          retention-days: 1
+

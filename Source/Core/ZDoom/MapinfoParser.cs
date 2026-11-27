@@ -67,7 +67,21 @@ namespace CodeImp.DoomBuilder.ZDoom
 			return Parse(data, mapname, clearerrors);
 		}
 
-		public bool Parse(TextResourceData data, string mapname, bool clearerrors) 
+		public bool Parse(TextResourceData data, string mapname, bool clearerrors)
+		{
+			
+			if (Path.GetFileNameWithoutExtension(data.Filename).Equals("UMAPINFO", StringComparison.OrdinalIgnoreCase)) // Check if the parsed file is named UMAPINFO, and if so, divert to ParseUMAPINFO
+			{
+				return ParseUMAPINFO(data, mapname, clearerrors);
+			}
+			else
+			{
+				return ParseZDoomMAPINFO(data, mapname, clearerrors); // If not UMAPINFO, assume ZMAPINFO/MAPINFO
+			}
+		}
+
+
+		private bool ParseZDoomMAPINFO(TextResourceData data, string mapname, bool clearerrors) 
 		{
 			this.mapname = mapname.ToLowerInvariant();
 
@@ -80,6 +94,8 @@ namespace CodeImp.DoomBuilder.ZDoom
 
 			// Cannot process?
 			if(!base.Parse(data, clearerrors)) return false;
+
+			
 
 			// Keep local data
 			Stream localstream = datastream;
@@ -775,6 +791,154 @@ namespace CodeImp.DoomBuilder.ZDoom
             return true;
 
         }
+
+		#endregion
+
+		#region ================== UMAPINFO Parsing
+
+		private bool ParseUMAPINFO(TextResourceData data, string mapname, bool clearerrors)
+		{
+			this.mapname = mapname.ToLowerInvariant();
+
+			//mxd. Already parsed?
+			if (!base.AddTextResource(data))
+			{
+				if (clearerrors) ClearError();
+				return true;
+			}
+
+			// Cannot process?
+			if (!base.Parse(data, clearerrors)) return false;
+
+			// Classic format skip stoppers...
+			HashSet<string> breakat = new HashSet<string> { "map" };
+
+			while (SkipWhitespace(true))
+			{
+				string token = ReadToken().ToLowerInvariant();
+				if (string.IsNullOrEmpty(token) || token == "$gzdb_skip") break;
+
+				switch (token)
+				{
+					case "map":
+						// Get map lump name
+						SkipWhitespace(true);
+						token = ReadToken().ToLowerInvariant();
+						// [ZZ] Note: map name is sometimes in quotes. I think this was "fixed" some time ago, but apparently not.
+						token = StripQuotes(token);
+						if (token != this.mapname)
+						{
+							// Map number? Try to build map name from it...
+							int n;
+							if (int.TryParse(token, NumberStyles.Integer, CultureInfo.InvariantCulture, out n))
+							{
+								token = ((n > 0 && n < 10) ? "map0" + n : "map" + n);
+							}
+
+							// Still no dice?
+							if (token != this.mapname)
+							{
+								SkipStructure(breakat);
+								continue; // Not finished, search for next "map", "defaultmap" or "adddefaultmap" block
+							}
+						}
+
+						// Parse properties
+						if (!ParseUMAPINFOBlock()) return false;
+
+						// UMAPINFO spec specifies default IWAD skies used if none are defined in the map block, so adding this to fall back to game config defaults if skytexture is missing
+						if (string.IsNullOrEmpty(mapinfo.Sky1))
+						{
+							if (General.Map.Config.DefaultSkyTextures.ContainsKey(General.Map.Options.CurrentName))
+								mapinfo.Sky1 = General.Map.Config.DefaultSkyTextures[General.Map.Options.CurrentName];
+							else if (General.Map.Config.DefaultSkyTextures.Count > 0)
+								mapinfo.Sky1 = General.GetByIndex(General.Map.Config.DefaultSkyTextures, 0).Value;
+						}
+
+						// There is a map entry for current map, which makes it defined 
+						mapinfo.IsDefined = true;
+						break;
+
+					}
+			}
+
+			return !this.HasError;
+
+		}
+
+		private bool ParseUMAPINFOBlock()
+		{
+			// Must start with an opening brace
+			if (!NextTokenIs("{")) return false;
+			while (SkipWhitespace(true))
+			{
+				string token = ReadToken().ToLowerInvariant();
+				if (string.IsNullOrEmpty(token))
+				{
+					ReportError("Unexpected end of UMAPINFO block");
+					return false;
+				}
+				if (token == "}")
+				{
+					// End of map block
+					return true;
+				}
+				switch (token)
+				{
+					case "levelname":
+						if (!ParseUMAPINFOLevelName()) return false;
+						break;
+					case "skytexture":
+						if (!ParseUMAPINFOskytexture()) return false;
+						break;
+					default:
+						// Skip unknown property
+						ReadLine();
+						break;
+				}
+			}
+			return true;
+		}
+
+		private bool ParseUMAPINFOLevelName()
+		{
+			// UMAPINFO format (i.e. new format) only
+			if (!NextTokenIs("=")) return false;
+
+			SkipWhitespace(true);
+			string token = StripQuotes(ReadToken());
+
+			if (string.IsNullOrEmpty(token))
+			{
+				ReportError("Expected levelname");
+				return false;
+			}
+
+			mapinfo.Title = token;
+
+			return true;
+
+
+		}
+
+		private bool ParseUMAPINFOskytexture()
+		{
+			if (!NextTokenIs("=")) return false;
+
+			SkipWhitespace(true);
+			string token = StripQuotes(ReadToken());
+
+			if (string.IsNullOrEmpty(token))
+			{
+				ReportError("Expected skytexture name");
+				return false;
+			}
+
+			mapinfo.Sky1 = token.ToUpperInvariant();
+			mapinfo.Sky1ScrollSpeed = 0;
+
+			return true;
+		}
 
 		#endregion
 

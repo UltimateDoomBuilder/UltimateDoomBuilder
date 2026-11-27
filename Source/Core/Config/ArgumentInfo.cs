@@ -245,7 +245,7 @@ namespace CodeImp.DoomBuilder.Config
         // [ZZ] Constructor for an argument info defined in DECORATE/ZScript. reworked.
         internal ArgumentInfo(ActorStructure actor, int i)
         {
-            if(!actor.HasPropertyWithValue("$arg" + i))
+            if(!actor.HasPropertyWithValue("$arg" + i) && !actor.HasPropertyWithValue("$arg" + i + "str"))
             {
                 used = false;
                 return;
@@ -275,7 +275,13 @@ namespace CodeImp.DoomBuilder.Config
                 rendercolor = string.Empty; minrange = string.Empty; maxrange = string.Empty; minrangecolor = string.Empty; maxrangecolor = string.Empty;
 			}
 
-            string actorname = actor.ClassName;
+			// Fallback to default titles if not specified
+			if (string.IsNullOrEmpty(argtitle))
+				argtitle = "Argument " + (i + 1);
+			if (string.IsNullOrEmpty(argtitlestr))
+				argtitlestr = "Argument " + (i + 1);
+
+			string actorname = actor.ClassName;
             IDictionary<string, EnumList> enums = General.Map.Config.Enums;
             
 			this.used = true;

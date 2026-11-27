@@ -17,6 +17,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		#region ================== Variables
 
 		#endregion
+
+		#region ================== Properties
+
+		public override MapElement3D AsMapElement3D { get => null; }
+
+		#endregion
 		
 		#region ================== Constructor / Setup
 
