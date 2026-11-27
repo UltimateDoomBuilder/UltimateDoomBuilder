@@ -406,7 +406,7 @@ namespace CodeImp.DoomBuilder.ZDoom
         {
             for (int i = 0; i < 5; i++)
             {
-                if (HasProperty("$arg" + i))
+                if (HasProperty("$arg" + i) || (i == 0 && HasProperty("$arg" + i + "str")))
                     args[i] = new ArgumentInfo(this, i);
                 else args[i] = null;
             }

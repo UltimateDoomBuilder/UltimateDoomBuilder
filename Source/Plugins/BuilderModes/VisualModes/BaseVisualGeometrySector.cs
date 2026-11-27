@@ -80,6 +80,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public bool Changed { get { return changed; } set { changed = value; } }
 		public SectorLevel Level { get { return level; } }
 		public Effect3DFloor ExtraFloor { get { return extrafloor; } }
+		public abstract MapElement3D AsMapElement3D { get; }
 
 		#endregion
 

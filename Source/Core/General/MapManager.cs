@@ -465,6 +465,8 @@ namespace CodeImp.DoomBuilder
 			//mxd. Restore selection groups
 			options.ReadSelectionGroups();
 
+			options.ReadGroups3D();
+
 			// Bind any methods
 			General.Actions.BindMethods(this);
 
@@ -560,12 +562,13 @@ namespace CodeImp.DoomBuilder
 			// Restore selection groups
 			options.ReadSelectionGroups();
 
+			options.ReadGroups3D();
+
 			if(General.Editing.Mode != null)
 			{
 				if (General.Editing.Mode is ClassicMode)
 				{
 					ClassicMode mode = (ClassicMode)General.Editing.Mode;
-					mode.OnRedoEnd();
 
 					// biwa. Cancel current mode. This will re-engage non-volatile modes to make sure it's
 					// properly initialized for the new map. Fixes issues mentioned in #196

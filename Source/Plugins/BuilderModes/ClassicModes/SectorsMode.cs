@@ -58,7 +58,8 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// Highlighted item
 		private Sector highlighted;
 		private readonly Association highlightasso;
-
+		private readonly Association selectionasso; //New Event Lines on Select render function
+		
 		// Interface
 		new private bool editpressed;
 
@@ -103,7 +104,7 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		public SectorsMode()
 		{
 			highlightasso = new Association(renderer);
-
+			selectionasso = new Association(renderer); //New Event Lines on Select render
 			textlabelsizecache = new Dictionary<string, float>();
 
 			//mxd
@@ -237,7 +238,26 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 				// Render effect and tag labels
 				renderer.RenderText(torenderlabels);
-				
+
+				//Moving the event lines render here as it was causing a bug where it was in OnRedrawDisplay.
+				//Pass 1: Run through both Selectionasso and Highlightasso and render the orange shading
+				if (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION && !selectionasso.IsEmpty)
+					selectionasso.RenderAssociationShading();
+				if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE)
+				{
+					if ((highlighted != null) && !highlighted.IsDisposed && (General.Settings.GZShowEventLines == EventLinesRenderMode.HIGHLIGHT || !highlighted.Selected))
+						highlightasso.RenderAssociationShading(selectionasso);
+				}
+
+				//Pass 2: Then run through both Selectionasso and Highlightasso and render the event lines
+				if (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION && !selectionasso.IsEmpty)
+					selectionasso.RenderEventLines();
+				if (General.Settings.GZShowEventLines != EventLinesRenderMode.NONE)
+				{
+					if ((highlighted != null) && !highlighted.IsDisposed && (General.Settings.GZShowEventLines == EventLinesRenderMode.HIGHLIGHT || !highlighted.Selected))
+						highlightasso.RenderEventLines();
+				}
+
 				renderer.Finish();
 			}
 		}
@@ -400,12 +420,19 @@ namespace CodeImp.DoomBuilder.BuilderModes
 		// Support function for joining and merging sectors
 		private void JoinMergeSectors(bool removelines)
 		{
+			List<Sector> orderedselection = General.Map.Map.GetSelectedSectors(true).Where(s => !s.IsDisposed).ToList();
+
+			if(orderedselection.Count < 2) return; // Need at least 2 sectors to join
+
+			// Get the properties of the first selected sector. Do this before disposing the lines, since that might delete the
+			// sector if it's completely enclosed by other selected sectors
+			SectorProperties sectorProperties = new SectorProperties(orderedselection[0]);
+
 			// Remove lines in betwen joining sectors?
 			if(removelines)
 			{
 				// Go for all selected linedefs
-				List<Linedef> selectedlines = new List<Linedef>(General.Map.Map.GetSelectedLinedefs(true));
-				foreach(Linedef ld in selectedlines)
+				foreach (Linedef ld in General.Map.Map.GetSelectedLinedefs(true))
 				{
 					// Front and back side?
 					if((ld.Front != null) && (ld.Back != null))
@@ -422,15 +449,15 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 
 			// Find the first sector that is not disposed
-			List<Sector> orderedselection = new List<Sector>(General.Map.Map.GetSelectedSectors(true));
-			Sector first = null;
-			foreach(Sector s in orderedselection)
-				if(!s.IsDisposed) { first = s; break; }
-			
+			Sector first = orderedselection.First(s => !s.IsDisposed);
+
 			// Join all selected sectors with the first
-			for(int i = 0; i < orderedselection.Count; i++)
-				if((orderedselection[i] != first) && !orderedselection[i].IsDisposed)
+			for (int i = 0; i < orderedselection.Count; i++)
+				if (orderedselection[i] != first && !orderedselection[i].IsDisposed)
 					orderedselection[i].Join(first);
+
+			// Apply the properties to the joined sector. Only have to do it to the first, since it's the only one left
+			sectorProperties.Apply(new[] { first }, true);
 
 			// Clear selection
 			General.Map.Map.ClearAllSelected();
@@ -745,6 +772,17 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			}
 		}
 
+		//Update Selection event lines whenever sector selection changes
+		public override void UpdateSelectionInfo()
+		{
+			base.UpdateSelectionInfo();
+			ICollection<Sector> selected = General.Map.Map.GetSelectedSectors(true);
+			if (selected.Count > 0)
+				selectionasso.Set(selected);
+			else
+				selectionasso.Clear();
+		}
+
 		/// <summary>
 		/// Update the labels to render with the new scale before actually doing the rendering because zooming
 		/// will redraw the display, and the labels to render must be updated by then
@@ -951,7 +989,12 @@ namespace CodeImp.DoomBuilder.BuilderModes
 				if((highlighted != null) && !highlighted.IsDisposed)
 				{
 					renderer.PlotSector(highlighted, General.Colors.Highlight);
-					highlightasso.Plot();
+					if ((highlighted != null) && !highlighted.IsDisposed && (General.Settings.GZShowEventLines == EventLinesRenderMode.HIGHLIGHT || !highlighted.Selected))
+						highlightasso.Plot();
+				}
+				if (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION) //Added Event Line Selection mode
+				{
+					selectionasso.Plot();
 				}
 				renderer.Finish();
 			}
@@ -970,12 +1013,10 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			// Render selection
 			if(renderer.StartOverlay(false)) 
 			{
-				if (highlighted != null && !highlighted.IsDisposed) highlightasso.Render();
 				if (selecting) RenderMultiSelection();
-
 				renderer.Finish();
 			}
-			
+
 			renderer.Present();
 		}
 
@@ -1032,9 +1073,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 					UpdateOverlaySurfaces(); //mxd
 					UpdateOverlay();
 					renderer.Present();
-
+					UpdateSelectionInfo();
 					//mxd. Thing selection state may've changed
-					if(General.Interface.AltState ^ BuilderPlug.Me.SyncronizeThingEdit) General.Interface.RedrawDisplay();
+					if((General.Interface.AltState ^ BuilderPlug.Me.SyncronizeThingEdit) || (General.Settings.GZShowEventLines == EventLinesRenderMode.SELECTION)) General.Interface.RedrawDisplay();
 				}
 				else if(BuilderPlug.Me.AutoClearSelection) //mxd
 				{
@@ -2608,6 +2649,9 @@ namespace CodeImp.DoomBuilder.BuilderModes
 
 			//mxd. Clear selection info
 			General.Interface.DisplayStatus(StatusType.Selection, string.Empty); 
+
+			//Clear visible event lines on ClearSelection (credit to Boris)
+			selectionasso.Clear();
 
 			// Clear labels
 			foreach(TextLabel[] labelarray in labels.Values)
