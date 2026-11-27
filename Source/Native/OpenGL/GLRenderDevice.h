@@ -196,6 +196,7 @@ public:
 	bool mRasterizerStateChanged = true;
 
 	bool mContextIsCurrent = false;
+	bool mDebugMode = false;
 
 	int mViewportWidth = 0;
 	int mViewportHeight = 0;

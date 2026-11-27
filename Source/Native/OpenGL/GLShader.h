@@ -32,6 +32,7 @@ public:
 	void Setup(const std::string& identifier, const std::string& vertexShader, const std::string& fragmentShader, bool alphatest);
 	bool CheckCompile(GLRenderDevice *device);
 	void Bind();
+	bool IsProgramBuilt() const { return mProgramBuilt; }
 
 	std::string GetCompileError();
 
