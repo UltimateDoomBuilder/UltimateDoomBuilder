@@ -45,7 +45,9 @@ namespace CodeImp.DoomBuilder.Rendering
 
 		// Matrices
 		private Matrix projection;
+		private Matrix inverseprojection;
 		private Matrix view3d;
+		private Matrix inverseview3d;
 		private Matrix billboard;
 		private Matrix view2d;
 		private Matrix world;
@@ -191,6 +193,51 @@ namespace CodeImp.DoomBuilder.Rendering
 
 		#endregion
 
+		#region ================== View
+
+		// This is apparently the only part of the codebase that needs a 4D-vector
+		// so I'm not bothering with a full implementation :p
+		private struct Vector4D
+		{
+			public double x;
+			public double y;
+			public double z;
+			public double w;
+
+			public Vector4D(double x, double y, double z, double w)
+			{
+				this.x = x;
+				this.y = y;
+				this.z = z;
+				this.w = w;
+			}
+
+			public static Vector4D operator *(Matrix m, Vector4D v)
+			{
+				Vector4D r;
+
+				r.x = m.M11 * v.x + m.M21 * v.y + m.M31 * v.z + m.M41 * v.w;
+				r.y = m.M12 * v.x + m.M22 * v.y + m.M32 * v.z + m.M42 * v.w;
+				r.z = m.M13 * v.x + m.M23 * v.y + m.M33 * v.z + m.M43 * v.w;
+				r.w = m.M14 * v.x + m.M24 * v.y + m.M34 * v.z + m.M44 * v.w;
+
+				return r;
+			}
+		}
+
+		public Vector3D DisplayToWorld(Vector2D mousepos)
+		{
+			double mousex = (2.0 * mousepos.x / General.Map.Graphics.RenderTarget.ClientSize.Width) - 1.0;
+			double mousey = 1.0 - (2.0 * mousepos.y / General.Map.Graphics.RenderTarget.ClientSize.Height);
+
+			Vector4D pos4d = (inverseprojection * inverseview3d) * new Vector4D(mousex, mousey, 0.0, 1.0);
+			Vector3D pos = new Vector3D(pos4d.x / pos4d.w, pos4d.y / pos4d.w, pos4d.z / pos4d.w);
+
+			return (pos - cameraposition).GetNormal();
+		}
+
+		#endregion
+
 		#region ================== Management
 
 		// This is called before a device is reset
@@ -279,8 +326,9 @@ namespace CodeImp.DoomBuilder.Rendering
 			float reversefovy = reversefov * aspect;
 			float fovy = (float)Math.Atan(1.0f / reversefovy);
 			
-			// Make the projection matrix
+			// Make the projection matrix and its inverse
 			projection = Matrix.PerspectiveFov(fovy, aspect, PROJ_NEAR_PLANE, General.Settings.ViewDistance);
+			inverseprojection = Matrix.Invert(projection);
 
 			// We also need to re-create the 2D matrices, otherwise the corsshair will be distorted after the viewport is resized. See
 			// https://github.com/jewalky/UltimateDoomBuilder/issues/321
@@ -304,8 +352,9 @@ namespace CodeImp.DoomBuilder.Rendering
 			frustum = new ProjectedFrustum2D(pos, (float)anglexy, (float)anglez, PROJ_NEAR_PLANE,
 				General.Settings.ViewDistance, (float)Angle2D.DegToRad(General.Settings.VisualFOV));
 
-            // Make the view matrix
+            // Make the view matrix and its inverse
             view3d = Matrix.LookAt(RenderDevice.V3(pos), RenderDevice.V3(lookat), new Vector3f(0f, 0f, 1f));
+			inverseview3d = Matrix.Invert(view3d);
 			
 			// Make the billboard matrix
 			billboard = Matrix.RotationZ((float)(anglexy + Angle2D.PI));
