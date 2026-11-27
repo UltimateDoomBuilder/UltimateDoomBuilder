@@ -4017,6 +4017,90 @@ namespace CodeImp.DoomBuilder.BuilderModes
 			PostAction();
 		}
 
+		[BeginAction("splitlinedefsvisualmode")] 
+		public void SplitLinedefsVisualMode()
+		{
+			//Check if highlighted object is a sidedef, if not, abort
+			BaseVisualGeometrySidedef pickedsidedef = target.picked as BaseVisualGeometrySidedef;
+
+			if (pickedsidedef == null || pickedsidedef.Sidedef == null || pickedsidedef.Sidedef.IsDisposed)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "Must be pointing at a wall to split a linedef!");
+				return;
+			}
+
+			//Grab cursor position
+			Vector2D hitpos = GetHitPosition();
+
+			//Check distance fade etc. isn't messing things up
+			if (!hitpos.IsFinite())
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "Must be pointing at a wall to split a linedef!");
+				return;
+			}
+
+			//Snap to decimal level of map format and check if trying to build over an existing vertex
+			Linedef ld = pickedsidedef.Sidedef.Line;
+			Vector2D insertpos = ld.NearestOnLine(hitpos);
+			int decimals = General.Map.FormatInterface.VertexDecimals;
+			Vector2D snappedPos = new Vector2D(Math.Round(insertpos.x, decimals), Math.Round(insertpos.y, decimals));
+
+			if (snappedPos == ld.Start.Position || snappedPos == ld.End.Position)
+			{
+				General.Interface.DisplayStatus(StatusType.Warning, "Cannot split linedef, there is already a vertex here!");
+				return;
+			}
+
+			//If all good, set undo point
+			PreActionNoChange();
+			General.Map.UndoRedo.ClearAllRedos();
+			General.Map.UndoRedo.CreateUndo("Split linedef (visual mode)");
+
+			//Insert the vertex
+			Vertex splitvertex;
+			splitvertex = General.Map.Map.CreateVertex(snappedPos);
+
+			if (splitvertex == null)
+			{
+				General.Map.UndoRedo.WithdrawUndo();
+				return;
+			}
+
+			// Snap to map format accuracy
+			splitvertex.SnapToAccuracy();
+
+			// Split the line at the new vertex
+			Linedef sld = ld.Split(splitvertex);
+
+			if (sld == null)
+			{
+				General.Map.UndoRedo.WithdrawUndo();
+				return;
+			}
+
+			// Update cache values
+			General.Map.IsChanged = true;
+			General.Map.Map.Update();
+
+			// Create the blockmap
+			FillBlockMap();
+
+			// Redraw screen
+			if (ld.Front != null && ld.Front.Sector != null && VisualSectorExists(ld.Front.Sector))
+				((BaseVisualSector)GetVisualSector(ld.Front.Sector)).Changed = true;
+			if (ld.Back != null && ld.Back.Sector != null && VisualSectorExists(ld.Back.Sector))
+				((BaseVisualSector)GetVisualSector(ld.Back.Sector)).Changed = true;
+
+			RebuildElementData();
+			UpdateChangedObjects();
+
+			RebuildSelectedObjectsList();
+			PickTarget();
+			General.Interface.DisplayStatus(StatusType.Action, "Split a linedef");
+			PostAction();
+
+		}
+
 		//mxd
 		[BeginAction("deleteitem", BaseAction = true)]
 		public void Delete()
