@@ -46,6 +46,7 @@ static const char* GLLogCheckNull(const GLubyte* str)
 
 GLRenderDevice::GLRenderDevice(void* disp, void* window, bool debug)
 {
+	mDebugMode = debug;
 	Context = IOpenGLContext::Create(disp, window);
 	if (Context)
 	{
@@ -363,7 +364,9 @@ bool GLRenderDevice::Draw(PrimitiveType type, int startIndex, int primitiveCount
 
 	if (mNeedApply && !ApplyChanges()) return false;
 	glDrawArrays(modes[(int)type], mVertexBufferStartIndex + startIndex, toVertexStart[(int)type] + primitiveCount * toVertexCount[(int)type]);
-	return CheckGLError();
+	if (mDebugMode)
+		return CheckGLError();
+	return true;
 }
 
 bool GLRenderDevice::DrawIndexed(PrimitiveType type, int startIndex, int primitiveCount)
@@ -374,7 +377,9 @@ bool GLRenderDevice::DrawIndexed(PrimitiveType type, int startIndex, int primiti
 
 	if (mNeedApply && !ApplyChanges()) return false;
 	glDrawElementsBaseVertex(modes[(int)type], toVertexStart[(int)type] + primitiveCount * toVertexCount[(int)type], GL_UNSIGNED_INT, (const void*)(startIndex * sizeof(uint32_t)), mVertexBufferStartIndex);
-	return CheckGLError();
+	if (mDebugMode)
+		return CheckGLError();
+	return true;
 }
 
 bool GLRenderDevice::DrawData(PrimitiveType type, int startIndex, int primitiveCount, const void* data)
@@ -391,7 +396,8 @@ bool GLRenderDevice::DrawData(PrimitiveType type, int startIndex, int primitiveC
 	glBufferData(GL_ARRAY_BUFFER, vertcount * (size_t)VertexBuffer::FlatStride, static_cast<const uint8_t*>(data) + startIndex * (size_t)VertexBuffer::FlatStride, GL_STREAM_DRAW);
 	glBindVertexArray(mStreamVAO);
 	glDrawArrays(modes[(int)type], 0, vertcount);
-	if (!CheckGLError()) return false;
+	if (mDebugMode && !CheckGLError()) 
+		return false;
 
 	return ApplyVertexBuffer();
 }
@@ -462,7 +468,9 @@ bool GLRenderDevice::StartRendering(bool clear, int backcolor, Texture* itarget,
 	mBlendStateChanged = true;
 	mRasterizerStateChanged = true;
 
-	return CheckGLError();
+	if (mDebugMode)
+		return CheckGLError();
+	return true;
 }
 
 bool GLRenderDevice::FinishRendering()
@@ -613,8 +621,9 @@ bool GLRenderDevice::SetVertexBufferData(VertexBuffer* ibuffer, void* data, int6
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, oldbinding);
-	bool result = CheckGLError();
-	return result;
+	if (mDebugMode)
+		return CheckGLError();
+	return true;
 }
 
 bool GLRenderDevice::SetVertexBufferSubdata(VertexBuffer* ibuffer, int64_t destOffset, void* data, int64_t size)
@@ -626,8 +635,9 @@ bool GLRenderDevice::SetVertexBufferSubdata(VertexBuffer* ibuffer, int64_t destO
 	glBindBuffer(GL_ARRAY_BUFFER, mSharedVertexBuffers[(int)buffer->Format]->GetBuffer());
 	glBufferSubData(GL_ARRAY_BUFFER, buffer->BufferOffset + destOffset, size, data);
 	glBindBuffer(GL_ARRAY_BUFFER, oldbinding);
-	bool result = CheckGLError();
-	return result;
+	if (mDebugMode)
+		return CheckGLError();
+	return true;
 }
 
 bool GLRenderDevice::SetIndexBufferData(IndexBuffer* ibuffer, void* data, int64_t size)
@@ -644,8 +654,9 @@ bool GLRenderDevice::SetIndexBufferData(IndexBuffer* ibuffer, void* data, int64_
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->GetBuffer());
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, oldbinding);
-	bool result = CheckGLError();
-	return result;
+	if (mDebugMode)
+		return CheckGLError();
+	return true;
 }
 
 bool GLRenderDevice::SetPixels(Texture* itexture, const void* data)
@@ -779,12 +790,15 @@ bool GLRenderDevice::ApplyChanges()
 bool GLRenderDevice::ApplyViewport()
 {
 	glViewport(0, 0, mViewportWidth, mViewportHeight);
-	return CheckGLError();
+	if (mDebugMode)
+		return CheckGLError();
+	return true;
 }
 
 bool GLRenderDevice::ApplyShader()
 {
 	GLShader* curShader = GetActiveShader();
+	bool firstBind = !curShader->IsProgramBuilt();
 	if (!curShader->CheckCompile(this))
 	{
 		SetError("Failed to bind shader:\r\n%s", curShader->GetCompileError().c_str());
@@ -794,7 +808,9 @@ bool GLRenderDevice::ApplyShader()
 	curShader->Bind();
 	mShaderChanged = false;
 
-	return CheckGLError();
+	if (firstBind || mDebugMode)
+		return CheckGLError();
+	return true;
 }
 
 bool GLRenderDevice::ApplyRasterizerState()
@@ -814,7 +830,9 @@ bool GLRenderDevice::ApplyRasterizerState()
 
 	mRasterizerStateChanged = false;
 
-	return CheckGLError();
+	if (mDebugMode)
+		return CheckGLError();
+	return true;
 }
 
 bool GLRenderDevice::ApplyBlendState()
@@ -835,7 +853,9 @@ bool GLRenderDevice::ApplyBlendState()
 
 	mBlendStateChanged = false;
 
-	return CheckGLError();
+	if (mDebugMode)
+		return CheckGLError();
+	return true;
 }
 
 bool GLRenderDevice::ApplyDepthState()
@@ -853,7 +873,9 @@ bool GLRenderDevice::ApplyDepthState()
 
 	mDepthStateChanged = false;
 
-	return CheckGLError();
+	if (mDebugMode)
+		return CheckGLError();
+	return true;
 }
 
 bool GLRenderDevice::ApplyIndexBuffer()
@@ -869,7 +891,9 @@ bool GLRenderDevice::ApplyIndexBuffer()
 
 	mIndexBufferChanged = false;
 
-	return CheckGLError();
+	if (mDebugMode)
+		return CheckGLError();
+	return true;
 }
 
 bool GLRenderDevice::ApplyVertexBuffer()
@@ -879,7 +903,9 @@ bool GLRenderDevice::ApplyVertexBuffer()
 
 	mVertexBufferChanged = false;
 
-	return CheckGLError();
+	if (mDebugMode)
+		return CheckGLError();
+	return true;
 }
 
 void GLRenderDevice::DeclareUniform(UniformName name, const char* glslname, UniformType type)
@@ -930,7 +956,9 @@ bool GLRenderDevice::ApplyUniforms()
 
 	mUniformsChanged = false;
 
-	return CheckGLError();
+	if (mDebugMode)
+		return CheckGLError();
+	return true;
 }
 
 bool GLRenderDevice::ApplyTextures()
@@ -971,11 +999,14 @@ bool GLRenderDevice::ApplyTextures()
             }
         }
         
-        hasError |= CheckGLError();
+        if (mDebugMode)
+            hasError |= CheckGLError();
     }
     
     mTexturesChanged = false;
-    return hasError;
+    if (mDebugMode)
+        return hasError;
+    return true;
 }
 
 std::mutex& GLRenderDevice::GetMutex()
