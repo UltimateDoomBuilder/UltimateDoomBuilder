@@ -39,7 +39,7 @@ namespace CodeImp.DoomBuilder.Data
         public FileImage(string name, string filepathname, bool asflat)
         {
             // Initialize
-            this.texturenamespace = TextureNamespace.FLAT;
+            this.texturenamespace = (asflat ? TextureNamespace.FLAT : TextureNamespace.TEXTURE);
 
             if (asflat)
             {
@@ -66,7 +66,7 @@ namespace CodeImp.DoomBuilder.Data
             // Initialize
             this.scale.x = scalex;
             this.scale.y = scaley;
-            texturenamespace = TextureNamespace.FLAT;
+            texturenamespace = (asflat ? TextureNamespace.FLAT : TextureNamespace.TEXTURE);
 
             probableformat = (asflat ? ImageDataFormat.DOOMFLAT : ImageDataFormat.DOOMPICTURE);
 
