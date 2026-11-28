@@ -45,7 +45,7 @@ namespace CodeImp.DoomBuilder.Data
 		{
 			// Initialize
 			this.datareader = datareader;
-			texturenamespace = TextureNamespace.FLAT;
+			texturenamespace = (asflat ? TextureNamespace.FLAT : TextureNamespace.TEXTURE);
 
 			if(asflat)
 			{
